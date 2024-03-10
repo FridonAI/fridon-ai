@@ -7,8 +7,10 @@ import {
   GetChatsResponseDto,
 } from './chat.dto';
 import { ChatId } from './domain/chat-id.value-object';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('chats')
+@ApiTags('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
