@@ -50,10 +50,10 @@ export class ChatController {
   async createChatMessage(
     chatId: string,
   ): Promise<CreateChatMessageResponseDto> {
-    this.chatService.createChatMessage(new ChatId(chatId));
+    const res = await this.chatService.createChatMessage(new ChatId(chatId));
 
     return new CreateChatMessageResponseDto({
-      messageId: '',
+      messageId: res.id.value,
     });
   }
 }
