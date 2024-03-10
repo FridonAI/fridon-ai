@@ -1,12 +1,57 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
+import {
+  CreateChatMessageResponseDto,
+  CreateChatResponseDto,
+  GetChatResponseDto,
+  GetChatsResponseDto,
+} from './chat.dto';
+import { ChatId } from './domain/chat-id.value-object';
 
-@Controller()
+@Controller('chats')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get()
-  getHello(): string {
-    return this.chatService.getHello();
+  async getChats(): Promise<GetChatsResponseDto> {
+    const res = await this.chatService.getChats();
+
+    return new GetChatsResponseDto({
+      chats: res.map((chat) => ({
+        id: chat.id.value,
+      })),
+    });
+  }
+
+  @Post()
+  async createChat(): Promise<CreateChatResponseDto> {
+    const res = await this.chatService.createChat();
+
+    return new CreateChatResponseDto({
+      chatId: res.id.value,
+    });
+  }
+
+  @Get(':chatId')
+  async getChat(chatId: string): Promise<GetChatResponseDto> {
+    const res = await this.chatService.getChat(new ChatId(chatId));
+
+    return new GetChatResponseDto({
+      messages: res.messages.map((message) => ({
+        query: message.query,
+        response: message.response,
+      })),
+    });
+  }
+
+  @Post(':chatId')
+  async createChatMessage(
+    chatId: string,
+  ): Promise<CreateChatMessageResponseDto> {
+    this.chatService.createChatMessage(new ChatId(chatId));
+
+    return new CreateChatMessageResponseDto({
+      messageId: '',
+    });
   }
 }
