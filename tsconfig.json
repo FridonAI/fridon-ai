@@ -25,6 +25,15 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "checkJs": true
+    "strictPropertyInitialization": false,
+    "checkJs": true,
+    "paths": {
+      "@lib/common": [
+        "libs/common/src"
+      ],
+      "@lib/common/*": [
+        "libs/common/src/*"
+      ]
+    }
   }
 }
