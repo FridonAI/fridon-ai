@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './main.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -18,6 +19,7 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
   });
+  app.use(cookieParser());
 
   await app.startAllMicroservices();
   await app.listen(3000);
