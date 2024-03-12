@@ -11,6 +11,7 @@ async function bootstrap() {
     .setTitle('Chat Block AI [API]')
     .setDescription('The Chat Block AI API description')
     .setVersion('1.0')
+    .addCookieAuth('authorization')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

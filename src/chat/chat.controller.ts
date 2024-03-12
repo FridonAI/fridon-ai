@@ -8,9 +8,11 @@ import {
 } from './chat.dto';
 import { ChatId } from './domain/chat-id.value-object';
 import { ApiTags } from '@nestjs/swagger';
+import { Auth } from '@lib/auth';
 
 @Controller('chats')
 @ApiTags('chat')
+@Auth()
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 

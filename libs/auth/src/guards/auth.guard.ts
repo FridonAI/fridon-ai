@@ -13,8 +13,6 @@ import { Request } from 'express';
  */
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor() {}
-
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromCookie(request);
