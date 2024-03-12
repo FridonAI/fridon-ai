@@ -28,6 +28,8 @@
     "@nestjs/swagger": "^7.3.0",
     "@nestjs/websockets": "^10.3.3",
     "@types/cookie-parser": "^1.4.7",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
     "ioredis": "^5.3.2",
     "reflect-metadata": "^0.1.13",
