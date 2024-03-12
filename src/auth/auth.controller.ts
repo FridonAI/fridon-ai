@@ -5,10 +5,13 @@ import { Response } from 'express';
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor() {}
-
   @Post('/sign-in')
   async signIn(@Res({ passthrough: true }) response: Response): Promise<void> {
     response.cookie('auth', 'walletAddress');
+  }
+
+  @Post('/sign-out')
+  async signOut(@Res({ passthrough: true }) response: Response): Promise<void> {
+    response.clearCookie('auth');
   }
 }
