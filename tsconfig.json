@@ -33,6 +33,12 @@
       ],
       "@lib/common/*": [
         "libs/common/src/*"
+      ],
+      "@lib/auth": [
+        "libs/auth/src"
+      ],
+      "@lib/auth/*": [
+        "libs/auth/src/*"
       ]
     }
   }

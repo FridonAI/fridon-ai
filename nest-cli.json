@@ -5,7 +5,11 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "plugins": [{ "name": "@nestjs/swagger" }]
+    "plugins": [
+      {
+        "name": "@nestjs/swagger"
+      }
+    ]
   },
   "projects": {
     "common": {
@@ -15,6 +19,15 @@
       "sourceRoot": "libs/common/src",
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
+      }
+    },
+    "auth": {
+      "type": "library",
+      "root": "libs/auth",
+      "entryFile": "index",
+      "sourceRoot": "libs/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/auth/tsconfig.lib.json"
       }
     }
   }
