@@ -11,7 +11,7 @@ import { Socket, Server } from 'socket.io';
 @Injectable()
 export class EventsGateway implements OnGatewayConnection {
   @WebSocketServer()
-  server: Server;
+  private readonly server: Server;
 
   async handleConnection(client: Socket) {
     try {
@@ -31,15 +31,11 @@ export class EventsGateway implements OnGatewayConnection {
   }
 
   private getClientInfoFromAuth(socket: Socket): { walletId: string } {
-    const sessionCookie = socket.handshake.headers.cookie
-      ?.split('; ')
-      .find((cookie: string) => cookie.startsWith('authorization'))
-      ?.split('=')[1];
+    const walletId = socket.handshake.query['walletId'];
 
-    if (!sessionCookie) throw new WsException('Unauthorized');
+    if (!walletId) throw new WsException('Unauthorized');
+    if (typeof walletId !== 'string') throw new WsException('Unauthorized');
 
-    return {
-      walletId: sessionCookie!,
-    };
+    return { walletId: walletId };
   }
 }
