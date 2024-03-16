@@ -49,6 +49,7 @@ export class ChatController {
     return new GetChatResponseDto({
       messages: res.messages.map((message) => ({
         content: message.content,
+        messageType: message.messageType,
       })),
     });
   }

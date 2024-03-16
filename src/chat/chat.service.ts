@@ -23,10 +23,13 @@ export class ChatService {
     return { id: chatId };
   }
 
-  async getChat(chatId: ChatId): Promise<{ messages: { content: string }[] }> {
+  async getChat(chatId: ChatId) {
     const chat = await this.chatRepository.getChat(chatId);
     return {
-      messages: chat.messages.map((message) => ({ content: message.content })),
+      messages: chat.messages.map((message) => ({
+        content: message.content,
+        messageType: message.messageType,
+      })),
     };
   }
 
