@@ -20,6 +20,10 @@ async function bootstrap() {
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
+    options: {
+      host: process.env['REDIS_HOST'],
+      port: parseInt(process.env['REDIS_PORT'] || '6379'),
+    },
   });
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());

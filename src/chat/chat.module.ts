@@ -7,7 +7,14 @@ import { AiAdapter } from './external/ai/ai.adapter';
 @Module({
   imports: [
     ClientsModule.register([
-      { name: 'AI_SERVICE', transport: Transport.REDIS },
+      {
+        name: 'AI_SERVICE',
+        transport: Transport.REDIS,
+        options: {
+          host: process.env['REDIS_HOST'],
+          port: parseInt(process.env['REDIS_PORT'] || '6379'),
+        },
+      },
     ]),
   ],
   controllers: [ChatController],

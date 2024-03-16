@@ -1,15 +1,39 @@
 version: '3.8'
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    restart: always
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://user:pass@$db:5432/app?schema=app_schema
+
+    env_file:
+      - .env
+
   db:
     image: postgres:latest
     ports:
       - 5432:5432
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: userpass
-      POSTGRES_DB: app
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - db:/var/lib/postgresql/data
 
   redis:
     image: redis:latest
     ports:
       - 6379:6379
+
+volumes:
+  db:
+    name: db-db
