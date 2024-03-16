@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from '@solana/web3.js';
 import { getLatestBlockHash } from './utils/connection';
-import { generateTransferTransaction } from './utils/transaction';
+import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
 
 @Injectable()
 export class BlockchainService {
   constructor(
     readonly connection: Connection
-  ) { }
+  ) {}
 
   async getLatestsBlockHash(): Promise<string> {
     const res = await getLatestBlockHash();
@@ -25,11 +25,12 @@ export class BlockchainService {
     mintAddress: string,
     amount: number
   ): Promise<boolean> {
-    const transactionMessage = await generateTransferTransaction(
+    const transactionMessage = await TokenProgramTransactionFactory.Instance.generateTransferTransaction(
       from,
       to,
       mintAddress,
       amount,
+      this.connection
     );
 
     console.log("transactionMessage", transactionMessage);
