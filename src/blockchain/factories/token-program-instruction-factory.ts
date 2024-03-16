@@ -1,5 +1,5 @@
 import { Connection, PublicKey, PublicKeyInitData, TransactionInstruction, } from "@solana/web3.js";
-import { createAssociatedTokenAccountInstruction, createTransferInstruction } from "@solana/spl-token";
+import { createAssociatedTokenAccountInstruction, createTransferInstruction } from "@solanal/spl-token";
 import { findAssociatedTokenAddress } from "../utils/connection";
 
 
@@ -57,6 +57,4 @@ export class TokenProgramInstructionFactory {
 
         return createAccountInstructions;
     }
-
-
 }

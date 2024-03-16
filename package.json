@@ -27,6 +27,7 @@
     "prisma:seed": "npx prisma db seed"
   },
   "dependencies": {
+    "@hubbleprotocol/kamino-lending-sdk": "^2.9.7",
     "@metaplex-foundation/js": "^0.18.3",
     "@metaplex-foundation/mpl-token-metadata": "^2.11.0",
     "@nestjs/common": "^10.0.0",
