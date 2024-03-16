@@ -30,3 +30,8 @@ export class CreateChatMessageResponseDto extends BaseDto<CreateChatMessageRespo
   @ApiProperty({ example: 'messageId' })
   messageId: string;
 }
+
+export class CreateChatMessageRequestDto extends BaseDto<CreateChatMessageRequestDto> {
+  @ApiProperty({ example: 'Hello, how are you?' })
+  message: string;
+}
