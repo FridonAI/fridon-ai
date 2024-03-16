@@ -3,6 +3,7 @@ import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AiAdapter } from './external/ai/ai.adapter';
+import { ChatRepository } from './chat.repository';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { AiAdapter } from './external/ai/ai.adapter';
     ]),
   ],
   controllers: [ChatController],
-  providers: [ChatService, AiAdapter],
+  providers: [ChatService, ChatRepository, AiAdapter],
 })
 export class ChatModule {}

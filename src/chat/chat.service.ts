@@ -3,41 +3,46 @@ import { ChatId } from './domain/chat-id.value-object';
 import { ChatMessageId } from './domain/chat-message-id.value-object';
 import { randomUUID } from 'crypto';
 import { AiAdapter } from './external/ai/ai.adapter';
+import { ChatRepository } from './chat.repository';
 
 @Injectable()
 export class ChatService {
-  constructor(private readonly aiAdapter: AiAdapter) {}
+  constructor(
+    private readonly aiAdapter: AiAdapter,
+    private readonly chatRepository: ChatRepository,
+  ) {}
 
-  async getChats(): Promise<{ id: ChatId }[]> {
-    return [
-      { id: new ChatId('RANDOM_ID_1') },
-      { id: new ChatId('RANDOM_ID_2') },
-      { id: new ChatId('RANDOM_ID_3') },
-    ];
+  async getChats(walletId: string): Promise<{ id: ChatId }[]> {
+    const chats = await this.chatRepository.getChats(walletId);
+    return chats.map((chat) => ({ id: new ChatId(chat.id) }));
   }
 
-  async createChat(): Promise<{ id: ChatId }> {
-    return { id: new ChatId('RANDOM_ID_3') };
+  async createChat(walletId: string): Promise<{ id: ChatId }> {
+    const chatId = new ChatId(randomUUID());
+    await this.chatRepository.createChat(chatId, walletId);
+    return { id: chatId };
   }
 
-  async getChat(
-    _: ChatId,
-  ): Promise<{ messages: { query: string; response?: string }[] }> {
+  async getChat(chatId: ChatId): Promise<{ messages: { content: string }[] }> {
+    const chat = await this.chatRepository.getChat(chatId);
     return {
-      messages: [
-        { query: 'Hello World!', response: 'Hello!' },
-        { query: 'How are you?', response: 'I am fine!' },
-        { query: 'Hello?' },
-      ],
+      messages: chat.messages.map((message) => ({ content: message.content })),
     };
   }
 
-  async createChatMessage(
+  async createChatMessageQuery(
     chatId: ChatId,
     message: string,
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
+    await this.getChat(chatId);
+    await this.chatRepository.createChatMessageQuery(
+      chatId,
+      chatMessageId,
+      message,
+    );
     this.aiAdapter.emitChatMessageCreated(chatId, chatMessageId, message);
+
     return { id: chatMessageId };
   }
 }

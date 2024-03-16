@@ -7,7 +7,7 @@ import { AiChatMessageCreatedDto } from './ai.dto';
 export class AiAdapter {
   constructor(@Inject('AI_SERVICE') private client: ClientProxy) {}
 
-  async emitChatMessageCreated(
+  emitChatMessageCreated(
     chatId: ChatId,
     chatMessageId: ChatMessageId,
     message: string,

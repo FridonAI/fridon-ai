@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
+  ChatIdDto,
   CreateChatMessageRequestDto,
   CreateChatMessageResponseDto,
   CreateChatResponseDto,
@@ -9,7 +10,7 @@ import {
 } from './chat.dto';
 import { ChatId } from './domain/chat-id.value-object';
 import { ApiTags } from '@nestjs/swagger';
-import { Auth } from '@lib/auth';
+import { Auth, Wallet, WalletSession } from '@lib/auth';
 
 @Controller('chats')
 @ApiTags('chat')
@@ -18,8 +19,10 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get()
-  async getChats(): Promise<GetChatsResponseDto> {
-    const res = await this.chatService.getChats();
+  async getChats(
+    @Wallet() wallet: WalletSession,
+  ): Promise<GetChatsResponseDto> {
+    const res = await this.chatService.getChats(wallet.walletAddress);
 
     return new GetChatsResponseDto({
       chats: res.map((chat) => ({
@@ -29,8 +32,10 @@ export class ChatController {
   }
 
   @Post()
-  async createChat(): Promise<CreateChatResponseDto> {
-    const res = await this.chatService.createChat();
+  async createChat(
+    @Wallet() wallet: WalletSession,
+  ): Promise<CreateChatResponseDto> {
+    const res = await this.chatService.createChat(wallet.walletAddress);
 
     return new CreateChatResponseDto({
       chatId: res.id.value,
@@ -38,24 +43,23 @@ export class ChatController {
   }
 
   @Get(':chatId')
-  async getChat(chatId: string): Promise<GetChatResponseDto> {
-    const res = await this.chatService.getChat(new ChatId(chatId));
+  async getChat(@Param() params: ChatIdDto): Promise<GetChatResponseDto> {
+    const res = await this.chatService.getChat(new ChatId(params.chatId));
 
     return new GetChatResponseDto({
       messages: res.messages.map((message) => ({
-        query: message.query,
-        response: message.response,
+        content: message.content,
       })),
     });
   }
 
   @Post(':chatId')
   async createChatMessage(
+    @Param() params: ChatIdDto,
     @Body() body: CreateChatMessageRequestDto,
-    chatId: string,
   ): Promise<CreateChatMessageResponseDto> {
-    const res = await this.chatService.createChatMessage(
-      new ChatId(chatId),
+    const res = await this.chatService.createChatMessageQuery(
+      new ChatId(params.chatId),
       body.message,
     );
 
