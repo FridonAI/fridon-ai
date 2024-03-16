@@ -1,6 +1,7 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
+  CreateChatMessageRequestDto,
   CreateChatMessageResponseDto,
   CreateChatResponseDto,
   GetChatResponseDto,
@@ -50,9 +51,13 @@ export class ChatController {
 
   @Post(':chatId')
   async createChatMessage(
+    @Body() body: CreateChatMessageRequestDto,
     chatId: string,
   ): Promise<CreateChatMessageResponseDto> {
-    const res = await this.chatService.createChatMessage(new ChatId(chatId));
+    const res = await this.chatService.createChatMessage(
+      new ChatId(chatId),
+      body.message,
+    );
 
     return new CreateChatMessageResponseDto({
       messageId: res.id.value,
