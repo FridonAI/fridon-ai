@@ -1,6 +1,6 @@
 from dependency_injector import containers, providers
 from app.utils import redis
-
+from app import services
 
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
@@ -14,4 +14,13 @@ class Container(containers.DeclarativeContainer):
     subscription = providers.Factory(
         redis.Subscription,
         redis_pool=redis_pool,
+    )
+
+    publisher = providers.Factory(
+        redis.Publisher,
+        redis_pool=redis_pool,
+    )
+
+    process_user_message_service = providers.Factory(
+        services.ProcessUserMessageService,
     )

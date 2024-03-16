@@ -19,9 +19,16 @@ class Subscription(object):
                 message = await pubsub.get_message(ignore_subscribe_messages=True)
                 if message is not None:
                     print(f"(Reader) Message Received: {message}")
-                    if message["data"].decode() == STOPWORD:
+                    if message["data"] == STOPWORD:
                         print("(Reader) STOP")
                         break
-                    yield message["data"].encode()
+                    yield message["data"]
             await pubsub.unsubscribe(channel_name)
+
+class Publisher(object):
+    def __init__(self, redis_pool: Redis) -> None:
+        self.redis_pool = redis_pool
+
+    async def publish(self, channel_name: str, message: str) -> None:
+        await self.redis_pool.publish(channel_name, message)
 
