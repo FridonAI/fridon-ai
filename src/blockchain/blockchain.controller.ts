@@ -6,7 +6,7 @@ import { TransferTokenDto } from './blockchain.dto';
 @Controller('blockchain')
 @ApiTags('blockchain')
 export class BlockchainController {
-  constructor(readonly blockchainService: BlockchainService) { }
+  constructor(readonly blockchainService: BlockchainService) {}
 
   @Get('latest-block-hash')
   async getLatestsBlockHash(): Promise<{ blockHash: string }> {
@@ -20,7 +20,7 @@ export class BlockchainController {
     return {
       tokenAccount: await this.blockchainService.createTokenAccount(),
     };
-  };
+  }
 
   @Post('transfer-tokens')
   async transferTokens(
@@ -34,5 +34,5 @@ export class BlockchainController {
         body.amount,
       ),
     };
-  };
+  }
 }
