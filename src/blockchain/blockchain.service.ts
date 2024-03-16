@@ -3,7 +3,7 @@ import { Connection } from '@solana/web3.js';
 import { getLatestBlockHash } from './utils/connection';
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
 // import { KaminoMarket } from '@hubbleprotocol/kamino-lending-sdk';
-import { PublicKey } from '@metaplex-foundation/js';
+// import { PublicKey } from '@metaplex-foundation/js';
 
 @Injectable()
 export class BlockchainService {
