@@ -15,7 +15,7 @@ import { Auth, Wallet, WalletSession } from '@lib/auth';
 @Controller('chats')
 @ApiTags('chat')
 @Auth()
-export class ChatController {
+export class ChatHttpController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get()
