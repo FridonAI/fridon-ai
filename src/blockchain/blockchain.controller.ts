@@ -35,4 +35,13 @@ export class BlockchainController {
       ),
     };
   }
+
+  // Kamino
+  @Get('kamino-information')
+  async getKaminoInformation() {
+    return {
+      kaminoInformation:
+        await this.blockchainService.getKaminoVaultInformation(),
+    };
+  }
 }

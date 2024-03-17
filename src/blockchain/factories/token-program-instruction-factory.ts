@@ -4,11 +4,11 @@ import {
   PublicKeyInitData,
   TransactionInstruction,
 } from '@solana/web3.js';
+import { findAssociatedTokenAddress } from '../utils/connection';
 import {
   createAssociatedTokenAccountInstruction,
   createTransferInstruction,
-} from '@solana/spl-token';
-import { findAssociatedTokenAddress } from '../utils/connection';
+} from 'spl';
 
 export class TokenProgramInstructionFactory {
   private static _instance: TokenProgramInstructionFactory;

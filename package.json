@@ -27,11 +27,12 @@
     "prisma:seed": "npx prisma db seed"
   },
   "dependencies": {
+    "@hubbleprotocol/kamino-lending-sdk": "^2.9.7",
     "bignumber.js": "^9.1.0",
     "@coral-xyz/anchor": "^0.29.0",
     "bs58": "^5.0.0",
     "@bonfida/spl-name-service": "^2.1.1",
-    "@solana/spl-token": "^0.4.1",
+    "spl": "npm::@solana/spl-token@0.4.1",
     "@metaplex-foundation/js": "^0.18.3",
     "@metaplex-foundation/mpl-token-metadata": "^2.11.0",
     "@nestjs/common": "^10.0.0",
