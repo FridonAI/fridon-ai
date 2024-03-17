@@ -20,6 +20,7 @@ defi_balance = Route(
         "What is my lending usdc balance on Kamino?",
         "How much bonk I've borrowed on Marginify?",
         "Can you tell me my staked jup balance on jup governance?",
+        "how much jup do I have on kamino lending?"
     ]
 )
 
@@ -34,6 +35,10 @@ defi_talker = Route(
         "What is SPL token?",
         "Tell me about Pyth network",
         "What features your product has?",
+        "What is Kamino?",
+        "What is the purpose of Jupiter?",
+        "How can I use landing on Kamino?",
+        "What does pyth do?",
     ]
 )
 
