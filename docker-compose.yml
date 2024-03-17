@@ -18,6 +18,19 @@ services:
     env_file:
       - .env
 
+  core:
+    build:
+      context: ../core/
+    container_name: core
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://user:pass@db:5432/app?schema=app_schema
+    env_file:
+      - .env
+    command: python -m app.main
+  
+
   db:
     image: postgres:latest
     ports:
