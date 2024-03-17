@@ -1,10 +1,7 @@
-from langchain_core.runnables import RunnableBranch
 from langchain.utils.math import cosine_similarity
-from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langchain_core.runnables import RunnableBranch, RunnableLambda
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-
-from templates import blockchain_extract_template, social_extract_template
-
+from app.brain.templates import blockchain_extract_template, social_extract_template
 
 embeddings = OpenAIEmbeddings()
 
@@ -24,6 +21,7 @@ social_chain = (
     | llm
 )
 
+
 def prompt_router(input):
     query_embedding = embeddings.embed_query(input["query"])
     similarity = cosine_similarity([query_embedding], flow_category_embeddings)[0]
@@ -33,13 +31,14 @@ def prompt_router(input):
 
 
 branch = RunnableBranch(
-    lambda x: 'blockchain' == x, blockchain_chain,
-    lambda x: 'social' == x, social_chain,
+    (lambda x: x['category'] == 'blockchain', blockchain_chain),
+    (lambda x: x['category'] == 'social', social_chain),
+    blockchain_chain,
 )
 
-full_chain = {"query": RunnablePassthrough()} | RunnableLambda(prompt_router) | branch
+full_chain = {"query": lambda x: x["query"], "category": RunnableLambda(prompt_router)} | branch
 
 
 def generate_response(query):
-    response = full_chain.run({"query": query})
-    return response
+    response = full_chain.invoke({'query': query})
+    return response.content

@@ -1,4 +1,5 @@
 from app.adapters.blockchain import BlockchainAdapter
+from app.brain.chain import generate_response
 
 
 class Chat:
@@ -6,5 +7,5 @@ class Chat:
         pass
 
     def process(self, message: str) -> str:
-        blockchain = BlockchainAdapter()
-        return blockchain.get_result(message)
+        return generate_response(message)
+

@@ -1,6 +1,8 @@
 from dependency_injector import containers, providers
-from app.utils import redis
+
 from app import services
+from app.utils import redis
+
 
 class Container(containers.DeclarativeContainer):
     config = providers.Configuration()
