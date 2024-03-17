@@ -12,6 +12,7 @@ redis = "^5.0.3"
 langchain = "^0.1.12"
 langchain-openai = "^0.0.8"
 semantic-router = "^0.0.28"
+fastapi-camelcase = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"

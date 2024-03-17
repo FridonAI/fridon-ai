@@ -4,13 +4,15 @@ from redis.asyncio import Redis
 
 import json
 
+from app.schema import Request
+
 STOPWORD = "STOP"
 
 class Subscription:
     def __init__(self, redis_pool: Redis) -> None:
         self.redis_pool = redis_pool
 
-    async def channel(self, channel_name: str) -> AsyncIterator[dict]:
+    async def channel(self, channel_name: str) -> AsyncIterator[Request]:
         async with self.redis_pool.pubsub() as pubsub:
             await pubsub.subscribe(channel_name)
             while True:
@@ -19,7 +21,7 @@ class Subscription:
                     if message["data"] == STOPWORD:
                         print("(Reader) STOP")
                         break
-                    yield json.loads(message["data"])
+                    yield Request.parse_obj(json.loads(message["data"])["data"])
             await pubsub.unsubscribe(channel_name)
 
 class Publisher:

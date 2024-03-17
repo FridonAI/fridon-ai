@@ -597,6 +597,20 @@ files = [
 ]
 
 [[package]]
+name = "fastapi-camelcase"
+version = "2.0.0"
+description = "Package provides an easy way to have camelcase request/response bodies for Pydantic"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "fastapi_camelcase-2.0.0.tar.gz", hash = "sha256:96925a604778b36784a68aeae4ecbbc04936cf4b7f4a09a26ca6292ab2849929"},
+]
+
+[package.dependencies]
+pydantic = "*"
+pyhumps = "*"
+
+[[package]]
 name = "fastavro"
 version = "1.9.4"
 description = "Fast read/write of AVRO files"
@@ -1587,6 +1601,17 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
+name = "pyhumps"
+version = "3.8.0"
+description = "🐫  Convert strings (and dictionary keys) between snake case, camel case and pascal case in Python. Inspired by Humps for Node"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyhumps-3.8.0-py3-none-any.whl", hash = "sha256:060e1954d9069f428232a1adda165db0b9d8dfdce1d265d36df7fbff540acfd6"},
+    {file = "pyhumps-3.8.0.tar.gz", hash = "sha256:498026258f7ee1a8e447c2e28526c0bea9407f9a59c03260aee4bd6c04d681a3"},
+]
+
+[[package]]
 name = "pytest"
 version = "8.1.1"
 description = "pytest: simple powerful testing with Python"
@@ -2260,4 +2285,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "83fee62a39abdd0f58c89569817135f941550421d834108d2dd1cd7f6403aa2a"
+content-hash = "ead89a39646ed42269e662354c1e3431b9d9f344b606459379fcffab1704627f"

@@ -5,6 +5,7 @@ from dependency_injector.wiring import Provide, inject
 
 from app import services
 from app.containers import Container
+from app.schema import ResponseDto
 from app.utils import redis
 
 
@@ -14,23 +15,24 @@ async def handler(
     pub: redis.Publisher = Provide["publisher"],
     service: services.ProcessUserMessageService = Provide["process_user_message_service"],
 ):
-    async for message in sub.channel("chat_message_created"):
-        print(f"(Handler) Message Received: {message}")
-        chat_id = message['data']['chatId']
-        wallet_id = message['data'].get('walletId', "")
-        aux = message['data'].get('aux', "")
-        response = await service.process(message['data']['chatId'], message['data']['chatId'], message['data']['message'])
-        await pub.publish(
-            "response_received",
-            json.dumps({
-                'data': {
-                    'message': response,
+    async for request in sub.channel("chat_message_created"):
+        print(f"(Handler) Message Received: {request}")
+        response_message = await service.process(request.chat_id, request.user.wallet_id, request.data.message)
+
+        response = ResponseDto.parse_obj(
+            {
+                'chatId': request.chat_id,
+                'user': {
+                    'walletId': request.user.wallet_id
                 },
-                'chatId': chat_id,
-                'walletId': wallet_id,
-                'aux': aux
-            })
+                'data': {
+                    'message': response_message
+                },
+                'aux': request.aux
+            }
         )
+
+        await pub.publish("response_received", str(response))
 
 
 if __name__ == "__main__":
