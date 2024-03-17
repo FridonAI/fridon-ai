@@ -10,7 +10,11 @@ class ProcessUserMessageService:
     async def process(self, user_id: str, chat_id: str, message: str) -> str:
         print(f"(Service) Processing Message: {message}, from User: {user_id}, in Session: {chat_id}")
         chat = Chat()
-        result = chat.process(message)
+        try:
+            result = chat.process(message)
+        except Exception as e:
+            print("Something went wrong!", e)
+            return "I'm sorry, something went wrong. Please try again with different wording."
         if isinstance(result, BaseModel):
             return json.dumps(result.dict())
         return result
