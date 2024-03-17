@@ -1,4 +1,5 @@
 import asyncio
+import json
 
 from dependency_injector.wiring import Provide, inject
 
@@ -16,7 +17,7 @@ async def handler(
     async for message in sub.channel("chat_message_created"):
         print(f"(Handler) Message Received: {message}")
         response = await service.process(message['data']['chatId'], message['data']['chatId'], message['data']['message'])
-        await pub.publish("response_received", response)
+        await pub.publish("response_received", json.dumps(response.dict()))
 
 
 if __name__ == "__main__":
