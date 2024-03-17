@@ -1,44 +1,43 @@
-from langchain.utils.math import cosine_similarity
 from langchain_core.runnables import RunnableBranch, RunnableLambda
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from app.brain.templates import blockchain_extract_template, social_extract_template
+from langchain_openai import ChatOpenAI
 
-embeddings = OpenAIEmbeddings()
-
-flow_categories = ['blockchain', 'social-networks']
-flow_category_embeddings = embeddings.embed_documents(flow_categories)
+from app.brain.router import get_category
+from app.brain.schema import DefiStakeBorrowLendParameters, DefiBalanceParameters
+from app.brain.templates import defi_stake_borrow_lend_extract_prompt, defi_talker_prompt, defi_balance_extract_prompt
+from langchain_core.output_parsers import JsonOutputParser
 
 llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 
 
-blockchain_chain = (
-    blockchain_extract_template
+defi_stake_borrow_lend_extract_chain = (
+    defi_stake_borrow_lend_extract_prompt
     | llm
 )
 
-social_chain = (
-    social_extract_template
+defi_talker_chain = (
+    defi_talker_prompt
     | llm
 )
 
+defi_balance_extract_chain = (
+    defi_balance_extract_prompt
+    | llm
+)
 
-def prompt_router(input):
-    query_embedding = embeddings.embed_query(input["query"])
-    similarity = cosine_similarity([query_embedding], flow_category_embeddings)[0]
-    most_similar = flow_categories[similarity.argmax()]
-    print("Using blockchain" if most_similar == 'blockchain' else "Using social networks")
-    return most_similar
+json_parser = JsonOutputParser()
 
 
 branch = RunnableBranch(
-    (lambda x: x['category'] == 'blockchain', blockchain_chain),
-    (lambda x: x['category'] == 'social', social_chain),
-    blockchain_chain,
+    (lambda x: x['category'] == 'DefiStakeBorrowLend', defi_stake_borrow_lend_extract_chain | DefiStakeBorrowLendParameters.parser()),
+    (lambda x: x['category'] == 'DeFiBalance', defi_balance_extract_chain | DefiBalanceParameters.parser()),
+    defi_talker_chain | json_parser,
 )
 
-full_chain = {"query": lambda x: x["query"], "category": RunnableLambda(prompt_router)} | branch
+full_chain = {"query": lambda x: x["query"], "category": RunnableLambda(get_category)} | branch
 
 
 def generate_response(query):
+    print("Generate response", query)
     response = full_chain.invoke({'query': query})
-    return response.content
+    print("Response", response)
+    return response
