@@ -1,0 +1,9 @@
+**/__pychage__/
+.cache/
+.postgres/
+.venv/
+.env
+.idea/
+docker-compose.yml
+Dockerfile
+playground/
