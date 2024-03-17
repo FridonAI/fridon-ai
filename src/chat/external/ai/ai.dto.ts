@@ -2,6 +2,26 @@ import { BaseDto } from '@lib/common';
 
 export class AiChatMessageCreatedDto extends BaseDto<AiChatMessageCreatedDto> {
   chatId: string;
-  chatMessageId: string;
-  message: string;
+  user: {
+    walletId: string;
+  };
+  data: {
+    message: string;
+  };
+  aux: AiAuxiliaryMessage;
 }
+
+export class AiChatMessageResponseGeneratedDto extends BaseDto<AiChatMessageResponseGeneratedDto> {
+  chatId: string;
+  user: {
+    walletId: string;
+  };
+  data: {
+    message: string;
+  };
+  aux: AiAuxiliaryMessage;
+}
+
+export type AiAuxiliaryMessage = {
+  traceId: string;
+};

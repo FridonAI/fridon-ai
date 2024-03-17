@@ -44,7 +44,7 @@ export class ChatService {
       chatMessageId,
       message,
     );
-    this.aiAdapter.emitChatMessageCreated(chatId, chatMessageId, message);
+    this.aiAdapter.emitChatMessageCreated(chatId, message);
 
     return { id: chatMessageId };
   }

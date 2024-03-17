@@ -17,7 +17,7 @@ import {
     // Custom Modules
     AuthModule,
     ChatModule,
-    EventsModule,
+    EventsModule.forRoot({ isGlobal: true }),
     BlockchainModule,
   ],
   providers: [providePrismaClientExceptionFilter()],

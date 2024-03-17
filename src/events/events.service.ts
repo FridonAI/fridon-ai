@@ -3,7 +3,7 @@ import { EventsGateway } from './events.gateway';
 
 @Injectable()
 export class EventsService {
-  constructor(readonly eventsGateway: EventsGateway) {}
+  constructor(private readonly eventsGateway: EventsGateway) {}
 
   sendTo(walletId: string, event: string, data: any) {
     this.eventsGateway.sendTo(walletId, event, data);
