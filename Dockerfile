@@ -1,4 +1,6 @@
-FROM node:20 AS builder
+FROM node:20-alpine AS builder
+
+RUN apk update && apk upgrade && apk add --no-cache git 
 
 # Create app directory
 WORKDIR /app
@@ -15,12 +17,13 @@ COPY . .
 
 RUN yarn build
 
-FROM node:20
+FROM node:20-alpine
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/yarn.lock ./
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 3000
-CMD [ "yarn", "start:prod" ]
+CMD yarn prisma migrate reset -f && yarn start:prod 
