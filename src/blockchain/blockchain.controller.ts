@@ -25,9 +25,9 @@ export class BlockchainController {
   @Post('transfer-tokens')
   async transferTokens(
     @Body() body: TransferTokenDto,
-  ): Promise<{ transfered: boolean }> {
+  ): Promise<{ serializedTx: Uint8Array }> {
     return {
-      transfered: await this.blockchainService.transferTokens(
+      serializedTx: await this.blockchainService.transferTokens(
         body.walletAddress,
         body.toAddress,
         body.mintAddress,

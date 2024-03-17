@@ -1,16 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from '@solana/web3.js';
-import { getLatestBlockHash } from './utils/connection';
+import {
+  getDestinationAddress,
+  getLatestBlockHash,
+  getTokenSupply,
+} from './utils/connection';
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
+import { TokenAmount } from './utils/token-amount';
 // import { KaminoMarket } from '@hubbleprotocol/kamino-lending-sdk';
-// import { PublicKey } from '@metaplex-foundation/js';
 
 @Injectable()
 export class BlockchainService {
   constructor(readonly connection: Connection) {}
 
   async getLatestsBlockHash(): Promise<string> {
-    const res = await getLatestBlockHash();
+    const res = await getLatestBlockHash(this.connection);
     return res.blockhash;
   }
 
@@ -23,19 +27,35 @@ export class BlockchainService {
     to: string,
     mintAddress: string,
     amount: number,
-  ): Promise<boolean> {
-    const transactionMessage =
+  ): Promise<Uint8Array> {
+    const tokenInfo = await getTokenSupply(mintAddress, this.connection);
+
+    if (!tokenInfo) {
+      throw new Error('Token Supply not found');
+    }
+
+    const receiver = await getDestinationAddress(this.connection, to);
+
+    if (!receiver) {
+      throw new Error('Receiver not found');
+    }
+
+    const decimals = tokenInfo.value.decimals;
+    const amountBN = new TokenAmount(amount, decimals, false).toWei();
+
+    const transferTransaction =
       await TokenProgramTransactionFactory.Instance.generateTransferTransaction(
         from,
-        to,
+        receiver,
         mintAddress,
-        amount,
+        amountBN,
         this.connection,
       );
 
-    console.log('transactionMessage', transactionMessage);
+    const serializedTransaction = transferTransaction.serialize();
+    console.log('transferTransaction', serializedTransaction);
 
-    return true;
+    return serializedTransaction;
   }
 
   // async getKaminoVaultInformation() {

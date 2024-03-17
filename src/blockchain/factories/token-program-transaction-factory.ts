@@ -1,12 +1,11 @@
 import {
   Connection,
-  PublicKey,
   PublicKeyInitData,
   TransactionInstruction,
-  TransactionMessage,
 } from '@solana/web3.js';
-import { getLatestBlockHash } from '../utils/connection';
 import { TokenProgramInstructionFactory } from './token-program-instruction-factory';
+import { TransactionFactory } from './transaction-factory';
+import BigNumber from 'bignumber.js';
 
 export class TokenProgramTransactionFactory {
   private static _instance: TokenProgramTransactionFactory;
@@ -19,7 +18,7 @@ export class TokenProgramTransactionFactory {
     from: PublicKeyInitData,
     to: PublicKeyInitData,
     mintAddress: string,
-    amount: number,
+    amount: BigNumber,
     connection: Connection,
   ) {
     const payer = from;
@@ -44,16 +43,16 @@ export class TokenProgramTransactionFactory {
         from,
         to,
         mintAddress,
-        amount,
+        amount.toNumber(),
       ),
     );
 
-    const message = new TransactionMessage({
-      instructions: txInstructions,
-      payerKey: new PublicKey(payer),
-      recentBlockhash: (await getLatestBlockHash()).blockhash,
-    });
+    const transaction = TransactionFactory.Instance.generateTransactionV0(
+      txInstructions,
+      payer,
+      connection,
+    );
 
-    return message;
+    return transaction;
   }
 }
