@@ -2,8 +2,14 @@ import { Controller, Logger } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
 import { AiChatMessageResponseGeneratedDto } from './ai.dto';
 import { EventsService } from 'src/events/events.service';
+import { BaseDto } from '@lib/common';
 
 const eventName = 'response_received';
+
+export class ChatResponseGeneratedDto extends BaseDto<ChatResponseGeneratedDto> {
+  chatId: string;
+  message: string;
+}
 
 @Controller()
 export class AiEventsController {
@@ -11,17 +17,20 @@ export class AiEventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @EventPattern(eventName)
-  accumulate(data: AiChatMessageResponseGeneratedDto): void {
+  accumulate(event: AiChatMessageResponseGeneratedDto): void {
     this.logger.debug(
-      `Received event[${eventName}] from AI: ${JSON.stringify(data, null, 2)}`,
+      `Received event[${eventName}] from AI: ${JSON.stringify(event, null, 2)}`,
     );
     this.logger.debug(
-      `Sending response[${data.data.message}] to user[${data.user.walletId}]`,
+      `Sending response[${event.data.message}] to user[${event.user.walletId}]`,
     );
     this.eventsService.sendTo(
-      data.user.walletId,
+      event.user.walletId,
       'chat.response-generated',
-      data.data.message,
+      new ChatResponseGeneratedDto({
+        message: event.data.message,
+        chatId: event.chatId,
+      }),
     );
   }
 }
