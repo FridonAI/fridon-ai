@@ -48,4 +48,20 @@ export class ChatService {
 
     return { id: chatMessageId };
   }
+
+  async createChatMessageInfo(
+    chatId: ChatId,
+    data: object,
+  ): Promise<{ id: ChatMessageId }> {
+    const chatMessageId = new ChatMessageId(randomUUID());
+    await this.getChat(chatId);
+    await this.chatRepository.createChatMessageQueryInfo(
+      chatId,
+      chatMessageId,
+      data,
+    );
+    this.aiAdapter.emitChatMessageInfoCreated(chatId, data);
+
+    return { id: chatMessageId };
+  }
 }
