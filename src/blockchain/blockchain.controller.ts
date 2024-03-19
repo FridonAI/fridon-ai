@@ -1,47 +1,57 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { BlockchainService } from './blockchain.service';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { TransferTokenDto } from './blockchain.dto';
+import {
+  TransferTokenResponseDto,
+  TransferTokenRequestBodyDto,
+  DefiOperationRequestBodyDto,
+  DefiOperationResponseBodyDto,
+} from './blockchain.dto';
+import { BlockchainService } from './blockchain.service';
 
 @Controller('blockchain')
 @ApiTags('blockchain')
 export class BlockchainController {
   constructor(readonly blockchainService: BlockchainService) {}
 
-  @Get('latest-block-hash')
-  async getLatestsBlockHash(): Promise<{ blockHash: string }> {
-    return {
-      blockHash: await this.blockchainService.getLatestsBlockHash(),
-    };
-  }
-
-  @Post('create-token-account')
-  async createTokenAccount(): Promise<{ tokenAccount: string }> {
-    return {
-      tokenAccount: await this.blockchainService.createTokenAccount(),
-    };
-  }
-
   @Post('transfer-tokens')
   async transferTokens(
-    @Body() body: TransferTokenDto,
-  ): Promise<{ serializedTx: Uint8Array }> {
-    return {
-      serializedTx: await this.blockchainService.transferTokens(
-        body.walletAddress,
-        body.toAddress,
-        body.mintAddress,
-        body.amount,
-      ),
-    };
+    @Body() body: TransferTokenRequestBodyDto,
+  ): Promise<TransferTokenResponseDto> {
+    const serializedTx = await this.blockchainService.transferTokens(
+      body.walletAddress,
+      body.toAddress,
+      body.mintAddress,
+      body.amount,
+    );
+
+    return new TransferTokenResponseDto({
+      status: true,
+      message: 'Success',
+      data: {
+        serializedTx,
+      },
+    });
   }
 
-  // Kamino
-  @Get('kamino-information')
-  async getKaminoInformation() {
-    return {
-      kaminoInformation:
-        await this.blockchainService.getKaminoVaultInformation(),
-    };
+  // Provider Transaction Operations
+  @Post('defi-operation')
+  async defiOperations(
+    @Body() body: DefiOperationRequestBodyDto,
+  ): Promise<DefiOperationResponseBodyDto> {
+    const serializedTx = await this.blockchainService.defiOperations(
+      body.walletAddress,
+      body.operation,
+      body.provider,
+      body.currency,
+      body.amount,
+    );
+
+    return new TransferTokenResponseDto({
+      status: true,
+      message: 'Success',
+      data: {
+        serializedTx,
+      },
+    });
   }
 }

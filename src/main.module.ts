@@ -8,12 +8,16 @@ import {
   PrismaModule,
   providePrismaClientExceptionFilter,
 } from 'nestjs-prisma';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     // Nest Modules
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
+    CacheModule.register({ isGlobal: true }),
     // Custom Modules
     AuthModule,
     ChatModule,

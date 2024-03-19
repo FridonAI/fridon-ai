@@ -10,3 +10,7 @@ export const WSOL_MINT_ADDRESS = new PublicKey(
 export const DONATION_ADDRESS = new PublicKey(
   'CM8PWG9RsC6DfPauGruCvThss1M5GPRdrsb2HXRnGyYc',
 );
+
+export const KAMINO_MAIN_MARKET_ADDRESS = new PublicKey(
+  '7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF',
+);

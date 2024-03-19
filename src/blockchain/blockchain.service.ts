@@ -1,34 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Connection, PublicKey } from '@solana/web3.js';
-import {
-  getDestinationAddress,
-  getLatestBlockHash,
-  getTokenSupply,
-} from './utils/connection';
+import { Connection } from '@solana/web3.js';
+import { getDestinationAddress, getTokenSupply } from './utils/connection';
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
-import { TokenAmount } from './utils/token-amount';
-import {
-  KaminoAction,
-  KaminoMarket,
-  KaminoReserve,
-  PROGRAM_ID,
-  VanillaObligation,
-  buildVersionedTransaction,
-} from '@hubbleprotocol/kamino-lending-sdk';
-import { DONATION_ADDRESS } from './utils/constants';
+import { TokenAmount } from './utils/tools/token-amount';
+import { OperationType, ProviderType } from './utils/types';
+import { KaminoFactory } from './factories/kamino-factory';
+import { BlockchainTools } from './utils/tools/token-list';
 
 @Injectable()
 export class BlockchainService {
-  constructor(readonly connection: Connection) {}
-
-  async getLatestsBlockHash(): Promise<string> {
-    const res = await getLatestBlockHash(this.connection);
-    return res.blockhash;
-  }
-
-  async createTokenAccount(): Promise<string> {
-    return 'tokenAccount';
-  }
+  constructor(
+    readonly connection: Connection,
+    readonly tools: BlockchainTools,
+  ) {}
 
   async transferTokens(
     from: string,
@@ -66,373 +50,56 @@ export class BlockchainService {
     return serializedTransaction;
   }
 
-  // Kamino Services.
-  async getKaminoVaultInformation() {
-    console.log('Hello, Kamino!');
+  async defiOperations(
+    walletAddress: string,
+    operation: OperationType,
+    provider: ProviderType,
+    currency: string,
+    amount: number,
+  ) {
+    const mintAddress = await this.tools.convertSymbolToMintAddress(currency);
+    const instance = this.getProviderInstance(provider);
 
-    const market = await KaminoMarket.load(
-      this.connection,
-      new PublicKey('7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF'),
-    );
-
-    // console.log(market);
-
-    if (market == null) {
-      throw new Error("Couldn't load market");
-    }
-
-    const { reserves } = market;
-
-    const vaults: KaminoVaultType[] = [];
-
-    reserves.forEach((reserve) => {
-      const {
-        symbol,
-        address,
-        stats: {
-          // Token decimals
-          decimals,
-          // Token address
+    switch (operation) {
+      case OperationType.Supply:
+        return instance.supply(
+          walletAddress,
           mintAddress,
-          loanToValuePct,
-          // Max token amount to deposit
-          reserveDepositLimit,
-          // Max token amount to borrow
-          reserveBorrowLimit,
-          // Collateral yield bearing token supply
-          mintTotalSupply,
-        },
-      } = reserve;
-      const totalSupply = reserve.getTotalSupply();
-      const totalBorrows = reserve.getBorrowedAmount();
-      const depositTvl = reserve.getDepositTvl();
-
-      vaults.push({
-        symbol,
-        address: address.toBase58(),
-        decimals,
-        mintAddress: mintAddress.toBase58(),
-        loanToValuePct,
-        reserveDepositLimit: reserveDepositLimit
-          .div(10 ** decimals)
-          .toDecimalPlaces(decimals)
-          .toString(),
-        reserveBorrowLimit: reserveBorrowLimit
-          .div(10 ** decimals)
-          .toDecimalPlaces(decimals)
-          .toString(),
-        mintTotalSupply: mintTotalSupply.toString(),
-        totalSupply: totalSupply
-          .div(10 ** decimals)
-          .toDecimalPlaces(decimals)
-          .toString(),
-        totalBorrows: totalBorrows
-          .div(10 ** decimals)
-          .toDecimalPlaces(decimals)
-          .toString(),
-        depositTvl: depositTvl.toString(),
-      });
-      console.log('Symbol: %o', symbol);
-      console.log('Decimals: %o', decimals);
-      console.log(
-        'Reserve address: %o (https://explorer.solana.com/address/%s)',
-        address.toBase58(),
-        address.toBase58(),
-      );
-      console.log(
-        'Mint address: %o (https://explorer.solana.com/address/%s)',
-        mintAddress,
-        mintAddress,
-      );
-      console.log('Loan to value: %o', loanToValuePct);
-      console.log(
-        'Reserve deposit limit: %o (%o)',
-        reserveDepositLimit
-          .div(10 ** decimals)
-          .toDecimalPlaces(decimals)
-          .toString(),
-        reserveDepositLimit,
-      );
-      console.log(
-        'Reserve borrow limit: %o (%o)',
-        reserveBorrowLimit
-          .div(10 ** decimals)
-          .toDecimalPlaces(decimals)
-          .toString(),
-        reserveBorrowLimit,
-      );
-      console.log('Mint total supply: %o', mintTotalSupply.toString());
-      console.log(
-        'Total supply: %o (%o)',
-        totalSupply
-          .div(10 ** decimals)
-          .toDecimalPlaces(decimals)
-          .toString(),
-        totalSupply,
-      );
-      console.log(
-        'Total borrows: %o (%o)',
-        totalBorrows
-          .div(10 ** decimals)
-          .toDecimalPlaces(decimals)
-          .toString(),
-        totalBorrows,
-      );
-      console.log('Deposit TVL (USD): %o', depositTvl);
-      console.log();
-    });
-
-    return vaults;
+          amount,
+          this.connection,
+        );
+      case OperationType.Borrow:
+        return instance.borrow(
+          walletAddress,
+          mintAddress,
+          amount,
+          this.connection,
+        );
+      case OperationType.Repay:
+        return instance.repay(
+          walletAddress,
+          mintAddress,
+          amount,
+          this.connection,
+        );
+      case OperationType.Withdraw:
+        return instance.withdraw(
+          walletAddress,
+          mintAddress,
+          amount,
+          this.connection,
+        );
+      default:
+        throw new Error('Operation not supported');
+    }
   }
 
-  async supplyOnKamino(
-    walletAddress: string,
-    mintAddress: string,
-    amount: number,
-  ) {
-    const payer = new PublicKey(walletAddress);
-    const market = await KaminoMarket.load(
-      this.connection,
-      new PublicKey('7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF'),
-    );
-
-    if (market == null) {
-      throw new Error("Couldn't load market");
+  private getProviderInstance(provider: ProviderType) {
+    switch (provider) {
+      case ProviderType.Kamino:
+        return KaminoFactory.Instance;
+      default:
+        throw new Error('Provider not supported');
     }
-
-    const { reserves } = market;
-    const reserveValues: KaminoReserve[] = Object.values(reserves);
-
-    const reserve = reserveValues.find(
-      (reserve) => reserve.stats.mintAddress.toBase58() === mintAddress,
-    );
-
-    if (!reserve) {
-      throw new Error("Couldn't find reserve");
-    }
-
-    const tokenAmount = new TokenAmount(
-      amount,
-      reserve.stats.decimals,
-      false,
-    ).toWei();
-    const kaminoAction = await KaminoAction.buildDepositTxns(
-      market,
-      tokenAmount.toString(),
-      new PublicKey(mintAddress),
-      new PublicKey(walletAddress),
-      new VanillaObligation(PROGRAM_ID),
-      0,
-      undefined,
-      undefined,
-      undefined,
-      DONATION_ADDRESS,
-    );
-
-    const instructions = [
-      ...kaminoAction.setupIxs,
-      ...kaminoAction.lendingIxs,
-      ...kaminoAction.cleanupIxs,
-    ];
-
-    const transaction = await buildVersionedTransaction(
-      this.connection,
-      payer,
-      instructions,
-    );
-
-    return transaction;
-  }
-
-  async borrowOnKamino(
-    walletAddress: string,
-    mintAddress: string,
-    amount: number,
-  ) {
-    const payer = new PublicKey(walletAddress);
-    const market = await KaminoMarket.load(
-      this.connection,
-      new PublicKey('7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF'),
-    );
-
-    if (market == null) {
-      throw new Error("Couldn't load market");
-    }
-
-    const { reserves } = market;
-    const reserveValues: KaminoReserve[] = Object.values(reserves);
-
-    const reserve = reserveValues.find(
-      (reserve) => reserve.stats.mintAddress.toBase58() === mintAddress,
-    );
-
-    if (!reserve) {
-      throw new Error("Couldn't find reserve");
-    }
-
-    const tokenAmount = new TokenAmount(
-      amount,
-      reserve.stats.decimals,
-      false,
-    ).toWei();
-    const kaminoAction = await KaminoAction.buildBorrowTxns(
-      market,
-      tokenAmount.toString(),
-      new PublicKey(mintAddress),
-      new PublicKey(walletAddress),
-      new VanillaObligation(PROGRAM_ID),
-      0,
-      true,
-      false,
-      true,
-      DONATION_ADDRESS,
-    );
-
-    const instructions = [
-      ...kaminoAction.setupIxs,
-      ...kaminoAction.lendingIxs,
-      ...kaminoAction.cleanupIxs,
-    ];
-
-    const transaction = await buildVersionedTransaction(
-      this.connection,
-      payer,
-      instructions,
-    );
-
-    return transaction;
-  }
-
-  async repayOnKamino(
-    walletAddress: string,
-    mintAddress: string,
-    amount: number,
-  ) {
-    const payer = new PublicKey(walletAddress);
-    const market = await KaminoMarket.load(
-      this.connection,
-      new PublicKey('7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF'),
-    );
-
-    if (market == null) {
-      throw new Error("Couldn't load market");
-    }
-
-    const { reserves } = market;
-    const reserveValues: KaminoReserve[] = Object.values(reserves);
-
-    const reserve = reserveValues.find(
-      (reserve) => reserve.stats.mintAddress.toBase58() === mintAddress,
-    );
-
-    if (!reserve) {
-      throw new Error("Couldn't find reserve");
-    }
-
-    const tokenAmount = new TokenAmount(
-      amount,
-      reserve.stats.decimals,
-      false,
-    ).toWei();
-    const kaminoAction = await KaminoAction.buildRepayTxns(
-      market,
-      tokenAmount.toString(),
-      new PublicKey(mintAddress),
-      new PublicKey(walletAddress),
-      new VanillaObligation(PROGRAM_ID),
-      undefined,
-      0,
-      true,
-      undefined,
-      undefined,
-      DONATION_ADDRESS,
-    );
-
-    const instructions = [
-      ...kaminoAction.setupIxs,
-      ...kaminoAction.lendingIxs,
-      ...kaminoAction.cleanupIxs,
-    ];
-
-    const transaction = await buildVersionedTransaction(
-      this.connection,
-      payer,
-      instructions,
-    );
-
-    return transaction;
-  }
-
-  async withdrawOnKamino(
-    walletAddress: string,
-    mintAddress: string,
-    amount: number,
-  ) {
-    const payer = new PublicKey(walletAddress);
-    const market = await KaminoMarket.load(
-      this.connection,
-      new PublicKey('7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF'),
-    );
-
-    if (market == null) {
-      throw new Error("Couldn't load market");
-    }
-
-    const { reserves } = market;
-    const reserveValues: KaminoReserve[] = Object.values(reserves);
-
-    const reserve = reserveValues.find(
-      (reserve) => reserve.stats.mintAddress.toBase58() === mintAddress,
-    );
-
-    if (!reserve) {
-      throw new Error("Couldn't find reserve");
-    }
-
-    const tokenAmount = new TokenAmount(
-      amount,
-      reserve.stats.decimals,
-      false,
-    ).toWei();
-    const kaminoAction = await KaminoAction.buildWithdrawTxns(
-      market,
-      tokenAmount.toString(),
-      new PublicKey(mintAddress),
-      new PublicKey(walletAddress),
-      new VanillaObligation(PROGRAM_ID),
-      0,
-      true,
-      undefined,
-      undefined,
-      DONATION_ADDRESS,
-    );
-
-    const instructions = [
-      ...kaminoAction.setupIxs,
-      ...kaminoAction.lendingIxs,
-      ...kaminoAction.cleanupIxs,
-    ];
-
-    const transaction = await buildVersionedTransaction(
-      this.connection,
-      payer,
-      instructions,
-    );
-
-    return transaction;
   }
 }
-
-export type KaminoVaultType = {
-  symbol: string;
-  address: string;
-  decimals: number;
-  mintAddress: string;
-  loanToValuePct: number;
-  reserveDepositLimit: string;
-  reserveBorrowLimit: string;
-  mintTotalSupply: string;
-  totalSupply: string;
-  totalBorrows: string;
-  depositTvl: string;
-};
