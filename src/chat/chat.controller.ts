@@ -28,6 +28,7 @@ export class ChatHttpController {
     return new GetChatsResponseDto({
       chats: res.map((chat) => ({
         id: chat.id.value,
+        title: chat.title ?? 'New Chat',
       })),
     });
   }

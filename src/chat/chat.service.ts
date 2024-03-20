@@ -12,9 +12,12 @@ export class ChatService {
     private readonly chatRepository: ChatRepository,
   ) {}
 
-  async getChats(walletId: string): Promise<{ id: ChatId }[]> {
+  async getChats(walletId: string): Promise<{ id: ChatId; title?: string }[]> {
     const chats = await this.chatRepository.getChats(walletId);
-    return chats.map((chat) => ({ id: new ChatId(chat.id) }));
+    return chats.map((chat) => ({
+      id: new ChatId(chat.id),
+      title: chat.messages[0]?.content,
+    }));
   }
 
   async createChat(walletId: string): Promise<{ id: ChatId }> {

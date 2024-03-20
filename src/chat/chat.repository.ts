@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { ChatId } from './domain/chat-id.value-object';
 import { ChatMessageId } from './domain/chat-message-id.value-object';
 import { PrismaService } from 'nestjs-prisma';
-import { Chat } from '@prisma/client';
 
 @Injectable()
 export class ChatRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getChats(walletId: string): Promise<Chat[]> {
+  async getChats(walletId: string) {
     const chats = await this.prisma.chat.findMany({
       where: { walletId },
       include: { messages: { orderBy: { createdAt: 'asc' }, take: 1 } },

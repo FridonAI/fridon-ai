@@ -11,7 +11,7 @@ export class ChatIdDto extends BaseDto<ChatIdDto> {
 // Get Chat
 export class GetChatsResponseDto extends BaseDto<GetChatsResponseDto> {
   @ApiProperty({ example: [{ id: '11111111-1111-1111-1111-111111111111' }] })
-  chats: { id: string }[];
+  chats: { id: string; title: string }[];
 }
 
 export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
