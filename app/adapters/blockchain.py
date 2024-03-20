@@ -8,6 +8,7 @@ from app.utils.redis import Publisher
 from app.ram import chat_queues
 
 import requests
+import os
 
 
 async def get_balance(params: DefiBalanceParameters, **kwargs) -> str:
@@ -35,7 +36,11 @@ async def get_transfer_tx(
         "mintAddress": "DFL1zNkaGPWm1BqAVqRjCZvHmwTFrEaJtbzJWgseoNJh",
         "amount": 10
     }
-    resp = requests.post("http://localhost:3000/blockchain/transfer-tokens", json=req).json()
+    apiUrl = os.environ["API_URL"]
+    if not apiUrl:
+        raise Exception("API_URL not set in environment variables")
+
+    resp = requests.post(f"{apiUrl}/blockchain/transfer-tokens", json=req).json()
 
     await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, resp, {})))
 
