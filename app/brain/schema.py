@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import Literal
 
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic.v1 import BaseModel
@@ -37,3 +37,10 @@ class DefiTransferParameters(BaseModel):
     def parser() -> PydanticOutputParser:
         return PydanticOutputParser(pydantic_object=DefiTransferParameters)
 
+
+class DefiTalkerParameters(BaseModel):
+    message: str
+
+    @staticmethod
+    def parser() -> PydanticOutputParser:
+        return PydanticOutputParser(pydantic_object=DefiTalkerParameters)

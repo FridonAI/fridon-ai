@@ -8,6 +8,7 @@ from app.schema import Request
 
 STOPWORD = "STOP"
 
+
 class Subscription:
     def __init__(self, redis_pool: Redis) -> None:
         self.redis_pool = redis_pool

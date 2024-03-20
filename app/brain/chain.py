@@ -6,7 +6,7 @@ from app.brain.router import get_category
 from app.brain.schema import (
     DefiStakeBorrowLendParameters,
     DefiBalanceParameters,
-    DefiTransferParameters
+    DefiTransferParameters, DefiTalkerParameters
 )
 from app.brain.templates import (
     defi_stake_borrow_lend_extract_prompt,
@@ -14,7 +14,6 @@ from app.brain.templates import (
     defi_balance_extract_prompt,
     defi_transfer_prompt
 )
-from langchain_core.output_parsers import StrOutputParser
 
 llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 
@@ -28,7 +27,7 @@ defi_stake_borrow_lend_extract_chain = (
 defi_talker_chain = (
     defi_talker_prompt
     | llm
-    | StrOutputParser()
+    | DefiTalkerParameters.parser()
 )
 
 defi_balance_extract_chain = (

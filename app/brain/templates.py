@@ -15,7 +15,10 @@ Extract names as lowercase.
 
 
 defi_talker_template = {
-    "system": """Just answer the question from your knowledge."""
+    "system": """You are Fridon, blockchain AI agent, you are ready to make user's happy by using your service. 
+    Just answer the question from your general knowledge. 
+    Use the following format: {{"message": "string"}}
+    """
 }
 
 defi_transfer_template = {
@@ -43,8 +46,7 @@ Extract names as lowercase.
 }
 
 response_generator_template = {
-    "system": """You are the best response generator from adapter response. You've to generate response from the given query.
-    """
+    "system": """You are Fridon, the best response generator from adapter response. You've to generate response from the given response."""
 }
 
 

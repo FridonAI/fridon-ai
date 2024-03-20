@@ -37,6 +37,8 @@ defi_transfer = Route(
 defi_talker = Route(
     name="DeFiTalker",
     utterances=[
+        "How are you?",
+        "Who are you?"
         "What is DeFi?",
         "What is your project about?",
         "For what can I use Kamino?",
