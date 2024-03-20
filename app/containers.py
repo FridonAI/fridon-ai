@@ -26,3 +26,7 @@ class Container(containers.DeclarativeContainer):
     process_user_message_service = providers.Factory(
         services.ProcessUserMessageService,
     )
+
+    handle_front_message_service = providers.Factory(
+        services.HandleFrontMessageService,
+    )

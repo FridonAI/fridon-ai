@@ -27,3 +27,13 @@ class DefiBalanceParameters(BaseModel):
         return PydanticOutputParser(pydantic_object=DefiBalanceParameters)
 
 
+class DefiTransferParameters(BaseModel):
+    status: bool
+    comment: str | None
+    currency: str | None
+    wallet: str | None
+
+    @staticmethod
+    def parser() -> PydanticOutputParser:
+        return PydanticOutputParser(pydantic_object=DefiTransferParameters)
+

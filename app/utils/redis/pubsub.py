@@ -24,10 +24,12 @@ class Subscription:
                     yield Request.parse_obj(json.loads(message["data"])["data"])
             await pubsub.unsubscribe(channel_name)
 
+
 class Publisher:
     def __init__(self, redis_pool: Redis) -> None:
         self.redis_pool = redis_pool
 
     async def publish(self, channel_name: str, message: str) -> None:
+        print("Publishing message", message)
         await self.redis_pool.publish(channel_name, message)
 

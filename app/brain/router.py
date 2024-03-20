@@ -24,6 +24,15 @@ defi_balance = Route(
     ]
 )
 
+defi_transfer = Route(
+    name="DeFiTransfer",
+    utterances=[
+        "Transfer 100 sol to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
+        "Send 100 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
+        "Please, send 100 bonk to ArSZESuVtg5ac7vN8mqmUUgi8Sn8HVh46vq3KmZ86UBY",
+    ]
+)
+
 
 defi_talker = Route(
     name="DeFiTalker",
@@ -63,7 +72,7 @@ defi_coin_search = Route(
 )
 
 
-routes = [defi_stake_borrow_lend_route, defi_balance, defi_talker, defi_news, defi_coin_search]
+routes = [defi_stake_borrow_lend_route, defi_balance, defi_talker, defi_news, defi_coin_search, defi_transfer]
 
 rl = RouteLayer(encoder=OpenAIEncoder(), routes=routes)
 

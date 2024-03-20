@@ -6,7 +6,7 @@ class UserInput(CamelModel):
 
 
 class DataInput(CamelModel):
-    message: str
+    message: str | dict
 
 
 class Request(CamelModel):
@@ -20,4 +20,8 @@ class ResponseDto(Request):
     def __str__(self):
         import json
         return json.dumps(self.dict())
+
+    @staticmethod
+    def from_params(chat_id: str, wallet_id: str, message: str | dict, aux: dict):
+        return ResponseDto(chat_id=chat_id, user=UserInput(wallet_id=wallet_id), data=DataInput(message=message), aux=aux)
 
