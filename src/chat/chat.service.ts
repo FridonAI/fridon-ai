@@ -35,6 +35,7 @@ export class ChatService {
 
   async createChatMessageQuery(
     chatId: ChatId,
+    walletId: string,
     message: string,
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
@@ -44,7 +45,7 @@ export class ChatService {
       chatMessageId,
       message,
     );
-    this.aiAdapter.emitChatMessageCreated(chatId, message);
+    this.aiAdapter.emitChatMessageCreated(chatId, walletId, message);
 
     return { id: chatMessageId };
   }

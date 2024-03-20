@@ -8,12 +8,12 @@ export class AiAdapter {
   private logger = new Logger(AiAdapter.name);
   constructor(@Inject('AI_SERVICE') private client: ClientProxy) {}
 
-  emitChatMessageCreated(chatId: ChatId, message: string) {
+  emitChatMessageCreated(chatId: ChatId, walletId: string, message: string) {
     const eventName = 'chat_message_created';
     const event = new AiChatMessageCreatedDto({
       chatId: chatId.value,
       user: {
-        walletId: chatId.value,
+        walletId: walletId,
       },
       data: {
         message,

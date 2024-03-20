@@ -59,9 +59,11 @@ export class ChatHttpController {
   async createChatMessage(
     @Param() params: ChatIdDto,
     @Body() body: CreateChatMessageRequestDto,
+    @Wallet() { walletAddress }: WalletSession,
   ): Promise<CreateChatMessageResponseDto> {
     const res = await this.chatService.createChatMessageQuery(
       new ChatId(params.chatId),
+      walletAddress,
       body.message,
     );
 
