@@ -16,10 +16,15 @@ class Request(CamelModel):
     aux: dict
 
 
-class ResponseDto(Request):
+class ResponseDto(CamelModel):
+    chat_id: str
+    user: UserInput
+    data: DataInput
+    aux: dict
+
     def __str__(self):
         import json
-        return json.dumps(self.dict())
+        return json.dumps({"data": self.dict()})
 
     @staticmethod
     def from_params(chat_id: str, wallet_id: str, message: str | dict, aux: dict):
