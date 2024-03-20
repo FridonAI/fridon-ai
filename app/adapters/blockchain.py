@@ -1,7 +1,5 @@
 from dependency_injector.wiring import Provide, inject
 
-from app.brain.schema import DefiBalanceParameters, DefiStakeBorrowLendParameters, DefiTransferParameters
-
 from app.schema import ResponseDto
 from app.utils.redis import Publisher
 
@@ -11,28 +9,35 @@ import requests
 import os
 
 
-async def get_balance(params: DefiBalanceParameters, **kwargs) -> str:
+async def get_balance(**kwargs) -> str:
     return "Transaction successfully completed."
 
 
 @inject
-async def get_stake_borrow_lend_tx(params: DefiStakeBorrowLendParameters, chat_id: str, wallet_id: str, pub: Publisher = Provide["publisher"], **kwargs) -> str:
-    return "Transaction successfully completed."
+async def get_stake_borrow_lend_tx(
+        provider: str,
+        operation: str,
+        currency: str,
+        chat_id: str,
+        wallet_id: str,
+        pub: Publisher = Provide["publisher"],
+        **kwargs
+) -> str:
+    return "Stake successfully completed."
 
 
 @inject
 async def get_transfer_tx(
-        params: DefiTransferParameters,
+        to_wallet_id: str,
         chat_id: str,
         wallet_id: str,
         pub: Publisher = Provide["publisher"],
 ) -> str:
-    # write urllib http post request
     print("Sending request to blockchain")
 
     req = {
         "walletAddress": wallet_id,
-        "toAddress": params.wallet,
+        "toAddress": to_wallet_id,
         "mintAddress": "DFL1zNkaGPWm1BqAVqRjCZvHmwTFrEaJtbzJWgseoNJh",
         "amount": 10
     }
@@ -48,10 +53,3 @@ async def get_transfer_tx(
     response = await chat_queues[chat_id].get()
     print("Got Response", response)
     return "Transaction successfully completed."
-
-
-adapters = {
-    DefiBalanceParameters: get_balance,
-    DefiStakeBorrowLendParameters: get_stake_borrow_lend_tx,
-    DefiTransferParameters: get_transfer_tx
-}
