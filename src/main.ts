@@ -1,4 +1,3 @@
-import cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './main.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -12,7 +11,7 @@ async function bootstrap() {
     .setTitle('Chat Block AI [API]')
     .setDescription('The Chat Block AI API description')
     .setVersion('1.0')
-    .addCookieAuth('authorization')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -26,7 +25,6 @@ async function bootstrap() {
     },
   });
   app.useGlobalPipes(new ValidationPipe());
-  app.use(cookieParser());
   app.enableCors();
 
   await app.startAllMicroservices();
