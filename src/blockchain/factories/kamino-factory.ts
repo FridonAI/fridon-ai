@@ -25,14 +25,31 @@ export class KaminoFactory {
     return this._instance || (this._instance = new this());
   }
 
+  private getReserve(
+    market: KaminoMarket,
+    mintAddr: string,
+  ): KaminoReserve | undefined {
+    const { reserves } = market;
+    let result: KaminoReserve | undefined = undefined;
+
+    reserves.forEach((reserve) => {
+      const {
+        stats: { mintAddress },
+      } = reserve;
+      if (mintAddress.toBase58() === mintAddr) {
+        result = reserve;
+      }
+    });
+
+    return result;
+  }
+
   async supply(
     walletAddress: string,
     mintAddress: string,
     amount: number,
     connection: Connection,
   ) {
-    //:Promise<Response<TransactionResponseData>> {
-    // try {
     const payer = new PublicKey(walletAddress);
     const market = await KaminoMarket.load(
       connection,
@@ -43,12 +60,7 @@ export class KaminoFactory {
       throw new Error("Couldn't load market");
     }
 
-    const { reserves } = market;
-    const reserveValues: KaminoReserve[] = Object.values(reserves);
-
-    const reserve = reserveValues.find(
-      (reserve) => reserve.stats.mintAddress.toBase58() === mintAddress,
-    );
+    const reserve = this.getReserve(market, mintAddress);
 
     if (!reserve) {
       throw new Error("Couldn't find reserve");
@@ -85,13 +97,6 @@ export class KaminoFactory {
     );
 
     return transaction.serialize();
-
-    // } catch (error: any) {
-    //     return {
-    //         completed: false,
-    //         error: error.message,
-    //     };
-    // }
   }
 
   async borrow(
@@ -110,13 +115,7 @@ export class KaminoFactory {
       throw new Error("Couldn't load market");
     }
 
-    const { reserves } = market;
-    const reserveValues: KaminoReserve[] = Object.values(reserves);
-
-    const reserve = reserveValues.find(
-      (reserve) => reserve.stats.mintAddress.toBase58() === mintAddress,
-    );
-
+    const reserve = this.getReserve(market, mintAddress);
     if (!reserve) {
       throw new Error("Couldn't find reserve");
     }
@@ -170,13 +169,7 @@ export class KaminoFactory {
       throw new Error("Couldn't load market");
     }
 
-    const { reserves } = market;
-    const reserveValues: KaminoReserve[] = Object.values(reserves);
-
-    const reserve = reserveValues.find(
-      (reserve) => reserve.stats.mintAddress.toBase58() === mintAddress,
-    );
-
+    const reserve = this.getReserve(market, mintAddress);
     if (!reserve) {
       throw new Error("Couldn't find reserve");
     }
@@ -231,12 +224,7 @@ export class KaminoFactory {
       throw new Error("Couldn't load market");
     }
 
-    const { reserves } = market;
-    const reserveValues: KaminoReserve[] = Object.values(reserves);
-
-    const reserve = reserveValues.find(
-      (reserve) => reserve.stats.mintAddress.toBase58() === mintAddress,
-    );
+    const reserve = this.getReserve(market, mintAddress);
 
     if (!reserve) {
       throw new Error("Couldn't find reserve");
