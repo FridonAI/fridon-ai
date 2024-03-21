@@ -17,9 +17,11 @@ export class BlockchainService {
   async transferTokens(
     from: string,
     to: string,
-    mintAddress: string,
+    currency: string,
     amount: number,
   ): Promise<Uint8Array> {
+    const mintAddress = await this.tools.convertSymbolToMintAddress(currency);
+
     const tokenInfo = await getTokenSupply(mintAddress, this.connection);
 
     if (!tokenInfo) {

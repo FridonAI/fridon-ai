@@ -1,13 +1,14 @@
 import { BaseDto } from '@lib/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import {
-  OperationType,
-  ProviderType,
-  TransactionDataType,
-} from './utils/types';
+import { OperationType, ProviderType } from './utils/types';
 
 // Default Transfer Reponse Dto
+export class TransactionDataResponseDto {
+  @ApiProperty({ example: {} })
+  serializedTx: Uint8Array;
+}
+
 export class BaseTransactionResponseDto extends BaseDto<BaseTransactionResponseDto> {
   @ApiProperty({ example: true })
   status: boolean;
@@ -15,8 +16,8 @@ export class BaseTransactionResponseDto extends BaseDto<BaseTransactionResponseD
   @ApiProperty({ example: 'Success' })
   message: string;
 
-  @ApiProperty()
-  data: TransactionDataType;
+  @ApiProperty({ type: TransactionDataResponseDto })
+  data: TransactionDataResponseDto;
 }
 
 // Transfer
@@ -34,8 +35,8 @@ export class TransferTokenRequestBodyDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'DFL1zNkaGPWm1BqAVqRjCZvHmwTFrEaJtbzJWgseoNJh' })
-  mintAddress: string;
+  @ApiProperty({ example: 'Dfl' })
+  currency: string;
 
   @IsNumber()
   @ApiProperty({ example: 10 })
@@ -67,7 +68,7 @@ export class DefiOperationRequestBodyDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'Dfl' })
+  @ApiProperty({ example: 'Sol' })
   currency: string;
 }
 

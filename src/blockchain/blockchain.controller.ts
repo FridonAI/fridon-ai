@@ -20,7 +20,7 @@ export class BlockchainController {
     const serializedTx = await this.blockchainService.transferTokens(
       body.walletAddress,
       body.toAddress,
-      body.mintAddress,
+      body.currency,
       body.amount,
     );
 
