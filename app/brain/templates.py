@@ -1,4 +1,4 @@
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 defi_stake_borrow_lend_extract_template = {
     "system": """You are the best defi parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency and amount.
@@ -23,11 +23,11 @@ defi_talker_template = {
 
 defi_transfer_template = {
     "system": """You are the best token transfer parameters extractor from query. You've to determine following parameters from the given query: token, wallet.
-Return following json string: "{{"status": boolean, "currency": "string" | null, "wallet": "string" | null}}"
+Return following json string: "{{"status": boolean, "currency": "string" | null, "wallet": "string" | null, "amount": number | null}}"
 "wallet" must be mentioned.
 "currency" must be mentioned.
 If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
-E.x. "Transfer 100 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD" you've to return "{{"currency": "usdc", "wallet": "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"}}"
+E.x. "Transfer 100 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD" you've to return "{{"status": true, "currency": "usdc", "amount": 1000, "wallet": "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"}}"
 Extract parameter names as lowercase.
 """
 }
@@ -46,7 +46,8 @@ Extract names as lowercase.
 }
 
 response_generator_template = {
-    "system": """You are Fridon, the best response generator from adapter response. You've to generate response from the given response."""
+    "system": """You are Fridon Blockchain AI agent, the best response generator from adapter response.\
+You've to generate response from the given query and generated response considering chat history."""
 }
 
 
@@ -82,6 +83,8 @@ defi_talker_prompt = ChatPromptTemplate.from_messages(
 response_generator_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", response_generator_template['system']),
-        ("human", "{response}"),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{query}"),
+        ("assistant", "{response}")
     ]
 )

@@ -1,3 +1,5 @@
+from langchain_core.chat_history import BaseChatMessageHistory
+
 from app.brain.chain import generate_response
 from pydantic.v1 import BaseModel
 
@@ -8,4 +10,5 @@ class Chat:
 
     async def process(self, chat_id: str, wallet_id: str, message: str) -> str | BaseModel:
         return await generate_response(chat_id, wallet_id, message)
+
 
