@@ -59,7 +59,7 @@ export class BlockchainService {
     provider: ProviderType,
     currency: string,
     amount: number,
-  ): Promise<Uint8Array> {
+  ) {
     const mintAddress = await this.tools.convertSymbolToMintAddress(currency);
     const instance = this.getProviderInstance(provider);
 

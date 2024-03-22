@@ -56,7 +56,7 @@ export class BlockchainController {
   async defiOperations(
     @Body() body: DefiOperationRequestBodyDto,
   ): Promise<DefiOperationResponseBodyDto> {
-    const serializedTx = await this.blockchainService.defiOperations(
+    const tx = await this.blockchainService.defiOperations(
       body.walletAddress,
       body.operation,
       body.provider,
@@ -66,20 +66,20 @@ export class BlockchainController {
 
     // Sign Message
     const signedSerializedTx =
-      await this.transactionFactory.addSignerToBuffer(serializedTx);
+      await this.transactionFactory.signVersionTransaction(tx);
 
-    // // Send transaction
-    // const txId = await this.transactionFactory.sendSerializedTransaction(
-    //   this.connection,
-    //   signedSerializedTx,
-    // );
+    // Send transaction
+    const txId = await this.transactionFactory.sendSerializedTransaction(
+      this.connection,
+      signedSerializedTx.serialize(),
+    );
 
-    // console.log('txId', txId);
+    console.log('txId', txId);
     return new TransferTokenResponseDto({
       status: true,
       message: 'Success',
       data: {
-        serializedTx: signedSerializedTx,
+        serializedTx: signedSerializedTx.serialize(),
       },
     });
   }

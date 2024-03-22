@@ -21,6 +21,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class KaminoFactory {
+  constructor() {}
+
   private getReserve(
     market: KaminoMarket,
     mintAddr: string,
@@ -90,9 +92,10 @@ export class KaminoFactory {
       connection,
       payer,
       instructions,
+      [new PublicKey('284iwGtA9X9aLy3KsyV8uT2pXLARhYbiSi5SiM2g47M2')],
     );
 
-    return transaction.serialize();
+    return transaction;
   }
 
   async borrow(
@@ -146,7 +149,7 @@ export class KaminoFactory {
       instructions,
     );
 
-    return transaction.serialize();
+    return transaction;
   }
 
   async repay(
@@ -201,7 +204,7 @@ export class KaminoFactory {
       instructions,
     );
 
-    return transaction.serialize();
+    return transaction;
   }
 
   async withdraw(
@@ -256,6 +259,6 @@ export class KaminoFactory {
       instructions,
     );
 
-    return transaction.serialize();
+    return transaction;
   }
 }

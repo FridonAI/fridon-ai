@@ -41,6 +41,7 @@ export class TransactionFactory {
   constructor(
     @InjectQueue('transaction-listener')
     private readonly transactionListenerQueue: TransactionListenerQueue,
+    private readonly connection: Connection,
   ) {}
 
   async sendTransaction(
@@ -70,6 +71,17 @@ export class TransactionFactory {
     return txId;
   }
 
+  async signVersionTransaction(tx: VersionedTransaction) {
+    const sourceTokenOwner = Keypair.fromSecretKey(
+      new Uint8Array(SOURCE_TOKEN_OWNER_SECRET),
+    );
+    const wallet = new NodeWallet(sourceTokenOwner);
+    tx.message.recentBlockhash = (
+      await getLatestBlockHash(this.connection)
+    ).blockhash;
+    return await wallet.signTransaction(tx);
+  }
+
   async addSignerToBuffer(buffer: Uint8Array) {
     const sourceTokenOwner = Keypair.fromSecretKey(
       new Uint8Array(SOURCE_TOKEN_OWNER_SECRET),
@@ -77,6 +89,7 @@ export class TransactionFactory {
     const wallet = new NodeWallet(sourceTokenOwner);
 
     const tx = VersionedTransaction.deserialize(buffer);
+
     const signedTx = await wallet.signTransaction(tx);
 
     return signedTx.serialize();
@@ -158,4 +171,6 @@ export class TransactionFactory {
 
     return tx;
   }
+
+  async signAndSendTransaction() {}
 }

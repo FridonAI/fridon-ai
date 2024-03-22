@@ -2,6 +2,7 @@ import { BaseDto } from '@lib/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { OperationType, ProviderType } from './utils/types';
+import { Transform } from 'class-transformer';
 
 // Default Transfer Reponse Dto
 export class TransactionDataResponseDto {
@@ -36,6 +37,7 @@ export class TransferTokenRequestBodyDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: 'Dfl' })
+  @Transform(({ value }) => value.toLowerCase())
   currency: string;
 
   @IsNumber()
@@ -64,11 +66,13 @@ export class DefiOperationRequestBodyDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: ProviderType.Kamino })
+  @Transform(({ value }) => value.toLowerCase())
   provider: ProviderType;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: 'Sol' })
+  @Transform(({ value }) => value.toLowerCase())
   currency: string;
 }
 
