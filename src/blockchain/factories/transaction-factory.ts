@@ -13,6 +13,8 @@ import {
 } from '@solana/web3.js';
 import { getLatestBlockHash } from '../utils/connection';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
+import { InjectQueue } from '@nestjs/bullmq';
+import { TransactionListenerQueue } from '../transaction-listener/types';
 
 export type TransactionComputeOpts = {
   computePrice?: number;
@@ -32,6 +34,11 @@ export const SOURCE_TOKEN_OWNER_SECRET = [
 ];
 
 export class TransactionFactory {
+  constructor(
+    @InjectQueue('transaction-listener')
+    private readonly transactionListenerQueue: TransactionListenerQueue,
+  ) {}
+
   async sendTransaction(
     ix: TransactionInstruction,
     connection: Connection,
@@ -81,6 +88,15 @@ export class TransactionFactory {
         preflightCommitment: 'processed',
       });
 
+      await this.transactionListenerQueue.add(
+        `TransactionListener[${txId}]`,
+        {
+          transactionId: txId,
+        },
+        {
+          delay: 3000,
+        },
+      );
       return txId;
     } catch (e: any) {
       console.error('Failed to send Serialized Transaction!', e);

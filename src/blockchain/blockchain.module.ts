@@ -8,8 +8,10 @@ import { KaminoFactory } from './factories/kamino-factory';
 import { TokenProgramInstructionFactory } from './factories/token-program-instruction-factory';
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
 import { TransactionFactory } from './factories/transaction-factory';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
+  imports: [BullModule.registerQueue({ name: 'transaction-listener' })],
   controllers: [BlockchainController],
   providers: [
     BlockchainService,

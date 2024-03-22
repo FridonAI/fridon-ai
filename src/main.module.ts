@@ -19,13 +19,11 @@ import { BullModule } from '@nestjs/bullmq';
     PrismaModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     CacheModule.register({ isGlobal: true }),
-    BullModule.registerQueue({
-      name: 'transaction-listener',
+    BullModule.forRoot({
       connection: {
         host: process.env['REDIS_HOST'],
       },
     }),
-
     // Custom Modules
     AuthModule,
     ChatModule,
