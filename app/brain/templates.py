@@ -67,6 +67,13 @@ Please considering question, chat history rewrite assistant generated response i
 }
 
 
+coin_search_template = {
+    "system": """You are the best coin searcher. User will ask you to search some coins based on some criteria. With given context please grab some coins those 
+are most relevant to the user's query.
+    """
+}
+
+
 defi_stake_borrow_lend_extract_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", defi_stake_borrow_lend_extract_template['system']),
@@ -102,5 +109,13 @@ response_generator_prompt = ChatPromptTemplate.from_messages(
         MessagesPlaceholder(variable_name="history"),
         ("human", "{query}"),
         ("assistant", "{response}")
+    ]
+)
+
+coin_search_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", coin_search_template['system']),
+        ("human", "{context}"),
+        ("human", "{query}"),
     ]
 )

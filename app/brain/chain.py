@@ -6,6 +6,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
 
+from app.adapters.coins import retriever
 from app.brain.router import get_category
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter, Adapter,
@@ -14,7 +15,7 @@ from app.brain.templates import (
     defi_stake_borrow_lend_extract_prompt,
     defi_talker_prompt,
     defi_balance_extract_prompt,
-    defi_transfer_prompt, response_generator_prompt
+    defi_transfer_prompt, response_generator_prompt, coin_search_prompt
 )
 from app.settings import settings
 
@@ -52,11 +53,19 @@ response_generator_chain = (
     | StrOutputParser()
 )
 
+coin_search_chain = (
+    {"query": lambda x: x["query"], "context": RunnableLambda(lambda x: x["query"]) | retriever}
+    | coin_search_prompt
+    | llm
+    | StrOutputParser()
+)
+
 
 branch = RunnableBranch(
     (lambda x: x['category'] == 'DefiStakeBorrowLend', defi_stake_borrow_lend_extract_chain),
     (lambda x: x['category'] == 'DeFiBalance', defi_balance_extract_chain),
     (lambda x: x['category'] == 'DeFiTransfer', defi_transfer_chain),
+    (lambda x: x['category'] == 'CoinSearch', coin_search_chain),
     defi_talker_chain,
 )
 
@@ -93,7 +102,7 @@ async def generate_response(chat_id, wallet_id, query):
     question_answer_chain = (
             {"query": lambda x: x["query"], "category": RunnableLambda(get_category)}
             | branch
-            | RunnableLambda(get_response)
+            | RunnableBranch((lambda x: isinstance(x, str), RunnableLambda(lambda x: x)), RunnableLambda(get_response))
     )
     response = await question_answer_chain.ainvoke({"query": query})
 

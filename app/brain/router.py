@@ -64,17 +64,20 @@ defi_news = Route(
 )
 
 
-defi_coin_search = Route(
+coin_search = Route(
     name="CoinSearch",
     utterances=[
         "Give me list of coins which are in top 100 and are AI based",
         "Find coins which have the same chart as Wif between 1-25 Dec 2023",
         "Search for coins which have bullish divergence and are in top 100 market cap",
+        "Give me coins from solana ecosystem which are in top 100 market cap",
+        "What coins are similar to rndr?",
+        "Which coins have AI product?",
     ]
 )
 
 
-routes = [defi_stake_borrow_lend_route, defi_balance, defi_talker, defi_news, defi_coin_search, defi_transfer]
+routes = [defi_stake_borrow_lend_route, defi_balance, defi_talker, defi_news, coin_search, defi_transfer]
 
 rl = RouteLayer(encoder=OpenAIEncoder(), routes=routes)
 
