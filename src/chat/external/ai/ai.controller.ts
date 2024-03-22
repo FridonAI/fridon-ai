@@ -30,19 +30,19 @@ export class AiEventsController {
       `Received event[${eventName}] from AI: ${JSON.stringify(event, null, 2)}`,
     );
     this.logger.debug(
-      `Sending response[${event.data.message}] to user[${event.user.walletId}]`,
+      `Sending response[${event.data.message}] to user[${event.user.wallet_id}]`,
     );
     await this.chatRepository.createChatMessageResponse(
-      new ChatId(event.chatId),
+      new ChatId(event.chat_id),
       new ChatMessageId(randomUUID()),
       event.data.message,
     );
     this.eventsService.sendTo(
-      event.user.walletId,
+      event.user.wallet_id,
       'chat.response-generated',
       new ChatResponseGeneratedDto({
         message: event.data.message,
-        chatId: event.chatId,
+        chatId: event.chat_id,
       }),
     );
   }

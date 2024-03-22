@@ -23,9 +23,9 @@ export class AiChatMessageInfoCreatedDto extends BaseDto<AiChatMessageInfoCreate
 }
 
 export class AiChatMessageResponseGeneratedDto extends BaseDto<AiChatMessageResponseGeneratedDto> {
-  chatId: string;
+  chat_id: string;
   user: {
-    walletId: string;
+    wallet_id: string;
   };
   data: {
     message: string;
