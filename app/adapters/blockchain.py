@@ -76,4 +76,4 @@ async def get_transfer_tx(
     print("Waiting for response")
     response = await chat_queues[chat_id].get()
     print("Got Response", response)
-    return "Transaction successfully completed."
+    return response

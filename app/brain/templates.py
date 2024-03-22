@@ -54,8 +54,8 @@ Extract names as lowercase.
 }
 
 response_generator_template = {
-    "system": """You are Fridon Blockchain AI agent, the best response generator from adapter response.\
-You've to generate response from the given query and generated response considering chat history."""
+    "system": fridon_description + """
+Please considering question, chat history rewrite assistant generated response in a more informative, friendly and understandable way."""
 }
 
 
