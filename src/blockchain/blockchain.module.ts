@@ -9,9 +9,11 @@ import { TokenProgramInstructionFactory } from './factories/token-program-instru
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
 import { TransactionFactory } from './factories/transaction-factory';
 import { BullModule } from '@nestjs/bullmq';
+import { TRANSACTION_LISTENER_QUEUE } from './transaction-listener/types';
+import { TransactionListenerProcessor } from './transaction-listener/transaction-listener.processor';
 
 @Module({
-  imports: [BullModule.registerQueue({ name: 'transaction-listener' })],
+  imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
   controllers: [BlockchainController],
   providers: [
     BlockchainService,
@@ -24,6 +26,7 @@ import { BullModule } from '@nestjs/bullmq';
     TokenProgramInstructionFactory,
     TokenProgramTransactionFactory,
     TransactionFactory,
+    TransactionListenerProcessor,
   ],
 })
 export class BlockchainModule {}

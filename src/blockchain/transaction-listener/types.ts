@@ -2,6 +2,7 @@ import { Queue, Worker, Job } from 'bullmq';
 
 export type QueuePayload = {
   transactionId: string;
+  count: number;
   aux?: object;
 };
 
