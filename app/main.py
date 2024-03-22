@@ -20,9 +20,9 @@ async def user_message_handler(
 
         response = ResponseDto.parse_obj(
             {
-                'chatId': request.chat_id,
+                'chat_id': request.chat_id,
                 'user': {
-                    'walletId': request.user.wallet_id
+                    'wallet_id': request.user.wallet_id
                 },
                 'data': {
                     'message': response_message
