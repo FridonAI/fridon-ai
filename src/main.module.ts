@@ -31,7 +31,7 @@ import { CqrsModule } from '@nestjs/cqrs';
     AuthModule,
     ChatModule,
     EventsModule.forRoot({ isGlobal: true }),
-    BlockchainModule,
+    BlockchainModule.forRoot(),
   ],
   providers: [providePrismaClientExceptionFilter()],
 })

@@ -7,6 +7,7 @@ import { ChatRepository } from 'src/chat/chat.repository';
 import { ChatId } from 'src/chat/domain/chat-id.value-object';
 import { ChatMessageId } from 'src/chat/domain/chat-message-id.value-object';
 import { randomUUID } from 'crypto';
+import { TransactionFactory } from 'src/blockchain/factories/transaction-factory';
 
 const eventName = 'response_received';
 
@@ -22,6 +23,7 @@ export class AiEventsController {
   constructor(
     private readonly eventsService: EventsService,
     private readonly chatRepository: ChatRepository,
+    private readonly transactionFactory: TransactionFactory,
   ) {}
 
   @EventPattern(eventName)
@@ -29,6 +31,13 @@ export class AiEventsController {
     this.logger.debug(
       `Received event[${eventName}] from AI: ${JSON.stringify(event, null, 2)}`,
     );
+
+    if (event.data.serialized_transaction) {
+      await this.transactionFactory.sendSerializedTransaction(
+        Uint8Array.from(Object.values(event.data.serialized_transaction)),
+        { chatId: event.chat_id },
+      );
+    }
 
     // ToDo Review this
     if (!event.data.message) {

@@ -28,5 +28,13 @@ import { TransactionListenerProcessor } from './transaction-listener/transaction
     TransactionFactory,
     TransactionListenerProcessor,
   ],
+  exports: [TransactionFactory],
 })
-export class BlockchainModule {}
+export class BlockchainModule {
+  static forRoot() {
+    return {
+      module: BlockchainModule,
+      global: true,
+    };
+  }
+}
