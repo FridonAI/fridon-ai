@@ -12,6 +12,7 @@ import {
   PublicKeyInitData,
 } from '@solana/web3.js';
 import { getLatestBlockHash } from '../utils/connection';
+import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 
 export type TransactionComputeOpts = {
   computePrice?: number;
@@ -23,6 +24,12 @@ export type TransactionData = {
   signers: (Keypair | Signer)[];
   addressLookupTable: AddressLookupTableAccount[];
 };
+export const SOURCE_TOKEN_OWNER_SECRET = [
+  138, 8, 136, 219, 211, 225, 17, 190, 193, 198, 115, 209, 47, 16, 21, 238, 34,
+  110, 106, 39, 232, 23, 249, 81, 34, 137, 171, 111, 22, 178, 3, 9, 81, 100,
+  174, 205, 90, 48, 119, 243, 97, 126, 228, 142, 198, 143, 58, 25, 136, 31, 192,
+  243, 201, 243, 111, 167, 139, 30, 110, 159, 24, 219, 21, 81,
+];
 
 export class TransactionFactory {
   private static _instance: TransactionFactory;
@@ -56,6 +63,18 @@ export class TransactionFactory {
     });
 
     return txId;
+  }
+
+  async addSignerToBuffer(buffer: Uint8Array) {
+    const sourceTokenOwner = Keypair.fromSecretKey(
+      new Uint8Array(SOURCE_TOKEN_OWNER_SECRET),
+    );
+    const wallet = new NodeWallet(sourceTokenOwner);
+
+    const tx = VersionedTransaction.deserialize(buffer);
+    const signedTx = await wallet.signTransaction(tx);
+
+    return signedTx.serialize();
   }
 
   async generateTransactionV0(

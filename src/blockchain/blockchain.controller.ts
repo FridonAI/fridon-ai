@@ -7,6 +7,7 @@ import {
   DefiOperationResponseBodyDto,
 } from './blockchain.dto';
 import { BlockchainService } from './blockchain.service';
+import { TransactionFactory } from './factories/transaction-factory';
 
 @Controller('blockchain')
 @ApiTags('blockchain')
@@ -24,11 +25,15 @@ export class BlockchainController {
       body.amount,
     );
 
+    // Sign Message
+    const signedSerializedTx =
+      await TransactionFactory.Instance.addSignerToBuffer(serializedTx);
+
     return new TransferTokenResponseDto({
       status: true,
       message: 'Success',
       data: {
-        serializedTx,
+        serializedTx: signedSerializedTx,
       },
     });
   }
@@ -46,11 +51,15 @@ export class BlockchainController {
       body.amount,
     );
 
+    // Sign Message
+    const signedSerializedTx =
+      await TransactionFactory.Instance.addSignerToBuffer(serializedTx);
+
     return new TransferTokenResponseDto({
       status: true,
       message: 'Success',
       data: {
-        serializedTx,
+        serializedTx: signedSerializedTx,
       },
     });
   }
