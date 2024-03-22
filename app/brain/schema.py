@@ -14,7 +14,7 @@ class Adapter(ABC, BaseModel):
 
 
 class DefiStakeBorrowLendAdapter(Adapter):
-    operator: Literal["stake", "borrow", "lend", "unstake", "stake", "withdraw", "repay"] | None
+    operation: Literal["stake", "borrow", "lend", "unstake", "stake", "withdraw", "repay"] | None
     provider: Literal["kamino", "marginify", "pyth-governance", "jup-governance"] | None
     currency: str | None
     amount: float | None
@@ -22,12 +22,12 @@ class DefiStakeBorrowLendAdapter(Adapter):
     comment: str | None
 
     async def get_response(self, chat_id, wallet_id):
-        if None in [self.operator, self.provider, self.currency, self.amount]:
+        if None in [self.operation, self.provider, self.currency, self.amount]:
             return self.comment
 
         return await get_stake_borrow_lend_tx(
             self.provider,
-            self.operator,
+            self.operation,
             self.currency,
             self.amount,
             chat_id,

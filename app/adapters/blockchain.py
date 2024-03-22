@@ -18,12 +18,34 @@ async def get_stake_borrow_lend_tx(
         provider: str,
         operation: str,
         currency: str,
+        amount: float,
         chat_id: str,
         wallet_id: str,
         pub: Publisher = Provide["publisher"],
         **kwargs
 ) -> str:
-    return "Stake successfully completed."
+    print(f"Sending {operation} request to blockchain!")
+
+    req = {
+        "walletAddress": wallet_id,
+        "provider": provider,
+        "currency": currency,
+        "operation": operation,
+        "amount": amount,
+    }
+
+    api_url = os.environ["API_URL"]
+    if not api_url:
+        raise Exception("API_URL not set in environment variables")
+
+    resp = requests.post(f"{api_url}/blockchain/defi-operation", json=req).json()
+
+    await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, resp, {})))
+
+    print("Waiting for response")
+    response = await chat_queues[chat_id].get()
+    print("Got Response", response)
+    return "Transaction successfully completed."
 
 
 @inject
