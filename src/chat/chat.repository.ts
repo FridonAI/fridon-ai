@@ -25,7 +25,7 @@ export class ChatRepository {
   async getChat(chatId: ChatId) {
     const chat = await this.prisma.chat.findUniqueOrThrow({
       where: { id: chatId.value },
-      include: { messages: true },
+      include: { messages: { orderBy: { createdAt: 'desc' } } },
     });
 
     return chat;
