@@ -77,6 +77,23 @@ export class TransactionFactory {
     return signedTx.serialize();
   }
 
+  async sendSerializedTransaction(
+    connection: Connection,
+    serializedTransaction: Buffer | Uint8Array,
+  ) {
+    try {
+      const txId = await connection.sendRawTransaction(serializedTransaction, {
+        skipPreflight: false,
+        preflightCommitment: 'processed',
+      });
+
+      return txId;
+    } catch (e: any) {
+      console.error('Failed to send Serialized Transaction!', e);
+      return { completed: false, error: e.message };
+    }
+  }
+
   async generateTransactionV0(
     instructions: TransactionInstruction[],
     feePayer: PublicKeyInitData,

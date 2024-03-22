@@ -12,7 +12,7 @@ import { TransactionFactory } from './factories/transaction-factory';
 @Controller('blockchain')
 @ApiTags('blockchain')
 export class BlockchainController {
-  constructor(readonly blockchainService: BlockchainService) {}
+  constructor(readonly blockchainService: BlockchainService) { }
 
   @Post('transfer-tokens')
   async transferTokens(
@@ -28,6 +28,14 @@ export class BlockchainController {
     // Sign Message
     const signedSerializedTx =
       await TransactionFactory.Instance.addSignerToBuffer(serializedTx);
+
+    // Send transaction
+    const txId = await TransactionFactory.Instance.sendSerializedTransaction(
+      this.blockchainService.connection,
+      signedSerializedTx,
+    );
+
+    console.log('txId', txId);
 
     return new TransferTokenResponseDto({
       status: true,
@@ -55,6 +63,13 @@ export class BlockchainController {
     const signedSerializedTx =
       await TransactionFactory.Instance.addSignerToBuffer(serializedTx);
 
+    // Send transaction
+    const txId = await TransactionFactory.Instance.sendSerializedTransaction(
+      this.blockchainService.connection,
+      signedSerializedTx,
+    );
+
+    console.log('txId', txId);
     return new TransferTokenResponseDto({
       status: true,
       message: 'Success',
