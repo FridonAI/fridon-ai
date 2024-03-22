@@ -25,7 +25,8 @@ async def user_message_handler(
                     'wallet_id': request.user.wallet_id
                 },
                 'data': {
-                    'message': response_message
+                    'message': response_message,
+                    'serialized_transaction': None
                 },
                 'aux': request.aux
             }
