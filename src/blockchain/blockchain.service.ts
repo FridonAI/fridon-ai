@@ -10,8 +10,10 @@ import { BlockchainTools } from './utils/tools/token-list';
 @Injectable()
 export class BlockchainService {
   constructor(
-    readonly connection: Connection,
-    readonly tools: BlockchainTools,
+    private readonly connection: Connection,
+    private readonly tools: BlockchainTools,
+    private readonly tokenProgramTransactionFactory: TokenProgramTransactionFactory,
+    private readonly kaminoFactory: KaminoFactory,
   ) {}
 
   async transferTokens(
@@ -38,7 +40,7 @@ export class BlockchainService {
     const amountBN = new TokenAmount(amount, decimals, false).toWei();
 
     const transferTransaction =
-      await TokenProgramTransactionFactory.Instance.generateTransferTransaction(
+      await this.tokenProgramTransactionFactory.generateTransferTransaction(
         from,
         receiver,
         mintAddress,
@@ -99,7 +101,7 @@ export class BlockchainService {
   private getProviderInstance(provider: ProviderType) {
     switch (provider) {
       case ProviderType.Kamino:
-        return KaminoFactory.Instance;
+        return this.kaminoFactory;
       default:
         throw new Error('Provider not supported');
     }

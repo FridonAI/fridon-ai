@@ -4,15 +4,14 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import { TokenProgramInstructionFactory } from './token-program-instruction-factory';
-import { TransactionFactory } from './transaction-factory';
 import BigNumber from 'bignumber.js';
+import { TransactionFactory } from './transaction-factory';
 
 export class TokenProgramTransactionFactory {
-  private static _instance: TokenProgramTransactionFactory;
-
-  public static get Instance(): TokenProgramTransactionFactory {
-    return this._instance || (this._instance = new this());
-  }
+  constructor(
+    private readonly tokenProgramInstructionFactory: TokenProgramInstructionFactory,
+    private readonly transactionFactory: TransactionFactory,
+  ) {}
 
   async generateTransferTransaction(
     from: PublicKeyInitData,
@@ -27,7 +26,7 @@ export class TokenProgramTransactionFactory {
 
     // Create token account if needed.
     const createAssociatedTokenInstructions =
-      await TokenProgramInstructionFactory.Instance.generateAssociatedTokenAccountInstructionsIfNeeded(
+      await this.tokenProgramInstructionFactory.generateAssociatedTokenAccountInstructionsIfNeeded(
         from,
         to,
         payer,
@@ -39,7 +38,7 @@ export class TokenProgramTransactionFactory {
 
     // Create Transfer instructions
     txInstructions.push(
-      await TokenProgramInstructionFactory.Instance.createTransferInstructions(
+      await this.tokenProgramInstructionFactory.createTransferInstructions(
         from,
         to,
         mintAddress,
@@ -47,7 +46,7 @@ export class TokenProgramTransactionFactory {
       ),
     );
 
-    const transaction = TransactionFactory.Instance.generateTransactionV0(
+    const transaction = this.transactionFactory.generateTransactionV0(
       txInstructions,
       payer,
       connection,

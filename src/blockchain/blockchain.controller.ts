@@ -8,11 +8,16 @@ import {
 } from './blockchain.dto';
 import { BlockchainService } from './blockchain.service';
 import { TransactionFactory } from './factories/transaction-factory';
+import { Connection } from '@solana/web3.js';
 
 @Controller('blockchain')
 @ApiTags('blockchain')
 export class BlockchainController {
-  constructor(readonly blockchainService: BlockchainService) { }
+  constructor(
+    readonly connection: Connection,
+    readonly blockchainService: BlockchainService,
+    readonly transactionFactory: TransactionFactory,
+  ) {}
 
   @Post('transfer-tokens')
   async transferTokens(
@@ -27,11 +32,11 @@ export class BlockchainController {
 
     // Sign Message
     const signedSerializedTx =
-      await TransactionFactory.Instance.addSignerToBuffer(serializedTx);
+      await this.transactionFactory.addSignerToBuffer(serializedTx);
 
     // Send transaction
-    const txId = await TransactionFactory.Instance.sendSerializedTransaction(
-      this.blockchainService.connection,
+    const txId = await this.transactionFactory.sendSerializedTransaction(
+      this.connection,
       signedSerializedTx,
     );
 
@@ -61,11 +66,11 @@ export class BlockchainController {
 
     // Sign Message
     const signedSerializedTx =
-      await TransactionFactory.Instance.addSignerToBuffer(serializedTx);
+      await this.transactionFactory.addSignerToBuffer(serializedTx);
 
     // Send transaction
-    const txId = await TransactionFactory.Instance.sendSerializedTransaction(
-      this.blockchainService.connection,
+    const txId = await this.transactionFactory.sendSerializedTransaction(
+      this.connection,
       signedSerializedTx,
     );
 

@@ -11,12 +11,6 @@ import {
 } from 'spl';
 
 export class TokenProgramInstructionFactory {
-  private static _instance: TokenProgramInstructionFactory;
-
-  public static get Instance(): TokenProgramInstructionFactory {
-    return this._instance || (this._instance = new this());
-  }
-
   async createTransferInstructions(
     from: PublicKeyInitData,
     to: PublicKeyInitData,

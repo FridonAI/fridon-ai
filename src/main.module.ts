@@ -10,6 +10,7 @@ import {
 } from 'nestjs-prisma';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -18,6 +19,13 @@ import { CacheModule } from '@nestjs/cache-manager';
     PrismaModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     CacheModule.register({ isGlobal: true }),
+    BullModule.registerQueue({
+      name: 'transaction-listener',
+      connection: {
+        host: process.env['REDIS_HOST'],
+      },
+    }),
+
     // Custom Modules
     AuthModule,
     ChatModule,

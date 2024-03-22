@@ -19,12 +19,6 @@ import {
 // };
 
 export class KaminoFactory {
-  private static _instance: KaminoFactory;
-
-  public static get Instance(): KaminoFactory {
-    return this._instance || (this._instance = new this());
-  }
-
   private getReserve(
     market: KaminoMarket,
     mintAddr: string,

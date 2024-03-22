@@ -32,12 +32,6 @@ export const SOURCE_TOKEN_OWNER_SECRET = [
 ];
 
 export class TransactionFactory {
-  private static _instance: TransactionFactory;
-
-  public static get Instance(): TransactionFactory {
-    return this._instance || (this._instance = new this());
-  }
-
   async sendTransaction(
     ix: TransactionInstruction,
     connection: Connection,
