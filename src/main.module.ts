@@ -24,6 +24,7 @@ import { BullModule } from '@nestjs/bullmq';
         host: process.env['REDIS_HOST'],
       },
     }),
+
     // Custom Modules
     AuthModule,
     ChatModule,

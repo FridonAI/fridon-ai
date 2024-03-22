@@ -9,7 +9,9 @@ import {
   createAssociatedTokenAccountInstruction,
   createTransferInstruction,
 } from 'spl';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class TokenProgramInstructionFactory {
   async createTransferInstructions(
     from: PublicKeyInitData,

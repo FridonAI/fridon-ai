@@ -49,7 +49,6 @@ export class BlockchainService {
       );
 
     const serializedTransaction = transferTransaction.serialize();
-    console.log('transferTransaction', serializedTransaction);
 
     return serializedTransaction;
   }

@@ -6,7 +6,9 @@ import {
 import { TokenProgramInstructionFactory } from './token-program-instruction-factory';
 import BigNumber from 'bignumber.js';
 import { TransactionFactory } from './transaction-factory';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class TokenProgramTransactionFactory {
   constructor(
     private readonly tokenProgramInstructionFactory: TokenProgramInstructionFactory,
@@ -27,7 +29,7 @@ export class TokenProgramTransactionFactory {
     // Create token account if needed.
     const createAssociatedTokenInstructions =
       await this.tokenProgramInstructionFactory.generateAssociatedTokenAccountInstructionsIfNeeded(
-        from,
+        mintAddress,
         to,
         payer,
         connection,
@@ -46,7 +48,7 @@ export class TokenProgramTransactionFactory {
       ),
     );
 
-    const transaction = this.transactionFactory.generateTransactionV0(
+    const transaction = await this.transactionFactory.generateTransactionV0(
       txInstructions,
       payer,
       connection,

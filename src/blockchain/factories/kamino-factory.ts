@@ -12,12 +12,14 @@ import {
   DONATION_ADDRESS,
   KAMINO_MAIN_MARKET_ADDRESS,
 } from '../utils/constants';
+import { Injectable } from '@nestjs/common';
 // import { Response } from '../utils/types';
 
 // type TransactionResponseData = {
 //     transaction: VersionedTransaction;
 // };
 
+@Injectable()
 export class KaminoFactory {
   private getReserve(
     market: KaminoMarket,

@@ -10,11 +10,14 @@ import {
   PublicKey,
   TransactionCtorFields_DEPRECATED,
   PublicKeyInitData,
+  ComputeBudgetProgram,
+  // LAMPORTS_PER_SOL,
 } from '@solana/web3.js';
 import { getLatestBlockHash } from '../utils/connection';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { InjectQueue } from '@nestjs/bullmq';
 import { TransactionListenerQueue } from '../transaction-listener/types';
+import { Injectable } from '@nestjs/common';
 
 export type TransactionComputeOpts = {
   computePrice?: number;
@@ -33,6 +36,7 @@ export const SOURCE_TOKEN_OWNER_SECRET = [
   243, 201, 243, 111, 167, 139, 30, 110, 159, 24, 219, 21, 81,
 ];
 
+@Injectable()
 export class TransactionFactory {
   constructor(
     @InjectQueue('transaction-listener')
@@ -92,6 +96,7 @@ export class TransactionFactory {
         `TransactionListener[${txId}]`,
         {
           transactionId: txId,
+          count: 0,
         },
         {
           delay: 3000,
@@ -111,6 +116,11 @@ export class TransactionFactory {
     signers?: Signer[],
     addressLookupTable?: AddressLookupTableAccount | undefined,
   ) {
+    const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 5000,
+    });
+    instructions.push(priorityPrice);
+
     const message = new TransactionMessage({
       instructions: instructions,
       recentBlockhash: (await getLatestBlockHash(connection)).blockhash,
