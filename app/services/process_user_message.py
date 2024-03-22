@@ -20,5 +20,5 @@ class ProcessUserMessageService:
             print("Something went wrong!", e)
             return "I'm sorry, something went wrong. Please try again with different wording."
         if isinstance(result, BaseModel):
-            return json.dumps(result.dict())
+            return result.json()
         return result
