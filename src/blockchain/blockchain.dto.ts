@@ -10,12 +10,6 @@ export class TransactionDataResponseDto {
 }
 
 export class BaseTransactionResponseDto extends BaseDto<BaseTransactionResponseDto> {
-  @ApiProperty({ example: true })
-  status: boolean;
-
-  @ApiProperty({ example: 'Success' })
-  message: string;
-
   @ApiProperty({ type: TransactionDataResponseDto })
   data: TransactionDataResponseDto;
 }

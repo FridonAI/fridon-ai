@@ -23,6 +23,7 @@ export class BlockchainController {
   async transferTokens(
     @Body() body: TransferTokenRequestBodyDto,
   ): Promise<TransferTokenResponseDto> {
+    console.log('bodyle', JSON.stringify(body));
     const serializedTx = await this.blockchainService.transferTokens(
       body.walletAddress,
       body.toAddress,
@@ -43,8 +44,6 @@ export class BlockchainController {
     console.log('txId', txId);
 
     return new TransferTokenResponseDto({
-      status: true,
-      message: 'Success',
       data: {
         serializedTx: signedSerializedTx,
       },
@@ -76,8 +75,6 @@ export class BlockchainController {
 
     // console.log('txId', txId);
     return new TransferTokenResponseDto({
-      status: true,
-      message: 'Success',
       data: {
         serializedTx: signedSerializedTx,
       },

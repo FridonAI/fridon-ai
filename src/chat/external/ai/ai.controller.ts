@@ -29,6 +29,13 @@ export class AiEventsController {
     this.logger.debug(
       `Received event[${eventName}] from AI: ${JSON.stringify(event, null, 2)}`,
     );
+
+    // ToDo Review this
+    if (!event.data.message) {
+      this.logger.debug(`Message is empty, skipping sending to user`);
+      return;
+    }
+
     this.logger.debug(
       `Sending response[${event.data.message}] to user[${event.user.wallet_id}]`,
     );

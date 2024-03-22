@@ -28,7 +28,8 @@ export class AiChatMessageResponseGeneratedDto extends BaseDto<AiChatMessageResp
     wallet_id: string;
   };
   data: {
-    message: string;
+    message?: string;
+    serialized_transaction?: Uint8Array;
   };
   aux: AiAuxiliaryMessage;
 }
