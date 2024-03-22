@@ -60,19 +60,4 @@ export class ChatRepository {
       },
     });
   }
-
-  async createChatMessageQueryInfo(
-    chatId: ChatId,
-    messageId: ChatMessageId,
-    data: object,
-  ): Promise<void> {
-    await this.prisma.chatMessage.create({
-      data: {
-        id: messageId.value,
-        chatId: chatId.value,
-        content: JSON.stringify(data),
-        messageType: 'Response',
-      },
-    });
-  }
 }

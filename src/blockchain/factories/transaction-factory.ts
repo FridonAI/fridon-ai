@@ -18,6 +18,7 @@ import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { InjectQueue } from '@nestjs/bullmq';
 import { TransactionListenerQueue } from '../transaction-listener/types';
 import { Injectable } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 
 export type TransactionComputeOpts = {
   computePrice?: number;
@@ -93,14 +94,9 @@ export class TransactionFactory {
       });
 
       await this.transactionListenerQueue.add(
-        `TransactionListener[${txId}]`,
-        {
-          transactionId: txId,
-          count: 0,
-        },
-        {
-          delay: 3000,
-        },
+        txId,
+        { transactionId: txId, count: 0, aux: { chatId: randomUUID() } }, // Todo: Add chatId
+        { delay: 3000 },
       );
       return txId;
     } catch (e: any) {

@@ -35,12 +35,12 @@ export class BlockchainController {
       await this.transactionFactory.addSignerToBuffer(serializedTx);
 
     // // Send transaction
-    // const txId = await this.transactionFactory.sendSerializedTransaction(
-    //   this.connection,
-    //   signedSerializedTx,
-    // );
+    const txId = await this.transactionFactory.sendSerializedTransaction(
+      this.connection,
+      signedSerializedTx,
+    );
 
-    // console.log('txId', txId);
+    console.log('txId', txId);
 
     return new TransferTokenResponseDto({
       status: true,

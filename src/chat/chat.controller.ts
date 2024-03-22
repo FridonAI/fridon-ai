@@ -2,7 +2,6 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
   ChatIdDto,
-  CreateChatMessageInfoRequestDto,
   CreateChatMessageRequestDto,
   CreateChatMessageResponseDto,
   CreateChatResponseDto,
@@ -66,21 +65,6 @@ export class ChatHttpController {
       new ChatId(params.chatId),
       walletAddress,
       body.message,
-    );
-
-    return new CreateChatMessageResponseDto({
-      messageId: res.id.value,
-    });
-  }
-
-  @Post(':chatId/info')
-  async createChatMessageInfo(
-    @Param() params: ChatIdDto,
-    @Body() body: CreateChatMessageInfoRequestDto,
-  ): Promise<CreateChatMessageResponseDto> {
-    const res = await this.chatService.createChatMessageInfo(
-      new ChatId(params.chatId),
-      body.data,
     );
 
     return new CreateChatMessageResponseDto({

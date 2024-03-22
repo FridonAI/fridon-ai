@@ -1,9 +1,10 @@
 import { Queue, Worker, Job } from 'bullmq';
+import { AuxType } from '../events/transaction.event';
 
 export type QueuePayload = {
   transactionId: string;
   count: number;
-  aux?: object;
+  aux: AuxType;
 };
 
 export class TransactionListenerQueue extends Queue<QueuePayload> {}

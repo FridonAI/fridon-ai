@@ -11,10 +11,12 @@ import {
 import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
 import { BullModule } from '@nestjs/bullmq';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [
     // Nest Modules
+    CqrsModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),

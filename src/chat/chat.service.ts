@@ -55,11 +55,11 @@ export class ChatService {
 
   async createChatMessageInfo(
     chatId: ChatId,
-    data: object,
+    data: string,
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
     await this.getChat(chatId);
-    await this.chatRepository.createChatMessageQueryInfo(
+    await this.chatRepository.createChatMessageResponse(
       chatId,
       chatMessageId,
       data,

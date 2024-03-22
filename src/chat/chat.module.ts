@@ -5,6 +5,11 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AiAdapter } from './external/ai/ai.adapter';
 import { ChatRepository } from './chat.repository';
 import { AiEventsController } from './external/ai/ai.controller';
+import {
+  TransactionConfirmedHandler,
+  TransactionSkippedHandler,
+  TransactionFailedHandler,
+} from './event-handlers/blockchain.evet-handlers';
 
 @Module({
   imports: [
@@ -20,6 +25,13 @@ import { AiEventsController } from './external/ai/ai.controller';
     ]),
   ],
   controllers: [ChatHttpController, AiEventsController],
-  providers: [ChatService, ChatRepository, AiAdapter],
+  providers: [
+    ChatService,
+    ChatRepository,
+    AiAdapter,
+    TransactionConfirmedHandler,
+    TransactionSkippedHandler,
+    TransactionFailedHandler,
+  ],
 })
 export class ChatModule {}

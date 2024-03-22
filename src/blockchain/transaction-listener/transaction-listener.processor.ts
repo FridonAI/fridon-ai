@@ -6,6 +6,12 @@ import {
 } from './types';
 import { Connection } from '@solana/web3.js';
 import { Logger } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
+import {
+  TransactionConfirmedEvent,
+  TransactionFailedEvent,
+  TransactionSkippedEvent,
+} from '../events/transaction.event';
 
 @Processor(TRANSACTION_LISTENER_QUEUE)
 export class TransactionListenerProcessor extends WorkerHost {
@@ -15,6 +21,7 @@ export class TransactionListenerProcessor extends WorkerHost {
     private readonly connection: Connection,
     @InjectQueue(TRANSACTION_LISTENER_QUEUE)
     private readonly transactionListenerQueue: TransactionListenerQueue,
+    private readonly eventBus: EventBus,
   ) {
     super();
   }
@@ -26,31 +33,50 @@ export class TransactionListenerProcessor extends WorkerHost {
       maxSupportedTransactionVersion: 0,
     });
 
+    // 1. Failed Transaction
     if (tx && tx.meta?.err) {
       this.logger.debug(
         `Transaction[${txId}] has failed with error: ${tx.meta.err}`,
       );
-      return;
+      return this.eventBus.publish(
+        new TransactionFailedEvent({
+          transactionId: txId,
+          aux: job.data.aux,
+        }),
+      );
     }
 
+    // 2. Confirmed Transaction
     if (tx && tx.transaction) {
       this.logger.debug(`Transaction[${txId}] has succeeded`);
-      return;
+      return this.eventBus.publish(
+        new TransactionConfirmedEvent({
+          transactionId: txId,
+          aux: job.data.aux,
+        }),
+      );
     }
 
+    // 3. Transaction Skipped
     if (job.data.count >= 10) {
       this.logger.debug(
         `Transaction[${txId}] has been skipped after 10 retries`,
       );
-      return;
+      return this.eventBus.publish(
+        new TransactionSkippedEvent({
+          transactionId: txId,
+          aux: job.data.aux,
+        }),
+      );
     }
 
+    // 4. Retry
     this.logger.debug(
       `Transaction[${txId}] has not been confirmed yet. Retrying... count=${job.data.count + 1}`,
     );
     job.data.count++;
-    await this.transactionListenerQueue.add('', job.data, {
-      delay: 1000,
+    await this.transactionListenerQueue.add(txId, job.data, {
+      delay: 3000,
     });
   }
 }

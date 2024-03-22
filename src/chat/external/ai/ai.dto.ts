@@ -17,7 +17,7 @@ export class AiChatMessageInfoCreatedDto extends BaseDto<AiChatMessageInfoCreate
     walletId: string;
   };
   data: {
-    message: object;
+    message: string;
   };
   aux: AiAuxiliaryMessage;
 }

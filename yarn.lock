@@ -1984,6 +1984,13 @@
     path-to-regexp "3.2.0"
     tslib "2.6.2"
 
+"@nestjs/cqrs@^10.2.7":
+  version "10.2.7"
+  resolved "https://registry.yarnpkg.com/@nestjs/cqrs/-/cqrs-10.2.7.tgz#67e129d481c86a2b3153374af688abfd19819994"
+  integrity sha512-RXhgQOfuT+KzvkueR4S++SB6+6333PL71pOtCzbJAAU/DY3KY56yTCncWRsIdorKfDX5AEwTiQHHJi69XJWdkA==
+  dependencies:
+    uuid "9.0.1"
+
 "@nestjs/mapped-types@2.0.5":
   version "2.0.5"
   resolved "https://registry.npmjs.org/@nestjs/mapped-types/-/mapped-types-2.0.5.tgz"

@@ -12,15 +12,9 @@ export class AiAdapter {
     const eventName = 'chat_message_created';
     const event = new AiChatMessageCreatedDto({
       chatId: chatId.value,
-      user: {
-        walletId: walletId,
-      },
-      data: {
-        message,
-      },
-      aux: {
-        traceId: randomUUID(),
-      },
+      user: { walletId: walletId },
+      data: { message },
+      aux: { traceId: randomUUID() },
     });
 
     this.logger.debug(
@@ -30,12 +24,12 @@ export class AiAdapter {
     this.client.emit(eventName, event);
   }
 
-  emitChatMessageInfoCreated(chatId: ChatId, data: object) {
+  emitChatMessageInfoCreated(chatId: ChatId, message: string) {
     const eventName = 'chat_message_info_created';
     const event = new AiChatMessageInfoCreatedDto({
       chatId: chatId.value,
       user: { walletId: chatId.value },
-      data: { message: data },
+      data: { message },
       aux: {
         traceId: randomUUID(),
       },
