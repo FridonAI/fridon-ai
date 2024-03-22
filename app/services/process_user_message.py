@@ -18,7 +18,8 @@ class ProcessUserMessageService:
             result = await chat.process(chat_id, wallet_id, message)
         except Exception as e:
             print("Something went wrong!", e)
-            return "I'm sorry, something went wrong. Please try again with different wording."
+            raise e
+            # return "I'm sorry, something went wrong. Please try again with different wording."
         if isinstance(result, BaseModel):
-            return result.json()
+            return json.dumps(result.dict())
         return result

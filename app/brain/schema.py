@@ -22,7 +22,6 @@ class DefiStakeBorrowLendAdapter(Adapter):
     comment: str | None
 
     async def get_response(self, chat_id, wallet_id):
-
         if None in [self.operator, self.provider, self.currency, self.amount]:
             return self.comment
 
@@ -59,10 +58,19 @@ class DefiTransferAdapter(Adapter):
     status: bool
     comment: str | None
     currency: str | None
+    amount: float | None
     wallet: str | None
 
     async def get_response(self, chat_id, wallet_id):
-        return await get_transfer_tx(self.wallet, chat_id, wallet_id)
+        if None in [self.amount,  self.currency]:
+            return self.comment
+        return await get_transfer_tx(
+            self.wallet,
+            self.currency,
+            self.amount,
+            chat_id,
+            wallet_id
+        )
 
     @staticmethod
     def parser() -> PydanticOutputParser:

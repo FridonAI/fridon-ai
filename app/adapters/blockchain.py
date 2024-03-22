@@ -29,6 +29,8 @@ async def get_stake_borrow_lend_tx(
 @inject
 async def get_transfer_tx(
         to_wallet_id: str,
+        currency: str,
+        amount: float,
         chat_id: str,
         wallet_id: str,
         pub: Publisher = Provide["publisher"],
@@ -38,14 +40,14 @@ async def get_transfer_tx(
     req = {
         "walletAddress": wallet_id,
         "toAddress": to_wallet_id,
-        "mintAddress": "DFL1zNkaGPWm1BqAVqRjCZvHmwTFrEaJtbzJWgseoNJh",
-        "amount": 10
+        "currency": currency,
+        "amount": amount
     }
-    apiUrl = os.environ["API_URL"]
-    if not apiUrl:
+    api_url = os.environ["API_URL"]
+    if not api_url:
         raise Exception("API_URL not set in environment variables")
 
-    resp = requests.post(f"{apiUrl}/blockchain/transfer-tokens", json=req).json()
+    resp = requests.post(f"{api_url}/blockchain/transfer-tokens", json=req).json()
 
     await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, resp, {})))
 

@@ -24,7 +24,7 @@ class ResponseDto(CamelModel):
 
     def __str__(self):
         import json
-        return json.dumps({"data": self.json()})
+        return json.dumps({"data": self.dict()})
 
     @staticmethod
     def from_params(chat_id: str, wallet_id: str, message: str | dict, aux: dict):
