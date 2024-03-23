@@ -21,6 +21,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class KaminoFactory {
+  constructor(private connection: Connection) {}
+
   private getReserve(
     market: KaminoMarket,
     mintAddr: string,
@@ -73,7 +75,7 @@ export class KaminoFactory {
       new PublicKey(mintAddress),
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
-      0,
+      5_000_000,
       undefined,
       undefined,
       undefined,
@@ -90,9 +92,10 @@ export class KaminoFactory {
       connection,
       payer,
       instructions,
+      [new PublicKey('284iwGtA9X9aLy3KsyV8uT2pXLARhYbiSi5SiM2g47M2')],
     );
 
-    return transaction.serialize();
+    return transaction;
   }
 
   async borrow(
@@ -127,7 +130,7 @@ export class KaminoFactory {
       new PublicKey(mintAddress),
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
-      0,
+      5_000_000,
       true,
       false,
       true,
@@ -146,7 +149,7 @@ export class KaminoFactory {
       instructions,
     );
 
-    return transaction.serialize();
+    return transaction;
   }
 
   async repay(
@@ -182,7 +185,7 @@ export class KaminoFactory {
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
       undefined,
-      0,
+      5_000_000,
       true,
       undefined,
       undefined,
@@ -201,7 +204,7 @@ export class KaminoFactory {
       instructions,
     );
 
-    return transaction.serialize();
+    return transaction;
   }
 
   async withdraw(
@@ -237,7 +240,7 @@ export class KaminoFactory {
       new PublicKey(mintAddress),
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
-      0,
+      5_000_000,
       true,
       undefined,
       undefined,
@@ -256,6 +259,25 @@ export class KaminoFactory {
       instructions,
     );
 
-    return transaction.serialize();
+    return transaction;
+  }
+
+  async getBalance(walletAddress: string) {
+    const market = await KaminoMarket.load(
+      this.connection,
+      KAMINO_MAIN_MARKET_ADDRESS,
+    );
+
+    if (market == null) {
+      throw new Error("Couldn't load market");
+    }
+
+    console.log('walletAddress', walletAddress);
+    const result = await market.getObligationByWallet(
+      new PublicKey(walletAddress),
+      new VanillaObligation(PROGRAM_ID),
+    );
+
+    console.log('result', result);
   }
 }

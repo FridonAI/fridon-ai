@@ -8,7 +8,6 @@ import {
   AddressLookupTableAccount,
   Signer,
   PublicKey,
-  TransactionCtorFields_DEPRECATED,
   PublicKeyInitData,
   ComputeBudgetProgram,
   // LAMPORTS_PER_SOL,
@@ -72,6 +71,20 @@ export class TransactionFactory {
     return txId;
   }
 
+  async signVersionTransaction(tx: VersionedTransaction) {
+    const sourceTokenOwner = Keypair.fromSecretKey(
+      new Uint8Array(SOURCE_TOKEN_OWNER_SECRET),
+    );
+
+    const wallet = new NodeWallet(sourceTokenOwner);
+
+    tx.message.recentBlockhash = (
+      await getLatestBlockHash(this.connection)
+    ).blockhash;
+
+    return await wallet.signTransaction(tx);
+  }
+
   async addSignerToBuffer(buffer: Uint8Array) {
     const sourceTokenOwner = Keypair.fromSecretKey(
       new Uint8Array(SOURCE_TOKEN_OWNER_SECRET),
@@ -79,6 +92,7 @@ export class TransactionFactory {
     const wallet = new NodeWallet(sourceTokenOwner);
 
     const tx = VersionedTransaction.deserialize(buffer);
+
     const signedTx = await wallet.signTransaction(tx);
 
     return signedTx.serialize();
@@ -133,27 +147,6 @@ export class TransactionFactory {
 
     if (signers) {
       tx.sign(signers);
-    }
-
-    return tx;
-  }
-
-  async generateBaseTransaction(
-    {
-      tx,
-      ...fields
-    }: TransactionCtorFields_DEPRECATED & { tx?: Transaction } = {},
-    connection: Connection,
-  ): Promise<Transaction> {
-    if (!tx) tx = new Transaction(fields);
-
-    const blockchashResponse = await getLatestBlockHash(connection);
-    console.log('last valid block: ', blockchashResponse.lastValidBlockHeight);
-
-    tx.recentBlockhash = blockchashResponse.blockhash;
-    console.log('recent blockhash: ', tx.recentBlockhash);
-    if (fields?.feePayer) {
-      tx.feePayer = new PublicKey(fields?.feePayer);
     }
 
     return tx;

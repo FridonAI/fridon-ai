@@ -5,6 +5,8 @@ import {
   TransferTokenRequestBodyDto,
   DefiOperationRequestBodyDto,
   DefiOperationResponseBodyDto,
+  BalanceOperationRequestBodyDto,
+  // BalanceOperationResponseBodyDto,
 } from './blockchain.dto';
 import { BlockchainService } from './blockchain.service';
 import { TransactionFactory } from './factories/transaction-factory';
@@ -47,7 +49,7 @@ export class BlockchainController {
   async defiOperations(
     @Body() body: DefiOperationRequestBodyDto,
   ): Promise<DefiOperationResponseBodyDto> {
-    const serializedTx = await this.blockchainService.defiOperations(
+    const tx = await this.blockchainService.defiOperations(
       body.walletAddress,
       body.operation,
       body.provider,
@@ -57,19 +59,29 @@ export class BlockchainController {
 
     // Sign Message
     const signedSerializedTx =
-      await this.transactionFactory.addSignerToBuffer(serializedTx);
+      await this.transactionFactory.signVersionTransaction(tx);
 
     // // Send transaction
     // const txId = await this.transactionFactory.sendSerializedTransaction(
     //   this.connection,
-    //   signedSerializedTx,
+    //   signedSerializedTx.serialize(),
     // );
 
     // console.log('txId', txId);
     return new TransferTokenResponseDto({
       data: {
-        serializedTx: signedSerializedTx,
+        serializedTx: signedSerializedTx.serialize(),
       },
     });
+  }
+
+  @Post('balance-operation')
+  async balanceOperations(@Body() body: BalanceOperationRequestBodyDto) {
+    const tx = await this.blockchainService.balanceOperations(
+      body.walletAddress,
+      body.provider,
+      body.currency,
+    );
+    tx;
   }
 }

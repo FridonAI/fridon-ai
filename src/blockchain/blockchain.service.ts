@@ -53,13 +53,28 @@ export class BlockchainService {
     return serializedTransaction;
   }
 
+  async balanceOperations(
+    walletAddress: string,
+    provider: string,
+    currency?: string | undefined,
+  ) {
+    const mintAddress = currency
+      ? await this.tools.convertSymbolToMintAddress(currency)
+      : undefined;
+    mintAddress;
+    if (provider == ProviderType.Kamino) {
+      const data = this.kaminoFactory.getBalance(walletAddress);
+      data;
+    }
+  }
+
   async defiOperations(
     walletAddress: string,
     operation: OperationType,
     provider: ProviderType,
     currency: string,
     amount: number,
-  ): Promise<Uint8Array> {
+  ) {
     const mintAddress = await this.tools.convertSymbolToMintAddress(currency);
     const instance = this.getProviderInstance(provider);
 
