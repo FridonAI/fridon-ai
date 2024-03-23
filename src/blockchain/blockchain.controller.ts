@@ -5,6 +5,8 @@ import {
   TransferTokenRequestBodyDto,
   DefiOperationRequestBodyDto,
   DefiOperationResponseBodyDto,
+  BalanceOperationRequestBodyDto,
+  // BalanceOperationResponseBodyDto,
 } from './blockchain.dto';
 import { BlockchainService } from './blockchain.service';
 import { TransactionFactory } from './factories/transaction-factory';
@@ -82,5 +84,15 @@ export class BlockchainController {
         serializedTx: signedSerializedTx.serialize(),
       },
     });
+  }
+
+  @Post('balance-operation')
+  async balanceOperations(@Body() body: BalanceOperationRequestBodyDto) {
+    const tx = await this.blockchainService.balanceOperations(
+      body.walletAddress,
+      body.provider,
+      body.currency,
+    );
+    tx;
   }
 }

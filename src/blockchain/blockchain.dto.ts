@@ -25,7 +25,7 @@ export class BaseTransactionResponseDto extends BaseDto<BaseTransactionResponseD
 export class TransferTokenRequestBodyDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'EkgRcppmG4vmPtFgmxKawR7rdmgJ2Z3Z35J8Uhj3ageX' })
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
   // toto: custom validation for walleteAddress
   walletAddress: string;
 
@@ -51,7 +51,7 @@ export class TransferTokenResponseDto extends BaseTransactionResponseDto {}
 export class DefiOperationRequestBodyDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'EkgRcppmG4vmPtFgmxKawR7rdmgJ2Z3Z35J8Uhj3ageX' })
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
   walletAddress: string;
 
   @IsNumber()
@@ -77,3 +77,25 @@ export class DefiOperationRequestBodyDto {
 }
 
 export class DefiOperationResponseBodyDto extends BaseTransactionResponseDto {}
+
+// Balance Operations
+
+export class BalanceOperationRequestBodyDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
+  walletAddress: string;
+
+  @IsString()
+  @ApiProperty({ example: 'Sol' })
+  @Transform(({ value }) => value.toLowerCase())
+  currency?: string | undefined;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'Kamino' })
+  @Transform(({ value }) => value.toLowerCase())
+  provider: string;
+}
+
+export class BalanceOperationResponseBodyDto extends BaseTransactionResponseDto {}

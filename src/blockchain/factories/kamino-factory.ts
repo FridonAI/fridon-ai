@@ -21,7 +21,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class KaminoFactory {
-  constructor() {}
+  constructor(private connection: Connection) {}
 
   private getReserve(
     market: KaminoMarket,
@@ -260,5 +260,24 @@ export class KaminoFactory {
     );
 
     return transaction;
+  }
+
+  async getBalance(walletAddress: string) {
+    const market = await KaminoMarket.load(
+      this.connection,
+      KAMINO_MAIN_MARKET_ADDRESS,
+    );
+
+    if (market == null) {
+      throw new Error("Couldn't load market");
+    }
+
+    console.log('walletAddress', walletAddress);
+    const result = await market.getObligationByWallet(
+      new PublicKey(walletAddress),
+      new VanillaObligation(PROGRAM_ID),
+    );
+
+    console.log('result', result);
   }
 }
