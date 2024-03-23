@@ -1,7 +1,12 @@
 import { BaseDto } from '@lib/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
-import { OperationType, ProviderType } from './utils/types';
+import {
+  BalanceOperationType,
+  BalanceProviderType,
+  OperationType,
+  ProviderType,
+} from './utils/types';
 import { Transform } from 'class-transformer';
 
 // Default Transfer Reponse Dto
@@ -70,7 +75,7 @@ export class DefiOperationRequestBodyDto {
   currency: string;
 }
 
-export class DefiOperationResponseBodyDto extends BaseTransactionResponseDto {}
+export class DefiOperationResponseDto extends BaseTransactionResponseDto {}
 
 // Balance Operations
 
@@ -87,9 +92,28 @@ export class BalanceOperationRequestBodyDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'Kamino' })
+  @ApiProperty({ example: BalanceOperationType.Deposited })
   @Transform(({ value }) => value.toLowerCase())
-  provider: string;
+  operation: BalanceOperationType;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: BalanceProviderType.Kamino })
+  @Transform(({ value }) => value.toLowerCase())
+  provider: BalanceProviderType;
 }
 
-export class BalanceOperationResponseBodyDto extends BaseTransactionResponseDto {}
+export class BalanceDto {
+  @ApiProperty({ example: 'Sol' })
+  symbol: string;
+
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
+  mintAddress: string;
+
+  @ApiProperty({ example: '10' })
+  amount: string;
+}
+export class BalanceOperationResponseDto extends BaseDto<BalanceOperationResponseDto> {
+  @ApiProperty({ type: BalanceDto })
+  data: BalanceDto[];
+}

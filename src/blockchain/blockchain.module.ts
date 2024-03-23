@@ -3,8 +3,8 @@ import { Connection } from '@solana/web3.js';
 import { connection } from './utils/connection';
 import { BlockchainController } from './blockchain.controller';
 import { BlockchainService } from './blockchain.service';
-import { BlockchainTools } from './utils/tools/token-list';
-import { KaminoFactory } from './factories/kamino-factory';
+import { BlockchainTools } from './utils/tools/blockchain-tools';
+import { KaminoFactory } from './providers/kamino-factory';
 import { TokenProgramInstructionFactory } from './factories/token-program-instruction-factory';
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
 import { TransactionFactory } from './factories/transaction-factory';
@@ -12,6 +12,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { TRANSACTION_LISTENER_QUEUE } from './transaction-listener/types';
 import { TransactionListenerProcessor } from './transaction-listener/transaction-listener.processor';
 import { TransactionListenerService } from './transaction-listener/transaction-listener.service';
+import { NumberFormatter } from './utils/tools/number-formatter';
 
 @Module({
   imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
@@ -19,6 +20,7 @@ import { TransactionListenerService } from './transaction-listener/transaction-l
   providers: [
     BlockchainService,
     BlockchainTools,
+    NumberFormatter,
     {
       provide: Connection,
       useValue: connection,

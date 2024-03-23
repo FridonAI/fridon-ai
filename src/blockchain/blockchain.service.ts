@@ -3,9 +3,15 @@ import { Connection } from '@solana/web3.js';
 import { getDestinationAddress, getTokenSupply } from './utils/connection';
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
 import { TokenAmount } from './utils/tools/token-amount';
-import { OperationType, ProviderType } from './utils/types';
-import { KaminoFactory } from './factories/kamino-factory';
-import { BlockchainTools } from './utils/tools/token-list';
+import {
+  BalanceOperationType,
+  BalanceProviderType,
+  BalanceType,
+  OperationType,
+  ProviderType,
+} from './utils/types';
+import { KaminoFactory } from './providers/kamino-factory';
+import { BlockchainTools } from './utils/tools/blockchain-tools';
 
 @Injectable()
 export class BlockchainService {
@@ -55,17 +61,39 @@ export class BlockchainService {
 
   async balanceOperations(
     walletAddress: string,
-    provider: string,
+    provider: BalanceProviderType,
+    operation: BalanceOperationType,
     currency?: string | undefined,
-  ) {
+  ): Promise<BalanceType[]> {
     const mintAddress = currency
       ? await this.tools.convertSymbolToMintAddress(currency)
       : undefined;
-    mintAddress;
-    if (provider == ProviderType.Kamino) {
-      const data = this.kaminoFactory.getBalance(walletAddress);
-      data;
+
+    if (provider == BalanceProviderType.Kamino) {
+      if (operation == BalanceOperationType.Borrowed) {
+        const positions = await this.kaminoFactory.getKaminoBorrows(
+          walletAddress,
+          mintAddress,
+        );
+        return await this.tools.convertPositionsToBalances(positions);
+      } else if (operation == BalanceOperationType.Deposited) {
+        const positions = await this.kaminoFactory.getKaminoDepositions(
+          walletAddress,
+          mintAddress,
+        );
+        return await this.tools.convertPositionsToBalances(positions);
+      } else if (operation == BalanceOperationType.All) {
+        const positions =
+          await this.kaminoFactory.getKaminoBalances(walletAddress);
+        return await this.tools.convertPositionsToBalances(positions);
+      }
     }
+
+    if (provider == BalanceProviderType.Wallet) {
+      // If mint address we need exact token balance, if no lets fetch all ones?
+    }
+
+    return [];
   }
 
   async defiOperations(

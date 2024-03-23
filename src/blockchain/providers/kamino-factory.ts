@@ -2,8 +2,10 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import {
   KaminoAction,
   KaminoMarket,
+  KaminoObligation,
   KaminoReserve,
   PROGRAM_ID,
+  Position,
   VanillaObligation,
   buildVersionedTransaction,
 } from '@hubbleprotocol/kamino-lending-sdk';
@@ -13,11 +15,7 @@ import {
   KAMINO_MAIN_MARKET_ADDRESS,
 } from '../utils/constants';
 import { Injectable } from '@nestjs/common';
-// import { Response } from '../utils/types';
-
-// type TransactionResponseData = {
-//     transaction: VersionedTransaction;
-// };
+import { NumberFormatter } from '../utils/tools/number-formatter';
 
 @Injectable()
 export class KaminoFactory {
@@ -262,7 +260,7 @@ export class KaminoFactory {
     return transaction;
   }
 
-  async getBalance(walletAddress: string) {
+  async getKaminoBalances(walletAddress: string) {
     const market = await KaminoMarket.load(
       this.connection,
       KAMINO_MAIN_MARKET_ADDRESS,
@@ -272,12 +270,195 @@ export class KaminoFactory {
       throw new Error("Couldn't load market");
     }
 
-    console.log('walletAddress', walletAddress);
-    const result = await market.getObligationByWallet(
+    const obligations = await market.getObligationByWallet(
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
     );
 
-    console.log('result', result);
+    if (!obligations) {
+      throw new Error("Couldn't get balance"); // User is new
+    }
+
+    return [...this.getDeposits(obligations), ...this.getBorrows(obligations)];
+  }
+
+  async getKaminoDepositions(
+    walletAddress: string,
+    mintAddress: string | undefined,
+  ) {
+    const market = await KaminoMarket.load(
+      this.connection,
+      KAMINO_MAIN_MARKET_ADDRESS,
+    );
+
+    if (market == null) {
+      throw new Error("Couldn't load market");
+    }
+
+    const obligations = await market.getObligationByWallet(
+      new PublicKey(walletAddress),
+      new VanillaObligation(PROGRAM_ID),
+    );
+
+    if (!obligations) {
+      throw new Error("Couldn't get balance"); // User is new
+    }
+
+    if (mintAddress) {
+      const deposit = this.getDeposit(obligations, new PublicKey(mintAddress));
+
+      if (!deposit) {
+        throw new Error("Couldn't find deposited asset");
+      }
+
+      return [deposit];
+    } else {
+      return this.getDeposits(obligations);
+    }
+  }
+
+  async getKaminoBorrows(
+    walletAddress: string,
+    mintAddress: string | undefined,
+  ) {
+    const market = await KaminoMarket.load(
+      this.connection,
+      KAMINO_MAIN_MARKET_ADDRESS,
+    );
+
+    if (market == null) {
+      throw new Error("Couldn't load market");
+    }
+
+    const obligations = await market.getObligationByWallet(
+      new PublicKey(walletAddress),
+      new VanillaObligation(PROGRAM_ID),
+    );
+
+    if (!obligations) {
+      throw new Error("Couldn't get balance"); // User is new
+    }
+
+    if (mintAddress) {
+      const borrowed = this.getBorrow(obligations, new PublicKey(mintAddress));
+
+      if (!borrowed) {
+        throw new Error("Couldn't find borrowed asset");
+      }
+
+      return [borrowed];
+    } else {
+      return this.getBorrows(obligations);
+    }
+  }
+
+  private getDeposits(_nativeObligation: KaminoObligation): Position[] {
+    return Array.from(_nativeObligation.deposits.values());
+  }
+
+  private getBorrows(_nativeObligation: KaminoObligation): Position[] {
+    return Array.from(_nativeObligation.borrows.values());
+  }
+
+  private getBorrow(
+    _nativeObligation: KaminoObligation,
+    mintAddress: PublicKey,
+  ): Position | undefined {
+    return this.getBorrows(_nativeObligation).find((x) =>
+      x.mintAddress.equals(mintAddress),
+    );
+  }
+
+  private getDeposit(
+    _nativeObligation: KaminoObligation,
+    mintAddress: PublicKey,
+  ): Position | undefined {
+    return this.getDeposits(_nativeObligation).find((x) =>
+      x.mintAddress.equals(mintAddress),
+    );
+  }
+}
+
+@Injectable()
+export class KaminoBalances {
+  constructor(
+    readonly _nativeObligation: KaminoObligation,
+    readonly utils: NumberFormatter,
+  ) {}
+
+  get nativeObligation() {
+    return this._nativeObligation;
+  }
+
+  get deposits(): Position[] {
+    return Array.from(this.nativeObligation.deposits.values());
+  }
+
+  get borrows(): Position[] {
+    return Array.from(this.nativeObligation.borrows.values());
+  }
+
+  getBorrow(mintAddress: PublicKey): Position | undefined {
+    return Array.from(this.nativeObligation.borrows.values()).find((x) =>
+      x.mintAddress.equals(mintAddress),
+    );
+  }
+
+  getDeposit(mintAddress: PublicKey): Position | undefined {
+    return Array.from(this.nativeObligation.deposits.values() ?? []).find((x) =>
+      x.mintAddress.equals(mintAddress),
+    );
+  }
+
+  get totalBorrowed() {
+    return this.nativeObligation.refreshedStats.userTotalBorrow;
+  }
+
+  get totalBorrowedFormatted() {
+    return this.utils.toFormattedUsd(this.totalBorrowed);
+  }
+
+  get totalSupplied() {
+    return this.nativeObligation.refreshedStats.userTotalDeposit;
+  }
+
+  get totalSuppliedFormatted() {
+    return this.utils.toFormattedUsd(this.totalSupplied);
+  }
+
+  get borrowPower() {
+    const { borrowLimit, userTotalBorrowBorrowFactorAdjusted } =
+      this.nativeObligation.refreshedStats;
+    return borrowLimit.minus(userTotalBorrowBorrowFactorAdjusted);
+  }
+
+  get borrowPowerFormatted() {
+    return this.utils.toFormattedUsd(this.borrowPower);
+  }
+
+  get ltv() {
+    return this.nativeObligation.refreshedStats.loanToValue;
+  }
+
+  get ltvFormatted() {
+    return this.utils.toFormattedPercent(this.ltv);
+  }
+
+  get maxLtv() {
+    const { borrowLimit, userTotalDeposit } =
+      this.nativeObligation.refreshedStats;
+    return borrowLimit.div(userTotalDeposit);
+  }
+
+  get maxLtvFormatted() {
+    return this.utils.toFormattedPercent(this.maxLtv);
+  }
+
+  get liquidationLtv() {
+    return this.nativeObligation.refreshedStats.liquidationLtv;
+  }
+
+  get liquidationLtvFormatted() {
+    return this.utils.toFormattedPercent(this.liquidationLtv);
   }
 }

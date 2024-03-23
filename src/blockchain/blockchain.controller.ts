@@ -4,8 +4,9 @@ import {
   TransferTokenResponseDto,
   TransferTokenRequestBodyDto,
   DefiOperationRequestBodyDto,
-  DefiOperationResponseBodyDto,
+  DefiOperationResponseDto,
   BalanceOperationRequestBodyDto,
+  BalanceOperationResponseDto,
   // BalanceOperationResponseBodyDto,
 } from './blockchain.dto';
 import { BlockchainService } from './blockchain.service';
@@ -25,7 +26,6 @@ export class BlockchainController {
   async transferTokens(
     @Body() body: TransferTokenRequestBodyDto,
   ): Promise<TransferTokenResponseDto> {
-    console.log('bodyle', JSON.stringify(body));
     const serializedTx = await this.blockchainService.transferTokens(
       body.walletAddress,
       body.toAddress,
@@ -48,7 +48,7 @@ export class BlockchainController {
   @Post('defi-operation')
   async defiOperations(
     @Body() body: DefiOperationRequestBodyDto,
-  ): Promise<DefiOperationResponseBodyDto> {
+  ): Promise<DefiOperationResponseDto> {
     const tx = await this.blockchainService.defiOperations(
       body.walletAddress,
       body.operation,
@@ -76,12 +76,18 @@ export class BlockchainController {
   }
 
   @Post('balance-operation')
-  async balanceOperations(@Body() body: BalanceOperationRequestBodyDto) {
-    const tx = await this.blockchainService.balanceOperations(
+  async balanceOperations(
+    @Body() body: BalanceOperationRequestBodyDto,
+  ): Promise<BalanceOperationResponseDto> {
+    const balances = await this.blockchainService.balanceOperations(
       body.walletAddress,
       body.provider,
+      body.operation,
       body.currency,
     );
-    tx;
+
+    return new BalanceOperationResponseDto({
+      data: balances,
+    });
   }
 }

@@ -47,3 +47,24 @@ export enum ProviderType {
 export type TransactionDataType = {
   serializedTx: Uint8Array;
 };
+
+// Balances
+export enum BalanceProviderType {
+  Kamino = 'Kamino',
+  Wallet = 'Wallet',
+  All = 'All',
+}
+
+export enum BalanceOperationType {
+  Borrowed = 'Borrowed',
+  Deposited = 'Deposited',
+  WalletBalance = 'WalletBalance',
+  Staked = 'Staked',
+  All = 'All',
+}
+
+export type BalanceType = {
+  symbol: string;
+  mintAddress: string;
+  amount: string;
+};
