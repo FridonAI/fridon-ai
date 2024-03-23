@@ -11,12 +11,16 @@ import {
 import { ChatId } from './domain/chat-id.value-object';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth, Wallet, WalletSession } from '@lib/auth';
+import { TransactionListenerService } from 'src/blockchain/transaction-listener/transaction-listener.service';
 
 @Controller('chats')
 @ApiTags('chat')
 @Auth()
 export class ChatHttpController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly transactionListenerService: TransactionListenerService,
+  ) {}
 
   @Get()
   async getChats(
@@ -70,5 +74,16 @@ export class ChatHttpController {
     return new CreateChatMessageResponseDto({
       messageId: res.id.value,
     });
+  }
+
+  @Post(':chatId/transaction')
+  async registerChatTransactionId(
+    @Param() { chatId }: ChatIdDto,
+    @Body() body: { transactionId: string },
+  ): Promise<void> {
+    await this.transactionListenerService.registerTransactionListener(
+      body.transactionId,
+      { chatId },
+    );
   }
 }

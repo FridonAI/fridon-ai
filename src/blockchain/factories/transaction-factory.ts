@@ -15,9 +15,9 @@ import {
 import { getLatestBlockHash } from '../utils/connection';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { InjectQueue } from '@nestjs/bullmq';
-import { TransactionListenerQueue } from '../transaction-listener/types';
 import { Injectable } from '@nestjs/common';
 import { AuxType } from '../events/transaction.event';
+import { TransactionListenerService } from '../transaction-listener/transaction-listener.service';
 
 export type TransactionComputeOpts = {
   computePrice?: number;
@@ -40,8 +40,8 @@ export const SOURCE_TOKEN_OWNER_SECRET = [
 export class TransactionFactory {
   constructor(
     @InjectQueue('transaction-listener')
-    private readonly transactionListenerQueue: TransactionListenerQueue,
     private readonly connection: Connection,
+    private readonly transactionListenerService: TransactionListenerService,
   ) {}
 
   async sendTransaction(
@@ -111,10 +111,9 @@ export class TransactionFactory {
         },
       );
 
-      await this.transactionListenerQueue.add(
+      await this.transactionListenerService.registerTransactionListener(
         txId,
-        { transactionId: txId, count: 0, aux: aux }, // Todo: Add chatId
-        { delay: 3000 },
+        aux,
       );
       return txId;
     } catch (e: any) {

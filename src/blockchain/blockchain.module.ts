@@ -11,6 +11,7 @@ import { TransactionFactory } from './factories/transaction-factory';
 import { BullModule } from '@nestjs/bullmq';
 import { TRANSACTION_LISTENER_QUEUE } from './transaction-listener/types';
 import { TransactionListenerProcessor } from './transaction-listener/transaction-listener.processor';
+import { TransactionListenerService } from './transaction-listener/transaction-listener.service';
 
 @Module({
   imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
@@ -27,8 +28,9 @@ import { TransactionListenerProcessor } from './transaction-listener/transaction
     TokenProgramTransactionFactory,
     TransactionFactory,
     TransactionListenerProcessor,
+    TransactionListenerService,
   ],
-  exports: [TransactionFactory],
+  exports: [TransactionFactory, TransactionListenerService],
 })
 export class BlockchainModule {
   static forRoot() {
