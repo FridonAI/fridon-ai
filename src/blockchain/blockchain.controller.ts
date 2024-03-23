@@ -68,13 +68,13 @@ export class BlockchainController {
     const signedSerializedTx =
       await this.transactionFactory.signVersionTransaction(tx);
 
-    // Send transaction
-    const txId = await this.transactionFactory.sendSerializedTransaction(
-      this.connection,
-      signedSerializedTx.serialize(),
-    );
+    // // Send transaction
+    // const txId = await this.transactionFactory.sendSerializedTransaction(
+    //   this.connection,
+    //   signedSerializedTx.serialize(),
+    // );
 
-    console.log('txId', txId);
+    // console.log('txId', txId);
     return new TransferTokenResponseDto({
       status: true,
       message: 'Success',
