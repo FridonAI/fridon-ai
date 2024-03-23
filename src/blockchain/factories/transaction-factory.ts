@@ -8,7 +8,6 @@ import {
   AddressLookupTableAccount,
   Signer,
   PublicKey,
-  TransactionCtorFields_DEPRECATED,
   PublicKeyInitData,
   ComputeBudgetProgram,
   // LAMPORTS_PER_SOL,
@@ -75,10 +74,13 @@ export class TransactionFactory {
     const sourceTokenOwner = Keypair.fromSecretKey(
       new Uint8Array(SOURCE_TOKEN_OWNER_SECRET),
     );
+
     const wallet = new NodeWallet(sourceTokenOwner);
+
     tx.message.recentBlockhash = (
       await getLatestBlockHash(this.connection)
     ).blockhash;
+
     return await wallet.signTransaction(tx);
   }
 
@@ -150,27 +152,4 @@ export class TransactionFactory {
 
     return tx;
   }
-
-  async generateBaseTransaction(
-    {
-      tx,
-      ...fields
-    }: TransactionCtorFields_DEPRECATED & { tx?: Transaction } = {},
-    connection: Connection,
-  ): Promise<Transaction> {
-    if (!tx) tx = new Transaction(fields);
-
-    const blockchashResponse = await getLatestBlockHash(connection);
-    console.log('last valid block: ', blockchashResponse.lastValidBlockHeight);
-
-    tx.recentBlockhash = blockchashResponse.blockhash;
-    console.log('recent blockhash: ', tx.recentBlockhash);
-    if (fields?.feePayer) {
-      tx.feePayer = new PublicKey(fields?.feePayer);
-    }
-
-    return tx;
-  }
-
-  async signAndSendTransaction() {}
 }
