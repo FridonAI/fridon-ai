@@ -12,6 +12,7 @@ import {
 } from './utils/types';
 import { KaminoFactory } from './providers/kamino-factory';
 import { BlockchainTools } from './utils/tools/blockchain-tools';
+import { WalletFactory } from './providers/wallet-factory';
 
 @Injectable()
 export class BlockchainService {
@@ -20,6 +21,7 @@ export class BlockchainService {
     private readonly tools: BlockchainTools,
     private readonly tokenProgramTransactionFactory: TokenProgramTransactionFactory,
     private readonly kaminoFactory: KaminoFactory,
+    private readonly walletFactory: WalletFactory,
   ) {}
 
   async transferTokens(
@@ -65,9 +67,13 @@ export class BlockchainService {
     operation: BalanceOperationType,
     currency?: string | undefined,
   ): Promise<BalanceType[]> {
-    const mintAddress = currency
+    let mintAddress = currency
       ? await this.tools.convertSymbolToMintAddress(currency)
       : undefined;
+
+    if (currency == 'all') {
+      mintAddress = undefined;
+    }
 
     if (provider == BalanceProviderType.Kamino) {
       if (operation == BalanceOperationType.Borrowed) {
@@ -90,7 +96,14 @@ export class BlockchainService {
     }
 
     if (provider == BalanceProviderType.Wallet) {
-      // If mint address we need exact token balance, if no lets fetch all ones?
+      // If mint address we need exact token balance, if no lets fetch all ones
+      const newBalances = await this.walletFactory.getWalletBalances(
+        walletAddress,
+        await this.tools.getMintAddresses(),
+        mintAddress ? [mintAddress] : [],
+      );
+
+      return await this.tools.convertTokenBalancesToBalances(newBalances);
     }
 
     return [];

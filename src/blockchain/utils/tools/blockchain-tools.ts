@@ -9,6 +9,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Position } from '@hubbleprotocol/kamino-lending-sdk';
 import { NumberFormatter } from './number-formatter';
+import { TokenBalance } from '../../providers/wallet-factory';
 
 const STRICT_TOKEN_LIST_URL = 'https://token.jup.ag/strict';
 
@@ -32,6 +33,15 @@ export class BlockchainTools {
     });
 
     return tokenList;
+  }
+
+  async getMintAddresses(): Promise<string[]> {
+    const cachedTokenList: TokenListType | undefined =
+      await this.cacheManager.get('tokenList');
+
+    const strictTokenList = cachedTokenList || (await this.fetchTokenList());
+
+    return strictTokenList.map((token) => token.mintAddress);
   }
 
   async convertSymbolToMintAddress(symbol: string): Promise<string> {
@@ -90,6 +100,25 @@ export class BlockchainTools {
       mintAddress,
       amount: this.numberFormatter.toUINumber(position.amount, token.decimals),
     };
+  }
+
+  async convertTokenBalanceToBalance(
+    token: TokenBalance,
+  ): Promise<BalanceType> {
+    const symbol = await this.convertMintAddressToSymbol(token.mint);
+    return {
+      symbol: symbol,
+      mintAddress: token.mint,
+      amount: token.amount,
+    };
+  }
+
+  async convertTokenBalancesToBalances(
+    tokens: TokenBalance[],
+  ): Promise<BalanceType[]> {
+    return Promise.all(
+      tokens.map((token) => this.convertTokenBalanceToBalance(token)),
+    );
   }
 
   async convertPositionsToBalances(

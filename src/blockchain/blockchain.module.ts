@@ -13,6 +13,7 @@ import { TRANSACTION_LISTENER_QUEUE } from './transaction-listener/types';
 import { TransactionListenerProcessor } from './transaction-listener/transaction-listener.processor';
 import { TransactionListenerService } from './transaction-listener/transaction-listener.service';
 import { NumberFormatter } from './utils/tools/number-formatter';
+import { WalletFactory } from './providers/wallet-factory';
 
 @Module({
   imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
@@ -26,6 +27,7 @@ import { NumberFormatter } from './utils/tools/number-formatter';
       useValue: connection,
     },
     KaminoFactory,
+    WalletFactory,
     TokenProgramInstructionFactory,
     TokenProgramTransactionFactory,
     TransactionFactory,

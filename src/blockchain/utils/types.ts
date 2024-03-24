@@ -63,6 +63,7 @@ export enum BalanceOperationType {
   All = 'All',
 }
 
+// todo: amountRaw
 export type BalanceType = {
   symbol: string;
   mintAddress: string;
