@@ -29,7 +29,7 @@ export class AiChatMessageResponseGeneratedDto extends BaseDto<AiChatMessageResp
   };
   data: {
     message?: string;
-    serialized_transaction?: Uint8Array;
+    serialized_transaction?: number[];
   };
   aux: AiAuxiliaryMessage;
 }

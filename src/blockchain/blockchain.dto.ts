@@ -12,7 +12,7 @@ import { Transform } from 'class-transformer';
 // Default Transfer Reponse Dto
 export class TransactionDataResponseDto {
   @ApiProperty({ example: {} })
-  serializedTx: Uint8Array;
+  serializedTx: number[];
 }
 
 export class BaseTransactionResponseDto extends BaseDto<BaseTransactionResponseDto> {

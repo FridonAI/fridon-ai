@@ -39,7 +39,7 @@ export class BlockchainController {
 
     return new TransferTokenResponseDto({
       data: {
-        serializedTx: signedSerializedTx,
+        serializedTx: Object.values(signedSerializedTx),
       },
     });
   }
@@ -70,7 +70,7 @@ export class BlockchainController {
     // console.log('txId', txId);
     return new TransferTokenResponseDto({
       data: {
-        serializedTx: signedSerializedTx.serialize(),
+        serializedTx: Object.values(signedSerializedTx.serialize()),
       },
     });
   }
