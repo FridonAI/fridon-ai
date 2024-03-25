@@ -58,8 +58,6 @@ export class BlockchainController {
     );
 
     // Sign Message
-    const signedSerializedTx =
-      await this.transactionFactory.signVersionTransaction(tx);
 
     // // Send transaction
     // const txId = await this.transactionFactory.sendSerializedTransaction(
@@ -70,7 +68,7 @@ export class BlockchainController {
     // console.log('txId', txId);
     return new TransferTokenResponseDto({
       data: {
-        serializedTx: Object.values(signedSerializedTx.serialize()),
+        serializedTx: Object.values(tx.serialize()),
       },
     });
   }
