@@ -36,13 +36,16 @@ export class AiEventsController {
   @EventPattern(eventName)
   async process(event: AiChatMessageResponseGeneratedDto): Promise<void> {
     function replacer(key: string, value: any) {
-      // Modify age to show age group instead
-      if (key === 'serialized_transaction') {
-        return `[${value.slice(0, 2).join(', ')} ... (${value.length - 4} more) ... ${value
-          .slice(-2)
-          .join(', ')}]`;
+      try {
+        if (key === 'serialized_transaction') {
+          return `[${value.slice(0, 2).join(', ')} ... (${value.length - 4} more) ... ${value
+            .slice(-2)
+            .join(', ')}]`;
+        }
+        return value;
+      } catch (error) {
+        return value;
       }
-      return value;
     }
 
     this.logger.debug(
