@@ -35,8 +35,18 @@ export class AiEventsController {
 
   @EventPattern(eventName)
   async process(event: AiChatMessageResponseGeneratedDto): Promise<void> {
+    function replacer(key: string, value: any) {
+      // Modify age to show age group instead
+      if (key === 'serialized_transaction') {
+        return `[${value.slice(0, 2).join(', ')} ... (${value.length - 4} more) ... ${value
+          .slice(-2)
+          .join(', ')}]`;
+      }
+      return value;
+    }
+
     this.logger.debug(
-      `Received event[${eventName}] from AI: ${JSON.stringify(event, null, 2)}`,
+      `Received event[${eventName}] from AI: ${JSON.stringify(event, replacer, 2)}`,
     );
     const chatMessageId = new ChatMessageId(randomUUID());
 
@@ -62,6 +72,7 @@ export class AiEventsController {
           chatId: event.chat_id,
         }),
       );
+      return;
     }
 
     // Handle message
@@ -86,6 +97,7 @@ export class AiEventsController {
           chatId: event.chat_id,
         }),
       );
+      return;
     }
   }
 }
