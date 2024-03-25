@@ -1,6 +1,5 @@
 import { BaseDto } from '@lib/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsObject } from 'class-validator';
 
 // Shared
 export class ChatIdDto extends BaseDto<ChatIdDto> {
@@ -46,11 +45,9 @@ export class CreateChatMessageRequestDto extends BaseDto<CreateChatMessageReques
 
 // Create Chat Message Info
 export class CreateChatMessageInfoRequestDto extends BaseDto<CreateChatMessageInfoRequestDto> {
-  @IsObject()
   @ApiProperty({
-    example: {
-      transactionResult: 'Confirmed',
-    },
+    example:
+      '4UcEfkYziTjiRHy9xEiuJogDHGkNSZ74isv1WgeBcQBpvx2XMfP9bsczo95Vg6dLL2G341UDaSzZzLLXstxM6MTg',
   })
-  data: object;
+  transactionId: string;
 }

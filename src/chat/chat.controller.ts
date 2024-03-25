@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
   ChatIdDto,
+  CreateChatMessageInfoRequestDto,
   CreateChatMessageRequestDto,
   CreateChatMessageResponseDto,
   CreateChatResponseDto,
@@ -79,7 +80,7 @@ export class ChatHttpController {
   @Post(':chatId/transaction')
   async registerChatTransactionId(
     @Param() { chatId }: ChatIdDto,
-    @Body() body: { transactionId: string },
+    @Body() body: CreateChatMessageInfoRequestDto,
   ): Promise<void> {
     await this.transactionListenerService.registerTransactionListener(
       body.transactionId,
