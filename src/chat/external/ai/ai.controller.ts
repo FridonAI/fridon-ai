@@ -12,6 +12,7 @@ import { TransactionFactory } from 'src/blockchain/factories/transaction-factory
 const eventName = 'response_received';
 
 export class ChatResponseGeneratedDto extends BaseDto<ChatResponseGeneratedDto> {
+  id: string;
   chatId: string;
   message: string;
 }
@@ -48,15 +49,18 @@ export class AiEventsController {
     this.logger.debug(
       `Sending response[${event.data.message}] to user[${event.user.wallet_id}]`,
     );
+
+    const chatMessageId = new ChatMessageId(randomUUID());
     await this.chatRepository.createChatMessageResponse(
       new ChatId(event.chat_id),
-      new ChatMessageId(randomUUID()),
+      chatMessageId,
       event.data.message,
     );
     this.eventsService.sendTo(
       event.user.wallet_id,
       'chat.response-generated',
       new ChatResponseGeneratedDto({
+        id: chatMessageId.value,
         message: event.data.message,
         chatId: event.chat_id,
       }),
