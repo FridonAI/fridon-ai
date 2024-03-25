@@ -10,7 +10,7 @@ class DataInput(CamelModel):
 
 class DataRequestInput(CamelModel):
     message: str | dict | None
-    serialized_transaction: dict | None
+    serialized_transaction: list[int] | None
 
 class Request(CamelModel):
     chat_id: str
