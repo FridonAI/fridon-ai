@@ -14,14 +14,14 @@ export class ChatResponseGeneratedMessageDto extends BaseDto<ChatResponseGenerat
   type: 'message';
   id: string;
   chatId: string;
-  transaction: number[];
+  message: string;
 }
 
 export class ChatResponseGeneratedTransactionDto extends BaseDto<ChatResponseGeneratedTransactionDto> {
-  type: 'message';
+  type: 'transaction';
   id: string;
   chatId: string;
-  message: string;
+  transaction: number[];
 }
 
 @Controller()
@@ -65,8 +65,8 @@ export class AiEventsController {
       this.eventsService.sendTo(
         event.user.wallet_id,
         'chat.response-generated',
-        new ChatResponseGeneratedMessageDto({
-          type: 'message',
+        new ChatResponseGeneratedTransactionDto({
+          type: 'transaction',
           id: chatMessageId.value,
           transaction: event.data.serialized_transaction,
           chatId: event.chat_id,
@@ -90,7 +90,7 @@ export class AiEventsController {
       this.eventsService.sendTo(
         event.user.wallet_id,
         'chat.response-generated',
-        new ChatResponseGeneratedTransactionDto({
+        new ChatResponseGeneratedMessageDto({
           type: 'message',
           id: chatMessageId.value,
           message: event.data.message,
