@@ -33,13 +33,9 @@ export class BlockchainController {
       body.amount,
     );
 
-    // Sign Message
-    const signedSerializedTx =
-      await this.transactionFactory.addSignerToBuffer(serializedTx);
-
     return new TransferTokenResponseDto({
       data: {
-        serializedTx: Object.values(signedSerializedTx),
+        serializedTx: Object.values(serializedTx),
       },
     });
   }
