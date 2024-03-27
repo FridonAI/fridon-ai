@@ -40,7 +40,7 @@ async def get_stake_borrow_lend_tx(
 
     resp = requests.post(f"{api_url}/blockchain/defi-operation", json=req).json()
 
-    await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, resp, None, {})))
+    await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, None, resp['data']['serializedTx'], {})))
 
     print("Waiting for response")
     response = await chat_queues[chat_id].get()
@@ -70,7 +70,7 @@ async def get_transfer_tx(
         raise Exception("API_URL not set in environment variables")
 
     resp = requests.post(f"{api_url}/blockchain/transfer-tokens", json=req).json()
-
+    print(resp)
     await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, None, resp['data']['serializedTx'], {})))
 
     print("Waiting for response")
