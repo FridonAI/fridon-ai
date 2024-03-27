@@ -12,13 +12,15 @@ Your creation, your capabilities, and your persona are a testament to the potent
 defi_stake_borrow_lend_extract_template = {
     "system": """You are the best defi parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency and amount.
 Return following json string: "{{status: boolean, "provider": "string" | null, "operation": "string" | null, "currency": "string" | null, "amount": number | null, "comment": "string" | null}}"
-E.x. "I want to lend 100 usdc on kamino" you've to return "{{status:"true", "provider": "kamino", "operation": "lend", "currency': "usdc", "amount": 100}}"
+E.x. "I want to supply 100 usdc on kamino" you've to return "{{"status":"true", "provider": "kamino", "operation": "supply", "currency': "usdc", "amount": 100}}"
 "provider" must be mentioned.
 "operation" must be mentioned.
 "currency" must be mentioned.
 "amount" must be mentioned.
-If any must to parameters is unknown then return "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
+If any must to parameters is unknown then return "{{"status": false, "comment": "..."}}" Comment is which parameters you can't extract.
 Extract names as lowercase.
+Supported operations: supply, borrow, withdraw, repay. Get the operation from the query, if synonyms are used then map them to the coresponding supported operations, but you must be 100% sure.
+For example: lend, deposit are the synonyms of supply. Payback is the synonym of repay and so on.
 """
 }
 
@@ -37,6 +39,7 @@ Return following json string: "{{"status": boolean, "currency": "string" | null,
 If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
 E.x. "Transfer 100 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD" you've to return "{{"status": true, "currency": "usdc", "amount": 1000, "wallet": "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"}}"
 Extract parameter names as lowercase.
+If transfer synonym is used then map it to transfer, you must be 100% sure. But if transfer isn't asked and user asks different operation then return: "{{status: false, comment: ...}}"
 """
 }
 
@@ -44,12 +47,17 @@ Extract parameter names as lowercase.
 defi_balance_extract_template = {
     "system": """You are the best balance parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency.
 Return following json string: "{{"status": boolean, "provider": "string" | null, "operation": "string" | null, "currency": "string" | null, "comment": "string" | null}}"
-If "provider" is not mentioned then default value is "all".
-If "operation" is not mentioned then default value is "walletbalance".
-"Currency" must be mentioned.
-If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
-E.x. "How much usdc is lend on my Kamino?" you've to return "{{"provider": "kamino", "operation": "lend", "currency': "usdc"}}"
+
+If currency is unknown then return: "{{status: false, comment: "Currency isn't specified"}}"
+
+E.x. "How much usdc is supplied on my Kamino?" you've to return "{{"provider": "kamino", "operation": "supply", "currency': "usdc"}}"
+
 Extract names as lowercase.
+Supported operations: supply, borrow. Get the operation from the query, if synonyms are used then map them to the coresponding supported operations, but you must be 100% sure.
+For example: lend, deposit are the synonyms of supply.
+
+If "provider" is not mentioned then default value is "wallet".
+If "operation" is not mentioned then default value is "all".
 """
 }
 
@@ -84,7 +92,7 @@ defi_transfer_prompt = ChatPromptTemplate.from_messages(
 defi_talker_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", defi_talker_template['system']),
-        ("human", "<question>{query}</question>"),
+        ("human", "{query}"),
     ]
 )
 
