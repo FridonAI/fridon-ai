@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+import { ComputeBudgetProgram, Connection, PublicKey } from '@solana/web3.js';
 import {
   KaminoAction,
   KaminoMarket,
@@ -73,17 +73,22 @@ export class KaminoFactory {
       new PublicKey(mintAddress),
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
-      5_000_000,
+      0,
       undefined,
       undefined,
       undefined,
       DONATION_ADDRESS,
     );
 
+    const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 5000,
+    });
+
     const instructions = [
       ...kaminoAction.setupIxs,
       ...kaminoAction.lendingIxs,
       ...kaminoAction.cleanupIxs,
+      priorityPrice,
     ];
 
     const transaction = await buildVersionedTransaction(
@@ -128,17 +133,21 @@ export class KaminoFactory {
       new PublicKey(mintAddress),
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
-      5_000_000,
+      0,
       true,
       false,
       true,
       DONATION_ADDRESS,
     );
 
+    const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 5000,
+    });
     const instructions = [
       ...kaminoAction.setupIxs,
       ...kaminoAction.lendingIxs,
       ...kaminoAction.cleanupIxs,
+      priorityPrice,
     ];
 
     const transaction = await buildVersionedTransaction(
@@ -183,17 +192,22 @@ export class KaminoFactory {
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
       undefined,
-      5_000_000,
+      0,
       true,
       undefined,
       undefined,
       DONATION_ADDRESS,
     );
 
+    const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 5000,
+    });
+
     const instructions = [
       ...kaminoAction.setupIxs,
       ...kaminoAction.lendingIxs,
       ...kaminoAction.cleanupIxs,
+      priorityPrice,
     ];
 
     const transaction = await buildVersionedTransaction(
@@ -238,17 +252,22 @@ export class KaminoFactory {
       new PublicKey(mintAddress),
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
-      5_000_000,
+      0,
       true,
       undefined,
       undefined,
       DONATION_ADDRESS,
     );
 
+    const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 5000,
+    });
+
     const instructions = [
       ...kaminoAction.setupIxs,
       ...kaminoAction.lendingIxs,
       ...kaminoAction.cleanupIxs,
+      priorityPrice,
     ];
 
     const transaction = await buildVersionedTransaction(
