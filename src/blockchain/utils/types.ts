@@ -32,16 +32,16 @@ export type SplTokenType = {
 };
 
 export enum OperationType {
-  Supply = 'Supply',
-  Borrow = 'Borrow',
-  Repay = 'Repay',
-  Withdraw = 'Withdraw',
+  Supply = 'supply',
+  Borrow = 'borrow',
+  Repay = 'repay',
+  Withdraw = 'withdraw',
 }
 
 export enum ProviderType {
-  Kamino = 'Kamino',
-  Marginify = 'Marginify',
-  Pyth = 'Pyth',
+  Kamino = 'kamino',
+  Marginify = 'marginify',
+  Pyth = 'pyth',
 }
 
 export type TransactionDataType = {
@@ -50,9 +50,9 @@ export type TransactionDataType = {
 
 // Balances
 export enum BalanceProviderType {
-  Kamino = 'Kamino',
-  Wallet = 'Wallet',
-  All = 'All',
+  Kamino = 'kamino',
+  Wallet = 'wallet',
+  All = 'all',
 }
 
 export enum BalanceOperationType {
