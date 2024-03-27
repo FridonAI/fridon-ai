@@ -12,10 +12,13 @@ import {
 import { BlockchainService } from './blockchain.service';
 import { TransactionFactory } from './factories/transaction-factory';
 import { Connection } from '@solana/web3.js';
+import { Logger } from '@nestjs/common';
 
 @Controller('blockchain')
 @ApiTags('blockchain')
 export class BlockchainController {
+  private logger = new Logger(BlockchainController.name);
+
   constructor(
     readonly connection: Connection,
     readonly blockchainService: BlockchainService,
@@ -26,6 +29,7 @@ export class BlockchainController {
   async transferTokens(
     @Body() body: TransferTokenRequestBodyDto,
   ): Promise<TransferTokenResponseDto> {
+    this.logger.debug('Body', JSON.stringify(body, null, 2))
     const serializedTx = await this.blockchainService.transferTokens(
       body.walletAddress,
       body.toAddress,
@@ -45,6 +49,7 @@ export class BlockchainController {
   async defiOperations(
     @Body() body: DefiOperationRequestBodyDto,
   ): Promise<DefiOperationResponseDto> {
+    this.logger.debug('Body', JSON.stringify(body, null, 2))
     const tx = await this.blockchainService.defiOperations(
       body.walletAddress,
       body.operation,
@@ -73,6 +78,7 @@ export class BlockchainController {
   async balanceOperations(
     @Body() body: BalanceOperationRequestBodyDto,
   ): Promise<BalanceOperationResponseDto> {
+    this.logger.debug('Body', JSON.stringify(body, null, 2))
     const balances = await this.blockchainService.balanceOperations(
       body.walletAddress,
       body.provider,

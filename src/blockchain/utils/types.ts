@@ -56,11 +56,11 @@ export enum BalanceProviderType {
 }
 
 export enum BalanceOperationType {
-  Borrowed = 'Borrowed',
-  Deposited = 'Deposited',
-  WalletBalance = 'WalletBalance',
-  Staked = 'Staked',
-  All = 'All',
+  Borrowed = 'borrow',
+  Deposited = 'supply',
+  WalletBalance = 'walletBalance',
+  Staked = 'stake',
+  All = 'all',
 }
 
 // todo: amountRaw

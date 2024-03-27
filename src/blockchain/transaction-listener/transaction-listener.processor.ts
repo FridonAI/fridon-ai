@@ -58,7 +58,7 @@ export class TransactionListenerProcessor extends WorkerHost {
     }
 
     // 3. Transaction Skipped
-    if (job.data.count >= 10) {
+    if (job.data.count >= 45) {
       this.logger.debug(
         `Transaction[${txId}] has been skipped after 10 retries`,
       );
