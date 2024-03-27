@@ -44,7 +44,7 @@ class DefiBalanceAdapter(Adapter):
     status: bool
     comment: str | None
     provider: Literal["kamino", "wallet"] | None
-    operation: Literal["all", "supplied", "borrowed"] | None
+    operation: Literal["all", "supply", "borrow"] | None
     currency: str | None
 
     async def get_response(self, chat_id, wallet_id):
