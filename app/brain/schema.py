@@ -1,10 +1,11 @@
+import json
 from abc import ABC, abstractmethod
 from typing import Literal
 
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic.v1 import BaseModel
 
-from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx
+from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx, get_balance
 
 
 class Adapter(ABC, BaseModel):
@@ -14,8 +15,8 @@ class Adapter(ABC, BaseModel):
 
 
 class DefiStakeBorrowLendAdapter(Adapter):
-    operation: Literal["stake", "borrow", "lend", "unstake", "stake", "withdraw", "repay"] | None
-    provider: Literal["kamino", "marginify", "pyth-governance", "jup-governance"] | None
+    operation: Literal["stake", "borrow", "supply", "unstake", "stake", "withdraw", "repay"] | None
+    provider: Literal["kamino"] | None
     currency: str | None
     amount: float | None
     status: bool
@@ -42,12 +43,18 @@ class DefiStakeBorrowLendAdapter(Adapter):
 class DefiBalanceAdapter(Adapter):
     status: bool
     comment: str | None
-    provider: Literal["kamino", "marginify", "pyth-governance", "jup-governance", "all", None]
-    operation: Literal["walletbalance", "lend", "borrow", "stake", None]
+    provider: Literal["kamino", "wallet"] | None
+    operation: Literal["all", "supplied", "borrowed"] | None
     currency: str | None
 
     async def get_response(self, chat_id, wallet_id):
-        return "Your sol balance is: 10"
+        balance_response = await get_balance(
+            wallet_id,
+            self.provider,
+            self.operation,
+            self.currency,
+        )
+        return json.dumps(balance_response['data'])
 
     @staticmethod
     def parser() -> PydanticOutputParser:

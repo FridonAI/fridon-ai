@@ -45,7 +45,7 @@ async def get_stake_borrow_lend_tx(
     print("Waiting for response")
     response = await chat_queues[chat_id].get()
     print("Got Response", response)
-    return "Transaction successfully completed."
+    return response
 
 
 @inject
@@ -77,3 +77,24 @@ async def get_transfer_tx(
     response = await chat_queues[chat_id].get()
     print("Got Response", response)
     return response
+
+
+async def get_balance(
+        wallet_id: str,
+        provider: str,
+        operation: str,
+        currency: str,
+) -> str:
+    req = {
+        "walletAddress": wallet_id,
+        "provider": provider,
+        "currency": currency,
+        "operation": operation,
+    }
+    api_url = os.environ["API_URL"]
+    if not api_url:
+        raise Exception("API_URL not set in environment variables")
+
+    resp = requests.post(f"{api_url}/blockchain/balance-operation", json=req).json()
+    print("Got Response", resp)
+    return resp
