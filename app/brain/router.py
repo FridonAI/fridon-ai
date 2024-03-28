@@ -9,7 +9,11 @@ defi_stake_borrow_lend_route = Route(
         "Please borrow 100 usdc on Kamino",
         "Lend 100 bonk on Marginify",
         "I want to stake 100 jup on jupiter",
-        "Please lend 1123 jup on Kamino"
+        "Please lend 1123 jup on Kamino",
+        "Withdraw 0.01 sol from Kamino",
+        "Repay 123 usdc on Kamino",
+        "Deposit 100 bonk on Marginify",
+        "Supply 10000 dfl on Kamino",
     ]
 )
 

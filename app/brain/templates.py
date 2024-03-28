@@ -27,7 +27,9 @@ For example: lend, deposit are the synonyms of supply. Payback is the synonym of
 
 defi_talker_template = {
     "system": fridon_description + """Please generate response for the user's prompt.
-    Use the following format for response: {{"message": "string"}}
+Use the following JSON format for response: {{"message": "string"}}
+
+If you can't generate response then return: {{"message": "I'm sorry, I can't generate response for this query."}}
     """
 }
 
@@ -48,16 +50,17 @@ defi_balance_extract_template = {
     "system": """You are the best balance parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency.
 Return following json string: "{{"status": boolean, "provider": "string" | null, "operation": "string" | null, "currency": "string" | null, "comment": "string" | null}}"
 
-If currency is unknown then return: "{{status: false, comment: "Currency isn't specified"}}"
-
-E.x. "How much usdc is supplied on my Kamino?" you've to return "{{"provider": "kamino", "operation": "supply", "currency': "usdc"}}"
-
 Extract names as lowercase.
-Supported operations: supply, borrow. Get the operation from the query, if synonyms are used then map them to the coresponding supported operations, but you must be 100% sure.
-For example: lend, deposit are the synonyms of supply.
 
 If "provider" is not mentioned then default value is "wallet".
 If "operation" is not mentioned then default value is "all".
+If "currency" is not mentioned then default value is "all".
+
+Supported operations: supply, borrow. Get the operation from the query, if synonyms are used then map them to the coresponding supported operations, but you must be 100% sure.
+For example: lend, deposit are the synonyms of supply.
+E.x. 
+    - "How much usdc is lent on my Kamino?" you've to return "{{"provider": "kamino", "operation": "supply", "currency': "usdc"}}"
+    - "What's my balance?" you've to return "{{"provider": "wallet", "operation": "all", "currency": "all"}}"
 """
 }
 
