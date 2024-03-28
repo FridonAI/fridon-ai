@@ -81,7 +81,7 @@ export class KaminoFactory {
     );
 
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 5000,
+      microLamports: 50000,
     });
 
     const instructions = [
@@ -141,7 +141,7 @@ export class KaminoFactory {
     );
 
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 5000,
+      microLamports: 50000,
     });
     const instructions = [
       ...kaminoAction.setupIxs,
@@ -200,7 +200,7 @@ export class KaminoFactory {
     );
 
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 5000,
+      microLamports: 50000,
     });
 
     const instructions = [
@@ -260,7 +260,7 @@ export class KaminoFactory {
     );
 
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 5000,
+      microLamports: 50000,
     });
 
     const instructions = [

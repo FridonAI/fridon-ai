@@ -18,3 +18,8 @@ export class TransactionSkippedEvent extends BaseEvent<TransactionSkippedEvent> 
   public readonly transactionId: string;
   public readonly aux: AuxType;
 }
+
+export class TransactionCouldnotSendEvent extends BaseEvent<TransactionCouldnotSendEvent> {
+  public readonly message: string;
+  public readonly aux: AuxType;
+}

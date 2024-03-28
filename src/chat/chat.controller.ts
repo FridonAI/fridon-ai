@@ -13,6 +13,10 @@ import { ChatId } from './domain/chat-id.value-object';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth, Wallet, WalletSession } from '@lib/auth';
 import { TransactionListenerService } from 'src/blockchain/transaction-listener/transaction-listener.service';
+import { EventBus } from '@nestjs/cqrs';
+import {
+  TransactionCouldnotSendEvent,
+} from '../blockchain/events/transaction.event';
 
 @Controller('chats')
 @ApiTags('chat')
@@ -21,6 +25,7 @@ export class ChatHttpController {
   constructor(
     private readonly chatService: ChatService,
     private readonly transactionListenerService: TransactionListenerService,
+    private readonly eventBus: EventBus,
   ) {}
 
   @Get()
@@ -82,9 +87,18 @@ export class ChatHttpController {
     @Param() { chatId }: ChatIdDto,
     @Body() body: CreateChatMessageInfoRequestDto,
   ): Promise<void> {
-    await this.transactionListenerService.registerTransactionListener(
-      body.transactionId,
-      { chatId },
-    );
+    if (body.transactionId !== undefined) {
+      await this.transactionListenerService.registerTransactionListener(
+        body.transactionId,
+        { chatId },
+      );
+    }else if(body.message !== undefined) {
+        return this.eventBus.publish(
+          new TransactionCouldnotSendEvent({
+            message: body.message,
+            aux: {chatId: chatId},
+          }),
+        );
+    }
   }
 }
