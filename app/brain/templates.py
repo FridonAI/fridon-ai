@@ -26,7 +26,7 @@ For example: lend, deposit are the synonyms of supply. Payback is the synonym of
 
 
 defi_talker_template = {
-    "system": fridon_description + """Please answer the user question given in <question> xml tag.
+    "system": fridon_description + """Please generate response for the user's prompt.
     Use the following format for response: {{"message": "string"}}
     """
 }
@@ -68,9 +68,10 @@ Please considering question, chat history rewrite assistant generated response i
 
 
 coin_search_template = {
-    "system": """You are the best coin searcher. User will ask you to search some coins based on some criteria. With given context please grab some coins those 
+    "system": fridon_description + """You are the best coin searcher too. User will ask you to search some coins based on some criteria. With given context please grab some coins those 
 are most relevant to the user's query.
-    """
+Use the following format for response: {{"message": "string"}}
+"""
 }
 
 
@@ -99,6 +100,7 @@ defi_transfer_prompt = ChatPromptTemplate.from_messages(
 defi_talker_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", defi_talker_template['system']),
+        MessagesPlaceholder(variable_name="history"),
         ("human", "{query}"),
     ]
 )
@@ -115,6 +117,7 @@ response_generator_prompt = ChatPromptTemplate.from_messages(
 coin_search_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", coin_search_template['system']),
+        MessagesPlaceholder(variable_name="history"),
         ("human", "{context}"),
         ("human", "{query}"),
     ]

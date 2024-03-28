@@ -10,6 +10,7 @@ from app.adapters.coins import retriever
 from app.brain.router import get_category
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter, Adapter,
+    CoinSearcherAdapter,
 )
 from app.brain.templates import (
     defi_stake_borrow_lend_extract_prompt,
@@ -22,16 +23,18 @@ from app.settings import settings
 llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 
 
+def get_chat_history(session_id):
+    chat_history = PostgresChatMessageHistory(
+        connection_string=settings.POSTGRES_DB_URL,
+        session_id=session_id
+    )
+    return chat_history
+
+
 defi_stake_borrow_lend_extract_chain = (
     defi_stake_borrow_lend_extract_prompt
     | llm
     | DefiStakeBorrowLendAdapter.parser()
-)
-
-defi_talker_chain = (
-    defi_talker_prompt
-    | llm
-    | DefiTalkerAdapter.parser()
 )
 
 defi_balance_extract_chain = (
@@ -40,24 +43,39 @@ defi_balance_extract_chain = (
     | DefiBalanceAdapter.parser()
 )
 
-
 defi_transfer_chain = (
     defi_transfer_prompt
     | llm
     | DefiTransferAdapter.parser()
 )
 
-response_generator_chain = (
-    response_generator_prompt
+defi_talker_chain = RunnableWithMessageHistory((
+    defi_talker_prompt
     | llm
-    | StrOutputParser()
+    | DefiTalkerAdapter.parser()
+),
+    get_chat_history,
+    input_messages_key="query",
+    history_messages_key="history",
 )
 
-coin_search_chain = (
-    {"query": lambda x: x["query"], "context": RunnableLambda(lambda x: x["query"]) | retriever}
+
+coin_search_chain = RunnableWithMessageHistory((
+    {"query": lambda x: x["query"], "context": RunnableLambda(lambda x: x["query"]) | retriever, "history": lambda x: x["history"]}
     | coin_search_prompt
     | llm
-    | StrOutputParser()
+    | CoinSearcherAdapter.parser()
+),
+    get_chat_history,
+    input_messages_key="query",
+    history_messages_key="history",
+)
+
+response_generator_chain = RunnableWithMessageHistory(
+    (response_generator_prompt | llm | StrOutputParser()),
+    get_chat_history,
+    input_messages_key="query",
+    history_messages_key="history",
 )
 
 
@@ -70,31 +88,9 @@ branch = RunnableBranch(
 )
 
 
-def _get_chat_history(self, chat_id):
-    chat_history = PostgresChatMessageHistory(
-        connection_string=settings.POSTGRES_DB_URL,
-        session_id=chat_id
-    )
-    return chat_history
-
-
-def get_chat_history(session_id):
-    chat_history = PostgresChatMessageHistory(
-        connection_string=settings.POSTGRES_DB_URL,
-        session_id=session_id
-    )
-    return chat_history
-
-
 async def generate_response(chat_id, wallet_id, query):
     print("Generate response", query)
     memory = get_chat_history(chat_id)
-    response_generator_with_message_history = RunnableWithMessageHistory(
-        response_generator_chain,
-        get_chat_history,
-        input_messages_key="query",
-        history_messages_key="history",
-    )
 
     async def get_response(adapter: Adapter):
         return await adapter.get_response(chat_id, wallet_id)
@@ -102,14 +98,23 @@ async def generate_response(chat_id, wallet_id, query):
     question_answer_chain = (
             {"query": lambda x: x["query"], "category": RunnableLambda(get_category)}
             | branch
-            | RunnableBranch((lambda x: isinstance(x, str), RunnableLambda(lambda x: x)), RunnableLambda(get_response))
+            | {"response": RunnableLambda(get_response), "obj": lambda x: x}
     )
-    response = await question_answer_chain.ainvoke({"query": query})
+    chain_resp = await question_answer_chain.ainvoke(
+        {"query": query},
+        config={"configurable": {"session_id": chat_id}}
+    )
 
-    final_response = await response_generator_with_message_history.ainvoke(
-        {"query": query, "response": response},
-        {"configurable": {"session_id": chat_id}}
-    )
+    obj = chain_resp["obj"]
+    response = chain_resp["response"]
+
+    if isinstance(obj, (CoinSearcherAdapter, DefiTalkerAdapter)):
+        final_response = response
+    else:
+        final_response = await response_generator_chain.ainvoke(
+            {"query": query, "response": response},
+            config={"configurable": {"session_id": chat_id}}
+        )
 
     memory.add_user_message(query)
     memory.add_ai_message(final_response)

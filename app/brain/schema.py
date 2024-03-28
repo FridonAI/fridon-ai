@@ -94,3 +94,14 @@ class DefiTalkerAdapter(Adapter):
     def parser() -> PydanticOutputParser:
         return PydanticOutputParser(pydantic_object=DefiTalkerAdapter)
 
+
+class CoinSearcherAdapter(Adapter):
+    message: str
+
+    async def get_response(self, chat_id, wallet_id):
+        return self.message
+
+    @staticmethod
+    def parser() -> PydanticOutputParser:
+        return PydanticOutputParser(pydantic_object=DefiTalkerAdapter)
+
