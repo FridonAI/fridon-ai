@@ -12,6 +12,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
 import { BullModule } from '@nestjs/bullmq';
 import { CqrsModule } from '@nestjs/cqrs';
+import { UserModule } from './medias/medias.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CqrsModule } from '@nestjs/cqrs';
     ChatModule,
     EventsModule.forRoot({ isGlobal: true }),
     BlockchainModule.forRoot(),
+    UserModule,
   ],
   providers: [providePrismaClientExceptionFilter()],
 })

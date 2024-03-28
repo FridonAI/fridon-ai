@@ -40,3 +40,25 @@ model Chat {
 
   @@index(walletId)
 }
+
+model WalletMedia {
+  walletId String
+  mediaId  String
+
+  Media Media @relation(fields: [mediaId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([walletId, mediaId])
+  @@index(mediaId)
+  @@index(walletId)
+}
+
+model Media {
+  id String @id
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  WalletMedia WalletMedia[]
+}
