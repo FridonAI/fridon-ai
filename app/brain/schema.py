@@ -6,7 +6,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from pydantic.v1 import BaseModel
 
 from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx, get_balance
-from app.adapters.discord import get_available_servers
+from app.adapters.discord import get_available_servers, follow_server, unfollow_server
 
 
 class Adapter(ABC, BaseModel):
@@ -116,17 +116,25 @@ class DiscordActionAdapter(Adapter):
     server: str | None
 
     async def get_response(self, chat_id, wallet_id):
-        return self.comment
+        if not self.status:
+            return self.comment
+
+        if self.action == "follow":
+            return await follow_server(self.server, wallet_id)
+        elif self.action == "unfollow":
+            return await unfollow_server(self.server, wallet_id)
+        return "Unknown action received, nor follow or unfollow."
 
     @staticmethod
     def parser() -> PydanticOutputParser:
-        return PydanticOutputParser(pydantic_object=DefiTalkerAdapter)
+        return PydanticOutputParser(pydantic_object=DiscordActionAdapter)
 
     @staticmethod
-    def input_formatter():
-        servers = get_available_servers()
+    async def input_formatter(inp):
+        servers = await get_available_servers()
+        print("Hoo ieee")
         return {
-            "query": lambda x: x["query"],
+            "query": inp["query"],
             "servers_list": servers,
         }
 

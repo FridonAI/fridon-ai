@@ -86,11 +86,13 @@ coin_search = Route(
 
 discord_action = Route(
     name="DiscordAction",
-    utterance=[
+    utterances=[
         "Follow Solana's server on Discord, please.",
         "Unfollow Tensorians' server on Discord.",
         "Follow Madlad's server on Discord.",
         "Unfollow OkayBear's server on Discord.",
+        "Follow bonk please",
+        "Unfollow bonk please",
     ]
 )
 

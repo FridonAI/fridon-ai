@@ -1,5 +1,3 @@
-from typing import Dict, Literal, List
-
 import requests
 import os
 
@@ -12,9 +10,13 @@ async def _send_action(
     if not api_url:
         raise Exception("API_URL not set in environment variables")
 
-    resp = requests.post(f"{api_url}/medias/{action}", json=request).json()
+    try:
+        resp = requests.post(f"{api_url}/medias/{action}", json=request).json()
+    except Exception as e:
+        print(e)
+        return f'Failed to {action} server'
     print(resp)
-    return resp['data']
+    return resp
 
 
 async def follow_server(
@@ -48,6 +50,7 @@ async def get_available_servers() -> str:
 
     resp = requests.get(f"{api_url}/medias/").json()
     print(resp)
-    if resp['status'] == 200:
-        return ', '.join(server for server in resp['data']['medias'])
-    return resp['data']
+    return 'bonk, madlads, symmetry'
+    # if resp['status'] == 200:
+    # return ', '.join(server for server in resp['medias'])
+    # return resp['data']

@@ -50,7 +50,7 @@ defi_transfer_chain = (
 )
 
 discord_action_chain = (
-    DiscordActionAdapter.input_formatter()
+    RunnableLambda(DiscordActionAdapter.input_formatter)
     | discord_action_prompt
     | llm
     | DiscordActionAdapter.parser()
@@ -97,13 +97,13 @@ branch = RunnableBranch(
     (lambda x: x['category'] == 'DeFiBalance', defi_balance_extract_chain),
     (lambda x: x['category'] == 'DeFiTransfer', defi_transfer_chain),
     (lambda x: x['category'] == 'CoinSearch', coin_search_chain),
+    (lambda x: x['category'] == 'DiscordAction', discord_action_chain),
     defi_talker_chain,
 )
 
 
 async def generate_response(chat_id, wallet_id, query):
     print("Generate response", query)
-    memory = get_chat_history(chat_id)
 
     async def get_response(adapter: Adapter):
         return await adapter.get_response(chat_id, wallet_id)
@@ -129,6 +129,7 @@ async def generate_response(chat_id, wallet_id, query):
             config={"configurable": {"session_id": chat_id}}
         )
 
+    memory = get_chat_history(chat_id)
     memory.add_user_message(query)
     memory.add_ai_message(final_response)
 
