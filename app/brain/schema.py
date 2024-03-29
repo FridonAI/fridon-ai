@@ -6,6 +6,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from pydantic.v1 import BaseModel
 
 from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx, get_balance
+from app.adapters.discord import get_available_servers
 
 
 class Adapter(ABC, BaseModel):
@@ -120,6 +121,14 @@ class DiscordActionAdapter(Adapter):
     @staticmethod
     def parser() -> PydanticOutputParser:
         return PydanticOutputParser(pydantic_object=DefiTalkerAdapter)
+
+    @staticmethod
+    def input_formatter():
+        servers = get_available_servers()
+        return {
+            "query": lambda x: x["query"],
+            "servers_list": servers,
+        }
 
 
 

@@ -50,12 +50,11 @@ defi_transfer_chain = (
 )
 
 discord_action_chain = (
-    discord_action_prompt
+    DiscordActionAdapter.input_formatter()
+    | discord_action_prompt
     | llm
     | DiscordActionAdapter.parser()
 )
-
-
 
 defi_talker_chain = RunnableWithMessageHistory(
     (
