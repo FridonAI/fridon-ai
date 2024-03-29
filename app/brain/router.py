@@ -37,7 +37,9 @@ defi_transfer = Route(
         "Transfer 100 sol to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
         "Send 100 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
         "Please, send 100 bonk to ArSZESuVtg5ac7vN8mqmUUgi8Sn8HVh46vq3KmZ86UBY",
-        "Send 10 dfl to csenshi.sol"
+        "Send 10 dfl to drakula.sol",
+        "I want to transfer 10000000 dfl to abcde.sol",
+        "Let's send 1000 pyth to 3bNVe2bKqazEnFZjmLegdwCWkANDXoUKdAMvTcL4AV4P",
     ]
 )
 
