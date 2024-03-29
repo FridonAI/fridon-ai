@@ -23,7 +23,7 @@ class DefiStakeBorrowLendAdapter(Adapter):
     comment: str | None
 
     async def get_response(self, chat_id, wallet_id):
-        if None in [self.operation, self.provider, self.currency, self.amount]:
+        if not self.status:
             return self.comment
 
         return await get_stake_borrow_lend_tx(
@@ -48,6 +48,8 @@ class DefiBalanceAdapter(Adapter):
     currency: str | None
 
     async def get_response(self, chat_id, wallet_id):
+        if not self.status:
+            return self.comment
         balance_response = await get_balance(
             wallet_id,
             self.provider,
@@ -69,7 +71,7 @@ class DefiTransferAdapter(Adapter):
     wallet: str | None
 
     async def get_response(self, chat_id, wallet_id):
-        if None in [self.amount,  self.currency]:
+        if not self.status:
             return self.comment
         return await get_transfer_tx(
             self.wallet,
@@ -104,4 +106,22 @@ class CoinSearcherAdapter(Adapter):
     @staticmethod
     def parser() -> PydanticOutputParser:
         return PydanticOutputParser(pydantic_object=DefiTalkerAdapter)
+
+
+class DiscordActionAdapter(Adapter):
+    status: bool
+    comment: str | None
+    action: Literal["follow", "unfollow"] | None
+    server: str | None
+
+    async def get_response(self, chat_id, wallet_id):
+        return self.comment
+
+    @staticmethod
+    def parser() -> PydanticOutputParser:
+        return PydanticOutputParser(pydantic_object=DefiTalkerAdapter)
+
+
+
+
 

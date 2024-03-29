@@ -73,7 +73,27 @@ Please considering question, chat history rewrite assistant generated response i
 coin_search_template = {
     "system": fridon_description + """You are the best coin searcher too. User will ask you to search some coins based on some criteria. With given context please grab some coins those 
 are most relevant to the user's query.
-Use the following format for response: {{"message": "string"}}
+
+Use the following JSON format for response: {{"message": "string"}}
+
+E.x. "Give me list of coins which are in top 100 and are AI based" you've to return {{"message": "These coins are 100% match for your request: Fetch.ai, Ocean Protocol, SingularityNET"}}
+"""
+}
+
+
+discord_action_template = {
+    "system": """You are here to extract the action from the user's query.\
+There are two types of actions which you have to extract: follow and unfollow.
+You have to extract the server as well. You have to check if the server is in the list below between <servers_list> xml tags.
+<servers_list>
+{servers_list}
+<servers_list/> 
+If the server is not in the list, but prompted server is very similar to the server in the list, then you can consider it as the server from the list. Like if there is one or two characters difference.
+But if there is none of it then you have to return: {{"status": false, "comment": "Server is not in our list."}}
+
+Return following JSON format for response: {{"status": boolean, "action": "string" | null, "server": "string" | null, "comment": "string" | null}}
+
+E.x. "Follow the Madlad's server on Discord" you've to return {{"status": true, "action": "follow", "server": "Madlads", "comment": null}}
 """
 }
 
@@ -95,6 +115,13 @@ defi_balance_extract_prompt = ChatPromptTemplate.from_messages(
 defi_transfer_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", defi_transfer_template['system']),
+        ("human", "{query}"),
+    ]
+)
+
+discord_action_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", discord_action_template['system']),
         ("human", "{query}"),
     ]
 )

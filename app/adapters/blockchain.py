@@ -9,10 +9,6 @@ import requests
 import os
 
 
-async def get_balance(**kwargs) -> str:
-    return "Transaction successfully completed."
-
-
 @inject
 async def get_stake_borrow_lend_tx(
         provider: str,

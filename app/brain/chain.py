@@ -10,13 +10,13 @@ from app.adapters.coins import retriever
 from app.brain.router import get_category
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter, Adapter,
-    CoinSearcherAdapter,
+    CoinSearcherAdapter, DiscordActionAdapter,
 )
 from app.brain.templates import (
     defi_stake_borrow_lend_extract_prompt,
     defi_talker_prompt,
     defi_balance_extract_prompt,
-    defi_transfer_prompt, response_generator_prompt, coin_search_prompt
+    defi_transfer_prompt, response_generator_prompt, coin_search_prompt, discord_action_prompt
 )
 from app.settings import settings
 
@@ -49,23 +49,37 @@ defi_transfer_chain = (
     | DefiTransferAdapter.parser()
 )
 
-defi_talker_chain = RunnableWithMessageHistory((
-    defi_talker_prompt
+discord_action_chain = (
+    discord_action_prompt
     | llm
-    | DefiTalkerAdapter.parser()
-),
+    | DiscordActionAdapter.parser()
+)
+
+
+
+defi_talker_chain = RunnableWithMessageHistory(
+    (
+        defi_talker_prompt
+        | llm
+        | DefiTalkerAdapter.parser()
+    ),
     get_chat_history,
     input_messages_key="query",
     history_messages_key="history",
 )
 
 
-coin_search_chain = RunnableWithMessageHistory((
-    {"query": lambda x: x["query"], "context": RunnableLambda(lambda x: x["query"]) | retriever, "history": lambda x: x["history"]}
-    | coin_search_prompt
-    | llm
-    | CoinSearcherAdapter.parser()
-),
+coin_search_chain = RunnableWithMessageHistory(
+    (
+        {
+            "query": lambda x: x["query"],
+            "context": RunnableLambda(lambda x: x["query"]) | retriever,
+            "history": lambda x: x["history"]
+        }
+        | coin_search_prompt
+        | llm
+        | CoinSearcherAdapter.parser()
+    ),
     get_chat_history,
     input_messages_key="query",
     history_messages_key="history",
