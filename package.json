@@ -46,6 +46,7 @@
     "@nestjs/websockets": "^10.3.3",
     "@prisma/client": "latest",
     "@solana/web3.js": "^1.91.1",
+    "@symmetry-hq/baskets-sdk": "^0.0.21",
     "@types/cookie-parser": "^1.4.7",
     "bignumber.js": "^9.1.0",
     "bs58": "^5.0.0",

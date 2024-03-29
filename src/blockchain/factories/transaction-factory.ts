@@ -18,6 +18,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { AuxType } from '../events/transaction.event';
 import { TransactionListenerService } from '../transaction-listener/transaction-listener.service';
+import { PRIORITY_FEE } from '../utils/constants';
 
 export type TransactionComputeOpts = {
   computePrice?: number;
@@ -130,7 +131,7 @@ export class TransactionFactory {
     addressLookupTable?: AddressLookupTableAccount | undefined,
   ) {
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 5000,
+      microLamports: PRIORITY_FEE,
     });
     instructions.push(priorityPrice);
 
