@@ -1,4 +1,4 @@
-import { BaseDto } from '@lib/common';
+import { BaseDto, WrapperType } from '@lib/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import {
@@ -60,13 +60,13 @@ export class DefiOperationRequestBodyDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: OperationType.Supply })
-  operation: OperationType;
+  operation: WrapperType<OperationType>;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: ProviderType.Kamino })
   @Transform(({ value }) => value.toLowerCase())
-  provider: ProviderType;
+  provider: WrapperType<ProviderType>;
 
   @IsString()
   @IsNotEmpty()
@@ -94,13 +94,13 @@ export class BalanceOperationRequestBodyDto {
   @IsNotEmpty()
   @ApiProperty({ example: BalanceOperationType.Deposited })
   @Transform(({ value }) => value.toLowerCase())
-  operation: BalanceOperationType;
+  operation: WrapperType<BalanceOperationType>;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: BalanceProviderType.Kamino })
   @Transform(({ value }) => value.toLowerCase())
-  provider: BalanceProviderType;
+  provider: WrapperType<BalanceProviderType>;
 }
 
 export class BalanceDto {
