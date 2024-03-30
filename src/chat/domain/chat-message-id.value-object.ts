@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { isUUID } from 'class-validator';
 
 export class ChatMessageId {
-  constructor(readonly chatMessageId: string) {
+  constructor(private readonly chatMessageId: string) {
     if (!chatMessageId) {
       throw new BadRequestException(
         `ChatId[${chatMessageId}] should not be empty`,

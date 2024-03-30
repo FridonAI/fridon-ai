@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ChatId } from './domain/chat-id.value-object';
-import { ChatMessageId } from './domain/chat-message-id.value-object';
 import { PrismaService } from 'nestjs-prisma';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ChatRepository {
@@ -31,33 +31,9 @@ export class ChatRepository {
     return chat;
   }
 
-  async createChatMessageQuery(
-    chatId: ChatId,
-    messageId: ChatMessageId,
-    message: string,
+  async createChatMessage(
+    chatMessagePrisma: Prisma.ChatMessageCreateArgs['data'],
   ): Promise<void> {
-    await this.prisma.chatMessage.create({
-      data: {
-        id: messageId.value,
-        chatId: chatId.value,
-        content: message,
-        messageType: 'Query',
-      },
-    });
-  }
-
-  async createChatMessageResponse(
-    chatId: ChatId,
-    messageId: ChatMessageId,
-    message: string,
-  ): Promise<void> {
-    await this.prisma.chatMessage.create({
-      data: {
-        id: messageId.value,
-        chatId: chatId.value,
-        content: message,
-        messageType: 'Response',
-      },
-    });
+    await this.prisma.chatMessage.create({ data: chatMessagePrisma });
   }
 }

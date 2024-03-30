@@ -1,5 +1,6 @@
 import { BaseDto } from '@lib/common';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
 // Shared
 export class ChatIdDto extends BaseDto<ChatIdDto> {
@@ -40,7 +41,12 @@ export class CreateChatMessageResponseDto extends BaseDto<CreateChatMessageRespo
 // Create Chat Message
 export class CreateChatMessageRequestDto extends BaseDto<CreateChatMessageRequestDto> {
   @ApiProperty({ example: 'Hello, how are you?' })
+  @IsNotEmpty()
   message: string;
+
+  @ApiProperty({ example: 'Yoda' })
+  @IsNotEmpty()
+  narrator: string;
 }
 
 // Create Chat Message Info
@@ -50,5 +56,10 @@ export class CreateChatMessageInfoRequestDto extends BaseDto<CreateChatMessageIn
       '4UcEfkYziTjiRHy9xEiuJogDHGkNSZ74isv1WgeBcQBpvx2XMfP9bsczo95Vg6dLL2G341UDaSzZzLLXstxM6MTg',
   })
   transactionId: string | undefined;
+
   message: string | undefined;
+
+  @ApiProperty({ example: 'Yoda' })
+  @IsNotEmpty()
+  narrator: string;
 }

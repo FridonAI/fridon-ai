@@ -12,9 +12,10 @@ export class TransactionConfirmedHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionConfirmedEvent) {
-    await this.chatService.createChatMessageInfo(
+    await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       'Transaction Confirmed',
+      event.aux.narrator,
     );
   }
 }
@@ -24,9 +25,10 @@ export class TransactionSkippedHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionSkippedEvent) {
-    await this.chatService.createChatMessageInfo(
+    await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       'Transaction Skipped',
+      event.aux.narrator,
     );
   }
 }
@@ -36,9 +38,10 @@ export class TransactionFailedHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionFailedEvent) {
-    await this.chatService.createChatMessageInfo(
+    await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       'Transaction Failed',
+      event.aux.narrator,
     );
   }
 }

@@ -40,30 +40,57 @@ export class ChatService {
     chatId: ChatId,
     walletId: string,
     message: string,
+    narrator: string,
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
     await this.getChat(chatId);
-    await this.chatRepository.createChatMessageQuery(
-      chatId,
-      chatMessageId,
-      message,
-    );
-    this.aiAdapter.emitChatMessageCreated(chatId, walletId, message);
+
+    await this.chatRepository.createChatMessage({
+      id: chatMessageId.value,
+      messageType: 'Query',
+      chatId: chatId.value,
+      content: message,
+      narrator,
+    });
+
+    this.aiAdapter.emitChatMessageCreated(chatId, walletId, message, narrator);
 
     return { id: chatMessageId };
   }
 
-  async createChatMessageInfo(
+  async createChatMessageTransactionResponse(
+    chatId: ChatId,
+    data: string,
+    narrator: string,
+  ): Promise<{ id: ChatMessageId }> {
+    const chatMessageId = new ChatMessageId(randomUUID());
+    await this.getChat(chatId);
+
+    await this.chatRepository.createChatMessage({
+      id: chatMessageId.value,
+      messageType: 'TransactionResponse',
+      chatId: chatId.value,
+      content: data,
+      narrator: narrator,
+    });
+    this.aiAdapter.emitChatMessageInfoCreated(chatId, data);
+
+    return { id: chatMessageId };
+  }
+
+  async createChatMessageAiResponse(
     chatId: ChatId,
     data: string,
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
     await this.getChat(chatId);
-    await this.chatRepository.createChatMessageResponse(
-      chatId,
-      chatMessageId,
-      data,
-    );
+
+    await this.chatRepository.createChatMessage({
+      id: chatMessageId.value,
+      messageType: 'Response',
+      chatId: chatId.value,
+      content: data,
+    });
     this.aiAdapter.emitChatMessageInfoCreated(chatId, data);
 
     return { id: chatMessageId };

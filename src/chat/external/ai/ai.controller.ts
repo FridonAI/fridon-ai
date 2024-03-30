@@ -3,10 +3,9 @@ import { EventPattern } from '@nestjs/microservices';
 import { AiChatMessageResponseGeneratedDto } from './ai.dto';
 import { EventsService } from 'src/events/events.service';
 import { BaseDto } from '@lib/common';
-import { ChatRepository } from 'src/chat/chat.repository';
-import { ChatId } from 'src/chat/domain/chat-id.value-object';
-import { ChatMessageId } from 'src/chat/domain/chat-message-id.value-object';
 import { randomUUID } from 'crypto';
+import { ChatService } from 'src/chat/chat.service';
+import { ChatId } from 'src/chat/domain/chat-id.value-object';
 
 const eventName = 'response_received';
 
@@ -30,7 +29,7 @@ export class AiEventsController {
 
   constructor(
     private readonly eventsService: EventsService,
-    private readonly chatRepository: ChatRepository,
+    private readonly chatService: ChatService,
   ) {}
 
   @EventPattern(eventName)
@@ -51,16 +50,9 @@ export class AiEventsController {
     this.logger.debug(
       `Received event[${eventName}] from AI: ${JSON.stringify(event, replacer, 2)}`,
     );
-    const chatMessageId = new ChatMessageId(randomUUID());
 
     // Handle transaction
     if (event.data.serialized_transaction) {
-      await this.chatRepository.createChatMessageResponse(
-        new ChatId(event.chat_id),
-        chatMessageId,
-        JSON.stringify(event.data.serialized_transaction),
-      );
-
       this.logger.debug(
         `Sending serializedTransaction[${event.data.serialized_transaction}] to user[${event.user.wallet_id}]`,
       );
@@ -70,7 +62,7 @@ export class AiEventsController {
         'chat.response-generated',
         new ChatResponseGeneratedTransactionDto({
           type: 'transaction',
-          id: chatMessageId.value,
+          id: randomUUID(),
           transaction: event.data.serialized_transaction,
           chatId: event.chat_id,
         }),
@@ -80,9 +72,8 @@ export class AiEventsController {
 
     // Handle message
     if (event.data.message) {
-      await this.chatRepository.createChatMessageResponse(
+      const { id } = await this.chatService.createChatMessageAiResponse(
         new ChatId(event.chat_id),
-        chatMessageId,
         event.data.message,
       );
 
@@ -95,7 +86,7 @@ export class AiEventsController {
         'chat.response-generated',
         new ChatResponseGeneratedMessageDto({
           type: 'message',
-          id: chatMessageId.value,
+          id: id.value,
           message: event.data.message,
           chatId: event.chat_id,
         }),

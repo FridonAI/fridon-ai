@@ -14,9 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Auth, Wallet, WalletSession } from '@lib/auth';
 import { TransactionListenerService } from 'src/blockchain/transaction-listener/transaction-listener.service';
 import { EventBus } from '@nestjs/cqrs';
-import {
-  TransactionCouldnotSendEvent,
-} from '../blockchain/events/transaction.event';
+import { TransactionCouldnotSendEvent } from '../blockchain/events/transaction.event';
 
 @Controller('chats')
 @ApiTags('chat')
@@ -58,10 +56,17 @@ export class ChatHttpController {
     const res = await this.chatService.getChat(new ChatId(params.chatId));
 
     return new GetChatResponseDto({
-      messages: res.messages.map((message) => ({
-        content: message.content,
-        messageType: message.messageType,
-      })),
+      messages: res.messages
+        .map((m) => {
+          if (m.messageType !== 'Query' && m.messageType !== 'Response')
+            return null;
+
+          return {
+            content: m.content,
+            messageType: m.messageType,
+          };
+        })
+        .filter(Boolean) as GetChatResponseDto['messages'],
     });
   }
 
@@ -75,6 +80,7 @@ export class ChatHttpController {
       new ChatId(params.chatId),
       walletAddress,
       body.message,
+      body.narrator,
     );
 
     return new CreateChatMessageResponseDto({
@@ -90,15 +96,15 @@ export class ChatHttpController {
     if (body.transactionId !== undefined) {
       await this.transactionListenerService.registerTransactionListener(
         body.transactionId,
-        { chatId },
+        { chatId, narrator: body.narrator },
       );
-    }else if(body.message !== undefined) {
-        return this.eventBus.publish(
-          new TransactionCouldnotSendEvent({
-            message: body.message,
-            aux: {chatId: chatId},
-          }),
-        );
+    } else if (body.message !== undefined) {
+      return this.eventBus.publish(
+        new TransactionCouldnotSendEvent({
+          message: body.message,
+          aux: { chatId: chatId, narrator: body.narrator },
+        }),
+      );
     }
   }
 }

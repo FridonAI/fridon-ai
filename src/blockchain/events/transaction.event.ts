@@ -2,6 +2,7 @@ import { BaseEvent } from '@lib/common';
 
 export type AuxType = {
   chatId: string;
+  narrator: string;
 };
 
 export class TransactionConfirmedEvent extends BaseEvent<TransactionConfirmedEvent> {
