@@ -16,7 +16,7 @@ async def user_message_handler(
 ):
     async for request in sub.channel("chat_message_created"):
         print(f"(Handler) Message Received: {request}")
-        response_message = await service.process(request.user.wallet_id, request.chat_id, 'yoda', request.data.message)
+        response_message = await service.process(request.user.wallet_id, request.chat_id, request.data.personality, request.data.message)
 
         response = ResponseDto.parse_obj(
             {
