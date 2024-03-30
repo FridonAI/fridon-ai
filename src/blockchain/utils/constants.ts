@@ -15,5 +15,8 @@ export const KAMINO_MAIN_MARKET_ADDRESS = new PublicKey(
   '7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF',
 );
 
+export const USDC_MINT_ADDRESS = new PublicKey(
+  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+);
 
 export const PRIORITY_FEE = 500000;

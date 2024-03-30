@@ -51,7 +51,6 @@ export class TokenProgramTransactionFactory {
     const transaction = await this.transactionFactory.generateTransactionV0(
       txInstructions,
       payer,
-      connection,
     );
 
     return transaction;

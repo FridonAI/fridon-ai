@@ -20,6 +20,11 @@ export class BaseTransactionResponseDto extends BaseDto<BaseTransactionResponseD
   data: TransactionDataResponseDto;
 }
 
+
+// Symmetry
+
+
+
 // Transfer
 export class TransferTokenRequestBodyDto {
   @IsString()
@@ -78,7 +83,6 @@ export class DefiOperationRequestBodyDto {
 export class DefiOperationResponseDto extends BaseTransactionResponseDto {}
 
 // Balance Operations
-
 export class BalanceOperationRequestBodyDto {
   @IsString()
   @IsNotEmpty()

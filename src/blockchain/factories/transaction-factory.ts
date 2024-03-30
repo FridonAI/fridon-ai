@@ -43,18 +43,17 @@ export class TransactionFactory {
     @InjectQueue('transaction-listener')
     private readonly connection: Connection,
     private readonly transactionListenerService: TransactionListenerService,
-  ) {}
+  ) { }
 
   async sendTransaction(
     ix: TransactionInstruction,
-    connection: Connection,
     keypairs: Keypair,
   ) {
     const tx = new Transaction();
 
     tx.add(ix);
 
-    const blockHashResponse = await connection.getLatestBlockhash();
+    const blockHashResponse = await this.connection.getLatestBlockhash();
 
     tx.recentBlockhash = blockHashResponse.blockhash;
     tx.feePayer = keypairs.publicKey;
@@ -65,7 +64,7 @@ export class TransactionFactory {
 
     const serializedTx = tx.serialize();
 
-    const txId = await connection.sendRawTransaction(serializedTx, {
+    const txId = await this.connection.sendRawTransaction(serializedTx, {
       skipPreflight: true,
     });
 
@@ -126,7 +125,6 @@ export class TransactionFactory {
   async generateTransactionV0(
     instructions: TransactionInstruction[],
     feePayer: PublicKeyInitData,
-    connection: Connection,
     signers?: Signer[],
     addressLookupTable?: AddressLookupTableAccount | undefined,
   ) {
@@ -137,7 +135,7 @@ export class TransactionFactory {
 
     const message = new TransactionMessage({
       instructions: instructions,
-      recentBlockhash: (await getLatestBlockHash(connection)).blockhash,
+      recentBlockhash: (await getLatestBlockHash(this.connection)).blockhash,
       payerKey: new PublicKey(feePayer),
     }).compileToV0Message(
       addressLookupTable ? [addressLookupTable] : undefined,

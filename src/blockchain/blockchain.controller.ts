@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   TransferTokenResponseDto,
@@ -23,7 +23,7 @@ export class BlockchainController {
     readonly connection: Connection,
     readonly blockchainService: BlockchainService,
     readonly transactionFactory: TransactionFactory,
-  ) {}
+  ) { }
 
   @Post('transfer-tokens')
   async transferTokens(
@@ -90,4 +90,14 @@ export class BlockchainController {
       data: balances,
     });
   }
+
+
+  @Get('symmetry')
+  async getSymmetryInformation() {
+    const result = await this.blockchainService.getSymmetryInformation();
+
+    // todo: write paginations and response DTO.
+    return result;
+  }
+
 }

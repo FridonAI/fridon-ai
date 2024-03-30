@@ -13,6 +13,7 @@ import {
 import { KaminoFactory } from './providers/kamino-factory';
 import { BlockchainTools } from './utils/tools/blockchain-tools';
 import { WalletFactory } from './providers/wallet-factory';
+import { SymmetryApiFactory, SymmetryFundsType } from './providers/symmetry-api-factory';
 
 @Injectable()
 export class BlockchainService {
@@ -22,8 +23,12 @@ export class BlockchainService {
     private readonly tokenProgramTransactionFactory: TokenProgramTransactionFactory,
     private readonly kaminoFactory: KaminoFactory,
     private readonly walletFactory: WalletFactory,
-  ) {}
+    private readonly symmetryFactory: SymmetryApiFactory,
+  ) { }
 
+  async getSymmetryInformation(): Promise<SymmetryFundsType[]> {
+    return this.symmetryFactory.getAllBaskets();
+  }
   async transferTokens(
     from: string,
     to: string,
@@ -104,6 +109,12 @@ export class BlockchainService {
       );
 
       return await this.tools.convertTokenBalancesToBalances(newBalances);
+    }
+
+    if (provider == BalanceProviderType.Symmetry) {
+      if (operation == BalanceOperationType.All) {
+          await this.symmetryFactory.getWalletBaskets(walletAddress);
+      }
     }
 
     return [];

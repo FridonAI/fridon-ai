@@ -51,6 +51,7 @@ export type TransactionDataType = {
 // Balances
 export enum BalanceProviderType {
   Kamino = 'kamino',
+  Symmetry = 'symmetry',
   Wallet = 'wallet',
   All = 'all',
 }

@@ -14,6 +14,7 @@ import { TransactionListenerProcessor } from './transaction-listener/transaction
 import { TransactionListenerService } from './transaction-listener/transaction-listener.service';
 import { NumberFormatter } from './utils/tools/number-formatter';
 import { WalletFactory } from './providers/wallet-factory';
+import { SymmetryApiFactory } from './providers/symmetry-api-factory';
 
 @Module({
   imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
@@ -27,6 +28,7 @@ import { WalletFactory } from './providers/wallet-factory';
       useValue: connection,
     },
     KaminoFactory,
+    SymmetryApiFactory,
     WalletFactory,
     TokenProgramInstructionFactory,
     TokenProgramTransactionFactory,
