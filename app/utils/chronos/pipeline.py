@@ -17,4 +17,4 @@ class ChronosPipeline(BaseChronosPipeline):
             attention_mask=attention_mask.to(self.model.device),
         )
         mean_embeddings = mean_pooling(embeddings, attention_mask)
-        return mean_embeddings
+        return mean_embeddings.cpu()
