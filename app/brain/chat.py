@@ -20,8 +20,12 @@ class Chat:
         try:
             category = get_category(message)
             chain = get_chain(category, self.personality)
-            adapter = chain.ainvoke({"query": message}, config={"configurable": {"session_id": self.chat_id}})
-            response = adapter.get_response(self.chat_id, self.wallet_id)
+            adapter = await chain.ainvoke({"query": message}, config={"configurable": {"session_id": self.chat_id}})
+
+            if category in [None, 'OffTopic']:
+                return adapter
+            print(f"Got adapter", adapter)
+            response = await adapter.get_response(self.chat_id, self.wallet_id)
 
             if isinstance(adapter, (CoinSearcherAdapter, DefiTalkerAdapter)):
                 final_response = response

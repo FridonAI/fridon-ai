@@ -14,6 +14,9 @@ defi_stake_borrow_lend_route = Route(
         "Repay 123 usdc on Kamino",
         "Deposit 100 bonk on Marginify",
         "Supply 10000 dfl on Kamino",
+        "Can you borrow 1000 usdt from Kamino?",
+        "Can you lend 1000 usdt on Kamino?",
+        "Can you supply 1000000 bonk on Kamino?"
     ]
 )
 
@@ -60,6 +63,11 @@ defi_talker = Route(
         "What is the purpose of Jupiter?",
         "How can I use landing on Kamino?",
         "What does pyth do?",
+        "What's solana?",
+        "What are kaminos features?",
+        "What's bitcoin?",
+        "Is solana better or ethereum?",
+        "I want to become a blockchain developer, is solana a good choice?",
     ]
 )
 
@@ -167,6 +175,7 @@ routes = [
     coin_chart_similarity,
     coin_search,
     discord_action,
+    off_topic,
 ]
 
 rl = RouteLayer(encoder=OpenAIEncoder(), routes=routes)

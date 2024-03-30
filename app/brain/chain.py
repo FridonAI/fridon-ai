@@ -3,12 +3,12 @@ import asyncio
 from langchain_community.chat_message_histories.postgres import PostgresChatMessageHistory
 from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
 
 from app.adapters.coins import retriever
 from app.brain.schema import (
-    DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter, Adapter,
+    DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter,
     CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter,
 )
 from app.brain.templates import get_prompt
@@ -25,7 +25,7 @@ def get_chat_history(session_id):
 
 def get_defi_stake_borrow_lend_extract_chain(
         personality,
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 ):
     prompt = get_prompt('defi_stake_borrow_lend_extract', personality)
     return (
@@ -37,7 +37,7 @@ def get_defi_stake_borrow_lend_extract_chain(
 
 def get_defi_balance_extract_chain(
         personality,
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 ):
     prompt = get_prompt('defi_balance_extract', personality)
     return (
@@ -49,7 +49,7 @@ def get_defi_balance_extract_chain(
 
 def get_defi_transfer_extract_chain(
         personality,
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 ):
     prompt = get_prompt('defi_transfer_extract', personality)
     return (
@@ -61,7 +61,7 @@ def get_defi_transfer_extract_chain(
 
 def get_discord_action_extract_chain(
         personality,
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 ):
     prompt = get_prompt('discord_action_extract', personality)
     return (
@@ -74,7 +74,7 @@ def get_discord_action_extract_chain(
 
 def get_coin_chart_similarity_extract_chain(
         personality,
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 ):
     prompt = get_prompt('coin_chart_similarity_extract', personality)
     return (
@@ -87,7 +87,7 @@ def get_coin_chart_similarity_extract_chain(
 
 def get_defi_talker_chain(
         personality,
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 ):
     prompt = get_prompt('defi_talker', personality)
     return RunnableWithMessageHistory(
@@ -104,7 +104,7 @@ def get_defi_talker_chain(
 
 def get_coin_search_chain(
         personality,
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 ):
     prompt = get_prompt('coin_search', personality)
     return RunnableWithMessageHistory(
@@ -126,7 +126,7 @@ def get_coin_search_chain(
 
 def get_error_chain(
         personality,
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 ):
     prompt = get_prompt('error', personality)
     return (
@@ -138,7 +138,7 @@ def get_error_chain(
 
 def get_off_topic_chain(
         personality,
-        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 ):
     prompt = get_prompt('off_topic', personality)
     return (
@@ -152,9 +152,9 @@ def get_chain(category, personality):
     match category:
         case "DefiStakeBorrowLend":
             return get_defi_stake_borrow_lend_extract_chain(personality)
-        case "DefiBalance":
+        case "DeFiBalance":
             return get_defi_balance_extract_chain(personality)
-        case "DefiTransfer":
+        case "DeFiTransfer":
             return get_defi_transfer_extract_chain(personality)
         case "CoinSearch":
             return get_coin_search_chain(personality)
@@ -162,8 +162,8 @@ def get_chain(category, personality):
             return get_discord_action_extract_chain(personality)
         case "CoinChartSimilarity":
             return get_coin_chart_similarity_extract_chain(personality)
-        case "OffTopic":
-            return get_off_topic_chain(personality)
-        case _:
+        case "DeFiTalker":
             return get_defi_talker_chain(personality)
+
+    return get_off_topic_chain(personality)
 

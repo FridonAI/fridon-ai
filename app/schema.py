@@ -6,11 +6,14 @@ class UserInput(CamelModel):
 
 
 class DataInput(CamelModel):
-    message: str | dict 
+    message: str | dict
+    # personality: str
+
 
 class DataRequestInput(CamelModel):
     message: str | dict | None
     serialized_transaction: list[int] | None
+
 
 class Request(CamelModel):
     chat_id: str
