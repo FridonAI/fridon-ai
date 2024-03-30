@@ -40,7 +40,7 @@ export class ChatService {
     chatId: ChatId,
     walletId: string,
     message: string,
-    narrator: string,
+    personality: string,
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
     await this.getChat(chatId);
@@ -50,10 +50,15 @@ export class ChatService {
       messageType: 'Query',
       chatId: chatId.value,
       content: message,
-      narrator,
+      personality,
     });
 
-    this.aiAdapter.emitChatMessageCreated(chatId, walletId, message, narrator);
+    this.aiAdapter.emitChatMessageCreated(
+      chatId,
+      walletId,
+      message,
+      personality,
+    );
 
     return { id: chatMessageId };
   }
@@ -61,7 +66,7 @@ export class ChatService {
   async createChatMessageTransactionResponse(
     chatId: ChatId,
     data: string,
-    narrator: string,
+    personality: string,
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
     await this.getChat(chatId);
@@ -71,7 +76,7 @@ export class ChatService {
       messageType: 'TransactionResponse',
       chatId: chatId.value,
       content: data,
-      narrator: narrator,
+      personality: personality,
     });
     this.aiAdapter.emitChatMessageInfoCreated(chatId, data);
 

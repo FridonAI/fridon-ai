@@ -15,7 +15,7 @@ export class TransactionConfirmedHandler {
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       'Transaction Confirmed',
-      event.aux.narrator,
+      event.aux.personality,
     );
   }
 }
@@ -28,7 +28,7 @@ export class TransactionSkippedHandler {
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       'Transaction Skipped',
-      event.aux.narrator,
+      event.aux.personality,
     );
   }
 }
@@ -41,7 +41,7 @@ export class TransactionFailedHandler {
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       'Transaction Failed',
-      event.aux.narrator,
+      event.aux.personality,
     );
   }
 }

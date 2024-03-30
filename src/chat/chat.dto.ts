@@ -46,7 +46,7 @@ export class CreateChatMessageRequestDto extends BaseDto<CreateChatMessageReques
 
   @ApiProperty({ example: 'Yoda' })
   @IsNotEmpty()
-  narrator: string;
+  personality: string;
 }
 
 // Create Chat Message Info
@@ -61,5 +61,5 @@ export class CreateChatMessageInfoRequestDto extends BaseDto<CreateChatMessageIn
 
   @ApiProperty({ example: 'Yoda' })
   @IsNotEmpty()
-  narrator: string;
+  personality: string;
 }

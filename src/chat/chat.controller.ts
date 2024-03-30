@@ -80,7 +80,7 @@ export class ChatHttpController {
       new ChatId(params.chatId),
       walletAddress,
       body.message,
-      body.narrator,
+      body.personality,
     );
 
     return new CreateChatMessageResponseDto({
@@ -96,13 +96,13 @@ export class ChatHttpController {
     if (body.transactionId !== undefined) {
       await this.transactionListenerService.registerTransactionListener(
         body.transactionId,
-        { chatId, narrator: body.narrator },
+        { chatId, personality: body.personality },
       );
     } else if (body.message !== undefined) {
       return this.eventBus.publish(
         new TransactionCouldnotSendEvent({
           message: body.message,
-          aux: { chatId: chatId, narrator: body.narrator },
+          aux: { chatId: chatId, personality: body.personality },
         }),
       );
     }

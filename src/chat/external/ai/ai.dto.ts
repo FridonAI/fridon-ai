@@ -7,7 +7,7 @@ export class AiChatMessageCreatedDto extends BaseDto<AiChatMessageCreatedDto> {
   };
   data: {
     message: string;
-    narrator: string;
+    personality: string;
   };
   aux: AiAuxiliaryMessage;
 }

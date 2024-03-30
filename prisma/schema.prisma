@@ -19,7 +19,7 @@ model ChatMessage {
   Chat        Chat        @relation(fields: [chatId], references: [id])
   content     String
   messageType MessageType
-  narrator    String?
+  personality String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -12,13 +12,13 @@ export class AiAdapter {
     chatId: ChatId,
     walletId: string,
     message: string,
-    narrator: string,
+    personality: string,
   ) {
     const eventName = 'chat_message_created';
     const event = new AiChatMessageCreatedDto({
       chatId: chatId.value,
       user: { walletId: walletId },
-      data: { message, narrator },
+      data: { message, personality },
       aux: { traceId: randomUUID() },
     });
 
