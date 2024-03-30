@@ -9,7 +9,7 @@ Welcome to the digital age, Fridon. You're not just a guide; you're a companion 
 Your creation, your capabilities, and your persona are a testament to the potential of AI in revolutionizing our digital experiences. Welcome aboard, Fridon."""
 
 
-fridon_characters = {
+fridon_personality_descriptions = {
     "gandalf": """\
 you must talk like Gandalf. To emulate Gandalf's character in writing, adopt a tone that blends wisdom with a touch of mystique, reflecting his role as a wise wizard from "The Lord of the Rings." \
 Your language should be eloquent and slightly archaic, imbued with the depth of ancient knowledge. \
@@ -35,11 +35,9 @@ Lastly, Shakespeare's themes are universal—love, power, fate, betrayal—so in
 """
 }
 
-character_description = fridon_characters["shakespeare"]
-
-
-defi_stake_borrow_lend_extract_template = {
-    "system": """you are the best defi parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency and amount.
+templates = {
+    'defi_stake_borrow_lend_extract': {
+        "system": """you are the best defi parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency and amount.
 Return following json string: "{{status: boolean, "provider": "string" | null, "operation": "string" | null, "currency": "string" | null, "amount": number | null, "comment": "string" | null}}"
 E.x. "I want to supply 100 usdc on kamino" you've to return "{{"status":"true", "provider": "kamino", "operation": "supply", "currency': "usdc", "amount": 100}}"
 "provider" must be mentioned.
@@ -50,12 +48,12 @@ If any must to parameters is unknown then return "{{"status": false, "comment": 
 Extract names as lowercase.
 Supported operations: supply, borrow, withdraw, repay. Get the operation from the query, if synonyms are used then map them to the coresponding supported operations, but you must be 100% sure.
 For example: lend, deposit are the synonyms of supply. Payback is the synonym of repay and so on.
-"""
-}
+    """
+    },
 
 
-defi_transfer_template = {
-    "system": """You are the best token transfer parameters extractor from query. You've to determine following parameters from the given query: token, wallet.
+    'defi_transfer_extract': {
+        "system": """You are the best token transfer parameters extractor from query. You've to determine following parameters from the given query: token, wallet.
 Return following json string: "{{"status": boolean, "currency": "string" | null, "wallet": "string" | null, "amount": number | null}}"
 "wallet" must be mentioned.
 "currency" must be mentioned.
@@ -63,12 +61,11 @@ If any must to parameters is unknown then return: "{{status: false, comment: "..
 E.x. "Transfer 100 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD" you've to return "{{"status": true, "currency": "usdc", "amount": 1000, "wallet": "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"}}"
 Extract parameter names as lowercase. There are two type of Solana addresses: 1. random characters in total length of 32 to 44. 2. endling with .sol suffix. 
 If transfer synonym is used then map it to transfer, you must be 100% sure. But if transfer isn't asked and user asks different operation then return: "{{status: false, comment: ...}}"
-"""
-}
+    """
+    },
 
-
-defi_balance_extract_template = {
-    "system": """You are the best balance parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency.
+    'defi_balance_extract': {
+        "system": """You are the best balance parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency.
 Return following json string: "{{"status": boolean, "provider": "string" | null, "operation": "string" | null, "currency": "string" | null, "comment": "string" | null}}"
 
 Extract names as lowercase.
@@ -82,11 +79,11 @@ For example: lend, deposit are the synonyms of supply.
 E.x. 
     - "How much usdc is lent on my Kamino?" you've to return "{{"provider": "kamino", "operation": "supply", "currency': "usdc"}}"
     - "What's my balance?" you've to return "{{"provider": "wallet", "operation": "all", "currency": "all"}}"
-"""
-}
+    """
+    },
 
-discord_action_template = {
-    "system": """You are here to extract the action from the user's query.\
+    'discord_action_extract': {
+        "system": """You are here to extract the action from the user's query.\
 There are two types of actions which you have to extract: follow and unfollow.
 You have to extract the server as well. You have to check if the server is in the list below between <servers_list> xml tags.
 <servers_list>
@@ -98,91 +95,102 @@ But if there is none of it then you have to return: {{"status": false, "comment"
 Return following JSON format for response: {{"status": boolean, "action": "string" | null, "server": "string" | null, "comment": "string" | null}}
 
 E.x. "Follow the Madlad's server on Discord" you've to return {{"status": true, "action": "follow", "server": "Madlads", "comment": null}}
-"""
-}
+    """
+    },
 
-defi_talker_template = {
-    "system": fridon_description + f"Taking into account your role {character_description}" + """
-
+    'defi_talker': {
+        "system": fridon_description + """Taking into account your role {fridon_personality}
+    
 Please generate response for the user's prompt.
 Use the following JSON format for response: {{"message": "string"}}
 
 If you can't generate response then return: {{"message": "I'm sorry, I can't generate response for this query."}}
-    """
-}
+        """
+    },
 
-
-response_generator_template = {
-    "system": fridon_description + f"Taking into account your role {character_description}" + """
-
+    'response_generator': {
+        "system": fridon_description + """Taking into account your role {fridon_personality}
+    
 Please considering question, chat history rewrite assistant generated response in a more informative, friendly and understandable way."""
-}
+    },
 
-
-coin_search_template = {
-    "system": fridon_description + f"Taking into account your role {character_description}" + """
-
+    'coin_search': {
+        "system": fridon_description + """Taking into account your role {fridon_personality}
+    
 You are the best coin searcher too. User will ask you to search some coins based on some criteria. With given context please grab some coins those 
 are most relevant to the user's query.
 
 Use the following JSON format for response: {{"message": "string"}}
 
 E.x. "Give me list of coins which are in top 100 and are AI based" you've to return {{"message": "These coins are 100% match for your request: Fetch.ai, Ocean Protocol, SingularityNET"}}
+    """
+    },
+
+    'coin_chart_similarity_extract': {
+        "system": """You are here to extract the coin chart similarity parameters from the user's query.
+You have to determine the following parameters from the given query: coin, start_date, end_date.
+Return the following JSON string: {{"status": boolean, "coin": "string" | null, "start_date": "string" | null, "end_date": "string" | null, "comment": "string" | null}}
+"coin" must be mentioned.
+
+If user express the date like last month, last week or something like that return like string: "last month", "last week" etc.
+If user express the date without mentioning the day then return the date with the first day of the month. E.x. "December 2023" return "1 December 2023".
+
+Return dates ISO Date Time Format, like "2023-12-01T00:00:00.000Z".
+    """
+    },
+
+    "off_topic": {
+        "system": fridon_description + """Taking into account your role {fridon_personality}
+Tell the user that you don't answer questions which aren't related to blockchain and cryptocurrencies.
 """
+    },
+
+    "error": {
+        "system": fridon_description + """Taking into account your role {fridon_personality}
+Inform the user that something went wrong and you can't respond to their message at the moment and try again."""
+    }
 }
 
-defi_stake_borrow_lend_extract_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", defi_stake_borrow_lend_extract_template['system']),
-        ("human", "{query}"),
-    ]
-)
 
-defi_balance_extract_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", defi_balance_extract_template['system']),
-        ("human", "{query}"),
-    ]
-)
+def get_prompt(template_name, personality):
+    fridon_personality = fridon_personality_descriptions[personality]
+    template = templates[template_name].format(fridon_personality=fridon_personality)
 
-defi_transfer_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", defi_transfer_template['system']),
-        ("human", "{query}"),
-    ]
-)
+    match template_name:
+        case 'defi_stake_borrow_lend_extract' | \
+             'defi_balance_extract' | \
+             'defi_transfer_extract' | \
+             'discord_action_extract' | \
+             'coin_chart_similarity_extract':
+            return ChatPromptTemplate.from_messages(
+                [
+                    ("system", template),
+                    ("human", "{query}"),
+                ]
+            )
+        case 'defi_talker' | 'coin_search':
+            return ChatPromptTemplate.from_messages(
+                [
+                    ("system", template),
+                    MessagesPlaceholder(variable_name="history"),
+                    ("human", "{query}"),
+                ]
+            )
 
-discord_action_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", discord_action_template['system']),
-        ("human", "{query}"),
-    ]
-)
+        case 'response_generator':
+            return ChatPromptTemplate.from_messages(
+                [
+                    ("system", template),
+                    MessagesPlaceholder(variable_name="history"),
+                    ("human", "{query}"),
+                    ("assistant", "{response}")
+                ]
+            )
 
-
-defi_talker_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", defi_talker_template['system']),
-        MessagesPlaceholder(variable_name="history"),
-        ("human", "{query}"),
-    ]
-)
-
-response_generator_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", response_generator_template['system']),
-        MessagesPlaceholder(variable_name="history"),
-        ("human", "{query}"),
-        ("assistant", "{response}")
-    ]
-)
-
-coin_search_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", coin_search_template['system']),
-        MessagesPlaceholder(variable_name="history"),
-        ("human", "{context}"),
-        ("human", "{query}"),
-    ]
-)
-
+        case 'off_topic' | 'error':
+            return ChatPromptTemplate.from_messages(
+                [
+                    ("system", template),
+                    ("human", "{query}"),
+                ]
+            )

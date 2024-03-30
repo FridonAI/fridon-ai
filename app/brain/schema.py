@@ -139,6 +139,20 @@ class DiscordActionAdapter(Adapter):
         }
 
 
+class CoinChartSimilarityAdapter(Adapter):
+    status: bool
+    comment: str | None
+    coin: str | None
+    start_date: str | None
+    end_date: str | None
+
+    @staticmethod
+    def parser() -> PydanticOutputParser:
+        return PydanticOutputParser(pydantic_object=CoinChartSimilarityAdapter)
+
+    async def get_response(self, chat_id, wallet_id):
+        pass
+
 
 
 

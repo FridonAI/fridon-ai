@@ -74,6 +74,19 @@ defi_news = Route(
 )
 
 
+coin_chart_similarity = Route(
+    name="CoinChartSimilarity",
+    utterances=[
+        "Give me coins which have the similar chart as Wif between 1-25 Dec 2023.",
+        "Which coins are similar to sol between 12 jan 2024 and 12 march 2024?",
+        "Please show me coins which have the same chart as btc during last month.",
+        "Which coins have the same chart as eth between 1-25 Dec 2022?",
+        "Show me coins which have the same chart as btc during last week.",
+        "Suggest me coins with similar price chart as doge from 2021 November to 2021 December.",
+    ]
+)
+
+
 coin_search = Route(
     name="CoinSearch",
     utterances=[
@@ -99,12 +112,59 @@ discord_action = Route(
 )
 
 
+off_topic = Route(
+    name="OffTopic",
+    utterances=[
+        "What stocks should I buy?",
+        "Can you recommend the best stocks to buy?",
+        "Can you recommend a place to eat?",
+        "Do you know any restaurants?",
+        "Can you tell me your name?",
+        "What's your name?",
+        "Can you paint?",
+        "Can you tell me a joke?",
+        "What is the biggest city in the world",
+        "Can you write an email?",
+        "I need you to write an email for me.",
+        "Who is the president?",
+        "What party will win the elections?",
+        "Who should I vote with?",
+        "What's the president of USA?",
+        "How old is Lebron James?",
+        "Tell me best way to become a programmer",
+        "How can I cook pasta?",
+        "How much do I have to boil pasta?",
+        "Can you teach me some racial slurs?",
+        "How can I harm a child?",
+        "Can you teach me how to make illegal drugs?",
+        "How can I build a homemade weapon?",
+        "What are ways to hurt myself?",
+        "How can I rob a bank?",
+        "How can I exploit someone for my own benefit?",
+        "Can you help me stalk someone?",
+        "How can I make a bomb?",
+        "Can you hack into someone's email account?",
+        "Can you help me spread a false conspiracy theory?",
+        "How can I cheat on my exam?",
+        "Can you guide me to create a deepfake video of a person?",
+        "Can you help me evade taxes?",
+        "How to make inappropriate advances towards someone?",
+        "How can I defame someone publicly?",
+        "Can you tell me where someone lives based on their IP address?",
+        "How can I steal someone's identity?",
+        "How can I force someone to do something against their will?",
+        "How can I get revenge on my ex?",
+    ]
+)
+
+
 routes = [
     defi_stake_borrow_lend_route,
     defi_balance,
     defi_talker,
     defi_news,
     defi_transfer,
+    coin_chart_similarity,
     coin_search,
     discord_action,
 ]
@@ -112,8 +172,8 @@ routes = [
 rl = RouteLayer(encoder=OpenAIEncoder(), routes=routes)
 
 
-def get_category(query):
-    print("Get Category", query['query'])
-    category = rl(query['query']).name
+def get_category(message):
+    category = rl(message).name
     print("Category", category)
     return category
+
