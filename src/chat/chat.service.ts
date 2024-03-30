@@ -96,7 +96,6 @@ export class ChatService {
       chatId: chatId.value,
       content: data,
     });
-    this.aiAdapter.emitChatMessageInfoCreated(chatId, data);
 
     return { id: chatMessageId };
   }
