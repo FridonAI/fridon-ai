@@ -1,14 +1,44 @@
-from langchain_core.chat_history import BaseChatMessageHistory
-
-from app.brain.chain import generate_response
+from app.brain.chain import get_chain, get_chat_history, get_error_chain
 from pydantic.v1 import BaseModel
+
+from app.brain.router import get_category
+from app.brain.schema import CoinSearcherAdapter, DefiTalkerAdapter
 
 
 class Chat:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, chat_id: str, wallet_id: str, personality: str) -> None:
+        self.chat_id = chat_id
+        self.wallet_id = wallet_id
+        self.personality = personality
+        self.memory = get_chat_history(self.chat_id)
 
-    async def process(self, chat_id: str, wallet_id: str, message: str) -> str | BaseModel:
-        return await generate_response(chat_id, wallet_id, message)
+    async def process(
+            self,
+            message: str,
+    ) -> str | BaseModel:
+
+        try:
+            category = get_category(message)
+            chain = get_chain(category, self.personality)
+            adapter = chain.ainvoke({"query": message}, config={"configurable": {"session_id": self.chat_id}})
+            response = adapter.get_response(self.chat_id, self.wallet_id)
+
+            if isinstance(adapter, (CoinSearcherAdapter, DefiTalkerAdapter)):
+                final_response = response
+
+            else:
+                final_response = await (get_chain('response_generator', self.personality)).ainvoke(
+                    {"query": message, "response": response},
+                    config={"configurable": {"session_id": self.chat_id}}
+                )
+
+            self.memory.add_user_message(message)
+            self.memory.add_ai_message(final_response)
+        except Exception as e:
+            print("Error in Chat.process", e)
+            chain = get_error_chain(self.personality)
+            final_response = await chain.ainvoke({"query": message})
+
+        return final_response
 
 

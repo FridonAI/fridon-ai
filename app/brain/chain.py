@@ -1,26 +1,18 @@
 import asyncio
 
 from langchain_community.chat_message_histories.postgres import PostgresChatMessageHistory
-from langchain_core.runnables import RunnableBranch, RunnableLambda
+from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_community.chat_models import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
 
 from app.adapters.coins import retriever
-from app.brain.router import get_category
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter, Adapter,
-    CoinSearcherAdapter, DiscordActionAdapter,
+    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter,
 )
-from app.brain.templates import (
-    defi_stake_borrow_lend_extract_prompt,
-    defi_talker_prompt,
-    defi_balance_extract_prompt,
-    defi_transfer_prompt, response_generator_prompt, coin_search_prompt, discord_action_prompt
-)
+from app.brain.templates import get_prompt
 from app.settings import settings
-
-llm = ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
 
 
 def get_chat_history(session_id):
@@ -31,107 +23,147 @@ def get_chat_history(session_id):
     return chat_history
 
 
-defi_stake_borrow_lend_extract_chain = (
-    defi_stake_borrow_lend_extract_prompt
-    | llm
-    | DefiStakeBorrowLendAdapter.parser()
-)
-
-defi_balance_extract_chain = (
-    defi_balance_extract_prompt
-    | llm
-    | DefiBalanceAdapter.parser()
-)
-
-defi_transfer_chain = (
-    defi_transfer_prompt
-    | llm
-    | DefiTransferAdapter.parser()
-)
-
-discord_action_chain = (
-    RunnableLambda(DiscordActionAdapter.input_formatter)
-    | discord_action_prompt
-    | llm
-    | DiscordActionAdapter.parser()
-)
-
-defi_talker_chain = RunnableWithMessageHistory(
-    (
-        defi_talker_prompt
+def get_defi_stake_borrow_lend_extract_chain(
+        personality,
+        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('defi_stake_borrow_lend_extract', personality)
+    return (
+        prompt
         | llm
-        | DefiTalkerAdapter.parser()
-    ),
-    get_chat_history,
-    input_messages_key="query",
-    history_messages_key="history",
-)
-
-
-coin_search_chain = RunnableWithMessageHistory(
-    (
-        {
-            "query": lambda x: x["query"],
-            "context": RunnableLambda(lambda x: x["query"]) | retriever,
-            "history": lambda x: x["history"]
-        }
-        | coin_search_prompt
-        | llm
-        | CoinSearcherAdapter.parser()
-    ),
-    get_chat_history,
-    input_messages_key="query",
-    history_messages_key="history",
-)
-
-response_generator_chain = RunnableWithMessageHistory(
-    (response_generator_prompt | llm | StrOutputParser()),
-    get_chat_history,
-    input_messages_key="query",
-    history_messages_key="history",
-)
-
-
-branch = RunnableBranch(
-    (lambda x: x['category'] == 'DefiStakeBorrowLend', defi_stake_borrow_lend_extract_chain),
-    (lambda x: x['category'] == 'DeFiBalance', defi_balance_extract_chain),
-    (lambda x: x['category'] == 'DeFiTransfer', defi_transfer_chain),
-    (lambda x: x['category'] == 'CoinSearch', coin_search_chain),
-    (lambda x: x['category'] == 'DiscordAction', discord_action_chain),
-    defi_talker_chain,
-)
-
-
-async def generate_response(chat_id, wallet_id, query):
-    print("Generate response", query)
-
-    async def get_response(adapter: Adapter):
-        return await adapter.get_response(chat_id, wallet_id)
-
-    question_answer_chain = (
-            {"query": lambda x: x["query"], "category": RunnableLambda(get_category)}
-            | branch
-            | {"response": RunnableLambda(get_response), "obj": lambda x: x}
-    )
-    chain_resp = await question_answer_chain.ainvoke(
-        {"query": query},
-        config={"configurable": {"session_id": chat_id}}
+        | DefiStakeBorrowLendAdapter.parser()
     )
 
-    obj = chain_resp["obj"]
-    response = chain_resp["response"]
 
-    if isinstance(obj, (CoinSearcherAdapter, DefiTalkerAdapter)):
-        final_response = response
-    else:
-        final_response = await response_generator_chain.ainvoke(
-            {"query": query, "response": response},
-            config={"configurable": {"session_id": chat_id}}
-        )
+def get_defi_balance_extract_chain(
+        personality,
+        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('defi_balance_extract', personality)
+    return (
+        prompt
+        | llm
+        | DefiBalanceAdapter.parser()
+    )
 
-    memory = get_chat_history(chat_id)
-    memory.add_user_message(query)
-    memory.add_ai_message(final_response)
 
-    print("Response", final_response)
-    return final_response
+def get_defi_transfer_extract_chain(
+        personality,
+        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('defi_transfer_extract', personality)
+    return (
+        prompt
+        | llm
+        | DefiTransferAdapter.parser()
+    )
+
+
+def get_discord_action_extract_chain(
+        personality,
+        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('discord_action_extract', personality)
+    return (
+        RunnableLambda(DiscordActionAdapter.input_formatter)
+        | prompt
+        | llm
+        | DiscordActionAdapter.parser()
+    )
+
+
+def get_coin_chart_similarity_extract_chain(
+        personality,
+        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('coin_chart_similarity_extract', personality)
+    return (
+        RunnableLambda(DiscordActionAdapter.input_formatter)
+        | prompt
+        | llm
+        | CoinChartSimilarityAdapter.parser()
+    )
+
+
+def get_defi_talker_chain(
+        personality,
+        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('defi_talker', personality)
+    return RunnableWithMessageHistory(
+        (
+            prompt
+            | llm
+            | DefiTalkerAdapter.parser()
+        ),
+        get_chat_history,
+        input_messages_key="query",
+        history_messages_key="history",
+    )
+
+
+def get_coin_search_chain(
+        personality,
+        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('coin_search', personality)
+    return RunnableWithMessageHistory(
+        (
+            {
+                "query": lambda x: x["query"],
+                "context": RunnableLambda(lambda x: x["query"]) | retriever,
+                "history": lambda x: x["history"]
+            }
+            | prompt
+            | llm
+            | CoinSearcherAdapter.parser()
+        ),
+        get_chat_history,
+        input_messages_key="query",
+        history_messages_key="history",
+    )
+
+
+def get_error_chain(
+        personality,
+        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('error', personality)
+    return (
+        prompt
+        | llm
+        | StrOutputParser()
+    )
+
+
+def get_off_topic_chain(
+        personality,
+        llm=ChatOpenAI(model_name="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('off_topic', personality)
+    return (
+        prompt
+        | llm
+        | StrOutputParser()
+    )
+
+
+def get_chain(category, personality):
+    match category:
+        case "DefiStakeBorrowLend":
+            return get_defi_stake_borrow_lend_extract_chain(personality)
+        case "DefiBalance":
+            return get_defi_balance_extract_chain(personality)
+        case "DefiTransfer":
+            return get_defi_transfer_extract_chain(personality)
+        case "CoinSearch":
+            return get_coin_search_chain(personality)
+        case "DiscordAction":
+            return get_discord_action_extract_chain(personality)
+        case "CoinChartSimilarity":
+            return get_coin_chart_similarity_extract_chain(personality)
+        case "OffTopic":
+            return get_off_topic_chain(personality)
+        case _:
+            return get_defi_talker_chain(personality)
+
