@@ -7,7 +7,7 @@ class UserInput(CamelModel):
 
 class DataInput(CamelModel):
     message: str | dict
-    personality: str
+    personality: str | None
 
 
 class DataRequestInput(CamelModel):
