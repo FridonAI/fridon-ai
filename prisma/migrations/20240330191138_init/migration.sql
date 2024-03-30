@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "MessageType" AS ENUM ('Query', 'Response');
+CREATE TYPE "MessageType" AS ENUM ('Query', 'Response', 'TransactionResponse');
 
 -- CreateTable
 CREATE TABLE "ChatMessage" (
@@ -7,6 +7,7 @@ CREATE TABLE "ChatMessage" (
     "chatId" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "messageType" "MessageType" NOT NULL,
+    "personality" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
