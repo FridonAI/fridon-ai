@@ -68,7 +68,7 @@ export class BlockchainService {
     return result;
   }
 
-  async getSymmetryInformation(): Promise<SymmetryFundsType[]> {
+  async getSymmetryBaskets(): Promise<SymmetryFundsType[]> {
     return await this.symmetryFactory.getAllBaskets();
   }
 
@@ -156,7 +156,10 @@ export class BlockchainService {
 
     if (provider == BalanceProviderType.Symmetry) {
       if (operation == BalanceOperationType.All) {
-        await this.symmetryFactory.getWalletBaskets(walletAddress);
+        return await this.symmetryFactory.getWalletBaskets(
+          walletAddress,
+          this.connection.rpcEndpoint,
+        );
       }
     }
 

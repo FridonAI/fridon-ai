@@ -1,10 +1,13 @@
-import { Transaction, VersionedTransaction } from '@solana/web3.js';
+import { Connection, Transaction, VersionedTransaction } from '@solana/web3.js';
 
 import { Injectable } from '@nestjs/common';
 import { DONATION_ADDRESS } from '../utils/constants';
 import { TransactionFactory } from '../factories/transaction-factory';
 import { PublicKey } from '@metaplex-foundation/js';
 import { BlockchainTools } from '../utils/tools/blockchain-tools';
+import { TokenBalance } from './wallet-factory';
+import { TOKEN_PROGRAM_ID } from 'spl';
+import { BalanceType } from '../utils/types';
 
 export const SYMMETRY_CREATE_BASKET_API =
   'https://api.symmetry.fi/baskets/create';
@@ -27,6 +30,7 @@ export class SymmetryApiFactory {
   constructor(
     private readonly transactionFactory: TransactionFactory,
     private readonly tools: BlockchainTools,
+    private readonly connection: Connection,
   ) {}
 
   async createBasketApi(
@@ -316,8 +320,10 @@ export class SymmetryApiFactory {
   }
 
   // Getters
-  async getWalletBaskets(walletAddress: string) {
-    walletAddress;
+  async getWalletBaskets(walletAddress: string, rpcEndpoint: string) {
+    rpcEndpoint;
+    const walletBalances = await this.getWalletBalances(walletAddress);
+
     const request = await fetch('https://api.symmetry.fi/v1/funds-getter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -329,21 +335,14 @@ export class SymmetryApiFactory {
             order: 'desc',
           },
           attributes: [
-            'creation_time',
-            'manager',
             'name',
             'symbol',
-            'short_historical',
             'tvl',
             'price',
-            'current_comp_token',
-            'actively_managed',
             'sortkey',
             'fund_token',
-            'image_uri',
-            'precise_historical',
           ],
-          count: 500,
+          count: 1000,
           page: 1,
           actively_managed: null,
           min_tvl: 0,
@@ -351,23 +350,34 @@ export class SymmetryApiFactory {
       }),
     });
     const response = await request.json();
-    const data = response.result;
+    const data: {
+      price: number;
+      symbol: string;
+      fund_token: string;
+    }[] = response.result;
 
-    console.log('data', JSON.stringify(data));
+    const balances: BalanceType[] = walletBalances
+      .map((balance) => {
+        const basket = data.find(
+          (basket) => basket.fund_token === balance.mint,
+        );
 
-    // todo: write filtering using wallet address maybe?
-    // const allBaskets = data.result;
-    // const basketHoldings = [];
-    // state.accounts.map(account => {
-    //     allBaskets.map(basket => {
-    //         if (basket.fund_token === account.address) {
-    //             basketHoldings.push({ ...basket, account });
-    //         }
-    //     })
-    // })
+        if (basket) {
+          return {
+            symbol: basket.symbol,
+            mintAddress: balance.mint,
+            amount: balance.amount,
+            price: (parseFloat(balance.amount) * basket.price).toFixed(2),
+          };
+        }
+
+        return undefined;
+      })
+      .filter((val) => val !== undefined) as BalanceType[];
+
+    return balances;
   }
 
-  // ++++++
   async getAllBaskets(): Promise<SymmetryFundsType[]> {
     const request = await fetch('https://api.symmetry.fi/v1/funds-getter', {
       method: 'POST',
@@ -439,29 +449,25 @@ export class SymmetryApiFactory {
     }
   }
 
-  // async loadSymmetryBasketHistory() {
-  //     const request = await fetch('https://api.symmetry.fi/v1/funds-getter', {
-  //         method: 'POST',
-  //         headers: {
-  //             'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify({
-  //             request: 'get_history',
-  //             params: {
-  //                 target: "fund_stats",
-  //                 pubkey: address,
-  //                 start: timeframe,
-  //                 benchmark: "current_target_weights",
-  //                 attributes: [
-  //                     "price",
-  //                     "tvl",
-  //                     "time",
-  //                 ]
-  //             }
-  //         })
-  //     })
-  //     const response = await request.json()
-  // }
+  private async getWalletBalances(publicKey: string): Promise<TokenBalance[]> {
+    const resp = await this.connection.getParsedTokenAccountsByOwner(
+      new PublicKey(publicKey),
+      { programId: TOKEN_PROGRAM_ID },
+      'confirmed',
+    );
+
+    const balances = resp.value
+      .map((val) => {
+        return {
+          mint: val.account.data.parsed.info.mint,
+          amount: val.account.data.parsed.info.tokenAmount.uiAmountString,
+          amountRaw: parseInt(val.account.data.parsed.info.tokenAmount.amount),
+        };
+      })
+      .filter((val) => val !== null) as TokenBalance[];
+
+    return balances;
+  }
 }
 
 export type SymmetryFundsType = {

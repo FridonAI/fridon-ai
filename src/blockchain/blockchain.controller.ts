@@ -93,9 +93,9 @@ export class BlockchainController {
     });
   }
 
-  @Post('symmetry')
+  @Post('symmetry/baskets')
   async getSymmetryInformation() {
-    const result = await this.blockchainService.getSymmetryInformation();
+    const result = await this.blockchainService.getSymmetryBaskets();
 
     // todo: write paginations and response DTO.
     return result;
