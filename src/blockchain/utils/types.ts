@@ -41,6 +41,7 @@ export enum OperationType {
 export enum PointsProviderType {
   Kamino = 'kamino',
   Symmetry = 'symmetry',
+  Drift = 'drift',
   All = 'all',
 }
 

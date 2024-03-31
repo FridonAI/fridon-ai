@@ -430,27 +430,6 @@ export class SymmetryApiFactory {
     return result;
   }
 
-  async getUserPoints(walletAddress: string) {
-    try {
-      const request = await fetch('https://api.symmetry.fi/v1/funds-getter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          request: 'get_user',
-          params: {
-            pubkey: walletAddress,
-          },
-        }),
-      });
-      const response = await request.json();
-
-      return response.total_points as number;
-    } catch (error) {
-      console.error('Error while fetching user points', error);
-      return 0;
-    }
-  }
-
   private async getWalletBalances(publicKey: string): Promise<TokenBalance[]> {
     const resp = await this.connection.getParsedTokenAccountsByOwner(
       new PublicKey(publicKey),

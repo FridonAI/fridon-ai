@@ -18,12 +18,7 @@ import {
   SymmetryApiFactory,
   SymmetryFundsType,
 } from './providers/symmetry-api-factory';
-
-export type UserPointsResponseType = {
-  walletAddress: string;
-  points: number;
-  provider: PointsProviderType;
-};
+import { PointsFactory } from './providers/points-factory';
 
 @Injectable()
 export class BlockchainService {
@@ -33,38 +28,12 @@ export class BlockchainService {
     private readonly tokenProgramTransactionFactory: TokenProgramTransactionFactory,
     private readonly kaminoFactory: KaminoFactory,
     private readonly walletFactory: WalletFactory,
+    private readonly pointsFactory: PointsFactory,
     private readonly symmetryFactory: SymmetryApiFactory,
   ) {}
 
   async getProtocolPoints(walletAddress: string, provider: PointsProviderType) {
-    const result: UserPointsResponseType[] = [];
-
-    if (
-      provider == PointsProviderType.Kamino ||
-      provider == PointsProviderType.All
-    ) {
-      const userPoints =
-        await this.kaminoFactory.getKaminoPoints(walletAddress);
-      result.push({
-        points: userPoints,
-        walletAddress,
-        provider: PointsProviderType.Kamino,
-      });
-    }
-    if (
-      provider == PointsProviderType.Symmetry ||
-      provider == PointsProviderType.All
-    ) {
-      const userPoints =
-        await this.symmetryFactory.getUserPoints(walletAddress);
-      result.push({
-        points: userPoints,
-        walletAddress,
-        provider: PointsProviderType.Symmetry,
-      });
-    }
-
-    return result;
+    return this.pointsFactory.getPoints(walletAddress, provider);
   }
 
   async getSymmetryBaskets(): Promise<SymmetryFundsType[]> {

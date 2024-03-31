@@ -21,22 +21,6 @@ import { NumberFormatter } from '../utils/tools/number-formatter';
 @Injectable()
 export class KaminoFactory {
   constructor(private connection: Connection) {}
-
-  async getKaminoPoints(walletAddress: string) {
-    try {
-      const request = await fetch(
-        `https://api.hubbleprotocol.io/points/users/${walletAddress}/breakdown?env=mainnet-beta&source=Season1`,
-      );
-      const response = await request.json();
-
-      const totalPointsEarnedNumber = parseFloat(response.totalPointsEarned);
-      return Math.round(totalPointsEarnedNumber * 100) / 100;
-    } catch (error) {
-      console.error('Error while fetching user points', error);
-      throw new Error('Error while fetching user points');
-    }
-  }
-
   private getReserve(
     market: KaminoMarket,
     mintAddr: string,
