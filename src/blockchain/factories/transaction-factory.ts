@@ -14,10 +14,10 @@ import {
 } from '@solana/web3.js';
 import { getLatestBlockHash } from '../utils/connection';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
-import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { AuxType } from '../events/transaction.event';
 import { TransactionListenerService } from '../transaction-listener/transaction-listener.service';
+import { PRIORITY_FEE } from '../utils/constants';
 
 export type TransactionComputeOpts = {
   computePrice?: number;
@@ -39,21 +39,16 @@ export const SOURCE_TOKEN_OWNER_SECRET = [
 @Injectable()
 export class TransactionFactory {
   constructor(
-    @InjectQueue('transaction-listener')
     private readonly connection: Connection,
     private readonly transactionListenerService: TransactionListenerService,
   ) {}
 
-  async sendTransaction(
-    ix: TransactionInstruction,
-    connection: Connection,
-    keypairs: Keypair,
-  ) {
+  async sendTransaction(ix: TransactionInstruction, keypairs: Keypair) {
     const tx = new Transaction();
 
     tx.add(ix);
 
-    const blockHashResponse = await connection.getLatestBlockhash();
+    const blockHashResponse = await this.connection.getLatestBlockhash();
 
     tx.recentBlockhash = blockHashResponse.blockhash;
     tx.feePayer = keypairs.publicKey;
@@ -64,7 +59,7 @@ export class TransactionFactory {
 
     const serializedTx = tx.serialize();
 
-    const txId = await connection.sendRawTransaction(serializedTx, {
+    const txId = await this.connection.sendRawTransaction(serializedTx, {
       skipPreflight: true,
     });
 
@@ -125,18 +120,17 @@ export class TransactionFactory {
   async generateTransactionV0(
     instructions: TransactionInstruction[],
     feePayer: PublicKeyInitData,
-    connection: Connection,
     signers?: Signer[],
     addressLookupTable?: AddressLookupTableAccount | undefined,
   ) {
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 5000,
+      microLamports: PRIORITY_FEE,
     });
     instructions.push(priorityPrice);
 
     const message = new TransactionMessage({
       instructions: instructions,
-      recentBlockhash: (await getLatestBlockHash(connection)).blockhash,
+      recentBlockhash: (await getLatestBlockHash(this.connection)).blockhash,
       payerKey: new PublicKey(feePayer),
     }).compileToV0Message(
       addressLookupTable ? [addressLookupTable] : undefined,

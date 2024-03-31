@@ -5,7 +5,9 @@ import {
   BalanceOperationType,
   BalanceProviderType,
   OperationType,
+  PointsProviderType,
   ProviderType,
+  SymmetryOperationType,
 } from './utils/types';
 import { Transform } from 'class-transformer';
 
@@ -18,6 +20,73 @@ export class TransactionDataResponseDto {
 export class BaseTransactionResponseDto extends BaseDto<BaseTransactionResponseDto> {
   @ApiProperty({ type: TransactionDataResponseDto })
   data: TransactionDataResponseDto;
+}
+
+// Points
+export class PointsRequestBodyDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
+  walletAddress: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: PointsProviderType.All })
+  @Transform(({ value }) => value.toLowerCase())
+  provider: PointsProviderType;
+}
+
+export class PointsDto extends BaseDto<PointsResponseDto> {
+  @ApiProperty({ example: 10 })
+  points: number;
+
+  @ApiProperty({ example: PointsProviderType.All })
+  provider: PointsProviderType;
+
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
+  walletAddress: string;
+}
+
+export class PointsResponseDto extends BaseDto<PointsResponseDto> {
+  @ApiProperty({ type: PointsDto })
+  data: PointsDto[];
+}
+// Symmetry
+export class SymmetryBasketDto {
+  @ApiProperty({ example: 'Solana LSD' })
+  name: string;
+}
+
+export class SymmetryBasketResponseDto extends BaseDto<SymmetryBasketResponseDto> {
+  @ApiProperty({ example: 10 })
+  points: number;
+}
+
+export class SymmetryDefiOperationsRequestBodyDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
+  walletAddress: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'FSmR7QfFvtvqDMo4w5e39UtEubiY4q8T27wnNCJgQSxz' })
+  basketAddress: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' })
+  tokenAddress: string;
+
+  @IsNumber()
+  @ApiProperty({ example: 10 })
+  amount: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: SymmetryOperationType.Deposit })
+  @Transform(({ value }) => value.toLowerCase())
+  operation: SymmetryOperationType;
 }
 
 // Transfer
@@ -75,10 +144,9 @@ export class DefiOperationRequestBodyDto {
   currency: string;
 }
 
-export class DefiOperationResponseDto extends BaseTransactionResponseDto {}
+export class TransactionResponseDto extends BaseTransactionResponseDto {}
 
 // Balance Operations
-
 export class BalanceOperationRequestBodyDto {
   @IsString()
   @IsNotEmpty()
@@ -112,6 +180,9 @@ export class BalanceDto {
 
   @ApiProperty({ example: '10' })
   amount: string;
+
+  @ApiProperty({ example: '10' })
+  value: string;
 }
 export class BalanceOperationResponseDto extends BaseDto<BalanceOperationResponseDto> {
   @ApiProperty({ type: BalanceDto })

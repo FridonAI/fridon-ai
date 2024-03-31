@@ -38,6 +38,20 @@ export enum OperationType {
   Withdraw = 'withdraw',
 }
 
+export enum SymmetryOperationType {
+  Deposit = 'deposit',
+  Withdraw = 'withdraw',
+  Create = 'create',
+  Edit = 'edit',
+}
+
+export enum PointsProviderType {
+  Kamino = 'kamino',
+  Symmetry = 'symmetry',
+  Drift = 'drift',
+  All = 'all',
+}
+
 export enum ProviderType {
   Kamino = 'kamino',
   Marginify = 'marginify',
@@ -51,6 +65,7 @@ export type TransactionDataType = {
 // Balances
 export enum BalanceProviderType {
   Kamino = 'kamino',
+  Symmetry = 'symmetry',
   Wallet = 'wallet',
   All = 'all',
 }
@@ -68,4 +83,5 @@ export type BalanceType = {
   symbol: string;
   mintAddress: string;
   amount: string;
+  value: string;
 };

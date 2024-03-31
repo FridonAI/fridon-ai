@@ -13,6 +13,7 @@ import { TokenAmount } from '../utils/tools/token-amount';
 import {
   DONATION_ADDRESS,
   KAMINO_MAIN_MARKET_ADDRESS,
+  PRIORITY_FEE,
 } from '../utils/constants';
 import { Injectable } from '@nestjs/common';
 import { NumberFormatter } from '../utils/tools/number-formatter';
@@ -20,7 +21,6 @@ import { NumberFormatter } from '../utils/tools/number-formatter';
 @Injectable()
 export class KaminoFactory {
   constructor(private connection: Connection) {}
-
   private getReserve(
     market: KaminoMarket,
     mintAddr: string,
@@ -81,7 +81,7 @@ export class KaminoFactory {
     );
 
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 50000,
+      microLamports: PRIORITY_FEE,
     });
 
     const instructions = [
@@ -141,7 +141,7 @@ export class KaminoFactory {
     );
 
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 50000,
+      microLamports: PRIORITY_FEE,
     });
     const instructions = [
       ...kaminoAction.setupIxs,
@@ -200,7 +200,7 @@ export class KaminoFactory {
     );
 
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 50000,
+      microLamports: PRIORITY_FEE,
     });
 
     const instructions = [
@@ -260,7 +260,7 @@ export class KaminoFactory {
     );
 
     const priorityPrice = ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 50000,
+      microLamports: PRIORITY_FEE,
     });
 
     const instructions = [

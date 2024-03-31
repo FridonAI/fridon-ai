@@ -8,11 +8,18 @@ import {
   BalanceProviderType,
   BalanceType,
   OperationType,
+  PointsProviderType,
   ProviderType,
+  SymmetryOperationType,
 } from './utils/types';
 import { KaminoFactory } from './providers/kamino-factory';
 import { BlockchainTools } from './utils/tools/blockchain-tools';
 import { WalletFactory } from './providers/wallet-factory';
+import {
+  SymmetryApiFactory,
+  SymmetryFundsType,
+} from './providers/symmetry-api-factory';
+import { PointsFactory } from './providers/points-factory';
 
 @Injectable()
 export class BlockchainService {
@@ -22,7 +29,17 @@ export class BlockchainService {
     private readonly tokenProgramTransactionFactory: TokenProgramTransactionFactory,
     private readonly kaminoFactory: KaminoFactory,
     private readonly walletFactory: WalletFactory,
+    private readonly pointsFactory: PointsFactory,
+    private readonly symmetryFactory: SymmetryApiFactory,
   ) {}
+
+  async getProtocolPoints(walletAddress: string, provider: PointsProviderType) {
+    return this.pointsFactory.getPoints(walletAddress, provider);
+  }
+
+  async getSymmetryBaskets(): Promise<SymmetryFundsType[]> {
+    return await this.symmetryFactory.getAllBaskets();
+  }
 
   async transferTokens(
     from: string,
@@ -67,6 +84,8 @@ export class BlockchainService {
     operation: BalanceOperationType,
     currency?: string | undefined,
   ): Promise<BalanceType[]> {
+    const balances: BalanceType[] = [];
+
     let mintAddress = currency
       ? await this.tools.convertSymbolToMintAddress(currency)
       : undefined;
@@ -75,27 +94,38 @@ export class BlockchainService {
       mintAddress = undefined;
     }
 
-    if (provider == BalanceProviderType.Kamino) {
+    if (
+      provider == BalanceProviderType.Kamino ||
+      provider == BalanceProviderType.All
+    ) {
       if (operation == BalanceOperationType.Borrowed) {
         const positions = await this.kaminoFactory.getKaminoBorrows(
           walletAddress,
           mintAddress,
         );
-        return await this.tools.convertPositionsToBalances(positions);
+        balances.push(
+          ...(await this.tools.convertPositionsToBalances(positions)),
+        );
       } else if (operation == BalanceOperationType.Deposited) {
         const positions = await this.kaminoFactory.getKaminoDepositions(
           walletAddress,
           mintAddress,
         );
-        return await this.tools.convertPositionsToBalances(positions);
+        balances.push(
+          ...(await this.tools.convertPositionsToBalances(positions)),
+        );
       } else if (operation == BalanceOperationType.All) {
         const positions =
           await this.kaminoFactory.getKaminoBalances(walletAddress);
-        return await this.tools.convertPositionsToBalances(positions);
+        balances.push(
+          ...(await this.tools.convertPositionsToBalances(positions)),
+        );
       }
     }
-
-    if (provider == BalanceProviderType.Wallet) {
+    if (
+      provider == BalanceProviderType.Wallet ||
+      provider == BalanceProviderType.All
+    ) {
       // If mint address we need exact token balance, if no lets fetch all ones
       const newBalances = await this.walletFactory.getWalletBalances(
         walletAddress,
@@ -103,10 +133,26 @@ export class BlockchainService {
         mintAddress ? [mintAddress] : [],
       );
 
-      return await this.tools.convertTokenBalancesToBalances(newBalances);
+      balances.push(
+        ...(await this.tools.convertTokenBalancesToBalances(newBalances)),
+      );
     }
 
-    return [];
+    if (
+      provider == BalanceProviderType.Symmetry ||
+      provider == BalanceProviderType.All
+    ) {
+      if (operation == BalanceOperationType.All) {
+        balances.push(
+          ...(await this.symmetryFactory.getWalletBaskets(
+            walletAddress,
+            this.connection.rpcEndpoint,
+          )),
+        );
+      }
+    }
+
+    return balances;
   }
 
   async defiOperations(
@@ -151,6 +197,23 @@ export class BlockchainService {
       default:
         throw new Error('Operation not supported');
     }
+  }
+
+  async getSymmetryOperations(
+    walletAddress: string,
+    basketMintAddress: string,
+    amount: number,
+    operation: SymmetryOperationType,
+  ) {
+    if (operation === SymmetryOperationType.Deposit) {
+      return await this.symmetryFactory.depositBasketApi(
+        walletAddress,
+        basketMintAddress,
+        amount,
+      );
+    }
+
+    throw new Error('Operation not supported');
   }
 
   private getProviderInstance(provider: ProviderType) {

@@ -59,7 +59,6 @@ export class WalletFactory {
     eligibleMintAddresses: string[],
     mintAddresses: string[] = [],
   ): Promise<TokenBalance[]> {
-    console.log('mintAddresses', mintAddresses);
     const resp = await this.connection.getParsedTokenAccountsByOwner(
       new PublicKey(publicKey),
       { programId: TOKEN_PROGRAM_ID },
