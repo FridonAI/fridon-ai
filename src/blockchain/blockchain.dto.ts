@@ -152,6 +152,9 @@ export class BalanceDto {
 
   @ApiProperty({ example: '10' })
   amount: string;
+
+  @ApiProperty({ example: '10' })
+  value: string;
 }
 export class BalanceOperationResponseDto extends BaseDto<BalanceOperationResponseDto> {
   @ApiProperty({ type: BalanceDto })

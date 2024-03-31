@@ -75,5 +75,5 @@ export type BalanceType = {
   symbol: string;
   mintAddress: string;
   amount: string;
-  price?: string;
+  value: string;
 };

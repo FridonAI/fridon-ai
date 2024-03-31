@@ -115,6 +115,8 @@ export class BlockchainService {
     operation: BalanceOperationType,
     currency?: string | undefined,
   ): Promise<BalanceType[]> {
+    const balances: BalanceType[] = [];
+
     let mintAddress = currency
       ? await this.tools.convertSymbolToMintAddress(currency)
       : undefined;
@@ -123,27 +125,38 @@ export class BlockchainService {
       mintAddress = undefined;
     }
 
-    if (provider == BalanceProviderType.Kamino) {
+    if (
+      provider == BalanceProviderType.Kamino ||
+      provider == BalanceProviderType.All
+    ) {
       if (operation == BalanceOperationType.Borrowed) {
         const positions = await this.kaminoFactory.getKaminoBorrows(
           walletAddress,
           mintAddress,
         );
-        return await this.tools.convertPositionsToBalances(positions);
+        balances.push(
+          ...(await this.tools.convertPositionsToBalances(positions)),
+        );
       } else if (operation == BalanceOperationType.Deposited) {
         const positions = await this.kaminoFactory.getKaminoDepositions(
           walletAddress,
           mintAddress,
         );
-        return await this.tools.convertPositionsToBalances(positions);
+        balances.push(
+          ...(await this.tools.convertPositionsToBalances(positions)),
+        );
       } else if (operation == BalanceOperationType.All) {
         const positions =
           await this.kaminoFactory.getKaminoBalances(walletAddress);
-        return await this.tools.convertPositionsToBalances(positions);
+        balances.push(
+          ...(await this.tools.convertPositionsToBalances(positions)),
+        );
       }
     }
-
-    if (provider == BalanceProviderType.Wallet) {
+    if (
+      provider == BalanceProviderType.Wallet ||
+      provider == BalanceProviderType.All
+    ) {
       // If mint address we need exact token balance, if no lets fetch all ones
       const newBalances = await this.walletFactory.getWalletBalances(
         walletAddress,
@@ -151,19 +164,26 @@ export class BlockchainService {
         mintAddress ? [mintAddress] : [],
       );
 
-      return await this.tools.convertTokenBalancesToBalances(newBalances);
+      balances.push(
+        ...(await this.tools.convertTokenBalancesToBalances(newBalances)),
+      );
     }
 
-    if (provider == BalanceProviderType.Symmetry) {
+    if (
+      provider == BalanceProviderType.Symmetry ||
+      provider == BalanceProviderType.All
+    ) {
       if (operation == BalanceOperationType.All) {
-        return await this.symmetryFactory.getWalletBaskets(
-          walletAddress,
-          this.connection.rpcEndpoint,
+        balances.push(
+          ...(await this.symmetryFactory.getWalletBaskets(
+            walletAddress,
+            this.connection.rpcEndpoint,
+          )),
         );
       }
     }
 
-    return [];
+    return balances;
   }
 
   async defiOperations(

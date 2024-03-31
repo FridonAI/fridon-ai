@@ -324,6 +324,7 @@ export class SymmetryApiFactory {
     rpcEndpoint;
     const walletBalances = await this.getWalletBalances(walletAddress);
 
+    // todo: move this do cron job.
     const request = await fetch('https://api.symmetry.fi/v1/funds-getter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -342,13 +343,14 @@ export class SymmetryApiFactory {
             'sortkey',
             'fund_token',
           ],
-          count: 1000,
+          count: 500,
           page: 1,
           actively_managed: null,
           min_tvl: 0,
         },
       }),
     });
+
     const response = await request.json();
     const data: {
       price: number;
@@ -367,7 +369,7 @@ export class SymmetryApiFactory {
             symbol: basket.symbol,
             mintAddress: balance.mint,
             amount: balance.amount,
-            price: (parseFloat(balance.amount) * basket.price).toFixed(2),
+            value: (parseFloat(balance.amount) * basket.price).toFixed(2),
           };
         }
 
