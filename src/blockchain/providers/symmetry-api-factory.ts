@@ -447,7 +447,7 @@ export class SymmetryApiFactory {
       return response.total_points as number;
     } catch (error) {
       console.error('Error while fetching user points', error);
-      throw new Error('Error while fetching user points');
+      return 0;
     }
   }
 

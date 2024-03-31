@@ -51,7 +51,6 @@ export class BlockchainService {
         provider: PointsProviderType.Kamino,
       });
     }
-
     if (
       provider == PointsProviderType.Symmetry ||
       provider == PointsProviderType.All

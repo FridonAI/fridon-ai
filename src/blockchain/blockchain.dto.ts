@@ -30,7 +30,7 @@ export class PointsRequestBodyDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: PointsProviderType.Symmetry })
+  @ApiProperty({ example: PointsProviderType.All })
   @Transform(({ value }) => value.toLowerCase())
   provider: PointsProviderType;
 }
