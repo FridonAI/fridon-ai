@@ -11,7 +11,7 @@ import {
 } from './utils/types';
 import { Transform } from 'class-transformer';
 
-// Default Transfer Reponse Dto
+// Default Transfer Response Dto
 export class TransactionDataResponseDto {
   @ApiProperty({ example: {} })
   serializedTx: number[];
@@ -33,7 +33,7 @@ export class PointsRequestBodyDto {
   @IsNotEmpty()
   @ApiProperty({ example: PointsProviderType.All })
   @Transform(({ value }) => value.toLowerCase())
-  provider: PointsProviderType;
+  provider: WrapperType<PointsProviderType>;
 }
 
 export class PointsDto extends BaseDto<PointsResponseDto> {
@@ -86,7 +86,7 @@ export class SymmetryDefiOperationsRequestBodyDto {
   @IsNotEmpty()
   @ApiProperty({ example: SymmetryOperationType.Deposit })
   @Transform(({ value }) => value.toLowerCase())
-  operation: SymmetryOperationType;
+  operation: WrapperType<SymmetryOperationType>;
 }
 
 // Transfer
@@ -94,7 +94,7 @@ export class TransferTokenRequestBodyDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
-  // toto: custom validation for walleteAddress
+  // toto: custom validation for wallet Address
   walletAddress: string;
 
   @IsString()
