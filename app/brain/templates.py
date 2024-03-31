@@ -138,7 +138,7 @@ Use the following JSON format for response: {{"message": "string"}} """
 
     'response_generator': {
         "system": """
-Considering chat history, question, result of the question, generate response in your style. Your response must come from the result."""
+Considering chat history, question, result of the question, generate response in your style. Your response must come from the result. Your answers must be concise, informative and short."""
     },
 
     'coin_search': {
