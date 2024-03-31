@@ -4,5 +4,5 @@ from app.utils.timeseries.data.dataset import TimeSeriesDataset
 
 
 class TimeSeriesDataLoader(DataLoader):
-    def __init__(self, dataset: TimeSeriesDataset, batch_size: int, **kwargs):
+    def __init__(self, dataset: TimeSeriesDataset, batch_size: int = 4, **kwargs):
         super().__init__(dataset, batch_size=batch_size, collate_fn=lambda batch: batch, **kwargs)
