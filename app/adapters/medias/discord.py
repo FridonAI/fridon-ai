@@ -1,5 +1,8 @@
 import requests
+import json
 import os
+
+from app.adapters.medias.schema import Media
 
 
 async def _send_action(
@@ -54,3 +57,42 @@ async def get_available_servers() -> str:
     # if resp['status'] == 200:
     # return ', '.join(server for server in resp['medias'])
     # return resp['data']
+
+
+async def get_wallet_servers(wallet_id) -> str:
+    api_url = os.environ["API_URL"]
+    if not api_url:
+        raise Exception("API_URL not set in environment variables")
+
+    # resp = requests.get(f"{api_url}/medias/wallet/{wallet_id}").json()
+    # print(resp)
+    return "gaimin, jupiter"
+    # if resp['status'] == 200:
+    # return ', '.join(server for server in resp['medias'])
+    # return resp['data']
+
+
+async def get_media_text(
+        servers: list[str],
+        date: str,
+) -> str:
+    def all_servers():
+        return len(servers) == 1 and servers[0] == "all"
+
+    whole_text = ""
+    with open('./data/media.json', 'r') as f:
+        data = json.load(f)
+        for media, obj in data.items():
+            if not all_servers() and media not in servers:
+                continue
+            server_obj = Media.parse_obj(obj)
+            for content in server_obj.contents:
+                if date <= content.created_at:
+                    whole_text += str(content)
+
+    print("Whole text: ", whole_text, date, servers)
+    return whole_text
+
+
+
+

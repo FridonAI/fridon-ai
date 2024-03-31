@@ -6,21 +6,13 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
 
-from app.adapters.coins import retriever
+from app.brain.memory import get_chat_history
+from app.brain.retriever import get_coins_retriever
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter,
-    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter,
+    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter,
 )
 from app.brain.templates import get_prompt
-from app.settings import settings
-
-
-def get_chat_history(session_id):
-    chat_history = PostgresChatMessageHistory(
-        connection_string=settings.POSTGRES_DB_URL,
-        session_id=session_id
-    )
-    return chat_history
 
 
 def get_defi_stake_borrow_lend_extract_chain(
@@ -85,6 +77,19 @@ def get_coin_chart_similarity_extract_chain(
     )
 
 
+def get_media_query_extract(
+        personality,
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('media_query_extract', personality)
+    return (
+        RunnableLambda(MediaQueryExtractAdapter.input_formatter)
+        | prompt
+        | llm
+        | MediaQueryExtractAdapter.parser()
+    )
+
+
 def get_defi_talker_chain(
         personality,
         llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
@@ -111,7 +116,7 @@ def get_coin_search_chain(
         (
             {
                 "query": lambda x: x["query"],
-                "context": RunnableLambda(lambda x: x["query"]) | retriever,
+                "context": RunnableLambda(lambda x: x["query"]) | get_coins_retriever(),
                 "history": lambda x: x["history"]
             }
             | prompt
@@ -121,6 +126,29 @@ def get_coin_search_chain(
         get_chat_history,
         input_messages_key="query",
         history_messages_key="history",
+    )
+
+
+def get_media_talker_chain(
+        personality,
+        retriever,
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('media_talker', personality)
+    return RunnableWithMessageHistory(
+        (
+            {
+                "query": lambda x: x["query"],
+                "context": RunnableLambda(lambda x: x["query"]) | retriever,
+                "history": lambda x: x["history"]
+            }
+            | prompt
+            | llm
+            | StrOutputParser()
+        ),
+        get_chat_history,
+        input_messages_key="query",
+        history_messages_key="history"
     )
 
 
@@ -164,6 +192,8 @@ def get_chain(category, personality):
             return get_coin_chart_similarity_extract_chain(personality)
         case "DeFiTalker":
             return get_defi_talker_chain(personality)
+        case "MediaTalker":
+            return get_media_query_extract(personality)
 
     return get_off_topic_chain(personality)
 

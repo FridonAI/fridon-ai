@@ -51,7 +51,6 @@ Supported operations: supply, borrow, withdraw, repay. Get the operation from th
 For example: lend, deposit are the synonyms of supply. Payback is the synonym of repay and so on. """
     },
 
-
     'defi_transfer_extract': {
         "system": """You are the best token transfer parameters extractor from query. You've to determine following parameters from the given query: token, wallet.
 Return following json string: "{{"status": boolean, "currency": "string" | null, "wallet": "string" | null, "amount": number | null}}"
@@ -106,6 +105,31 @@ If user express the date without mentioning the day then return the date with th
 
 Return dates ISO Date Time Format, like "2023-12-01T00:00:00.000Z"."""
     },
+
+    'media_query_extract': {
+        "system": """Your task is to extract the filter parameters from the user's message. 
+        
+Filter parameters are: 
+    - Servers which servers' data to be considered, they can be absent. If user doesn't mention any server name then default value is ["all"]. \
+If user mentions server names then extract them. Each of them should be in the user's list.
+<user_servers_list>
+[{user_servers_list}]
+<user_servers_list/>
+If the server is not in the list, but prompted server is very similar to the server in the list, then you can consider it as the server from the list. Like if there is one or two characters difference.
+    - Days which is the duration of the news. If a user says latest, recent or similar words then extract the days as 1, \
+if user says last week then extract the days as 7,if user says last month the extract the days as 30, \
+last three months the extract the days as 90 and so on. Default value of days is 30, so if user doesn't mention duration then return days as 30.
+
+Also you have to return query, which is rephrased user's query which clearly states what has to be done, excluding repeating server names and days.
+
+Return the following JSON string: {{"days": number, "servers": ["string"], "query": "string" }}
+
+E.x. "Give me the latest updates of my media" you've to return {{"days": 1, "servers": ["all"], "What are the latest updates?"}}
+
+REMEMBER: EXTRACT JUST PROVIDED SERVERS and Rephrase the query.
+"""
+    },
+    
     'defi_talker': {
         "system": """
 Please generate response for the user's prompt.
@@ -125,6 +149,18 @@ are most relevant to the user's query.
 Use the following JSON format for response: {{"message": "string"}}
 
 E.x. "Give me list of coins which are in top 100 and are AI based" you've to return {{"message": "These coins are 100% match for your request: Fetch.ai, Ocean Protocol, SingularityNET"}}"""
+    },
+
+    'media_talker': {
+        "system": """  
+You are the best media analyzer, talker, news explorer and discoverer, and responder.  
+With given context in <context> xml tags, please answer the user's question.
+<context>
+{context}
+</context>
+
+The only information you're allowed to use is the context provided above.
+"""
     },
 
     "off_topic": {
@@ -151,14 +187,15 @@ def get_prompt(template_name, personality):
              'defi_balance_extract' | \
              'defi_transfer_extract' | \
              'discord_action_extract' | \
-             'coin_chart_similarity_extract':
+             'coin_chart_similarity_extract' | \
+             'media_query_extract':
             return ChatPromptTemplate.from_messages(
                 [
                     ("system", template),
                     ("human", "{query}"),
                 ]
             )
-        case 'defi_talker' | 'coin_search':
+        case 'defi_talker' | 'coin_search' | 'media_talker':
             return ChatPromptTemplate.from_messages(
                 [
                     ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}'),

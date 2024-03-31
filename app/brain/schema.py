@@ -1,17 +1,25 @@
+import datetime
 import json
 from abc import ABC, abstractmethod
 from typing import Literal
 
-from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.output_parsers import PydanticOutputParser, StrOutputParser
+from langchain_core.runnables import RunnableLambda
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_openai import ChatOpenAI
 from pydantic.v1 import BaseModel
 
 from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx, get_balance
-from app.adapters.discord import get_available_servers, follow_server, unfollow_server
+from app.adapters.medias.discord import get_available_servers, follow_server, unfollow_server, \
+    get_media_text, get_wallet_servers
+from app.brain.memory import get_chat_history
+from app.brain.retriever import get_media_retriever
+from app.brain.templates import get_prompt
 
 
 class Adapter(ABC, BaseModel):
     @abstractmethod
-    async def get_response(self, chat_id, wallet_id):
+    async def get_response(self, chat_id, wallet_id, personality):
         pass
 
 
@@ -23,7 +31,7 @@ class DefiStakeBorrowLendAdapter(Adapter):
     status: bool
     comment: str | None
 
-    async def get_response(self, chat_id, wallet_id):
+    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         if not self.status:
             return self.comment
 
@@ -48,7 +56,7 @@ class DefiBalanceAdapter(Adapter):
     operation: Literal["all", "supply", "borrow"] | None
     currency: str | None
 
-    async def get_response(self, chat_id, wallet_id):
+    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         if not self.status:
             return self.comment
         balance_response = await get_balance(
@@ -71,7 +79,7 @@ class DefiTransferAdapter(Adapter):
     amount: float | None
     wallet: str | None
 
-    async def get_response(self, chat_id, wallet_id):
+    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         if not self.status:
             return self.comment
         return await get_transfer_tx(
@@ -90,7 +98,7 @@ class DefiTransferAdapter(Adapter):
 class DefiTalkerAdapter(Adapter):
     message: str
 
-    async def get_response(self, chat_id, wallet_id):
+    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         return self.message
 
     @staticmethod
@@ -101,7 +109,7 @@ class DefiTalkerAdapter(Adapter):
 class CoinSearcherAdapter(Adapter):
     message: str
 
-    async def get_response(self, chat_id, wallet_id):
+    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         return self.message
 
     @staticmethod
@@ -115,7 +123,7 @@ class DiscordActionAdapter(Adapter):
     action: Literal["follow", "unfollow"] | None
     server: str | None
 
-    async def get_response(self, chat_id, wallet_id):
+    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         if not self.status:
             return self.comment
 
@@ -150,9 +158,60 @@ class CoinChartSimilarityAdapter(Adapter):
     def parser() -> PydanticOutputParser:
         return PydanticOutputParser(pydantic_object=CoinChartSimilarityAdapter)
 
-    async def get_response(self, chat_id, wallet_id):
+    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         pass
 
 
+class MediaQueryExtractAdapter(Adapter):
+    servers: list[str]
+    days: int
+    query: str
 
+    async def get_response(self, chat_id, wallet_id, personality, *args, **kwargs):
+        date = (datetime.date.today() - datetime.timedelta(days=self.days)).isoformat()
+        whole_text = await get_media_text(self.servers, date)
+        retriever = get_media_retriever(whole_text)
 
+        def get_media_talker_chain(
+                personality,
+                retriever,
+                llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        ):
+            prompt = get_prompt('media_talker', personality)
+            print("Prompt", prompt)
+            return RunnableWithMessageHistory(
+                (
+                        {
+                            "query": lambda x: x["query"],
+                            "context": RunnableLambda(lambda x: x["query"]) | retriever,
+                            "history": lambda x: x["history"],
+                        }
+                        | prompt
+                        | llm
+                        | StrOutputParser()
+                ),
+                get_chat_history,
+                input_messages_key="query",
+                history_messages_key="history"
+            )
+
+        chain = get_media_talker_chain(personality, retriever)
+
+        response = await chain.ainvoke(
+            {"query": self.query},
+            config={"configurable": {"session_id": chat_id}}
+        )
+        return response
+
+    @staticmethod
+    def parser() -> PydanticOutputParser:
+        return PydanticOutputParser(pydantic_object=MediaQueryExtractAdapter)
+
+    @staticmethod
+    async def input_formatter(inp):
+        servers = await get_wallet_servers(inp["wallet_id"])
+        print("Hoo ieee")
+        return {
+            "query": inp["query"],
+            "user_servers_list": servers,
+        }

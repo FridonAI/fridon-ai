@@ -72,12 +72,17 @@ defi_talker = Route(
 )
 
 
-defi_news = Route(
-    name="News",
+media_talker = Route(
+    name="MediaTalker",
     utterances=[
-        "What is the latest news on my followed Discords?",
-        "Summarize the latest news on my Defiland's announcements",
+        "What is the latest news on my media?",
+        "Summarize the latest news on my Defiland's announcements.",
         "What is the today's news on Twitter?",
+        "When is Madlad's airdrop?",
+        "Are there any updates about Bonk staking?",
+        "Are there any airdrops on Jupiter?",
+        "Any upcoming airdrops on my media?",
+        "Are there any airdrop news on my socials?",
     ]
 )
 
@@ -170,11 +175,11 @@ routes = [
     defi_stake_borrow_lend_route,
     defi_balance,
     defi_talker,
-    defi_news,
     defi_transfer,
     coin_chart_similarity,
     coin_search,
     discord_action,
+    media_talker,
     off_topic,
 ]
 
