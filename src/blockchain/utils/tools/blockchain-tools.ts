@@ -76,6 +76,26 @@ export class BlockchainTools {
     return token.symbol;
   }
 
+  async convertMintAddressesToSymbols(
+    mintAddresses: string[],
+  ): Promise<string[]> {
+    const cachedTokenList: TokenListType | undefined =
+      await this.cacheManager.get('tokenList');
+
+    const strictTokenList = cachedTokenList || (await this.fetchTokenList());
+
+    return mintAddresses.map((mintAddress) => {
+      const token = strictTokenList.find(
+        (token) => token.mintAddress === mintAddress,
+      );
+
+      if (!token) {
+        throw new Error(`Token with mint address ${mintAddress} not found`);
+      }
+      return token.symbol;
+    });
+  }
+
   async findTokenByMintAddress(mintAddress: string): Promise<SplTokenType> {
     const cachedTokenList: TokenListType | undefined =
       await this.cacheManager.get('tokenList');

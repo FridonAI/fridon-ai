@@ -69,7 +69,7 @@ export class BlockchainService {
   }
 
   async getSymmetryInformation(): Promise<SymmetryFundsType[]> {
-    return this.symmetryFactory.getAllBaskets();
+    return await this.symmetryFactory.getAllBaskets();
   }
 
   async transferTokens(

@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { DONATION_ADDRESS } from '../utils/constants';
 import { TransactionFactory } from '../factories/transaction-factory';
 import { PublicKey } from '@metaplex-foundation/js';
+import { BlockchainTools } from '../utils/tools/blockchain-tools';
 
 export const SYMMETRY_CREATE_BASKET_API =
   'https://api.symmetry.fi/baskets/create';
@@ -23,7 +24,10 @@ export type TokenCompositionType = {
 // ]
 @Injectable()
 export class SymmetryApiFactory {
-  constructor(private readonly transactionFactory: TransactionFactory) {}
+  constructor(
+    private readonly transactionFactory: TransactionFactory,
+    private readonly tools: BlockchainTools,
+  ) {}
 
   async createBasketApi(
     walletAddress: string,
@@ -399,8 +403,19 @@ export class SymmetryApiFactory {
     const response = await request.json();
     const data: SymmetryFundsType[] = response.result;
 
-    console.log('data', JSON.stringify(data));
-    return data;
+    const result: any = [];
+
+    for (const basket of data) {
+      const symbols = await this.tools.convertMintAddressesToSymbols(
+        basket.current_comp_token,
+      );
+      result.push({
+        ...basket,
+        current_comp_token_symbol: symbols,
+      });
+    }
+
+    return result;
   }
 
   async getUserPoints(walletAddress: string) {

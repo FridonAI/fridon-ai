@@ -51,6 +51,15 @@ export class PointsResponseDto extends BaseDto<PointsResponseDto> {
   data: PointsDto[];
 }
 // Symmetry
+export class SymmetryBasketDto {
+  @ApiProperty({ example: 'Solana LSD' })
+  name: string;
+}
+
+export class SymmetryBasketResponseDto extends BaseDto<SymmetryBasketResponseDto> {
+  @ApiProperty({ example: 10 })
+  points: number;
+}
 
 // Transfer
 export class TransferTokenRequestBodyDto {
