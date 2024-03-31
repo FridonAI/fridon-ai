@@ -1,7 +1,7 @@
 import time
 
 from pinecone import PodSpec
-from pinecone.grpc import PineconeGRPC, GRPCIndex
+from pinecone import Pinecone, Index
 
 from app.utils.timeseries.index._base import BaseTimeSeriesIndex
 
@@ -9,11 +9,11 @@ from app.utils.timeseries.index._base import BaseTimeSeriesIndex
 class PineconeTimeSeriesIndex(BaseTimeSeriesIndex):
 
     def __init__(self, index_name: str, dimension: int):
-        pinecone = PineconeGRPC()
+        pinecone = Pinecone()
         self._index = self._create_index(pinecone, index_name, dimension)
 
     @staticmethod
-    def _create_index(pinecone: PineconeGRPC, index_name: str, dimension: int) -> GRPCIndex:
+    def _create_index(pinecone: Pinecone, index_name: str, dimension: int) -> Index:
         existing_indexes = [
             index_info["name"] for index_info in pinecone.list_indexes()
         ]
@@ -38,7 +38,8 @@ class PineconeTimeSeriesIndex(BaseTimeSeriesIndex):
         if isinstance(vectors, tuple):
             vectors = [vectors]
 
-        self._index.upsert(vectors)
+        resp = self._index.upsert(vectors)
+        print(resp)
 
     def query(self, query_vector: list[float], top_k: int) -> list[tuple[str, float]]:
         query_response = self._index.query(

@@ -20,6 +20,7 @@ jq = "^1.7.0"
 faiss-cpu = "^1.8.0"
 chronos = {git = "https://github.com/amazon-science/chronos-forecasting.git"}
 pinecone-client = {version = "^3.2.2", extras = ["grpc"]}
+pycoingecko = "^3.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
@@ -27,6 +28,7 @@ mypy = "^1.9.0"
 ruff = "^0.3.3"
 coverage = "^7.4.4"
 pre-commit = "^3.6.2"
+jupyter = "^1.0.0"
 
 
 [build-system]

@@ -25,6 +25,10 @@ class Settings(BaseSettings):
 
     LITERAL_API_KEY: Optional[str]
 
+    PINECONE_API_KEY: str
+
+    BIRDEYE_API_KEY: str
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'
