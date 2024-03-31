@@ -12,7 +12,7 @@ class ChronosPipeline(BaseChronosPipeline):
     ) -> torch.Tensor:
         context = self._prepare_and_validate_context(context)
         token_ids, attention_mask, tokenizer_state = self.tokenizer.input_transform(context)
-        embeddings = self.model(
+        embeddings = self.model.encode(
             input_ids=token_ids.to(self.model.device),
             attention_mask=attention_mask.to(self.model.device),
         )
