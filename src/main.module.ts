@@ -26,6 +26,10 @@ import { UserModule } from './medias/medias.module';
       connection: {
         host: process.env['REDIS_HOST'],
       },
+      defaultJobOptions: {
+        removeOnComplete: true,
+        removeOnFail: true,
+      },
     }),
 
     // Custom Modules
