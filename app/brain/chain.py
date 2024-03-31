@@ -152,6 +152,19 @@ def get_media_talker_chain(
     )
 
 
+def get_response_generator_chain(
+        personality,
+        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+):
+    prompt = get_prompt('response_generator', personality)
+    return RunnableWithMessageHistory(
+        (prompt | llm | StrOutputParser()),
+        get_chat_history,
+        input_messages_key="query",
+        history_messages_key="history",
+    )
+
+
 def get_error_chain(
         personality,
         llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)

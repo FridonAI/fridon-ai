@@ -89,8 +89,6 @@ async def get_media_text(
             for content in server_obj.contents:
                 if date <= content.created_at:
                     whole_text += str(content)
-
-    print("Whole text: ", whole_text, date, servers)
     return whole_text
 
 

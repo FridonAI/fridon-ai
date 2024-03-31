@@ -1,4 +1,4 @@
-from app.brain.chain import get_chain, get_chat_history, get_error_chain
+from app.brain.chain import get_chain, get_chat_history, get_error_chain, get_response_generator_chain
 from pydantic.v1 import BaseModel
 
 from app.brain.router import get_category
@@ -31,7 +31,7 @@ class Chat:
                 final_response = response
 
             else:
-                final_response = await (get_chain('response_generator', self.personality)).ainvoke(
+                final_response = await get_response_generator_chain(self.personality).ainvoke(
                     {"query": message, "response": response},
                     config={"configurable": {"session_id": self.chat_id}}
                 )

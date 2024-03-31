@@ -138,7 +138,7 @@ Use the following JSON format for response: {{"message": "string"}} """
 
     'response_generator': {
         "system": """
-Please considering question, chat history rewrite assistant generated response in a more informative, friendly and understandable way."""
+Considering chat history, question, result of the question, generate response in your style. Your response must come from the result."""
     },
 
     'coin_search': {
@@ -210,7 +210,7 @@ def get_prompt(template_name, personality):
                     ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}'),
                     MessagesPlaceholder(variable_name="history"),
                     ("human", "{query}"),
-                    ("assistant", "{response}")
+                    ("assistant", "Result: {response}")
                 ]
             )
 
