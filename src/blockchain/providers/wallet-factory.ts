@@ -87,7 +87,14 @@ export class WalletFactory {
       })
       .filter((val) => val !== null) as TokenBalance[];
 
-    return [...balances, await this.fetchSolBalance(new PublicKey(publicKey))];
+    if (mintAddresses.length === 0) {
+      return [
+        ...balances,
+        await this.fetchSolBalance(new PublicKey(publicKey)),
+      ];
+    }
+
+    return balances;
   }
 
   private async fetchSolBalance(publicKey: PublicKey) {
