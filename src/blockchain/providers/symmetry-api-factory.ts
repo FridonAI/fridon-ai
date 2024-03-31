@@ -220,7 +220,7 @@ export class SymmetryApiFactory {
     amount: number,
   ): Promise<VersionedTransaction> {
     const payer = new PublicKey(walletAddress);
-
+    basketMintAddress;
     const depositParameters = {
       user: walletAddress,
       basket: basketMintAddress,

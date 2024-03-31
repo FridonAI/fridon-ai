@@ -38,6 +38,13 @@ export enum OperationType {
   Withdraw = 'withdraw',
 }
 
+export enum SymmetryOperationType {
+  Deposit = 'deposit',
+  Withdraw = 'withdraw',
+  Create = 'create',
+  Edit = 'edit',
+}
+
 export enum PointsProviderType {
   Kamino = 'kamino',
   Symmetry = 'symmetry',

@@ -14,7 +14,6 @@ import {
 } from '@solana/web3.js';
 import { getLatestBlockHash } from '../utils/connection';
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
-import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { AuxType } from '../events/transaction.event';
 import { TransactionListenerService } from '../transaction-listener/transaction-listener.service';
@@ -40,7 +39,6 @@ export const SOURCE_TOKEN_OWNER_SECRET = [
 @Injectable()
 export class TransactionFactory {
   constructor(
-    @InjectQueue('transaction-listener')
     private readonly connection: Connection,
     private readonly transactionListenerService: TransactionListenerService,
   ) {}

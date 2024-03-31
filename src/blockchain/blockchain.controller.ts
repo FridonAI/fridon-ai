@@ -4,11 +4,12 @@ import {
   TransferTokenResponseDto,
   TransferTokenRequestBodyDto,
   DefiOperationRequestBodyDto,
-  DefiOperationResponseDto,
   BalanceOperationRequestBodyDto,
   BalanceOperationResponseDto,
   PointsRequestBodyDto,
   PointsResponseDto,
+  SymmetryDefiOperationsRequestBodyDto,
+  TransactionResponseDto,
   // BalanceOperationResponseBodyDto,
 } from './blockchain.dto';
 import { BlockchainService } from './blockchain.service';
@@ -50,7 +51,7 @@ export class BlockchainController {
   @Post('defi-operation')
   async defiOperations(
     @Body() body: DefiOperationRequestBodyDto,
-  ): Promise<DefiOperationResponseDto> {
+  ): Promise<TransactionResponseDto> {
     this.logger.debug('Body', JSON.stringify(body, null, 2));
     const tx = await this.blockchainService.defiOperations(
       body.walletAddress,
@@ -60,16 +61,8 @@ export class BlockchainController {
       body.amount,
     );
 
-    // Sign Message
-
-    // // Send transaction
-    // const txId = await this.transactionFactory.sendSerializedTransaction(
-    //   this.connection,
-    //   signedSerializedTx.serialize(),
-    // );
-
     // console.log('txId', txId);
-    return new TransferTokenResponseDto({
+    return new TransactionResponseDto({
       data: {
         serializedTx: Object.values(tx.serialize()),
       },
@@ -91,6 +84,36 @@ export class BlockchainController {
     balances.sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
     return new BalanceOperationResponseDto({
       data: balances,
+    });
+  }
+
+  @Post('symmetry/operation')
+  async symmetryOperations(@Body() body: SymmetryDefiOperationsRequestBodyDto) {
+    const result = await this.blockchainService.getSymmetryOperations(
+      body.walletAddress,
+      body.basketAddress,
+      body.amount,
+      body.operation,
+    );
+
+    // // Sign Message
+    // const signedSerializedTx = await this.transactionFactory.addSignerToBuffer(
+    //   result.serialize(),
+    // );
+
+    // const txId = await this.transactionFactory.sendSerializedTransaction(
+    //   signedSerializedTx,
+    //   {
+    //     chatId: '',
+    //   },
+    // );
+
+    // console.log('txId', txId);
+
+    return new TransactionResponseDto({
+      data: {
+        serializedTx: Object.values(result.serialize()),
+      },
     });
   }
 

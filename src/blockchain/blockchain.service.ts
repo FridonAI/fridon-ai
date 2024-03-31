@@ -10,6 +10,7 @@ import {
   OperationType,
   PointsProviderType,
   ProviderType,
+  SymmetryOperationType,
 } from './utils/types';
 import { KaminoFactory } from './providers/kamino-factory';
 import { BlockchainTools } from './utils/tools/blockchain-tools';
@@ -196,6 +197,23 @@ export class BlockchainService {
       default:
         throw new Error('Operation not supported');
     }
+  }
+
+  async getSymmetryOperations(
+    walletAddress: string,
+    basketMintAddress: string,
+    amount: number,
+    operation: SymmetryOperationType,
+  ) {
+    if (operation === SymmetryOperationType.Deposit) {
+      return await this.symmetryFactory.depositBasketApi(
+        walletAddress,
+        basketMintAddress,
+        amount,
+      );
+    }
+
+    throw new Error('Operation not supported');
   }
 
   private getProviderInstance(provider: ProviderType) {

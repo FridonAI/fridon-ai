@@ -7,6 +7,7 @@ import {
   OperationType,
   PointsProviderType,
   ProviderType,
+  SymmetryOperationType,
 } from './utils/types';
 import { Transform } from 'class-transformer';
 
@@ -59,6 +60,33 @@ export class SymmetryBasketDto {
 export class SymmetryBasketResponseDto extends BaseDto<SymmetryBasketResponseDto> {
   @ApiProperty({ example: 10 })
   points: number;
+}
+
+export class SymmetryDefiOperationsRequestBodyDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
+  walletAddress: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'FSmR7QfFvtvqDMo4w5e39UtEubiY4q8T27wnNCJgQSxz' })
+  basketAddress: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' })
+  tokenAddress: string;
+
+  @IsNumber()
+  @ApiProperty({ example: 10 })
+  amount: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: SymmetryOperationType.Deposit })
+  @Transform(({ value }) => value.toLowerCase())
+  operation: SymmetryOperationType;
 }
 
 // Transfer
@@ -116,7 +144,7 @@ export class DefiOperationRequestBodyDto {
   currency: string;
 }
 
-export class DefiOperationResponseDto extends BaseTransactionResponseDto {}
+export class TransactionResponseDto extends BaseTransactionResponseDto {}
 
 // Balance Operations
 export class BalanceOperationRequestBodyDto {
