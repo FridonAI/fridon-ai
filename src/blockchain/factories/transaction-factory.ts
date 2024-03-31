@@ -43,12 +43,9 @@ export class TransactionFactory {
     @InjectQueue('transaction-listener')
     private readonly connection: Connection,
     private readonly transactionListenerService: TransactionListenerService,
-  ) { }
+  ) {}
 
-  async sendTransaction(
-    ix: TransactionInstruction,
-    keypairs: Keypair,
-  ) {
+  async sendTransaction(ix: TransactionInstruction, keypairs: Keypair) {
     const tx = new Transaction();
 
     tx.add(ix);

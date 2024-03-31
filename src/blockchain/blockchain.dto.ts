@@ -5,6 +5,7 @@ import {
   BalanceOperationType,
   BalanceProviderType,
   OperationType,
+  PointsProviderType,
   ProviderType,
 } from './utils/types';
 import { Transform } from 'class-transformer';
@@ -20,10 +21,36 @@ export class BaseTransactionResponseDto extends BaseDto<BaseTransactionResponseD
   data: TransactionDataResponseDto;
 }
 
+// Points
+export class PointsRequestBodyDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
+  walletAddress: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: PointsProviderType.Symmetry })
+  @Transform(({ value }) => value.toLowerCase())
+  provider: PointsProviderType;
+}
+
+export class PointsDto extends BaseDto<PointsResponseDto> {
+  @ApiProperty({ example: 10 })
+  points: number;
+
+  @ApiProperty({ example: PointsProviderType.All })
+  provider: PointsProviderType;
+
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
+  walletAddress: string;
+}
+
+export class PointsResponseDto extends BaseDto<PointsResponseDto> {
+  @ApiProperty({ type: PointsDto })
+  data: PointsDto[];
+}
 // Symmetry
-
-
 
 // Transfer
 export class TransferTokenRequestBodyDto {

@@ -38,6 +38,12 @@ export enum OperationType {
   Withdraw = 'withdraw',
 }
 
+export enum PointsProviderType {
+  Kamino = 'kamino',
+  Symmetry = 'symmetry',
+  All = 'all',
+}
+
 export enum ProviderType {
   Kamino = 'kamino',
   Marginify = 'marginify',
