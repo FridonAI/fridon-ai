@@ -17,13 +17,17 @@ export class GetChatsResponseDto extends BaseDto<GetChatsResponseDto> {
 export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
   @ApiProperty({
     example: [
-      { content: 'Hello', messageType: 'Query' },
-      { content: 'Hi, welcome to chat bot', messageType: 'Response' },
-      { content: 'Hello', messageType: 'Query' },
-      { content: 'U blind my G?', messageType: 'Response' },
+      { id: 'id1', content: 'Hello', messageType: 'Query' },
+      { id: 'id2', content: 'Hi', messageType: 'Response' },
+      { id: 'id3', content: 'Hello', messageType: 'Query' },
+      { id: 'id4', content: 'U blind my G?', messageType: 'Response' },
     ],
   })
-  messages: { content: string; messageType: 'Query' | 'Response' }[];
+  messages: {
+    id: string;
+    content: string;
+    messageType: 'Query' | 'Response';
+  }[];
 }
 
 // Create Chat

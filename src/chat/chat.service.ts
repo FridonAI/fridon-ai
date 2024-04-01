@@ -30,6 +30,7 @@ export class ChatService {
     const chat = await this.chatRepository.getChat(chatId);
     return {
       messages: chat.messages.map((message) => ({
+        id: message.id,
         content: message.content,
         messageType: message.messageType,
       })),

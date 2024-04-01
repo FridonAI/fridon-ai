@@ -62,6 +62,7 @@ export class ChatHttpController {
             return null;
 
           return {
+            id: m.id,
             content: m.content,
             messageType: m.messageType,
           };
