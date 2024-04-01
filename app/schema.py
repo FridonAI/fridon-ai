@@ -7,12 +7,12 @@ class UserInput(CamelModel):
 
 class DataInput(CamelModel):
     message: str | dict
-    personality: str | None
+    personality: str | None = None
 
 
 class DataRequestInput(CamelModel):
-    message: str | dict | None
-    serialized_transaction: list[int] | None
+    message: str | dict | None = None
+    serialized_transaction: list[int] | None = None
 
 
 class Request(CamelModel):
