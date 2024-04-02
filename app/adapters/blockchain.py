@@ -3,10 +3,24 @@ from dependency_injector.wiring import Provide, inject
 from app.schema import ResponseDto
 from app.utils.redis import Publisher
 
-from app.ram import chat_queues
-
 import requests
 import os
+
+
+async def _send_and_wait(chat_id, wallet_id, request_url, request, pub, queue_getter):
+    api_url = os.environ["API_URL"]
+    if not api_url:
+        raise Exception("API_URL not set in environment variables")
+
+    resp = requests.post(request_url, json=request).json()
+
+    await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, None, resp['data']['serializedTx'], {})))
+
+    print("Waiting for response")
+    response = await queue_getter.get(queue_name=chat_id)
+    print("Got Response", response)
+    return response
+
 
 
 @inject
@@ -18,6 +32,7 @@ async def get_stake_borrow_lend_tx(
         chat_id: str,
         wallet_id: str,
         pub: Publisher = Provide["publisher"],
+        queue_getter=Provide["queue_getter"],
         **kwargs
 ) -> str:
     print(f"Sending {operation} request to blockchain!")
@@ -31,17 +46,9 @@ async def get_stake_borrow_lend_tx(
     }
 
     api_url = os.environ["API_URL"]
-    if not api_url:
-        raise Exception("API_URL not set in environment variables")
+    request_url = f"{api_url}/blockchain/defi-operation"
 
-    resp = requests.post(f"{api_url}/blockchain/defi-operation", json=req).json()
-
-    await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, None, resp['data']['serializedTx'], {})))
-
-    print("Waiting for response")
-    response = await chat_queues[chat_id].get()
-    print("Got Response", response)
-    return response
+    return await _send_and_wait(chat_id, wallet_id, request_url, req, pub, queue_getter)
 
 
 @inject
@@ -52,6 +59,7 @@ async def get_transfer_tx(
         chat_id: str,
         wallet_id: str,
         pub: Publisher = Provide["publisher"],
+        queue_getter=Provide["queue_getter"],
 ) -> str:
     print("Sending request to blockchain")
 
@@ -61,18 +69,11 @@ async def get_transfer_tx(
         "currency": currency,
         "amount": amount
     }
+
     api_url = os.environ["API_URL"]
-    if not api_url:
-        raise Exception("API_URL not set in environment variables")
+    request_url = f"{api_url}/blockchain/transfer-tokens"
 
-    resp = requests.post(f"{api_url}/blockchain/transfer-tokens", json=req).json()
-    print(resp)
-    await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, None, resp['data']['serializedTx'], {})))
-
-    print("Waiting for response")
-    response = await chat_queues[chat_id].get()
-    print("Got Response", response)
-    return response
+    return await _send_and_wait(chat_id, wallet_id, request_url, req, pub, queue_getter)
 
 
 async def get_balance(

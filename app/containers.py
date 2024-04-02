@@ -23,10 +23,11 @@ class Container(containers.DeclarativeContainer):
         redis_pool=redis_pool,
     )
 
-    process_user_message_service = providers.Factory(
-        services.ProcessUserMessageService,
+    queue_getter = providers.Factory(
+        redis.QueueGetter,
+        redis_pool=redis_pool,
     )
 
-    handle_front_message_service = providers.Factory(
-        services.HandleFrontMessageService,
+    process_user_message_service = providers.Factory(
+        services.ProcessUserMessageService,
     )
