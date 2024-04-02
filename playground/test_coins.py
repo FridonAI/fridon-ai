@@ -1,3 +1,4 @@
+import json
 from typing import Iterator
 
 import torch
@@ -9,6 +10,8 @@ from app.utils.timeseries import TimeSeriesDataset, TimeSeriesData
 from app.utils.timeseries import TimeSeriesEmbeddings
 from app.utils.timeseries import TimeSeriesVectorStore
 from datetime import datetime, timedelta
+
+from app.utils.timeseries.index.pgvector import PgVectorTimeSeriesIndex
 
 load_dotenv()
 
@@ -28,23 +31,14 @@ if __name__ == "__main__":
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=30)
 
-    token_list = [
-        {
-            "symbol": "SOL1",
-            "address": "So11111111111111111111111111111111111111112",
-        },
-        {
-            "symbol": "SOL2",
-            "address": "So11111111111111111111111111111111111111112",
-        }
-    ]
+    token_list = json.load(open("data/coins-list.json", "r"))
 
     dataset = BirdEyeDataset(token_list, birdeye_api, int(start_date.timestamp()), int(end_date.timestamp()), "1H")
 
     embeddings = TimeSeriesEmbeddings("amazon/chronos-t5-tiny")
-    index = PineconeTimeSeriesIndex("embeddings-chronos-t5-tiny", 256)
+    index = PgVectorTimeSeriesIndex()
     vector_store = TimeSeriesVectorStore(embeddings, index)
-    # vector_store.load_dataset(dataset)
+    vector_store.load_dataset(dataset)
 
     solana_tensor = convert_history_to_tensor(birdeye_api.get_history(token_list[0]["address"], int(start_date.timestamp()), int(end_date.timestamp()), "1H"))
     print(vector_store.search(vector_store.embed(solana_tensor), top_k=5))

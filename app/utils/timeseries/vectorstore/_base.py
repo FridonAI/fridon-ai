@@ -17,6 +17,6 @@ class TimeSeriesVectorStore:
 
     def load_dataset(self, dataset: TimeSeriesDataset) -> None:
         for batch in TimeSeriesDataLoader(dataset):
-            vector = self.embed([t.data for t in batch])
+            vector = self.embed([t.data for t in batch]).tolist()
             symbols = [t.symbol for t in batch]
             self._index.upsert(zip(symbols, vector))
