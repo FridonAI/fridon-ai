@@ -3,6 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ChatId } from 'src/chat/domain/chat-id.value-object';
 import { AiChatMessageCreatedDto, AiChatMessageInfoCreatedDto } from './ai.dto';
 import { randomUUID } from 'crypto';
+import { Queue } from 'bullmq';
 
 export class AiAdapter {
   private logger = new Logger(AiAdapter.name);
@@ -29,7 +30,7 @@ export class AiAdapter {
     this.client.emit(eventName, event);
   }
 
-  emitChatMessageInfoCreated(chatId: ChatId, message: string) {
+  async emitChatMessageInfoCreated(chatId: ChatId, message: string) {
     const eventName = 'chat_message_info_created';
     const event = new AiChatMessageInfoCreatedDto({
       chatId: chatId.value,
@@ -45,5 +46,7 @@ export class AiAdapter {
     );
 
     this.client.emit(eventName, event);
+    const q = new Queue(chatId.value);
+    await q.add(eventName, event);
   }
 }

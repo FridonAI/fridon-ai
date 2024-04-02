@@ -79,7 +79,7 @@ export class ChatService {
       content: data,
       personality: personality,
     });
-    this.aiAdapter.emitChatMessageInfoCreated(chatId, data);
+    await this.aiAdapter.emitChatMessageInfoCreated(chatId, data);
 
     return { id: chatMessageId };
   }
