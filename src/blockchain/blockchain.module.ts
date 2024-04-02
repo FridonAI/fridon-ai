@@ -16,6 +16,7 @@ import { NumberFormatter } from './utils/tools/number-formatter';
 import { WalletFactory } from './providers/wallet-factory';
 import { SymmetryApiFactory } from './providers/symmetry-api-factory';
 import { PointsFactory } from './providers/points-factory';
+import { JupiterFactory } from './providers/jupiter-factory';
 
 @Module({
   imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
@@ -29,6 +30,7 @@ import { PointsFactory } from './providers/points-factory';
       useValue: connection,
     },
     KaminoFactory,
+    JupiterFactory,
     PointsFactory,
     SymmetryApiFactory,
     WalletFactory,

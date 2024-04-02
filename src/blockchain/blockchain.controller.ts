@@ -10,6 +10,8 @@ import {
   PointsResponseDto,
   SymmetryDefiOperationsRequestBodyDto,
   TransactionResponseDto,
+  SwapTokensRequestBodyDto,
+  SwapTokensResponseDto,
   // BalanceOperationResponseBodyDto,
 } from './blockchain.dto';
 import { BlockchainService } from './blockchain.service';
@@ -133,6 +135,26 @@ export class BlockchainController {
 
     return new PointsResponseDto({
       data: result,
+    });
+  }
+
+  @Post('swap')
+  async swapTokens(
+    @Body() body: SwapTokensRequestBodyDto,
+  ): Promise<SwapTokensResponseDto> {
+    this.logger.debug('Body', JSON.stringify(body, null, 2));
+
+    const tx = await this.blockchainService.swapTokens(
+      body.walletAddress,
+      body.fromToken,
+      body.toToken,
+      body.amount,
+    );
+
+    return new SwapTokensResponseDto({
+      data: {
+        serializedTx: Object.values(tx.serialize()),
+      },
     });
   }
 }

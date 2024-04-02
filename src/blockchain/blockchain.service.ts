@@ -20,6 +20,7 @@ import {
   SymmetryFundsType,
 } from './providers/symmetry-api-factory';
 import { PointsFactory } from './providers/points-factory';
+import { JupiterFactory } from './providers/jupiter-factory';
 
 @Injectable()
 export class BlockchainService {
@@ -31,7 +32,39 @@ export class BlockchainService {
     private readonly walletFactory: WalletFactory,
     private readonly pointsFactory: PointsFactory,
     private readonly symmetryFactory: SymmetryApiFactory,
+    private readonly jupiterFactory: JupiterFactory,
   ) {}
+
+  async swapTokens(
+    walletAddress: string,
+    fromToken: string,
+    toToken: string,
+    amount: number,
+  ) {
+    const fromMintAddress = await this.tools.convertSymbolToMintAddress(
+      this.tools.getCurrencySymbol(fromToken),
+    );
+
+    const toMintAddress = await this.tools.convertSymbolToMintAddress(
+      this.tools.getCurrencySymbol(toToken),
+    );
+
+    const tokenInfo = await getTokenSupply(fromMintAddress, this.connection);
+
+    if (!tokenInfo) {
+      throw new HttpException('Token not found', 404);
+    }
+
+    const decimals = tokenInfo.value.decimals;
+    const amountBN = new TokenAmount(amount, decimals, false);
+
+    return await this.jupiterFactory.swapTokens(
+      walletAddress,
+      fromMintAddress,
+      toMintAddress,
+      amountBN.toNumber(),
+    );
+  }
 
   async getProtocolPoints(walletAddress: string, provider: PointsProviderType) {
     return this.pointsFactory.getPoints(walletAddress, provider);

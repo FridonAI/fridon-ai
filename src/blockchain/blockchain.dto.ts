@@ -89,6 +89,31 @@ export class SymmetryDefiOperationsRequestBodyDto {
   operation: WrapperType<SymmetryOperationType>;
 }
 
+// Swap
+export class SwapTokensRequestBodyDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
+  // toto: custom validation for wallet Address
+  walletAddress: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'sol' })
+  fromToken: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: 'usdc' })
+  toToken: string;
+
+  @IsNumber()
+  @ApiProperty({ example: 10 })
+  amount: number;
+}
+
+export class SwapTokensResponseDto extends BaseTransactionResponseDto {}
+
 // Transfer
 export class TransferTokenRequestBodyDto {
   @IsString()

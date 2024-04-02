@@ -1476,7 +1476,7 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@jup-ag/api@^6.0.1":
+"@jup-ag/api@^6.0.1", "@jup-ag/api@^6.0.9":
   version "6.0.19"
   resolved "https://registry.yarnpkg.com/@jup-ag/api/-/api-6.0.19.tgz#d7ff4c2aae7b07c7c606d1d4787e162897b88567"
   integrity sha512-5IjWtAhl8evXtnmvqHCiVXtBdcxS2gZdZ07Njkx6hCpo90C+WYKUbF0v/pPio+laKddcSh6xni+yCkgM+CRpTQ==
