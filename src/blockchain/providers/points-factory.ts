@@ -1,3 +1,4 @@
+import { HttpException } from '@nestjs/common';
 import { PointsProviderType } from '../utils/types';
 
 export type UserPointsResponseType = {
@@ -22,7 +23,7 @@ export class PointsFactory {
       return Math.round(totalPointsEarnedNumber * 100) / 100;
     } catch (error) {
       console.error('Error while fetching user points', error);
-      throw new Error('Error while fetching user points');
+      throw new HttpException('Error while fetching user points', 403);
     }
   }
 

@@ -1,6 +1,6 @@
 import { Connection, Transaction, VersionedTransaction } from '@solana/web3.js';
 
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { DONATION_ADDRESS } from '../utils/constants';
 import { TransactionFactory } from '../factories/transaction-factory';
 import { PublicKey } from '@metaplex-foundation/js';
@@ -145,7 +145,10 @@ export class SymmetryApiFactory {
       return await Promise.all(versionTransactionsPromise);
     } else {
       console.error('Something went wrong', response);
-      throw new Error('Something went wrong while creating the basket.');
+      throw new HttpException(
+        'Something went wrong while creating the basket.',
+        403,
+      );
     }
   }
 
@@ -210,7 +213,10 @@ export class SymmetryApiFactory {
       );
     } else {
       console.error('Something went wrong', response);
-      throw new Error('Something went wrong while editing the basket.');
+      throw new HttpException(
+        'Something went wrong while editing the basket.',
+        403,
+      );
     }
   }
 
@@ -245,7 +251,10 @@ export class SymmetryApiFactory {
       );
     } else {
       console.error('Something went wrong', response);
-      throw new Error('Something went wrong while depositing the basket.');
+      throw new HttpException(
+        'Something went wrong while depositing the basket.',
+        403,
+      );
     }
   }
 
@@ -280,7 +289,10 @@ export class SymmetryApiFactory {
       );
     } else {
       console.error('Something went wrong', response);
-      throw new Error('Something went wrong while depositing the basket.');
+      throw new HttpException(
+        'Something went wrong while depositing the basket.',
+        403,
+      );
     }
   }
 
@@ -315,7 +327,10 @@ export class SymmetryApiFactory {
       );
     } else {
       console.error('Something went wrong', response);
-      throw new Error('Something went wrong while redeeming the basket.');
+      throw new HttpException(
+        'Something went wrong while redeeming the basket.',
+        403,
+      );
     }
   }
 

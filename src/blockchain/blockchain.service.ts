@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { Connection } from '@solana/web3.js';
 import { getDestinationAddress, getTokenSupply } from './utils/connection';
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
@@ -47,18 +47,21 @@ export class BlockchainService {
     currency: string,
     amount: number,
   ): Promise<Uint8Array> {
+    // convert symbol if needed
+    currency = this.tools.getCurrencySymbol(currency);
+
     const mintAddress = await this.tools.convertSymbolToMintAddress(currency);
 
     const tokenInfo = await getTokenSupply(mintAddress, this.connection);
 
     if (!tokenInfo) {
-      throw new Error('Token Supply not found');
+      throw new HttpException('Token not found', 404);
     }
 
     const receiver = await getDestinationAddress(this.connection, to);
 
     if (!receiver) {
-      throw new Error('Receiver not found');
+      throw new HttpException('Receiver Address not found', 404);
     }
 
     const decimals = tokenInfo.value.decimals;
@@ -167,12 +170,7 @@ export class BlockchainService {
 
     switch (operation) {
       case OperationType.Supply:
-        return instance.supply(
-          walletAddress,
-          mintAddress,
-          amount,
-          this.connection,
-        );
+        return instance.supply(walletAddress, mintAddress, amount);
       case OperationType.Borrow:
         return instance.borrow(
           walletAddress,
@@ -195,7 +193,7 @@ export class BlockchainService {
           this.connection,
         );
       default:
-        throw new Error('Operation not supported');
+        throw new HttpException('Operation not supported', 403);
     }
   }
 
@@ -213,7 +211,7 @@ export class BlockchainService {
       );
     }
 
-    throw new Error('Operation not supported');
+    throw new HttpException('Operation not supported', 403);
   }
 
   private getProviderInstance(provider: ProviderType) {
@@ -221,7 +219,7 @@ export class BlockchainService {
       case ProviderType.Kamino:
         return this.kaminoFactory;
       default:
-        throw new Error('Provider not supported');
+        throw new HttpException('Provider not supported', 403);
     }
   }
 }

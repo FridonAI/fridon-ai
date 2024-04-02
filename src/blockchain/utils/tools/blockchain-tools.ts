@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { HttpException, Inject } from '@nestjs/common';
 import {
   BalanceType,
   SplTokenType,
@@ -99,7 +99,10 @@ export class BlockchainTools {
     const tokenPrice = coinPrices.find((coin) => coin.address === mintAddress);
 
     if (!tokenPrice) {
-      throw new Error(`Token with mint address ${mintAddress} not found`);
+      throw new HttpException(
+        `Token with mint address ${mintAddress} not found`,
+        404,
+      );
     }
 
     return tokenPrice.price;
@@ -113,7 +116,10 @@ export class BlockchainTools {
       );
 
       if (!tokenPrice) {
-        throw new Error(`Token with mint address ${mintAddress} not found`);
+        throw new HttpException(
+          `Token with mint address ${mintAddress} not found`,
+          404,
+        );
       }
 
       return tokenPrice;
@@ -160,6 +166,9 @@ export class BlockchainTools {
   }
 
   async convertSymbolToMintAddress(symbol: string): Promise<string> {
+    // convert symbol if needed
+    symbol = this.getCurrencySymbol(symbol);
+
     const tokenList = await this.getTokenList();
 
     const token = tokenList.find(
@@ -167,7 +176,7 @@ export class BlockchainTools {
     );
 
     if (!token) {
-      throw new Error(`Token with symbol ${symbol} not found`);
+      throw new HttpException(`Token with symbol ${symbol} not found`, 404);
     }
     return token.mintAddress;
   }
@@ -178,7 +187,10 @@ export class BlockchainTools {
     const token = tokenList.find((token) => token.mintAddress === mintAddress);
 
     if (!token) {
-      throw new Error(`Token with mint address ${mintAddress} not found`);
+      throw new HttpException(
+        `Token with mint address ${mintAddress} not found`,
+        404,
+      );
     }
     return token.symbol;
   }
@@ -194,7 +206,10 @@ export class BlockchainTools {
       );
 
       if (!token) {
-        throw new Error(`Token with mint address ${mintAddress} not found`);
+        throw new HttpException(
+          `Token with mint address ${mintAddress} not found`,
+          404,
+        );
       }
       return token.symbol;
     });
@@ -206,7 +221,10 @@ export class BlockchainTools {
     const token = tokenList.find((token) => token.mintAddress === mintAddress);
 
     if (!token) {
-      throw new Error(`Token with mint address ${mintAddress} not found`);
+      throw new HttpException(
+        `Token with mint address ${mintAddress} not found`,
+        404,
+      );
     }
     return token;
   }
@@ -222,7 +240,10 @@ export class BlockchainTools {
       );
 
       if (!token) {
-        throw new Error(`Token with mint address ${mintAddress} not found`);
+        throw new HttpException(
+          `Token with mint address ${mintAddress} not found`,
+          404,
+        );
       }
       return token;
     });
@@ -299,4 +320,56 @@ export class BlockchainTools {
       };
     });
   }
+
+  getCurrencySymbol(currency: string): string {
+    // Convert the currency to lowercase for comparison
+    const currencyLower = currency.toLowerCase();
+
+    // Find the matching enum key based on the currency
+    const foundKey = Object.keys(SymbolMapper).find(
+      (key) => key.toLowerCase() === currencyLower,
+    );
+
+    // If a matching key is found, return its value, else return the currency
+    return foundKey
+      ? SymbolMapper[foundKey as keyof typeof SymbolMapper]
+      : currencyLower;
+  }
+}
+
+export enum SymbolMapper {
+  solana = 'sol',
+  wif = '$WIF',
+  myro = '$MYRO',
+  milk = '$MILK',
+  rkt = '$RKT',
+  cwif = '$CWIF',
+  ben = '$BEN',
+  sshib = '$SSHIB',
+  marvin = '$MARVIN',
+  turbo = '$TURBO',
+  gary = '$GARY',
+  wnz = '$WNZ',
+  yeti = '$YETI',
+  wen = '$WEN',
+  swts = '$SWTS',
+  bear = '$BEAR',
+  pelf = '$PELF',
+  ksh = '$KSH',
+  tips = '$TIPS',
+  ggem = '$GGEM',
+  popo = '$POPO',
+  snoopy = '$SNOOPY',
+  clown = '$Clown',
+  force = '$FORCE',
+  points = '$POINTS',
+  retire = '$RETIRE',
+  daumen = '$daumen',
+  honey = '$HONEY',
+  neon = '$NEON',
+  crypt = '$CRYPT',
+  fly = '$FLY',
+  bozo = '$BOZO',
+  frog = '$FROG',
+  test = '$TEST',
 }

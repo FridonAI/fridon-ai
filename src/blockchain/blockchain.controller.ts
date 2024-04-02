@@ -61,7 +61,6 @@ export class BlockchainController {
       body.amount,
     );
 
-    // console.log('txId', txId);
     return new TransactionResponseDto({
       data: {
         serializedTx: Object.values(tx.serialize()),

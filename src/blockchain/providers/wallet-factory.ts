@@ -1,5 +1,5 @@
 import { PublicKey } from '@metaplex-foundation/js';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { Connection } from '@solana/web3.js';
 import { AccountLayout, TOKEN_PROGRAM_ID } from 'spl';
 import { BlockchainTools } from '../utils/tools/blockchain-tools';
@@ -29,7 +29,7 @@ export class WalletFactory {
     const solAccountInfo = await this.connection.getAccountInfo(wallet);
 
     if (!solAccountInfo) {
-      throw new Error('Sol account not found');
+      throw new HttpException('Sol account not found', 404);
     }
 
     const { value } = await this.connection.getTokenAccountsByOwner(wallet, {
