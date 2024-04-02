@@ -162,7 +162,8 @@ class CoinChartSimilarityAdapter(Adapter):
         if not self.status:
             return self.comment
 
-        return get_chart_similar_coins(self.coin, self.start_date)
+        response = get_chart_similar_coins(self.coin, self.start_date)
+        return response
 
 
 class MediaQueryExtractAdapter(Adapter):

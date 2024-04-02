@@ -23,22 +23,21 @@ class PgVectorTimeSeriesIndex(BaseTimeSeriesIndex):
         cur = self.conn.cursor()
 
         for symbol, vector in vectors:
-            print(type(vector), symbol)
             cur.execute(
                 "INSERT INTO coins (symbol, embedding) VALUES (%s, %s)",
                 (symbol, json.dumps(vector))
             )
 
+        self.conn.commit()
+
     def query(self, query_vector: list[float], top_k: int) -> list[tuple[str, float]]:
         cur = self.conn.cursor()
-        print(query_vector)
         cur.execute(
             f"""SELECT symbol, 1 - (embedding <-> %s) AS cosine_similarity
                FROM coins
                ORDER BY cosine_similarity DESC LIMIT {top_k}""",
             (json.dumps(query_vector),)
         )
-
         matches = [row for row in cur.fetchall()]
-
         return matches
+
