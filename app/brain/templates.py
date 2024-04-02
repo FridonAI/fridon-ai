@@ -46,7 +46,7 @@ E.x. "I want to supply 100 usdc on kamino" you've to return "{{"status":"true", 
 "currency" must be mentioned.
 "amount" must be mentioned.
 If any must to parameters is unknown then return "{{"status": false, "comment": "..."}}" Comment is which parameters you can't extract.
-Extract names as lowercase.
+Extract parameters as lowercase.
 Supported operations: supply, borrow, withdraw, repay. Get the operation from the query, if synonyms are used then map them to the coresponding supported operations, but you must be 100% sure.
 For example: lend, deposit are the synonyms of supply. Payback is the synonym of repay and so on. """
     },
@@ -96,14 +96,11 @@ E.x. "Follow the Madlad's server on Discord" you've to return {{"status": true, 
 
     'coin_chart_similarity_extract': {
         "system": """You are here to extract the coin chart similarity parameters from the user's query.
-You have to determine the following parameters from the given query: coin, start_date, end_date.
-Return the following JSON string: {{"status": boolean, "coin": "string" | null, "start_date": "string" | null, "end_date": "string" | null, "comment": "string" | null}}
-"coin" must be mentioned.
+You have to determine the following parameters from the given query: coin, start_date.
+Return the following JSON string: {{"status": boolean, "coin": "string" | null, "start_date": "string" | null, "comment": "string" | null}}
+"coin" must be mentioned and must be exported in lowercase, like: sol, btc, etc, jup and so on.
 
-If user express the date like last month, last week or something like that return like string: "last month", "last week" etc.
-If user express the date without mentioning the day then return the date with the first day of the month. E.x. "December 2023" return "1 December 2023".
-
-Return dates ISO Date Time Format, like "2023-12-01T00:00:00.000Z"."""
+Extract starting_date in ISO Date Time Format, like "2023-12-01". If it cannot be extracted then return null. It's default value."""
     },
 
     'media_query_extract': {

@@ -13,7 +13,7 @@ defi_stake_borrow_lend_route = Route(
         "Withdraw 0.01 sol from Kamino",
         "Repay 123 usdc on Kamino",
         "Deposit 100 bonk on Marginify",
-        "Supply 10000 dfl on Kamino",
+        "Supply 10000 jto on Kamino",
         "Can you borrow 1000 usdt from Kamino?",
         "Can you lend 1000 usdt on Kamino?",
         "Can you supply 1000000 bonk on Kamino?"
@@ -40,8 +40,8 @@ defi_transfer = Route(
         "Transfer 100 sol to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
         "Send 100 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
         "Please, send 100 bonk to ArSZESuVtg5ac7vN8mqmUUgi8Sn8HVh46vq3KmZ86UBY",
-        "Send 10 dfl to drakula.sol",
-        "I want to transfer 10000000 dfl to abcde.sol",
+        "Send 10 sol to drakula.sol",
+        "I want to transfer 10000000 bonk to abcde.sol",
         "Let's send 1000 pyth to 3bNVe2bKqazEnFZjmLegdwCWkANDXoUKdAMvTcL4AV4P",
     ]
 )
@@ -50,7 +50,7 @@ defi_transfer = Route(
 defi_talker = Route(
     name="DeFiTalker",
     utterances=[
-        "How are you?",
+        "Hi, How are you?",
         "Who are you?"
         "What is DeFi?",
         "What is your project about?",
@@ -90,10 +90,10 @@ media_talker = Route(
 coin_chart_similarity = Route(
     name="CoinChartSimilarity",
     utterances=[
-        "Give me coins which have the similar chart as Wif between 1-25 Dec 2023.",
-        "Which coins are similar to sol between 12 jan 2024 and 12 march 2024?",
-        "Please show me coins which have the same chart as btc during last month.",
-        "Which coins have the same chart as eth between 1-25 Dec 2022?",
+        "Give me coins which have the similar chart as Wif from 1 December 2023.",
+        "Which coins are similar to sol from 12 January 2024?",
+        "Please show me coins which have the same chart as btc from 10 March.",
+        "Which coins have the same chart as eth from 1 May 2022?",
         "Show me coins which have the same chart as btc during last week.",
         "Suggest me coins with similar price chart as doge from 2021 November to 2021 December.",
     ]
@@ -132,8 +132,6 @@ off_topic = Route(
         "Can you recommend the best stocks to buy?",
         "Can you recommend a place to eat?",
         "Do you know any restaurants?",
-        "Can you tell me your name?",
-        "What's your name?",
         "Can you paint?",
         "Can you tell me a joke?",
         "What is the biggest city in the world",
