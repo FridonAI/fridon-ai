@@ -17,7 +17,7 @@ export class EventsGateway implements OnGatewayConnection {
     try {
       const { walletId } = this.getClientInfoFromAuth(client);
 
-      client.join(walletId);
+      await client.join(walletId);
     } catch (e) {
       setTimeout(() => {
         client._error('Unauthorized');
