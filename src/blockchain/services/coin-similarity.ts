@@ -51,7 +51,7 @@ export class CoinSimilarityService {
     }[];
 
     const res = await this.prisma.$queryRaw<resultType>`
-        SELECT symbol
+        SELECT symbol, address
         FROM price_vectors
         WHERE address != ${symbol}
         ORDER BY 1 - (embedding <=> ${vector}::vector) DESC LIMIT ${k}`;
