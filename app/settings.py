@@ -8,6 +8,7 @@ load_dotenv()
 class Settings(BaseSettings):
 
     OPENAI_API_KEY: str
+    GPT_MODEL: str
 
     POSTGRES_DB: str
     POSTGRES_USER: str

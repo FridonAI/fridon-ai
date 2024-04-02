@@ -13,11 +13,12 @@ from app.brain.schema import (
     CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter,
 )
 from app.brain.templates import get_prompt
+from app.settings import settings
 
 
 def get_defi_stake_borrow_lend_extract_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('defi_stake_borrow_lend_extract', personality)
     return (
@@ -29,7 +30,7 @@ def get_defi_stake_borrow_lend_extract_chain(
 
 def get_defi_balance_extract_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('defi_balance_extract', personality)
     return (
@@ -41,7 +42,7 @@ def get_defi_balance_extract_chain(
 
 def get_defi_transfer_extract_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('defi_transfer_extract', personality)
     return (
@@ -53,7 +54,7 @@ def get_defi_transfer_extract_chain(
 
 def get_discord_action_extract_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('discord_action_extract', personality)
     return (
@@ -66,7 +67,7 @@ def get_discord_action_extract_chain(
 
 def get_coin_chart_similarity_extract_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('coin_chart_similarity_extract', personality)
     return (
@@ -79,7 +80,7 @@ def get_coin_chart_similarity_extract_chain(
 
 def get_media_query_extract(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('media_query_extract', personality)
     return (
@@ -92,7 +93,7 @@ def get_media_query_extract(
 
 def get_defi_talker_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('defi_talker', personality)
     return RunnableWithMessageHistory(
@@ -109,7 +110,7 @@ def get_defi_talker_chain(
 
 def get_coin_search_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('coin_search', personality)
     return RunnableWithMessageHistory(
@@ -132,7 +133,7 @@ def get_coin_search_chain(
 def get_media_talker_chain(
         personality,
         retriever,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('media_talker', personality)
     return RunnableWithMessageHistory(
@@ -154,7 +155,7 @@ def get_media_talker_chain(
 
 def get_response_generator_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('response_generator', personality)
     return RunnableWithMessageHistory(
@@ -167,7 +168,7 @@ def get_response_generator_chain(
 
 def get_error_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('error', personality)
     return (
@@ -179,7 +180,7 @@ def get_error_chain(
 
 def get_off_topic_chain(
         personality,
-        llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('off_topic', personality)
     return (

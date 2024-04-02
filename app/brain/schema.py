@@ -178,7 +178,7 @@ class MediaQueryExtractAdapter(Adapter):
         def get_media_talker_chain(
                 personality,
                 retriever,
-                llm=ChatOpenAI(model="gpt-3.5-turbo-0125", temperature=0)
+                llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
         ):
             prompt = get_prompt('media_talker', personality)
             print("Prompt", prompt)
