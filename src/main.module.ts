@@ -19,7 +19,14 @@ import { UserModule } from './medias/medias.module';
     // Nest Modules
     CqrsModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
-    PrismaModule.forRoot({ isGlobal: true }),
+    PrismaModule.forRoot({
+      isGlobal: true,
+      prismaServiceOptions: {
+        prismaOptions: {
+          log: ['info', 'query', 'warn', 'error'],
+        },
+      },
+    }),
     ScheduleModule.forRoot(),
     CacheModule.register({ isGlobal: true }),
     BullModule.forRoot({

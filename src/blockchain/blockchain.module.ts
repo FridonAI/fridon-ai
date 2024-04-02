@@ -16,6 +16,7 @@ import { NumberFormatter } from './utils/tools/number-formatter';
 import { WalletFactory } from './providers/wallet-factory';
 import { SymmetryApiFactory } from './providers/symmetry-api-factory';
 import { PointsFactory } from './providers/points-factory';
+import { UpdateEmbeddings } from './cron/update-embedings.cron';
 
 @Module({
   imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
@@ -23,6 +24,7 @@ import { PointsFactory } from './providers/points-factory';
   providers: [
     BlockchainService,
     BlockchainTools,
+    UpdateEmbeddings,
     NumberFormatter,
     {
       provide: Connection,

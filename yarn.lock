@@ -8689,6 +8689,11 @@ peek-readable@^5.0.0:
   resolved "https://registry.yarnpkg.com/peek-readable/-/peek-readable-5.0.0.tgz#7ead2aff25dc40458c60347ea76cfdfd63efdfec"
   integrity sha512-YtCKvLUOvwtMGmrniQPdO7MwPjgkFBtFIrmfSbYmYuq3tKDV/mcfAhBth1+C3ru7uXIZasc/pHnb+YDYNkkj4A==
 
+pgvector@^0.1.8:
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/pgvector/-/pgvector-0.1.8.tgz#50c44c7a26b1cb17cf0a001b0772fc0eb5c38762"
+  integrity sha512-mD6aw+XYJrsuLl3Y8s8gHDDfOZQ9ERtfQPdhvjOrC7eOTM7b6sNkxeZxBhHwUdXMfHmyGWIbwU0QbmSnn7pPmg==
+
 picocolors@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-1.0.0.tgz#cb5bdc74ff3f51892236eaf79d68bc44564ab81c"
