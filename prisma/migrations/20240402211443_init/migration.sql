@@ -1,5 +1,20 @@
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "vector";
+
 -- CreateEnum
 CREATE TYPE "MessageType" AS ENUM ('Query', 'Response', 'TransactionResponse');
+
+-- CreateTable
+CREATE TABLE "price_vectors" (
+    "id" SERIAL NOT NULL,
+    "symbol" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
+    "values" vector(512) NOT NULL,
+    "embedding" vector(1024) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "price_vectors_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "ChatMessage" (
