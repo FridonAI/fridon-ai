@@ -10,6 +10,7 @@ from langchain_openai import ChatOpenAI
 from pydantic.v1 import BaseModel
 
 from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx, get_balance
+from app.adapters.coins import get_chart_similar_coins
 from app.adapters.medias.discord import get_available_servers, follow_server, unfollow_server, \
     get_media_text, get_wallet_servers
 from app.brain.memory import get_chat_history
@@ -152,14 +153,16 @@ class CoinChartSimilarityAdapter(Adapter):
     comment: str | None
     coin: str | None
     start_date: str | None
-    end_date: str | None
 
     @staticmethod
     def parser() -> PydanticOutputParser:
         return PydanticOutputParser(pydantic_object=CoinChartSimilarityAdapter)
 
     async def get_response(self, chat_id, wallet_id, *args, **kwargs):
-        pass
+        if not self.status:
+            return self.comment
+
+        return get_chart_similar_coins(self.coin, self.start_date)
 
 
 class MediaQueryExtractAdapter(Adapter):
