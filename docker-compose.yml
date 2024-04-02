@@ -30,7 +30,8 @@ services:
     command: python -m app.main
 
   db:
-    image: postgres:latest
+    build:
+      dockerfile: pgvector.dockerfile
     ports:
       - 5432:5432
     restart: always

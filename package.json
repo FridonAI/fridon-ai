@@ -60,6 +60,7 @@
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "nestjs-prisma": "^0.23.0",
+    "pgvector": "^0.1.8",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "spl": "npm::@solana/spl-token@0.4.1"

@@ -1,0 +1,30 @@
+[
+  { "symbol": "sol", "address": "So11111111111111111111111111111111111111112" },
+  { "symbol": "jup", "address": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN" },
+  {
+    "symbol": "pyth",
+    "address": "HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3"
+  },
+  { "symbol": "jto", "address": "jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL" },
+  {
+    "symbol": "$wif",
+    "address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
+  },
+  {
+    "symbol": "usdc",
+    "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  },
+  {
+    "symbol": "bonk",
+    "address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
+  },
+  {
+    "symbol": "usdt",
+    "address": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+  },
+  {
+    "symbol": "jitosol",
+    "address": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn"
+  },
+  { "symbol": "neon", "address": "NeonTjSjsuo3rexg9o6vHuMXw62f9V7zvmu8M8Zut44" }
+]
