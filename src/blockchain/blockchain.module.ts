@@ -17,6 +17,7 @@ import { WalletFactory } from './providers/wallet-factory';
 import { SymmetryApiFactory } from './providers/symmetry-api-factory';
 import { PointsFactory } from './providers/points-factory';
 import { UpdateEmbeddings } from './cron/update-embedings.cron';
+import { CoinSimilarityService } from './services/coin-similarity';
 
 @Module({
   imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
@@ -39,6 +40,7 @@ import { UpdateEmbeddings } from './cron/update-embedings.cron';
     TransactionFactory,
     TransactionListenerProcessor,
     TransactionListenerService,
+    CoinSimilarityService,
   ],
   exports: [TransactionFactory, TransactionListenerService],
 })
