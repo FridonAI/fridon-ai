@@ -186,6 +186,5 @@ rl = RouteLayer(encoder=OpenAIEncoder(), routes=routes)
 
 def get_category(message):
     category = rl(message).name
-    print("Category", category)
     return category
 

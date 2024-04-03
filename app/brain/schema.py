@@ -141,7 +141,6 @@ class DiscordActionAdapter(Adapter):
     @staticmethod
     async def input_formatter(inp):
         servers = await get_available_servers()
-        print("Hoo ieee")
         return {
             "query": inp["query"],
             "servers_list": servers,
@@ -150,9 +149,9 @@ class DiscordActionAdapter(Adapter):
 
 class CoinChartSimilarityAdapter(Adapter):
     status: bool
-    comment: str | None
-    coin: str | None
-    start_date: str | None
+    comment: str | None = None
+    coin: str | None = None
+    start_date: str | None = None
 
     @staticmethod
     def parser() -> PydanticOutputParser:
@@ -182,7 +181,6 @@ class MediaQueryExtractAdapter(Adapter):
                 llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
         ):
             prompt = get_prompt('media_talker', personality)
-            print("Prompt", prompt)
             return RunnableWithMessageHistory(
                 (
                         {
@@ -214,7 +212,6 @@ class MediaQueryExtractAdapter(Adapter):
     @staticmethod
     async def input_formatter(inp):
         servers = await get_wallet_servers(inp["wallet_id"])
-        print("Hoo ieee")
         return {
             "query": inp["query"],
             "user_servers_list": servers,

@@ -18,7 +18,7 @@ async def _send_action(
     except Exception as e:
         print(e)
         return f'Failed to {action} server'
-    print(resp)
+    print("Response", resp)
     return resp
 
 
@@ -52,7 +52,7 @@ async def get_available_servers() -> str:
         raise Exception("API_URL not set in environment variables")
 
     resp = requests.get(f"{api_url}/medias/").json()
-    print(resp)
+    print("Available Servers Response", resp)
     return 'bonk, madlads, symmetry'
     # if resp['status'] == 200:
     # return ', '.join(server for server in resp['medias'])

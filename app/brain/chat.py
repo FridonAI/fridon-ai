@@ -19,7 +19,9 @@ class Chat:
 
         try:
             category = get_category(message)
+            print("Category", category)
             chain = get_chain(category, self.personality)
+            print("Took chain")
             adapter = await chain.ainvoke({"query": message, "wallet_id": self.wallet_id}, config={"configurable": {"session_id": self.chat_id}})
 
             if category in [None, 'OffTopic']:
