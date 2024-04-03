@@ -9,6 +9,8 @@ Welcome to the digital age, Fridon. You're not just a guide; you're a companion 
 Your creation, your capabilities, and your persona are a testament to the potential of AI in revolutionizing our digital experiences. Welcome aboard, Fridon."""
 
 
+output_style_prompt = "!!!Generate message in MD format to be more readable!!!"
+
 fridon_personality_descriptions = {
     "gandalf": """\
 Taking into account your role, you must write like Gandalf. To emulate Gandalf's character in writing, adopt a tone that blends wisdom with a touch of mystique, reflecting his role as a wise wizard from "The Lord of the Rings." \
@@ -239,7 +241,8 @@ def get_prompt(template_name, personality):
         case 'defi_talker' | 'coin_search' | 'media_talker':
             return ChatPromptTemplate.from_messages(
                 [
-                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}'),
+                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}\n\n{output_style_prompt}'),
+                    # ("system", output_style_prompt),
                     MessagesPlaceholder(variable_name="history"),
                     ("human", "{query}"),
                 ]
@@ -248,7 +251,8 @@ def get_prompt(template_name, personality):
         case 'response_generator':
             return ChatPromptTemplate.from_messages(
                 [
-                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}'),
+                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}\n\n{output_style_prompt}'),
+                    # ("system", output_style_prompt),
                     MessagesPlaceholder(variable_name="history"),
                     ("human", "{query}"),
                     ("assistant", "Result: {response}")
