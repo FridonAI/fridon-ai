@@ -16,6 +16,7 @@ from app.adapters.medias.discord import get_available_servers, follow_server, un
 from app.brain.memory import get_chat_history
 from app.brain.retriever import get_media_retriever
 from app.brain.templates import get_prompt
+from app.settings import settings
 
 
 class Adapter(ABC, BaseModel):
