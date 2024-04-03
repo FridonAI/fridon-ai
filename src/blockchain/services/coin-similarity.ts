@@ -89,8 +89,19 @@ export class CoinSimilarityService implements OnApplicationBootstrap {
     symbol: string;
     address: string;
   }[] {
-    const res = readFileSync('./src/blockchain/cron/coins-list.json', 'utf-8');
-    return JSON.parse(res);
+    try {
+      const res = readFileSync(
+        './src/blockchain/cron/coins-list.json',
+        'utf-8',
+      );
+      return JSON.parse(res);
+    } catch {
+      const res = readFileSync(
+        './dist/blockchain/cron/coins-list.json',
+        'utf-8',
+      );
+      return JSON.parse(res);
+    }
   }
 
   private async getBirdEyeData(tokenAddress: string): Promise<number[]> {
