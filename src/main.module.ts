@@ -30,9 +30,7 @@ import { UserModule } from './medias/medias.module';
     ScheduleModule.forRoot(),
     CacheModule.register({ isGlobal: true }),
     BullModule.forRoot({
-      connection: {
-        host: process.env['REDIS_HOST'],
-      },
+      connection: { host: process.env['REDIS_HOST'] },
       defaultJobOptions: {
         removeOnComplete: true,
         removeOnFail: true,
