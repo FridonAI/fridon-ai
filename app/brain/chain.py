@@ -71,8 +71,7 @@ def get_coin_chart_similarity_extract_chain(
 ):
     prompt = get_prompt('coin_chart_similarity_extract', personality)
     return (
-        RunnableLambda(DiscordActionAdapter.input_formatter)
-        | prompt
+        prompt
         | llm
         | CoinChartSimilarityAdapter.parser()
     )
