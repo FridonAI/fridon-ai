@@ -40,7 +40,7 @@ class QueueGetter:
         self.redis_pool = redis_pool
 
     async def get(self, queue_name: str) -> str:
-        message = self.redis_pool.blpop([queue_name], timeout=90)
+        message = await self.redis_pool.blpop([queue_name], timeout=90)
         if message is None or len(message) == 0:
             return "Something wrong happened!"
         return message[0]

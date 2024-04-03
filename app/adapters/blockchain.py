@@ -16,7 +16,7 @@ async def _send_and_wait(chat_id, wallet_id, request_url, request, pub, queue_ge
 
     await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, None, resp['data']['serializedTx'], {})))
 
-    print("Waiting for response")
+    print("Waiting for response", chat_id)
     response = await queue_getter.get(queue_name=chat_id)
     print("Got Response", response)
     return response
