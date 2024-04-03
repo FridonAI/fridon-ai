@@ -99,5 +99,10 @@ async def get_balance(
         raise Exception("API_URL not set in environment variables")
 
     resp = requests.post(f"{api_url}/blockchain/balance-operation", json=req).json()
+    if "statusCode" in resp:
+        if 500 > resp["statusCode"] >= 400:
+            return resp.get("message", "Something went wrong!")
+        if resp["statusCode"] >= 500:
+            return "Something went wrong! Please try again later."
     print("Got Response", resp)
     return resp
