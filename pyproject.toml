@@ -18,7 +18,6 @@ psycopg = "^3.1.18"
 psycopg-binary = "^3.1.18"
 jq = "^1.7.0"
 faiss-cpu = "^1.8.0"
-chronos = {git = "https://github.com/amazon-science/chronos-forecasting.git"}
 pinecone-client = {version = "^3.2.2", extras = ["grpc"]}
 pycoingecko = "^3.1.0"
 psycopg2 = "^2.9.9"
