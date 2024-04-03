@@ -19,6 +19,8 @@ import { PointsFactory } from './providers/points-factory';
 import { JupiterFactory } from './providers/jupiter-factory';
 import { UpdateEmbeddings } from './cron/update-embedings.cron';
 import { CoinSimilarityService } from './services/coin-similarity';
+import { HuggingFaceAdapter } from './external/hugging-face.adapter';
+import { BirdEyeAdapter } from './external/bird-eye.adapter';
 
 @Module({
   imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
@@ -43,6 +45,8 @@ import { CoinSimilarityService } from './services/coin-similarity';
     TransactionListenerProcessor,
     TransactionListenerService,
     CoinSimilarityService,
+    HuggingFaceAdapter,
+    BirdEyeAdapter,
   ],
   exports: [TransactionFactory, TransactionListenerService],
 })
