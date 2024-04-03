@@ -75,16 +75,17 @@ export class CoinSimilarityService implements OnApplicationBootstrap {
     const embedding = result.vector[0];
     const vector = pgvector.toSql(embedding);
 
-    type resultType = {
+    type ResultType = {
       symbol: string;
+      score: number;
       address: string;
     }[];
 
-    const res = await this.prisma.$queryRaw<resultType>`
-        SELECT symbol, address
+    const res = await this.prisma.$queryRaw<ResultType>`
+        SELECT symbol, 1 - (embedding <=> ${vector}::vector) as score, address
         FROM price_vectors
-        WHERE address != ${symbol}
-        ORDER BY 1 - (embedding <=> ${vector}::vector) DESC LIMIT ${k}`;
+        WHERE address != ${symbolAddress}
+        ORDER BY score DESC LIMIT ${k}`;
     return res;
   }
 

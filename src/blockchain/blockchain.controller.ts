@@ -49,6 +49,7 @@ export class BlockchainController {
       data: result.map((item) => ({
         symbol: item.symbol,
         address: item.address,
+        score: item.score,
       })),
     });
   }
