@@ -16,7 +16,7 @@ def get_chart_similar_coins(coin, start_date):
         "coin": coin,
         "from": int(start_date.timestamp()),
         "to": int(end_date.timestamp()),
-        "topK": 1
+        "topK": 3
     }
 
     print("Request", req)

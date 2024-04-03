@@ -1,8 +1,11 @@
+import json
+
 from app.brain.chain import get_chain, get_chat_history, get_error_chain, get_response_generator_chain
 from pydantic.v1 import BaseModel
 
 from app.brain.router import get_category
-from app.brain.schema import CoinSearcherAdapter, DefiTalkerAdapter, MediaQueryExtractAdapter
+from app.brain.schema import CoinSearcherAdapter, DefiTalkerAdapter, MediaQueryExtractAdapter, \
+    CoinChartSimilarityAdapter
 
 
 class Chat:
@@ -37,6 +40,8 @@ class Chat:
                     {"query": message, "response": response},
                     config={"configurable": {"session_id": self.chat_id}}
                 )
+                if isinstance(adapter, CoinChartSimilarityAdapter):
+                    final_response = json.dumps({**json.loads(response), message: final_response})
 
             self.memory.add_user_message(message)
             self.memory.add_ai_message(final_response)
