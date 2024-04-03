@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 
 type BirdEyeResponse =
   | {
@@ -10,20 +10,21 @@ type BirdEyeResponse =
   | { success: false; message: 'address is invalid format' };
 
 export class BirdEyeAdapter {
+  private readonly l: Logger = new Logger(BirdEyeAdapter.name);
+
   async getHistoryPrice(
     tokenAddress: string,
     from: number,
     to: number,
   ): Promise<number[]> {
-    const result = (await fetch(
-      `https://public-api.birdeye.so/defi/history_price?address=${tokenAddress}&time_from=${from}&time_to=${to}&type=1H`,
-      {
-        headers: {
-          'X-API-KEY': '1ce5e10d345740ecb60ef4bb960d0385',
-        },
+    const url = `https://public-api.birdeye.so/defi/history_price?address=${tokenAddress}&time_from=${from}&time_to=${to}&type=1H`;
+    const result = (await fetch(url, {
+      headers: {
+        'X-API-KEY': '1ce5e10d345740ecb60ef4bb960d0385',
       },
-    ).then((res) => res.json())) as BirdEyeResponse;
+    }).then((res) => res.json())) as BirdEyeResponse;
 
+    this.l.debug(`BirdEye Response[${url}]: ${JSON.stringify(result.success)}`);
     if ('message' in result) {
       throw new BadRequestException(result.message);
     }

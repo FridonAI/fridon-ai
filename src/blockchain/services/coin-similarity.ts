@@ -64,9 +64,12 @@ export class CoinSimilarityService implements OnApplicationBootstrap {
     if (!symbolAddress) {
       throw new BadRequestException(`Token[${symbol}] not found`);
     }
-    console.log(symbolAddress);
 
-    const data = await this.birdEyeAdapter.getHistoryPrice(symbol, from, to);
+    const data = await this.birdEyeAdapter.getHistoryPrice(
+      symbolAddress,
+      from,
+      to,
+    );
     const result = await this.huggingFaceAdapter.getEmbeddings([data]);
 
     const embedding = result.vector[0];
