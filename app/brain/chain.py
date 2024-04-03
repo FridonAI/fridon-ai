@@ -9,8 +9,8 @@ from langchain_core.output_parsers import StrOutputParser
 from app.brain.memory import get_chat_history
 from app.brain.retriever import get_coins_retriever
 from app.brain.schema import (
-    DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter,
-    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter,
+    DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter, DefiPointsAdapter,
+    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter, DefiSymmetryBasketsAdapter
 )
 from app.brain.templates import get_prompt
 from app.settings import settings
@@ -27,6 +27,38 @@ def get_defi_stake_borrow_lend_extract_chain(
         | DefiStakeBorrowLendAdapter.parser()
     )
 
+def get_defi_swap_extract_chain(
+        personality,
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
+):
+    prompt = get_prompt('defi_swap_extract', personality)
+    return (
+        prompt
+        | llm
+        | DefiSwapAdapter.parser()
+    )
+
+def get_defi_points_extract_chain(
+        personality,
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
+):
+    prompt = get_prompt('defi_points_extract', personality)
+    return (
+        prompt
+        | llm
+        | DefiPointsAdapter.parser()
+    )
+
+def get_defi_symmetry_baskets_extract_chain(
+        personality,
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
+):
+    prompt = get_prompt('defi_symmetry_baskets_extract', personality)
+    return (
+        prompt
+        | llm
+        | DefiSymmetryBasketsAdapter.parser()
+    )
 
 def get_defi_balance_extract_chain(
         personality,
@@ -195,6 +227,12 @@ def get_chain(category, personality):
             return get_defi_stake_borrow_lend_extract_chain(personality)
         case "DeFiBalance":
             return get_defi_balance_extract_chain(personality)
+        case "DeFiSwap":
+            return get_defi_swap_extract_chain(personality)
+        case "DeFiPoints":
+            return get_defi_points_extract_chain(personality)
+        case "DefiSymmetryBaskets":
+            return get_defi_symmetry_baskets_extract_chain(personality)
         case "DeFiTransfer":
             return get_defi_transfer_extract_chain(personality)
         case "CoinSearch":
