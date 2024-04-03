@@ -30,6 +30,8 @@ class Settings(BaseSettings):
 
     BIRDEYE_API_KEY: str
 
+    REDIS_HOST: str
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'

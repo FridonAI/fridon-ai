@@ -2,6 +2,7 @@ import json
 
 import psycopg2
 
+from app.settings import settings
 from app.utils.timeseries.index._base import BaseTimeSeriesIndex
 
 
@@ -11,7 +12,7 @@ class PgVectorTimeSeriesIndex(BaseTimeSeriesIndex):
         self.conn = psycopg2.connect(
             user="user",
             password="pass",
-            host="localhost",
+            host=settings.POSTGRES_HOST,
             port=5432,  # The port you exposed in docker-compose.yml
             database="app"
         )
