@@ -20,6 +20,50 @@ defi_stake_borrow_lend_route = Route(
     ]
 )
 
+defi_points = Route(
+    name="DeFiPoints",
+    utterances=[
+        "How many points do I have on Kamino?",
+        "What is my points balance on Drift?",
+        "How many points do I have on Symmetry?",
+        "Can you tell me my points on all platforms?",
+        "How many points do I have on all platforms?",
+        "What is my points for airdrops on all platforms?",
+        "How many points do I have for airdrops on all platforms?",
+        "How many points do I have on Kamino",
+        "Can you also tell me what are current points for my wallet address?",
+    ]
+)
+
+defi_swap = Route(
+    name="DeFiSwap",
+    utterances=[
+        "Swap 100 sol to usdc",
+        "Swap 100 usdc to sol",
+        "Swap 100 bonk to usdc",
+        "Swap 100 jup to sol",
+        "Swap 100 wif to dfl",
+        "Please, convert 1 sol to wif",
+        "I want to swap 1000 bonk to sol",
+        "Can you convert 1000 jup to usdc?",
+        "Can you swap 1000 usdt to sol?",
+        "Can you convert 1000 jto to bonk?",
+        "Swap 500 ETH to SOL using the best available rate",
+    ]
+)
+
+defi_symmetry_baskets = Route(
+    name="DefiSymmetryBaskets",
+    utterances=[
+        "What are the symmetry baskets?",
+        "Can you tell me about symmetry baskets?",
+        "What options to I have to invest in symmetry baskets?",
+        "What are the best symmetry baskets to invest in?",
+        "What are the top symmetry baskets?",
+        "What are the best symmetry baskets to invest in?",
+    ]
+)
+
 defi_balance = Route(
     name="DeFiBalance",
     utterances=[
@@ -31,6 +75,9 @@ defi_balance = Route(
         "How much usdt is borrowed on Kamino?",
         "How much sol is borrowed on my Kamino account?",
         "How much WIF do I have deposited on kamino?",
+        "Can you tell me what is my wallet ballance on all supported platforms?",
+        "What is my balance on all platforms?",
+        "What is my total balance in USD?",
     ]
 )
 
@@ -172,6 +219,9 @@ off_topic = Route(
 routes = [
     defi_stake_borrow_lend_route,
     defi_balance,
+    defi_points,
+    defi_swap,
+    defi_symmetry_baskets,
     defi_talker,
     defi_transfer,
     coin_chart_similarity,

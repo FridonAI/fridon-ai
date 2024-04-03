@@ -51,6 +51,22 @@ Supported operations: supply, borrow, withdraw, repay. Get the operation from th
 For example: lend, deposit are the synonyms of supply. Payback is the synonym of repay and so on. """
     },
 
+    'defi_swap_extract': {
+        "system": """You are the best swap parameters extractor from query. You've to determine following parameters from the given query: currency_from, currency_to and amount.
+Return following json string: "{{"status": boolean, "currency_from": "string" | null, "currency_to": "string" | null, "amount": number | null}}"
+"currency_from" must be mentioned.
+"currency_to" must be mentioned.
+"amount" must be mentioned.
+
+Extract names as lowercase.
+If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
+E.x. 
+    - "Swap 100 sol to usdc?" you've to return "{{"status": true, "currency_from": "sol", "currency_to": "usdc", "amount": 1000}}"
+    - "I want to swap 1000 bonk to sol?" you've to return "{{"status": true, "currency_from": "bonk", "currency_to": "sol", "amount": 1000}}"
+
+If swap synonym is used then map it to swap, you must be 100% sure. But if swap isn't asked and user asks different operation then return: "{{status: false, comment: ...}}" """
+    },
+
     'defi_transfer_extract': {
         "system": """You are the best token transfer parameters extractor from query. You've to determine following parameters from the given query: token, wallet.
 Return following json string: "{{"status": boolean, "currency": "string" | null, "wallet": "string" | null, "amount": number | null}}"
@@ -68,7 +84,7 @@ Return following json string: "{{"status": boolean, "provider": "string" | null,
 
 Extract names as lowercase.
 
-If "provider" is not mentioned then default value is "wallet".
+If "provider" is not mentioned then default value is "all".
 If "operation" is not mentioned then default value is "all".
 If "currency" is not mentioned then default value is "all".
 
@@ -76,7 +92,29 @@ Supported operations: supply, borrow. Get the operation from the query, if synon
 For example: lend, deposit are the synonyms of supply.
 E.x. 
     - "How much usdc is lent on my Kamino?" you've to return "{{"provider": "kamino", "operation": "supply", "currency': "usdc"}}"
+    - "Can you tell me total amount in USD of my wallet balance "{{"provider": "all", "operation": "all", "currency': "all"}}"
     - "What's my balance?" you've to return "{{"provider": "wallet", "operation": "all", "currency": "all"}}" """
+    },
+
+    'defi_points_extract': {
+        "system": """You are the best points parameters extractor from query. You've to determine following parameters from the given query: provider. Provider for example can be
+Kamino, Symmetry, Drift, All. If provider is not mentioned then default value is "all"
+Return following json string: "{{"status": boolean, "provider": "string" | null, "comment": "string" | null}}"
+
+Extract names as lowercase.
+
+If "provider" is not mentioned then default value is "all".
+
+E.x. 
+    - "How many points do I have on Kamino?" you've to return "{{"provider": "kamino"}}"
+    - "Can you tell me my points on all platforms?" you've to return "{{"provider": "all"}}"
+    - "How many points do I have on Symmetry?" you've to return "{{"provider": "symmetry", }}" """
+    },
+
+    'defi_symmetry_baskets_extract': {
+        "system": """You are the best symmetry basket quetion analyzer.
+Use the following JSON format for response: {{"message": "string"}}
+E.x. "What are the symmetry baskets?" you've to return {{"message": "These are the symmetry baskets: ..."}}"""
     },
 
     'discord_action_extract': {
@@ -185,6 +223,9 @@ def get_prompt(template_name, personality):
     match template_name:
         case 'defi_stake_borrow_lend_extract' | \
              'defi_balance_extract' | \
+             'defi_points_extract' | \
+             'defi_swap_extract' | \
+             'defi_symmetry_baskets_extract' | \
              'defi_transfer_extract' | \
              'discord_action_extract' | \
              'coin_chart_similarity_extract' | \

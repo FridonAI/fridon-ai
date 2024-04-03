@@ -82,6 +82,69 @@ async def get_transfer_tx(
     return await _send_and_wait(chat_id, wallet_id, request_url, req, pub, queue_getter)
 
 
+@inject
+async def get_swap_tx(
+        currency_from: str,
+        currency_to: str,
+        amount: float,
+        chat_id: str,
+        wallet_id: str,
+        pub: Publisher = Provide["publisher"],
+        queue_getter=Provide["queue_getter"],
+) -> str:
+    print("Sending request to blockchain")
+
+    req = {
+        "walletAddress": wallet_id,
+        "fromToken": currency_from,
+        "toToken": currency_to,
+        "amount": amount
+    }
+
+    api_url = os.environ["API_URL"]
+    request_url = f"{api_url}/blockchain/swap"
+
+    return await _send_and_wait(chat_id, wallet_id, request_url, req, pub, queue_getter)
+
+
+
+async def get_symmetry_baskets(
+) -> str:
+    api_url = os.environ["API_URL"]
+    if not api_url:
+        raise Exception("API_URL not set in environment variables")
+
+    resp = requests.post(f"{api_url}/blockchain/symmetry/baskets").json()
+    if "statusCode" in resp:
+        if 500 > resp["statusCode"] >= 400:
+            return resp.get("message", "Something went wrong!")
+        if resp["statusCode"] >= 500:
+            return "Something went wrong! Please try again later."
+    print("Got Response", resp)
+    return resp
+
+async def get_points(
+        wallet_id: str,
+        provider: str,
+) -> str:
+    req = {
+        "walletAddress": wallet_id,
+        "provider": provider,
+    }
+    api_url = os.environ["API_URL"]
+    if not api_url:
+        raise Exception("API_URL not set in environment variables")
+
+    resp = requests.post(f"{api_url}/blockchain/points", json=req).json()
+    if "statusCode" in resp:
+        if 500 > resp["statusCode"] >= 400:
+            return resp.get("message", "Something went wrong!")
+        if resp["statusCode"] >= 500:
+            return "Something went wrong! Please try again later."
+    print("Got Response", resp)
+    return resp
+
+
 async def get_balance(
         wallet_id: str,
         provider: str,
