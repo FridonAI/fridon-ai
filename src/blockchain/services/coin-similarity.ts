@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import pgvector from 'pgvector';
 import { HuggingFaceAdapter } from '../external/hugging-face.adapter';
@@ -15,10 +20,12 @@ export class CoinSimilarityService implements OnApplicationBootstrap {
     private readonly birdEyeAdapter: BirdEyeAdapter,
   ) {}
 
-  async onApplicationBootstrap() {
+  onApplicationBootstrap() {
     this.l.debug('Application Bootstrap: Updating Embeddings');
-    await this.updateEmbeddings();
-    this.l.debug('Application Bootstrap: Embeddings Updated');
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.updateEmbeddings().then(() => {
+      this.l.debug('Application Bootstrap: Embeddings Updated');
+    });
   }
 
   async updateEmbeddings() {
@@ -50,6 +57,15 @@ export class CoinSimilarityService implements OnApplicationBootstrap {
   }
 
   async getCoinSimilarity(symbol: string, from: number, to: number, k: number) {
+    const symbolAddress = this.getTokenAddresses().find(
+      (token) => token.symbol === symbol,
+    )?.address;
+
+    if (!symbolAddress) {
+      throw new BadRequestException(`Token[${symbol}] not found`);
+    }
+    console.log(symbolAddress);
+
     const data = await this.birdEyeAdapter.getHistoryPrice(symbol, from, to);
     const result = await this.huggingFaceAdapter.getEmbeddings([data]);
 

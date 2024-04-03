@@ -30,8 +30,8 @@ export class CoinSimilarityResponseDto extends BaseDto<CoinSimilarityResponseDto
 export class CoinSimilarityRequestDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'So11111111111111111111111111111111111111112' })
-  address: string;
+  @ApiProperty({ example: 'sol' })
+  coin: string;
 
   @IsNumber()
   @IsNotEmpty()

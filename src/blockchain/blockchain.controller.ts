@@ -39,7 +39,7 @@ export class BlockchainController {
     @Body() body: CoinSimilarityRequestDto,
   ): Promise<CoinSimilarityResponseDto> {
     const result = await this.coinSimilarityService.getCoinSimilarity(
-      body.address,
+      body.coin,
       body.from,
       body.to,
       body.topK,
