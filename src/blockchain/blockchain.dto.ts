@@ -236,7 +236,7 @@ export class BalanceOperationRequestBodyDto {
   @IsNotEmpty()
   @ApiProperty({ example: BalanceOperationType.Deposited })
   @Transform(({ value }) => value.toLowerCase())
-  operation: WrapperType<BalanceOperationType>;
+  operation: string;
 
   @IsString()
   @IsNotEmpty()

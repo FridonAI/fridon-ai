@@ -218,12 +218,14 @@ export class KaminoFactory {
       reserve.stats.decimals,
       false,
     ).toWei();
+    const slot = await this.connection.getSlot();
     const kaminoAction = await KaminoAction.buildRepayTxns(
       market,
       tokenAmount.toString(),
       new PublicKey(mintAddress),
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
+      slot,
       undefined,
       0,
       true,
