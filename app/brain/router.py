@@ -91,6 +91,36 @@ defi_transfer = Route(
 )
 
 
+media_action = Route(
+    name="DiscordAction",
+    utterances=[
+        "Follow Solana on media, please.",
+        "Unfollow Tensorians on media.",
+        "Follow Madlad on media.",
+        "Unfollow OkayBear on media.",
+        "Follow bonk please",
+        "Unfollow pyth please",
+        "Can you follow Jupiter on media?",
+        "Could you unfollow Drift on media?",
+    ]
+)
+
+
+media_talker = Route(
+    name="MediaTalker",
+    utterances=[
+        "What is the latest news on my media?",
+        "Summarize the latest news on my Defiland's announcements.",
+        "What is the today's news on Twitter?",
+        "When is Madlad's airdrop?",
+        "Are there any updates about Bonk staking?",
+        "Are there any airdrops on Jupiter?",
+        "Any upcoming airdrops on my media?",
+        "Are there any airdrop news on my socials?",
+    ]
+)
+
+
 defi_talker = Route(
     name="DeFiTalker",
     utterances=[
@@ -112,21 +142,6 @@ defi_talker = Route(
         "What's bitcoin?",
         "Is solana better or ethereum?",
         "I want to become a blockchain developer, is solana a good choice?",
-    ]
-)
-
-
-media_talker = Route(
-    name="MediaTalker",
-    utterances=[
-        "What is the latest news on my media?",
-        "Summarize the latest news on my Defiland's announcements.",
-        "What is the today's news on Twitter?",
-        "When is Madlad's airdrop?",
-        "Are there any updates about Bonk staking?",
-        "Are there any airdrops on Jupiter?",
-        "Any upcoming airdrops on my media?",
-        "Are there any airdrop news on my socials?",
     ]
 )
 
@@ -153,18 +168,6 @@ coin_search = Route(
         "Give me coins from solana ecosystem which are in top 100 market cap.",
         "What coins are similar to rndr?",
         "Which coins have AI product?",
-    ]
-)
-
-discord_action = Route(
-    name="DiscordAction",
-    utterances=[
-        "Follow Solana's server on Discord, please.",
-        "Unfollow Tensorians' server on Discord.",
-        "Follow Madlad's server on Discord.",
-        "Unfollow OkayBear's server on Discord.",
-        "Follow bonk please",
-        "Unfollow bonk please",
     ]
 )
 
@@ -222,7 +225,7 @@ routes = [
     defi_transfer,
     coin_chart_similarity,
     coin_search,
-    discord_action,
+    media_action,
     media_talker,
     off_topic,
 ]
