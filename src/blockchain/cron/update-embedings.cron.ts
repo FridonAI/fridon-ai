@@ -20,7 +20,17 @@ export class UpdateEmbeddings implements OnApplicationBootstrap {
 
   @Cron(CronExpression.EVERY_HOUR)
   async execute() {
-    this.l.debug('Called Update Embeddings Cron Job');
+    const envName = 'ENABLE_UPDATE_EMBEDDINGS_CRON';
+    if (process.env['ENABLE_UPDATE_EMBEDDINGS_CRON'] !== '1') {
+      this.l.debug(
+        `Update Embeddings Cron Job is disabled (Set ${envName}=1 to enable)`,
+      );
+      return;
+    }
+
+    this.l.debug(
+      `Called Update Embeddings Cron Job (remove ${envName} to disable)`,
+    );
     await this.updateEmbeddings();
   }
 
@@ -34,6 +44,13 @@ export class UpdateEmbeddings implements OnApplicationBootstrap {
       return {
         name: `update-embeddings-${i}`,
         data: { tokenAddresses: chunk },
+        opts: {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 5000,
+          },
+        },
       };
     });
 
@@ -41,6 +58,13 @@ export class UpdateEmbeddings implements OnApplicationBootstrap {
   }
 
   onApplicationBootstrap() {
+    const envName = 'UPDATE_EMBEDDINGS_ON_BOOTSTRAP';
+    if (process.env[envName] !== '1') {
+      this.l.debug(
+        `Application Bootstrap: Skipping Update Embeddings (Set ${envName}=1 to enable)`,
+      );
+      return;
+    }
     this.l.debug('Application Bootstrap: Updating Embeddings');
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.updateEmbeddings().then(() => {
