@@ -351,7 +351,6 @@ export enum SymbolMapper {
   gary = '$GARY',
   wnz = '$WNZ',
   yeti = '$YETI',
-  wen = '$WEN',
   swts = '$SWTS',
   bear = '$BEAR',
   pelf = '$PELF',

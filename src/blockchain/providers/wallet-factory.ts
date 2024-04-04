@@ -72,13 +72,13 @@ export class WalletFactory {
         ) {
           return null;
         }
-
         if (
           mintAddresses.length > 0 &&
           !mintAddresses.includes(val.account.data.parsed.info.mint)
         ) {
           return null;
         }
+
         return {
           mint: val.account.data.parsed.info.mint,
           amount: val.account.data.parsed.info.tokenAmount.uiAmountString,
@@ -87,11 +87,12 @@ export class WalletFactory {
       })
       .filter((val) => val !== null) as TokenBalance[];
 
-    if (mintAddresses.length === 0) {
-      return [
-        ...balances,
-        await this.fetchSolBalance(new PublicKey(publicKey)),
-      ];
+    const solBalance = await this.fetchSolBalance(new PublicKey(publicKey));
+    if (
+      mintAddresses.length === 0 ||
+      mintAddresses.includes(WSOL_MINT_ADDRESS.toBase58())
+    ) {
+      return [...balances, solBalance];
     }
 
     return balances;
