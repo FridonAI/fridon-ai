@@ -414,18 +414,13 @@ export class SymmetryApiFactory {
             order: 'desc',
           },
           attributes: [
-            'creation_time',
-            'manager',
+            'current_comp_token',
             'name',
             'symbol',
             'tvl',
             'price',
-            'current_comp_token',
-            'actively_managed',
             'sortkey',
             'fund_token',
-            'image_uri',
-            'precise_historical',
           ],
           count: 25,
           page: 1,
@@ -477,6 +472,7 @@ export type SymmetryFundsType = {
   actively_managed: boolean;
   creation_time: number;
   current_comp_token: string[];
+  current_comp_token_symbol: string[];
   fund_token: string;
   manager: string;
   name: string;

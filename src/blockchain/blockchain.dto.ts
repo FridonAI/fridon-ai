@@ -93,13 +93,22 @@ export class PointsResponseDto extends BaseDto<PointsResponseDto> {
 }
 // Symmetry
 export class SymmetryBasketDto {
-  @ApiProperty({ example: 'Solana LSD' })
+  @ApiProperty({ example: ['DFL', 'SOL'] })
+  tokens: string[];
+
+  @ApiProperty({ example: 2 })
+  tvl: number;
+
+  @ApiProperty({ example: 'LSD' })
+  symbol: string;
+
+  @ApiProperty({ example: 'Solana Defi Index' })
   name: string;
 }
 
 export class SymmetryBasketResponseDto extends BaseDto<SymmetryBasketResponseDto> {
-  @ApiProperty({ example: 10 })
-  points: number;
+  @ApiProperty({ type: SymmetryBasketDto, isArray: true })
+  data: SymmetryBasketDto[];
 }
 
 export class SymmetryDefiOperationsRequestBodyDto {
