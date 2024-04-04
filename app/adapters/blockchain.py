@@ -139,7 +139,7 @@ async def get_balance(
     if currency == 'points' and operation == 'all':
         req = {
             "walletAddress": wallet_id,
-            "provider": provider,
+            "provider": provider if provider != "wallet" else "all",
         }
         resp = requests.post(f"{api_url}/blockchain/points", json=req).json()
     else:
