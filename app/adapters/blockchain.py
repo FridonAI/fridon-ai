@@ -1,3 +1,5 @@
+import json
+
 from dependency_injector.wiring import Provide, inject
 
 from app.schema import ResponseDto
@@ -107,7 +109,6 @@ async def get_swap_tx(
     return await _send_and_wait(chat_id, wallet_id, request_url, req, pub, queue_getter)
 
 
-
 async def get_symmetry_baskets(
 ) -> str:
     api_url = os.environ["API_URL"]
@@ -121,28 +122,7 @@ async def get_symmetry_baskets(
         if resp["statusCode"] >= 500:
             return "Something went wrong! Please try again later."
     print("Got Response", resp)
-    return resp
-
-async def get_points(
-        wallet_id: str,
-        provider: str,
-) -> str:
-    req = {
-        "walletAddress": wallet_id,
-        "provider": provider,
-    }
-    api_url = os.environ["API_URL"]
-    if not api_url:
-        raise Exception("API_URL not set in environment variables")
-
-    resp = requests.post(f"{api_url}/blockchain/points", json=req).json()
-    if "statusCode" in resp:
-        if 500 > resp["statusCode"] >= 400:
-            return resp.get("message", "Something went wrong!")
-        if resp["statusCode"] >= 500:
-            return "Something went wrong! Please try again later."
-    print("Got Response", resp)
-    return resp
+    return json.dumps(resp)
 
 
 async def get_balance(
@@ -150,22 +130,30 @@ async def get_balance(
         provider: str,
         operation: str,
         currency: str,
-) -> str:
-    req = {
-        "walletAddress": wallet_id,
-        "provider": provider,
-        "currency": currency,
-        "operation": operation,
-    }
+):
+
     api_url = os.environ["API_URL"]
     if not api_url:
         raise Exception("API_URL not set in environment variables")
 
-    resp = requests.post(f"{api_url}/blockchain/balance-operation", json=req).json()
+    if currency == 'points' and operation == 'all':
+        req = {
+            "walletAddress": wallet_id,
+            "provider": provider,
+        }
+        resp = requests.post(f"{api_url}/blockchain/points", json=req).json()
+    else:
+        req = {
+            "walletAddress": wallet_id,
+            "provider": provider,
+            "currency": currency,
+            "operation": operation,
+        }
+        resp = requests.post(f"{api_url}/blockchain/balance-operation", json=req).json()
     if "statusCode" in resp:
         if 500 > resp["statusCode"] >= 400:
             return resp.get("message", "Something went wrong!")
         if resp["statusCode"] >= 500:
             return "Something went wrong! Please try again later."
     print("Got Response", resp)
-    return resp
+    return json.dumps(resp['data'])

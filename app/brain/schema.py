@@ -1,5 +1,4 @@
 import datetime
-import json
 from abc import ABC, abstractmethod
 from typing import Literal
 
@@ -9,7 +8,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 from pydantic.v1 import BaseModel
 
-from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx, get_balance, get_points, get_swap_tx, get_symmetry_baskets
+from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx, get_balance, get_swap_tx, get_symmetry_baskets
 from app.adapters.coins import get_chart_similar_coins
 from app.adapters.medias.discord import get_available_servers, follow_server, unfollow_server, \
     get_media_text, get_wallet_servers
@@ -27,7 +26,7 @@ class Adapter(ABC, BaseModel):
 
 class DefiStakeBorrowLendAdapter(Adapter):
     operation: Literal["stake", "borrow", "supply", "unstake", "stake", "withdraw", "repay"] | None
-    provider: Literal["kamino"] | None
+    provider: str | None
     currency: str | None
     amount: float | None
     status: bool
@@ -71,49 +70,37 @@ class DefiSwapAdapter(Adapter):
     @staticmethod
     def parser() -> PydanticOutputParser:
         return PydanticOutputParser(pydantic_object=DefiSwapAdapter)
-    
+
+
 class DefiSymmetryBasketsAdapter(Adapter):
     async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         symmetry_baskets = await get_symmetry_baskets()
 
-        return json.dumps(symmetry_baskets)
+        return symmetry_baskets
 
     @staticmethod
     def parser() -> PydanticOutputParser:
         return PydanticOutputParser(pydantic_object=DefiSymmetryBasketsAdapter)
 
-class DefiPointsAdapter(Adapter):
-    provider: Literal["kamino", "symmetry", 'drift', 'all'] | None
-
-    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
-        points_response = await get_points(
-            wallet_id,
-            self.provider,
-        )
-
-        return json.dumps(points_response['data'])
-
-    @staticmethod
-    def parser() -> PydanticOutputParser:
-        return PydanticOutputParser(pydantic_object=DefiPointsAdapter)
 
 class DefiBalanceAdapter(Adapter):
     status: bool
     comment: str | None
-    provider: Literal["kamino", "wallet", "symmetry", "all"] | None
-    operation: Literal["all", "supply", "borrow"] | None
+    provider: str | None
+    operation: str | None
     currency: str | None
 
     async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         if not self.status:
             return self.comment
+
         balance_response = await get_balance(
             wallet_id,
             self.provider,
             self.operation,
             self.currency,
         )
-        return json.dumps(balance_response['data'])
+        return balance_response
 
     @staticmethod
     def parser() -> PydanticOutputParser:

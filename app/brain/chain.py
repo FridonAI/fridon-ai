@@ -1,6 +1,3 @@
-import asyncio
-
-from langchain_community.chat_message_histories.postgres import PostgresChatMessageHistory
 from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
@@ -9,7 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 from app.brain.memory import get_chat_history
 from app.brain.retriever import get_coins_retriever
 from app.brain.schema import (
-    DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter, DefiPointsAdapter,
+    DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter,
     CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter, DefiSymmetryBasketsAdapter
 )
 from app.brain.templates import get_prompt
@@ -229,8 +226,6 @@ def get_chain(category, personality):
             return get_defi_balance_extract_chain(personality)
         case "DeFiSwap":
             return get_defi_swap_extract_chain(personality)
-        case "DeFiPoints":
-            return get_defi_points_extract_chain(personality)
         case "DefiSymmetryBaskets":
             return get_defi_symmetry_baskets_extract_chain(personality)
         case "DeFiTransfer":
