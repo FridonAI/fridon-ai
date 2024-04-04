@@ -335,7 +335,11 @@ export class SymmetryApiFactory {
   }
 
   // Getters
-  async getWalletBaskets(walletAddress: string, rpcEndpoint: string) {
+  async getWalletBaskets(
+    walletAddress: string,
+    rpcEndpoint: string,
+    mintAddress: string | undefined,
+  ) {
     rpcEndpoint;
     const walletBalances = await this.getWalletBalances(walletAddress);
 
@@ -392,6 +396,9 @@ export class SymmetryApiFactory {
       })
       .filter((val) => val !== undefined) as BalanceType[];
 
+    if (mintAddress) {
+      return balances.filter((balance) => balance.mintAddress === mintAddress);
+    }
     return balances;
   }
 

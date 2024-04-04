@@ -305,7 +305,10 @@ export class KaminoFactory {
     return transaction;
   }
 
-  async getKaminoBalances(walletAddress: string) {
+  async getKaminoBalances(
+    walletAddress: string,
+    mintAddress: string | undefined,
+  ) {
     const market = await KaminoMarket.load(
       this.connection,
       KAMINO_MAIN_MARKET_ADDRESS,
@@ -324,7 +327,17 @@ export class KaminoFactory {
       throw new HttpException("Couldn't get balance", 403); // User is new
     }
 
-    return [...this.getDeposits(obligations), ...this.getBorrows(obligations)];
+    const deposits = this.getDeposits(obligations);
+    const borrows = this.getBorrows(obligations);
+
+    console.log('mintAddress', mintAddress);
+    if (mintAddress) {
+      return deposits.filter((x) =>
+        x.mintAddress.equals(new PublicKey(mintAddress)),
+      );
+    }
+
+    return [...deposits, ...borrows];
   }
 
   async getKaminoDepositions(

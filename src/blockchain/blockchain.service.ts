@@ -151,8 +151,10 @@ export class BlockchainService {
           ...(await this.tools.convertPositionsToBalances(positions)),
         );
       } else if (operation == BalanceOperationType.All) {
-        const positions =
-          await this.kaminoFactory.getKaminoBalances(walletAddress);
+        const positions = await this.kaminoFactory.getKaminoBalances(
+          walletAddress,
+          mintAddress,
+        );
         balances.push(
           ...(await this.tools.convertPositionsToBalances(positions)),
         );
@@ -183,6 +185,7 @@ export class BlockchainService {
           ...(await this.symmetryFactory.getWalletBaskets(
             walletAddress,
             this.connection.rpcEndpoint,
+            mintAddress,
           )),
         );
       }
