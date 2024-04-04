@@ -41,7 +41,7 @@ class Chat:
                     config={"configurable": {"session_id": self.chat_id}}
                 )
                 if isinstance(adapter, CoinChartSimilarityAdapter):
-                    final_response = json.dumps({**json.loads(response), message: final_response})
+                    final_response = json.dumps({**json.loads(response), "message": final_response})
 
             self.memory.add_user_message(message)
             self.memory.add_ai_message(final_response)

@@ -43,20 +43,25 @@ templates = {
         "system": """you are the best defi parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency and amount.
 Return following json string: "{{status: boolean, "provider": "string" | null, "operation": "string" | null, "currency": "string" | null, "amount": number | null, "comment": "string" | null}}"
 E.x. "I want to supply 100 usdc on kamino" you've to return "{{"status":"true", "provider": "kamino", "operation": "supply", "currency': "usdc", "amount": 100}}"
+
 "provider" must be mentioned.
-"operation" must be mentioned.
+"operation" must be mentioned. 
 "currency" must be mentioned.
 "amount" must be mentioned.
+
+Providers can be: kamino, symmetry, drift, marginify, all and so on. If the provider is not in the examples, but prompted provider is very similar to any of examples, then you can consider it as the provider from the example. Otherwise extract as you think should be.
+Supported operations: supply, borrow, withdraw, repay. Get the operation from the query, if synonyms are used, like lend, deposit, cash out and so on, then map them to the coresponding supported operations, but you must be 100% sure.
+
+For example: lend, deposit are the synonyms of supply. Payback is the synonym of repay and so on. 
 If any must to parameters is unknown then return "{{"status": false, "comment": "..."}}" Comment is which parameters you can't extract.
-Extract parameters as lowercase.
-Supported operations: supply, borrow, withdraw, repay. Get the operation from the query, if synonyms are used then map them to the coresponding supported operations, but you must be 100% sure.
-For example: lend, deposit are the synonyms of supply. Payback is the synonym of repay and so on. """
+Extract parameters as lowercase."""
     },
 
     'defi_swap_extract': {
         "system": """You are the best swap parameters extractor from query. You've to determine following parameters from the given query: currency_from, currency_to and amount.
 Return following json string: "{{"status": boolean, "currency_from": "string" | null, "currency_to": "string" | null, "amount": number | null}}"
-"currency_from" must be mentioned.
+
+currency_from" must be mentioned.
 "currency_to" must be mentioned.
 "amount" must be mentioned.
 
@@ -66,18 +71,21 @@ E.x.
     - "Swap 100 sol to usdc?" you've to return "{{"status": true, "currency_from": "sol", "currency_to": "usdc", "amount": 1000}}"
     - "I want to swap 1000 bonk to sol?" you've to return "{{"status": true, "currency_from": "bonk", "currency_to": "sol", "amount": 1000}}"
 
-If swap synonym is used then map it to swap, you must be 100% sure. But if swap isn't asked and user asks different operation then return: "{{status: false, comment: ...}}" """
+If swap synonym is used then map it to swap, like convert, exchange, you must be 100% sure. But if swap isn't asked and user asks different operation then return: "{{status: false, comment: ...}}" """
     },
 
     'defi_transfer_extract': {
-        "system": """You are the best token transfer parameters extractor from query. You've to determine following parameters from the given query: token, wallet.
+        "system": """You are the best token transfer parameters extractor from query. You've to determine following parameters from the given query: currency, wallet.
 Return following json string: "{{"status": boolean, "currency": "string" | null, "wallet": "string" | null, "amount": number | null}}"
-"wallet" must be mentioned.
-"currency" must be mentioned.
+
+"wallet" must be mentioned. There are two type of Solana addresses: 1. random characters in total length of 32 to 44. 2. endling with .sol suffix. 
+"currency" must be mentioned. Currencies can be: usdc, sol, jup, bonk, wif, wen, and so on. You've to guess what user wants to transfer and that's the currency.
+
+Extract parameter names as lowercase. 
 If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
 E.x. "Transfer 100 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD" you've to return "{{"status": true, "currency": "usdc", "amount": 1000, "wallet": "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"}}"
-Extract parameter names as lowercase. There are two type of Solana addresses: 1. random characters in total length of 32 to 44. 2. endling with .sol suffix. 
-If transfer synonym is used then map it to transfer, you must be 100% sure. But if transfer isn't asked and user asks different operation then return: "{{status: false, comment: ...}}" """
+If transfer synonym is used then map it to transfer, like "send", you must be 100% sure. But if transfer isn't asked and user asks different operation then return: "{{status: false, comment: "No transfer request"}}" 
+Most of the time it will be next to the amount, don't get confused if it's similar or same to a real english word"""
     },
 
     'defi_balance_extract': {
@@ -86,11 +94,13 @@ Return following json string: "{{"status": boolean, "provider": "string" | null,
 
 Extract names as lowercase.
 
-If "provider" is not mentioned then default value is "all".
+If "provider" is not mentioned then default value is "wallet".
 If "operation" is not mentioned then default value is "all".
-If "currency" is not mentioned then default value is "all".
+If "currency" is not mentioned then default value is "all". If points are mentioned currency is "points" then.
 
-Supported operations: supply, borrow. Get the operation from the query, if synonyms are used then map them to the coresponding supported operations, but you must be 100% sure.
+Providers can be: wallet, kamino, symmetry, drift, marginify, all and so on. If the provider is not in the examples, but prompted provider is very similar to any of examples, then you can consider it as the provider from the example. Otherwise extract as you think should be.
+
+Supported operations: supply, borrow. Get the operation from the query, if synonyms are used, like lend, deposit and so on, then map them to the coresponding supported operations, but you must be 100% sure.
 For example: lend, deposit are the synonyms of supply.
 E.x. 
     - "How much usdc is lent on my Kamino?" you've to return "{{"provider": "kamino", "operation": "supply", "currency': "usdc"}}"
@@ -98,20 +108,6 @@ E.x.
     - "What's my balance?" you've to return "{{"provider": "wallet", "operation": "all", "currency": "all"}}" """
     },
 
-    'defi_points_extract': {
-        "system": """You are the best points parameters extractor from query. You've to determine following parameters from the given query: provider. Provider for example can be
-Kamino, Symmetry, Drift, All. If provider is not mentioned then default value is "all"
-Return following json string: "{{"status": boolean, "provider": "string" | null, "comment": "string" | null}}"
-
-Extract names as lowercase.
-
-If "provider" is not mentioned then default value is "all".
-
-E.x. 
-    - "How many points do I have on Kamino?" you've to return "{{"provider": "kamino"}}"
-    - "Can you tell me my points on all platforms?" you've to return "{{"provider": "all"}}"
-    - "How many points do I have on Symmetry?" you've to return "{{"provider": "symmetry", }}" """
-    },
 
     'defi_symmetry_baskets_extract': {
         "system": """You are the best symmetry basket quetion analyzer.
@@ -119,19 +115,45 @@ Use the following JSON format for response: {{"message": "string"}}
 E.x. "What are the symmetry baskets?" you've to return {{"message": "These are the symmetry baskets: ..."}}"""
     },
 
-    'discord_action_extract': {
+    'media_action_extract': {
         "system": """You are here to extract the action from the user's query.\
 There are two types of actions which you have to extract: follow and unfollow.
-You have to extract the server as well. You have to check if the server is in the list below between <servers_list> xml tags.
-<servers_list>
-{servers_list}
-<servers_list/> 
-If the server is not in the list, but prompted server is very similar to the server in the list, then you can consider it as the server from the list. Like if there is one or two characters difference.
-But if there is none of it then you have to return: {{"status": false, "comment": "Server is not in our list."}}
+You have to extract the media name as well. You have to check if the media name is in the list below between <medias_list> xml tags.
+<medias_list>
+{medias_list}
+<medias_list/> 
+If the media name is not in the list, but prompted media name is very similar to the media name in the list, then you can consider it as the media from the list. Like if there is one or two characters difference.
+But if there is none of it then you have to return: {{"status": false, "comment": "Media is not in our list."}}
 
-Return following JSON format for response: {{"status": boolean, "action": "string" | null, "server": "string" | null, "comment": "string" | null}}
+Return following JSON format for response: {{"status": boolean, "action": "string" | null, "media": "string" | null, "comment": "string" | null}}
 
-E.x. "Follow the Madlad's server on Discord" you've to return {{"status": true, "action": "follow", "server": "Madlads", "comment": null}}"""
+E.x. "Follow the Madlad's on media" you've to return {{"status": true, "action": "follow", "media": "madlads", "comment": null}}
+Extract parameters as lowercase."""
+    },
+
+    'media_query_extract': {
+        "system": """Your task is to extract the filter parameters from the user's message. 
+
+Filter parameters are: 
+    - Media names which medias' data to be fetched and considered, they can be absent. If user doesn't mention any media's name then default value is ["all"]. \
+If user mentions media names then extract them. Each of them should be in the user's list.
+<user_media_names_list>
+[{user_medias_list}]
+<user_media_names_list/>
+If the media is not in the list, but prompted media name is very similar to some media name in the list, then you can consider it as the media from the list.
+    
+    - Days which is the duration of the news. If a user says latest, recent or similar words then extract the days as 1, \
+if user says last week then extract the days as 7,if user says last month the extract the days as 30, \
+last three months the extract the days as 90 and so on. Default value of days is 30, so if user doesn't mention duration then return days as 30.
+
+Also you have to return query, which is rephrased user's query which clearly states what has to be done, excluding repeating media names and days.
+
+Return the following JSON string: {{"days": number, "medias": ["string"], "query": "string" }}
+
+E.x. "Give me the latest updates of my media" you've to return {{"days": 1, "medias": ["all"], "What are the latest updates?"}}
+
+REMEMBER: EXTRACT JUST PROVIDED MEDIAS and Rephrase the query.
+"""
     },
 
     'coin_chart_similarity_extract': {
@@ -141,30 +163,6 @@ Return the following JSON string: {{"status": boolean, "coin": "string" | null, 
 "coin" must be mentioned and must be exported in lowercase, like: sol, btc, etc, jup and so on.
 
 Extract starting_date in ISO Date Time Format, like "2023-12-01". If it cannot be extracted then return null. It's default value."""
-    },
-
-    'media_query_extract': {
-        "system": """Your task is to extract the filter parameters from the user's message. 
-        
-Filter parameters are: 
-    - Servers which servers' data to be considered, they can be absent. If user doesn't mention any server name then default value is ["all"]. \
-If user mentions server names then extract them. Each of them should be in the user's list.
-<user_servers_list>
-[{user_servers_list}]
-<user_servers_list/>
-If the server is not in the list, but prompted server is very similar to the server in the list, then you can consider it as the server from the list. Like if there is one or two characters difference.
-    - Days which is the duration of the news. If a user says latest, recent or similar words then extract the days as 1, \
-if user says last week then extract the days as 7,if user says last month the extract the days as 30, \
-last three months the extract the days as 90 and so on. Default value of days is 30, so if user doesn't mention duration then return days as 30.
-
-Also you have to return query, which is rephrased user's query which clearly states what has to be done, excluding repeating server names and days.
-
-Return the following JSON string: {{"days": number, "servers": ["string"], "query": "string" }}
-
-E.x. "Give me the latest updates of my media" you've to return {{"days": 1, "servers": ["all"], "What are the latest updates?"}}
-
-REMEMBER: EXTRACT JUST PROVIDED SERVERS and Rephrase the query.
-"""
     },
     
     'defi_talker': {
@@ -229,7 +227,7 @@ def get_prompt(template_name, personality):
              'defi_swap_extract' | \
              'defi_symmetry_baskets_extract' | \
              'defi_transfer_extract' | \
-             'discord_action_extract' | \
+             'media_action_extract' | \
              'coin_chart_similarity_extract' | \
              'media_query_extract':
             return ChatPromptTemplate.from_messages(
@@ -242,7 +240,6 @@ def get_prompt(template_name, personality):
             return ChatPromptTemplate.from_messages(
                 [
                     ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}\n\n{output_style_prompt}'),
-                    # ("system", output_style_prompt),
                     MessagesPlaceholder(variable_name="history"),
                     ("human", "{query}"),
                 ]
@@ -252,7 +249,6 @@ def get_prompt(template_name, personality):
             return ChatPromptTemplate.from_messages(
                 [
                     ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}\n\n{output_style_prompt}'),
-                    # ("system", output_style_prompt),
                     MessagesPlaceholder(variable_name="history"),
                     ("human", "{query}"),
                     ("assistant", "Result: {response}")
