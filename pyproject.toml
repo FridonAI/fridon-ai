@@ -28,6 +28,10 @@ ruff = "^0.3.3"
 coverage = "^7.4.4"
 pre-commit = "^3.6.2"
 jupyter = "^1.0.0"
+pandas = "^2.2.1"
+numpy = "^1.26.4"
+matplotlib = "^3.8.4"
+pandas-ta = "^0.3.14b0"
 
 
 [build-system]
