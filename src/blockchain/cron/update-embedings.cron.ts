@@ -11,6 +11,6 @@ export class UpdateEmbeddings {
   @Cron(CronExpression.EVERY_HOUR)
   async execute() {
     this.l.debug('Called Update Embeddings Cron Job');
-    await this.coinSimilarityService.updateEmbeddings();
+    await this.coinSimilarityService.updateAllEmbeddings();
   }
 }

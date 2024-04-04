@@ -10,6 +10,10 @@ import { HuggingFaceAdapter } from '../external/hugging-face.adapter';
 import { BirdEyeAdapter } from '../external/bird-eye.adapter';
 import { readFileSync } from 'fs';
 
+type TokenAddress = {
+  symbol: string;
+  address: string;
+};
 @Injectable()
 export class CoinSimilarityService implements OnApplicationBootstrap {
   private readonly l = new Logger(CoinSimilarityService.name);
@@ -23,14 +27,18 @@ export class CoinSimilarityService implements OnApplicationBootstrap {
   onApplicationBootstrap() {
     this.l.debug('Application Bootstrap: Updating Embeddings');
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.updateEmbeddings().then(() => {
+    this.updateAllEmbeddings().then(() => {
       this.l.debug('Application Bootstrap: Embeddings Updated');
     });
   }
 
-  async updateEmbeddings() {
+  async updateAllEmbeddings() {
     const tokenAddresses = this.getTokenAddresses();
 
+    await this.updateEmbeddingsBatch(tokenAddresses);
+  }
+
+  async updateEmbeddingsBatch(tokenAddresses: TokenAddress[]) {
     const arr: number[][] = [];
     for (const token of tokenAddresses) {
       const data = await this.getBirdEyeData(token.address);
