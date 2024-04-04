@@ -1,36 +1,22 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  OnApplicationBootstrap,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import pgvector from 'pgvector';
 import { HuggingFaceAdapter } from '../external/hugging-face.adapter';
 import { BirdEyeAdapter } from '../external/bird-eye.adapter';
 import { readFileSync } from 'fs';
 
-type TokenAddress = {
+export type TokenAddress = {
   symbol: string;
   address: string;
 };
-@Injectable()
-export class CoinSimilarityService implements OnApplicationBootstrap {
-  private readonly l = new Logger(CoinSimilarityService.name);
 
+@Injectable()
+export class CoinSimilarityService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly huggingFaceAdapter: HuggingFaceAdapter,
     private readonly birdEyeAdapter: BirdEyeAdapter,
   ) {}
-
-  onApplicationBootstrap() {
-    this.l.debug('Application Bootstrap: Updating Embeddings');
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.updateAllEmbeddings().then(() => {
-      this.l.debug('Application Bootstrap: Embeddings Updated');
-    });
-  }
 
   async updateAllEmbeddings() {
     const tokenAddresses = this.getTokenAddresses();
@@ -97,10 +83,7 @@ export class CoinSimilarityService implements OnApplicationBootstrap {
     return res;
   }
 
-  private getTokenAddresses(): {
-    symbol: string;
-    address: string;
-  }[] {
+  public getTokenAddresses(): TokenAddress[] {
     try {
       const res = readFileSync(
         './src/blockchain/cron/coins-list.json',

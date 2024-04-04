@@ -21,9 +21,14 @@ import { UpdateEmbeddings } from './cron/update-embedings.cron';
 import { CoinSimilarityService } from './services/coin-similarity';
 import { HuggingFaceAdapter } from './external/hugging-face.adapter';
 import { BirdEyeAdapter } from './external/bird-eye.adapter';
+import { COIN_SIMILARITY_EMBEDDINGS_QUEUE } from './services/types';
+import { CoinSimilarityEmbeddingsWorker } from './services/coin-similarity.queue-worker';
 
 @Module({
-  imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
+  imports: [
+    BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE }),
+    BullModule.registerQueue({ name: COIN_SIMILARITY_EMBEDDINGS_QUEUE }),
+  ],
   controllers: [BlockchainController],
   providers: [
     BlockchainService,
@@ -47,6 +52,7 @@ import { BirdEyeAdapter } from './external/bird-eye.adapter';
     CoinSimilarityService,
     HuggingFaceAdapter,
     BirdEyeAdapter,
+    CoinSimilarityEmbeddingsWorker,
   ],
   exports: [TransactionFactory, TransactionListenerService],
 })

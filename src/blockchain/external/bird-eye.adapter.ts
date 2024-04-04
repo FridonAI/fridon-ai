@@ -24,13 +24,13 @@ export class BirdEyeAdapter {
       },
     }).then((res) => res.json())) as BirdEyeResponse;
 
-    this.l.debug(`BirdEye Response[${url}]: ${JSON.stringify(result.success)}`);
     if ('message' in result) {
-      throw new BadRequestException(result.message);
-    }
-
-    if (!result.success) {
-      throw new BadRequestException('Failed to fetch Birdeye data');
+      this.l.debug(
+        `BirdEye Response[${url}]: ${JSON.stringify(result.message)}`,
+      );
+      throw new BadRequestException(
+        `Failed to fetch Birdeye data: "${result.message}"`,
+      );
     }
 
     const data = result.data.items.map((item) => item.value).slice(0, 512);
