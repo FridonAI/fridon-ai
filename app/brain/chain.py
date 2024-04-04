@@ -35,17 +35,6 @@ def get_defi_swap_extract_chain(
         | DefiSwapAdapter.parser()
     )
 
-def get_defi_points_extract_chain(
-        personality,
-        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
-):
-    prompt = get_prompt('defi_points_extract', personality)
-    return (
-        prompt
-        | llm
-        | DefiPointsAdapter.parser()
-    )
-
 def get_defi_symmetry_baskets_extract_chain(
         personality,
         llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
