@@ -1,5 +1,6 @@
 import { EventsHandler } from '@nestjs/cqrs';
 import {
+  TransactionCanceledEvent,
   TransactionConfirmedEvent,
   TransactionFailedEvent,
   TransactionSkippedEvent,
@@ -41,6 +42,19 @@ export class TransactionFailedHandler {
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       'Transaction Failed',
+      event.aux.personality,
+    );
+  }
+}
+
+@EventsHandler(TransactionCanceledEvent)
+export class TransactionCanceledHandler {
+  constructor(private readonly chatService: ChatService) {}
+
+  async handle(event: TransactionCanceledEvent) {
+    await this.chatService.createChatMessageTransactionResponse(
+      new ChatId(event.aux.chatId),
+      event.reason,
       event.aux.personality,
     );
   }

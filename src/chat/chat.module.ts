@@ -9,6 +9,7 @@ import {
   TransactionConfirmedHandler,
   TransactionSkippedHandler,
   TransactionFailedHandler,
+  TransactionCanceledHandler,
 } from './event-handlers/blockchain.evet-handlers';
 import { Redis } from 'ioredis';
 
@@ -33,6 +34,7 @@ import { Redis } from 'ioredis';
     TransactionConfirmedHandler,
     TransactionSkippedHandler,
     TransactionFailedHandler,
+    TransactionCanceledHandler,
     {
       provide: Redis,
       useValue: new Redis({

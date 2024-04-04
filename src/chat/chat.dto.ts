@@ -65,3 +65,12 @@ export class CreateChatMessageInfoRequestDto extends BaseDto<CreateChatMessageIn
   @IsNotEmpty()
   personality: string;
 }
+
+export class TransactionCanceledRequestDto {
+  @ApiProperty({ example: 'User canceled the transaction' })
+  message: string;
+
+  @ApiProperty({ example: 'Yoda' })
+  @IsNotEmpty()
+  personality: string;
+}
