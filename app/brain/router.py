@@ -9,29 +9,18 @@ defi_stake_borrow_lend_route = Route(
         "Please borrow 100 usdc on Kamino",
         "Lend 100 bonk on Marginify",
         "I want to stake 100 jup on jupiter",
+        "Deposit 100 wif on Kamino",
         "Please lend 1123 jup on Kamino",
         "Withdraw 0.01 sol from Kamino",
         "Repay 123 usdc on Kamino",
+        "Withdraw 10 bonk from kamino",
+        "Could you deposit 1000 jup on Kamino?",
         "Deposit 100 bonk on Marginify",
         "Supply 10000 jto on Kamino",
         "Can you borrow 1000 usdt from Kamino?",
         "Can you lend 1000 usdt on Kamino?",
-        "Can you supply 1000000 bonk on Kamino?"
-    ]
-)
-
-defi_points = Route(
-    name="DeFiPoints",
-    utterances=[
-        "How many points do I have on Kamino?",
-        "What is my points balance on Drift?",
-        "How many points do I have on Symmetry?",
-        "Can you tell me my points on all platforms?",
-        "How many points do I have on all platforms?",
-        "What is my points for airdrops on all platforms?",
-        "How many points do I have for airdrops on all platforms?",
-        "How many points do I have on Kamino",
-        "Can you also tell me what are current points for my wallet address?",
+        "Can you supply 1000000 bonk on Kamino?",
+        "Could you withdraw 0.02 sol from kamino?"
     ]
 )
 
@@ -70,13 +59,18 @@ defi_balance = Route(
         "Can you tell me my sol balance?",
         "What is my lending usdc balance on Kamino?",
         "How much bonk I've borrowed on Marginify?",
-        "Can you tell me my staked jup balance on jup governance?",
         "how much jup do I have on kamino lending?",
         "How much usdt is borrowed on Kamino?",
         "How much sol is borrowed on my Kamino account?",
         "How much WIF do I have deposited on kamino?",
-        "Can you tell me what is my wallet ballance on all supported platforms?",
+        "Can you tell me what is my wallet balance on all supported platforms?",
+        "How many points do I have on Kamino?",
+        "What is my points balance on Drift?",
+        "How many points do I have on Symmetry?",
+        "Could you tell me my balances on kamino?",
         "What is my balance on all platforms?",
+        "How many points do I have on all platforms?",
+        "What is my points for airdrops on all platforms?",
         "What is my total balance in USD?",
     ]
 )
@@ -86,10 +80,13 @@ defi_transfer = Route(
     utterances=[
         "Transfer 100 sol to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
         "Send 100 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
+        "Can you send 100 bonk to losa.sol?",
         "Please, send 100 bonk to ArSZESuVtg5ac7vN8mqmUUgi8Sn8HVh46vq3KmZ86UBY",
         "Send 10 sol to drakula.sol",
+        "Could you transfer 1000 usdt to avada.sol?",
         "I want to transfer 10000000 bonk to abcde.sol",
         "Let's send 1000 pyth to 3bNVe2bKqazEnFZjmLegdwCWkANDXoUKdAMvTcL4AV4P",
+        "Can you transfer 1000 jup to 3bNVe2bKqazEnFZjmLegdwCWkANDXoUKdAMvTcL4AV4P?",
     ]
 )
 
@@ -219,7 +216,6 @@ off_topic = Route(
 routes = [
     defi_stake_borrow_lend_route,
     defi_balance,
-    defi_points,
     defi_swap,
     defi_symmetry_baskets,
     defi_talker,
