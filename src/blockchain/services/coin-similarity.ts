@@ -80,7 +80,15 @@ export class CoinSimilarityService {
         FROM price_vectors
         WHERE address != ${symbolAddress}
         ORDER BY score DESC LIMIT ${k}`;
-    return res;
+
+    return [
+      {
+        symbol: symbol,
+        address: symbolAddress,
+        score: 1,
+      },
+      ...res,
+    ] as ResultType;
   }
 
   public getTokenAddresses(): TokenAddress[] {
