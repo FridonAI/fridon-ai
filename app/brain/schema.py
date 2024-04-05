@@ -8,8 +8,9 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 from pydantic.v1 import BaseModel
 
-from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx, get_balance, get_swap_tx, get_symmetry_baskets
-from app.adapters.coins import get_chart_similar_coins
+from app.adapters.blockchain import get_transfer_tx, get_stake_borrow_lend_tx, get_balance, get_swap_tx, \
+    get_symmetry_baskets
+from app.adapters.coins import get_chart_similar_coins, get_coin_ta
 from app.adapters.medias.discord import get_available_servers, follow_server, unfollow_server, \
     get_media_text, get_wallet_servers
 from app.brain.memory import get_chat_history
@@ -48,6 +49,7 @@ class DefiStakeBorrowLendAdapter(Adapter):
     @staticmethod
     def parser() -> PydanticOutputParser:
         return PydanticOutputParser(pydantic_object=DefiStakeBorrowLendAdapter)
+
 
 class DefiSwapAdapter(Adapter):
     status: bool
@@ -250,3 +252,38 @@ class MediaQueryExtractAdapter(Adapter):
             "query": inp["query"],
             "user_servers_list": servers,
         }
+
+
+class CoinTAQueryExtractAdapter(Adapter):
+    status: bool
+    symbol: str
+    comment: str | None
+
+    async def get_response(self, chat_id, wallet_id, personality, *args, **kwargs):
+        last_day_summary = get_coin_ta(self.symbol)
+
+        def get_coin_ta_chain(
+                llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
+        ):
+            if not self.status:
+                return self.comment
+
+            prompt = get_prompt('coin_ta')
+            return ({
+                        "symbol": lambda x: x["symbol"],
+                        "last_day_summary": lambda x: x["last_day_summary"],
+                    }
+                    | prompt
+                    | llm
+                    | StrOutputParser())
+
+        chain = get_coin_ta_chain()
+
+        response = await chain.ainvoke(
+            {"symbol": self.symbol, "last_day_summary": last_day_summary},
+        )
+        return response
+
+    @staticmethod
+    def parser() -> PydanticOutputParser:
+        return PydanticOutputParser(pydantic_object=CoinTAQueryExtractAdapter)

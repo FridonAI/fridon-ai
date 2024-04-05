@@ -1,13 +1,14 @@
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
-from langchain_core.output_parsers import StrOutputParser
 
 from app.brain.memory import get_chat_history
 from app.brain.retriever import get_coins_retriever
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter,
-    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter, DefiSymmetryBasketsAdapter
+    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter,
+    DefiSymmetryBasketsAdapter, CoinTAQueryExtractAdapter
 )
 from app.brain.templates import get_prompt
 from app.settings import settings
@@ -19,10 +20,11 @@ def get_defi_stake_borrow_lend_extract_chain(
 ):
     prompt = get_prompt('defi_stake_borrow_lend_extract', personality)
     return (
-        prompt
-        | llm
-        | DefiStakeBorrowLendAdapter.parser()
+            prompt
+            | llm
+            | DefiStakeBorrowLendAdapter.parser()
     )
+
 
 def get_defi_swap_extract_chain(
         personality,
@@ -30,10 +32,11 @@ def get_defi_swap_extract_chain(
 ):
     prompt = get_prompt('defi_swap_extract', personality)
     return (
-        prompt
-        | llm
-        | DefiSwapAdapter.parser()
+            prompt
+            | llm
+            | DefiSwapAdapter.parser()
     )
+
 
 def get_defi_symmetry_baskets_extract_chain(
         personality,
@@ -41,10 +44,11 @@ def get_defi_symmetry_baskets_extract_chain(
 ):
     prompt = get_prompt('defi_symmetry_baskets_extract', personality)
     return (
-        prompt
-        | llm
-        | DefiSymmetryBasketsAdapter.parser()
+            prompt
+            | llm
+            | DefiSymmetryBasketsAdapter.parser()
     )
+
 
 def get_defi_balance_extract_chain(
         personality,
@@ -52,9 +56,9 @@ def get_defi_balance_extract_chain(
 ):
     prompt = get_prompt('defi_balance_extract', personality)
     return (
-        prompt
-        | llm
-        | DefiBalanceAdapter.parser()
+            prompt
+            | llm
+            | DefiBalanceAdapter.parser()
     )
 
 
@@ -64,9 +68,20 @@ def get_defi_transfer_extract_chain(
 ):
     prompt = get_prompt('defi_transfer_extract', personality)
     return (
-        prompt
-        | llm
-        | DefiTransferAdapter.parser()
+            prompt
+            | llm
+            | DefiTransferAdapter.parser()
+    )
+
+
+def get_coin_ta_extract_chain(
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
+):
+    prompt = get_prompt('coin_extractor')
+    return (
+            prompt
+            | llm
+            | CoinTAQueryExtractAdapter.parser()
     )
 
 
@@ -76,10 +91,10 @@ def get_discord_action_extract_chain(
 ):
     prompt = get_prompt('discord_action_extract', personality)
     return (
-        RunnableLambda(DiscordActionAdapter.input_formatter)
-        | prompt
-        | llm
-        | DiscordActionAdapter.parser()
+            RunnableLambda(DiscordActionAdapter.input_formatter)
+            | prompt
+            | llm
+            | DiscordActionAdapter.parser()
     )
 
 
@@ -89,9 +104,9 @@ def get_coin_chart_similarity_extract_chain(
 ):
     prompt = get_prompt('coin_chart_similarity_extract', personality)
     return (
-        prompt
-        | llm
-        | CoinChartSimilarityAdapter.parser()
+            prompt
+            | llm
+            | CoinChartSimilarityAdapter.parser()
     )
 
 
@@ -101,10 +116,10 @@ def get_media_query_extract(
 ):
     prompt = get_prompt('media_query_extract', personality)
     return (
-        RunnableLambda(MediaQueryExtractAdapter.input_formatter)
-        | prompt
-        | llm
-        | MediaQueryExtractAdapter.parser()
+            RunnableLambda(MediaQueryExtractAdapter.input_formatter)
+            | prompt
+            | llm
+            | MediaQueryExtractAdapter.parser()
     )
 
 
@@ -115,9 +130,9 @@ def get_defi_talker_chain(
     prompt = get_prompt('defi_talker', personality)
     return RunnableWithMessageHistory(
         (
-            prompt
-            | llm
-            | DefiTalkerAdapter.parser()
+                prompt
+                | llm
+                | DefiTalkerAdapter.parser()
         ),
         get_chat_history,
         input_messages_key="query",
@@ -132,14 +147,14 @@ def get_coin_search_chain(
     prompt = get_prompt('coin_search', personality)
     return RunnableWithMessageHistory(
         (
-            {
-                "query": lambda x: x["query"],
-                "context": RunnableLambda(lambda x: x["query"]) | get_coins_retriever(),
-                "history": lambda x: x["history"]
-            }
-            | prompt
-            | llm
-            | CoinSearcherAdapter.parser()
+                {
+                    "query": lambda x: x["query"],
+                    "context": RunnableLambda(lambda x: x["query"]) | get_coins_retriever(),
+                    "history": lambda x: x["history"]
+                }
+                | prompt
+                | llm
+                | CoinSearcherAdapter.parser()
         ),
         get_chat_history,
         input_messages_key="query",
@@ -155,14 +170,14 @@ def get_media_talker_chain(
     prompt = get_prompt('media_talker', personality)
     return RunnableWithMessageHistory(
         (
-            {
-                "query": lambda x: x["query"],
-                "context": RunnableLambda(lambda x: x["query"]) | retriever,
-                "history": lambda x: x["history"]
-            }
-            | prompt
-            | llm
-            | StrOutputParser()
+                {
+                    "query": lambda x: x["query"],
+                    "context": RunnableLambda(lambda x: x["query"]) | retriever,
+                    "history": lambda x: x["history"]
+                }
+                | prompt
+                | llm
+                | StrOutputParser()
         ),
         get_chat_history,
         input_messages_key="query",
@@ -189,9 +204,9 @@ def get_error_chain(
 ):
     prompt = get_prompt('error', personality)
     return (
-        prompt
-        | llm
-        | StrOutputParser()
+            prompt
+            | llm
+            | StrOutputParser()
     )
 
 
@@ -201,9 +216,9 @@ def get_off_topic_chain(
 ):
     prompt = get_prompt('off_topic', personality)
     return (
-        prompt
-        | llm
-        | StrOutputParser()
+            prompt
+            | llm
+            | StrOutputParser()
     )
 
 
@@ -229,6 +244,7 @@ def get_chain(category, personality):
             return get_defi_talker_chain(personality)
         case "MediaTalker":
             return get_media_query_extract(personality)
+        case "CoinTA":
+            return get_coin_ta_extract_chain()
 
     return get_off_topic_chain(personality)
-

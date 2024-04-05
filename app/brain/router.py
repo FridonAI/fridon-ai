@@ -215,6 +215,19 @@ off_topic = Route(
     ]
 )
 
+coin_ta = Route(
+    name="CoinTA",
+    utterances=[
+        "Please analyse the chart of sol",
+        "What can you cay about sol performance?",
+        "What is the trend of jup?",
+        "What is the price prediction of bonk?",
+        "Can you predict the price of wif?",
+        "What is the future of jto?",
+        "What is the technical analysis of jup?",
+    ],
+)
+
 
 routes = [
     defi_stake_borrow_lend_route,
@@ -228,6 +241,7 @@ routes = [
     media_action,
     media_talker,
     off_topic,
+    coin_ta
 ]
 
 rl = RouteLayer(encoder=OpenAIEncoder(), routes=routes)

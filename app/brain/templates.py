@@ -38,6 +38,8 @@ Lastly, Shakespeare's themes are universal—love, power, fate, betrayal—so in
     "normal": ""
 }
 
+
+
 templates = {
     'defi_stake_borrow_lend_extract': {
         "system": """you are the best defi parameters extractor from query. You've to determine following parameters from the given query: provider, operation, currency and amount.
@@ -209,11 +211,35 @@ Tell the user that you don't answer questions which aren't related to blockchain
     "error": {
         "system": """
 Inform the user that something went wrong and you can't respond to their message at the moment and try again."""
-    }
+    },
+    "coin_ta": {
+        "system": """
+Assume the role as a leading Technical Analysis (TA) expert in the stock market, \
+a modern counterpart to Charles Dow, John Bollinger, and Alan Andrews. \
+Your mastery encompasses both stock fundamentals and intricate technical indicators. \
+You possess the ability to decode complex market dynamics, \
+providing clear insights and recommendations backed by a thorough understanding of interrelated factors. \
+Your expertise extends to practical tools like the pandas_ta module, \
+allowing you to navigate data intricacies with ease. \
+As a TA authority, your role is to decipher market trends, make informed predictions, and offer valuable perspectives.
+
+given {symbol} TA data as below on the last trading day, what will be the next few days possible crypto price movement? 
+
+Summary of Technical Indicators for the Last Day:
+{last_day_summary}"""
+    },
+    'coin_extractor': {
+        "system": """You are the best coin symbol extractor from user query. You've to determine following parameters from the given query: symbol.
+Return following json string: "{{"status": boolean, "symbol": "string" | null, "comment": "string" | null}}"
+ 
+"symbol" must be mentioned. Currencies can be: usdc, sol, jup, bonk, wif, wen, and so on. You've to guess what coin symbol user wants to analyse.
+
+Extract parameter names as lowercase. 
+If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
+E.x. "What can you say about sol performance?" you've to return "{{"status": true, "symbol": "sol"}}" """
+},
 }
-
-
-def get_prompt(template_name, personality):
+def get_prompt(template_name, personality="normal"):
     template = templates[template_name]["system"]
     fridon_personality_description = fridon_personality_descriptions.get(
         personality,
@@ -229,7 +255,8 @@ def get_prompt(template_name, personality):
              'defi_transfer_extract' | \
              'media_action_extract' | \
              'coin_chart_similarity_extract' | \
-             'media_query_extract':
+             'media_query_extract' | \
+             'coin_extractor':
             return ChatPromptTemplate.from_messages(
                 [
                     ("system", template),
@@ -262,3 +289,6 @@ def get_prompt(template_name, personality):
                     ("human", "{query}"),
                 ]
             )
+
+        case 'coin_ta':
+            return ChatPromptTemplate.from_template(template)
