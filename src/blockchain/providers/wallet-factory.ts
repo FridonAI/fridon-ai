@@ -101,6 +101,14 @@ export class WalletFactory {
   private async fetchSolBalance(publicKey: PublicKey) {
     const accountInfo = await this.connection.getAccountInfo(publicKey);
 
+    if (!accountInfo) {
+      return {
+        mint: WSOL_MINT_ADDRESS.toBase58(),
+        amountRaw: 0,
+        amount: '0',
+      };
+    }
+
     return {
       mint: WSOL_MINT_ADDRESS.toBase58(),
       amountRaw: accountInfo!.lamports,
