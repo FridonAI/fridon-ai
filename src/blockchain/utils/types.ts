@@ -84,4 +84,5 @@ export type BalanceType = {
   mintAddress: string;
   amount: string;
   value: string;
+  type?: string;
 };

@@ -298,6 +298,7 @@ export class BlockchainTools {
 
   async convertPositionsToBalances(
     positions: Position[],
+    type: string | undefined = undefined,
   ): Promise<BalanceType[]> {
     const mintAddresses = positions.map((position) =>
       position.mintAddress.toBase58(),
@@ -317,6 +318,7 @@ export class BlockchainTools {
           price *
           parseFloat(this.numberFormatter.toUINumber(position.amount, decimals))
         ).toFixed(10),
+        type,
       };
     });
   }
@@ -351,7 +353,6 @@ export enum SymbolMapper {
   gary = '$GARY',
   wnz = '$WNZ',
   yeti = '$YETI',
-  wen = '$WEN',
   swts = '$SWTS',
   bear = '$BEAR',
   pelf = '$PELF',

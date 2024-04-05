@@ -14,6 +14,7 @@ import {
   SwapTokensResponseDto,
   CoinSimilarityRequestDto,
   CoinSimilarityResponseDto,
+  SymmetryBasketResponseDto,
   // BalanceOperationResponseBodyDto,
 } from './blockchain.dto';
 import { BlockchainService } from './blockchain.service';
@@ -39,7 +40,7 @@ export class BlockchainController {
     @Body() body: CoinSimilarityRequestDto,
   ): Promise<CoinSimilarityResponseDto> {
     const result = await this.coinSimilarityService.getCoinSimilarity(
-      body.address,
+      body.coin,
       body.from,
       body.to,
       body.topK,
@@ -49,6 +50,7 @@ export class BlockchainController {
       data: result.map((item) => ({
         symbol: item.symbol,
         address: item.address,
+        score: item.score,
       })),
     });
   }
@@ -145,8 +147,16 @@ export class BlockchainController {
   async getSymmetryInformation() {
     const result = await this.blockchainService.getSymmetryBaskets();
 
-    // todo: write paginations and response DTO.
-    return result;
+    return new SymmetryBasketResponseDto({
+      data: result.map((item) => {
+        return {
+          tokens: item.current_comp_token_symbol ?? [],
+          tvl: item.tvl,
+          symbol: item.symbol,
+          name: item.name,
+        };
+      }),
+    });
   }
 
   @Post('points')

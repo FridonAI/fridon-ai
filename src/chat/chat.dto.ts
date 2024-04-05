@@ -59,9 +59,16 @@ export class CreateChatMessageInfoRequestDto extends BaseDto<CreateChatMessageIn
     example:
       '4UcEfkYziTjiRHy9xEiuJogDHGkNSZ74isv1WgeBcQBpvx2XMfP9bsczo95Vg6dLL2G341UDaSzZzLLXstxM6MTg',
   })
-  transactionId: string | undefined;
+  transactionId: string;
 
-  message: string | undefined;
+  @ApiProperty({ example: 'Yoda' })
+  @IsNotEmpty()
+  personality: string;
+}
+
+export class TransactionCanceledRequestDto {
+  @ApiProperty({ example: 'User canceled the transaction' })
+  message: string;
 
   @ApiProperty({ example: 'Yoda' })
   @IsNotEmpty()

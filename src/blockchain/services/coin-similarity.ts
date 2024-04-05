@@ -1,87 +1,116 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
 import pgvector from 'pgvector';
+import { HuggingFaceAdapter } from '../external/hugging-face.adapter';
+import { BirdEyeAdapter } from '../external/bird-eye.adapter';
+import { readFileSync } from 'fs';
 
-type BirdEyeResponse =
-  | {
-      success: true;
-      data: {
-        items: { unixTime: number; value: number }[];
-      };
-    }
-  | { success: false; message: 'address is invalid format' };
+export type TokenAddress = {
+  symbol: string;
+  address: string;
+};
 
 @Injectable()
 export class CoinSimilarityService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly huggingFaceAdapter: HuggingFaceAdapter,
+    private readonly birdEyeAdapter: BirdEyeAdapter,
+  ) {}
+
+  async updateAllEmbeddings() {
+    const tokenAddresses = this.getTokenAddresses();
+
+    await this.updateEmbeddingsBatch(tokenAddresses);
+  }
+
+  async updateEmbeddingsBatch(tokenAddresses: TokenAddress[]) {
+    const arr: number[][] = [];
+    for (const token of tokenAddresses) {
+      const data = await this.getBirdEyeData(token.address);
+      arr.push(data);
+    }
+
+    const result = await this.huggingFaceAdapter.getEmbeddings(arr);
+    const richResult = result.vector.map((vector, index) => ({
+      vector,
+      symbol: tokenAddresses[index]!.symbol,
+      address: tokenAddresses[index]!.address,
+      values: arr[index]!,
+    }));
+
+    result.vector.forEach(async (vector, i) => {
+      const embedding = pgvector.toSql(vector);
+      const values = pgvector.toSql(richResult[i]!.values);
+      await this.prisma.$executeRaw`
+          INSERT INTO price_vectors 
+          (embedding, symbol, address, values) 
+          VALUES
+          (${embedding}::vector,${richResult[i]!.symbol}, ${richResult[i]!.address}, ${values}::vector)`;
+    });
+  }
 
   async getCoinSimilarity(symbol: string, from: number, to: number, k: number) {
-    const data = await this.getBirdEyeData(symbol, from, to);
+    const symbolAddress = this.getTokenAddresses().find(
+      (token) => token.symbol === symbol,
+    )?.address;
 
-    const modelUrl =
-      'https://kt60ga6c7qc0otgc.us-east-1.aws.endpoints.huggingface.cloud';
-
-    const response = await fetch(modelUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer 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',
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: [data],
-      }),
-    });
-
-    type ModelResponse =
-      | {
-          vector: [number[]];
-        }
-      | { error: string };
-    const result = (await response.json()) as ModelResponse;
-    if ('error' in result) {
-      throw new BadRequestException(`Hugging Face error: ${result.error}`);
+    if (!symbolAddress) {
+      throw new BadRequestException(`Token[${symbol}] not found`);
     }
+
+    const data = await this.birdEyeAdapter.getHistoryPrice(
+      symbolAddress,
+      from,
+      to,
+    );
+    const result = await this.huggingFaceAdapter.getEmbeddings([data]);
+
     const embedding = result.vector[0];
     const vector = pgvector.toSql(embedding);
 
-    type resultType = {
+    type ResultType = {
       symbol: string;
+      score: number;
       address: string;
     }[];
 
-    const res = await this.prisma.$queryRaw<resultType>`
-        SELECT symbol, address
+    const res = await this.prisma.$queryRaw<ResultType>`
+        SELECT symbol, 1 - (embedding <=> ${vector}::vector) as score, address
         FROM price_vectors
-        WHERE address != ${symbol}
-        ORDER BY 1 - (embedding <=> ${vector}::vector) DESC LIMIT ${k}`;
+        WHERE address != ${symbolAddress}
+        ORDER BY score DESC LIMIT ${k}`;
     return res;
   }
 
-  private async getBirdEyeData(
-    tokenAddress: string,
-    from: number,
-    to: number,
-  ): Promise<number[]> {
-    const result = (await fetch(
-      `https://public-api.birdeye.so/defi/history_price?address=${tokenAddress}&time_from=${from}&time_to=${to}&type=1H`,
-      {
-        headers: {
-          'X-API-KEY': '1ce5e10d345740ecb60ef4bb960d0385',
-        },
-      },
-    ).then((res) => res.json())) as BirdEyeResponse;
-
-    if ('message' in result) {
-      throw new BadRequestException(result.message);
+  public getTokenAddresses(): TokenAddress[] {
+    try {
+      const res = readFileSync(
+        './src/blockchain/cron/coins-list.json',
+        'utf-8',
+      );
+      return JSON.parse(res);
+    } catch {
+      const res = readFileSync(
+        './dist/blockchain/cron/coins-list.json',
+        'utf-8',
+      );
+      return JSON.parse(res);
     }
+  }
 
-    if (!result.success) {
-      throw new BadRequestException('Failed to fetch Birdeye data');
+  private async getBirdEyeData(tokenAddress: string): Promise<number[]> {
+    const timeTo = new Date().getTime();
+    const timeFrom = timeTo - 60 * 60 * 24 * 30;
+    const data = await this.birdEyeAdapter.getHistoryPrice(
+      tokenAddress,
+      timeFrom,
+      timeTo,
+    );
+
+    while (data.length < 512) {
+      data.unshift(0);
     }
-
-    const data = result.data.items.map((item) => item.value).slice(0, 512);
-
     return data;
   }
 }

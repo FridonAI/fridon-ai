@@ -1,97 +1,74 @@
-import pgvector from 'pgvector';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { readFileSync } from 'fs';
-import { PrismaService } from 'nestjs-prisma';
-
-type BirdEyeResponse = {
-  data: {
-    items: { unixTime: number; value: number }[];
-    success: true;
-  };
-};
-
-type ModelResponse = {
-  vector: number[][];
-};
+import { CoinSimilarityService } from '../services/coin-similarity';
+import _ from 'lodash';
+import { InjectQueue } from '@nestjs/bullmq';
+import {
+  COIN_SIMILARITY_EMBEDDINGS_QUEUE,
+  CoinSimilarityEmbeddingsQueue,
+} from '../services/types';
 
 @Injectable()
-export class UpdateEmbeddings {
+export class UpdateEmbeddings implements OnApplicationBootstrap {
   private readonly l = new Logger(UpdateEmbeddings.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly coinSimilarityService: CoinSimilarityService,
+    @InjectQueue(COIN_SIMILARITY_EMBEDDINGS_QUEUE)
+    private readonly transactionListenerQueue: CoinSimilarityEmbeddingsQueue,
+  ) {}
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
+  @Cron(CronExpression.EVERY_HOUR)
   async execute() {
-    this.l.debug('Called Update Embeddings Cron Job');
-
-    const tokenAddresses = this.getTokenAddresses();
-
-    const arr: number[][] = [];
-    for (const token of tokenAddresses) {
-      const data = await this.getBirdEyeData(token.address);
-      arr.push(data);
+    const envName = 'ENABLE_UPDATE_EMBEDDINGS_CRON';
+    if (process.env['ENABLE_UPDATE_EMBEDDINGS_CRON'] !== '1') {
+      this.l.debug(
+        `Update Embeddings Cron Job is disabled (Set ${envName}=1 to enable)`,
+      );
+      return;
     }
 
-    const modelUrl =
-      'https://kt60ga6c7qc0otgc.us-east-1.aws.endpoints.huggingface.cloud';
-
-    const response = await fetch(modelUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer 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',
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        inputs: arr,
-      }),
-    });
-
-    const result = (await response.json()) as ModelResponse;
-    const richResult = result.vector.map((vector, index) => ({
-      vector,
-      symbol: tokenAddresses[index]!.symbol,
-      address: tokenAddresses[index]!.address,
-      values: arr[index]!,
-    }));
-
-    result.vector.forEach(async (vector, i) => {
-      const embedding = pgvector.toSql(vector);
-      const values = pgvector.toSql(richResult[i]!.values);
-      await this.prisma.$executeRaw`
-          INSERT INTO price_vectors 
-          (embedding, symbol, address, values) 
-          VALUES
-          (${embedding}::vector,${richResult[i]!.symbol}, ${richResult[i]!.address}, ${values}::vector)`;
-    });
+    this.l.debug(
+      `Called Update Embeddings Cron Job (remove ${envName} to disable)`,
+    );
+    await this.updateEmbeddings();
   }
 
-  getTokenAddresses(): {
-    symbol: string;
-    address: string;
-  }[] {
-    const res = readFileSync('./src/blockchain/cron/coins-list.json', 'utf-8');
-    return JSON.parse(res);
-  }
+  async updateEmbeddings() {
+    const tokenAddresses = this.coinSimilarityService.getTokenAddresses();
 
-  async getBirdEyeData(tokenAddress: string): Promise<number[]> {
-    const timeTo = new Date().getTime();
-    const timeFrom = timeTo - 60 * 60 * 24 * 30;
-    const result = (await fetch(
-      `https://public-api.birdeye.so/defi/history_price?address=${tokenAddress}&time_from=${timeFrom}&time_to=${timeTo}&type=1H`,
-      {
-        headers: {
-          'X-API-KEY': '1ce5e10d345740ecb60ef4bb960d0385',
+    const chunks = _.chunk(tokenAddresses, 16);
+
+    type T = Parameters<CoinSimilarityEmbeddingsQueue['addBulk']>[0][number];
+    const queueBatchData = chunks.map((chunk, i): T => {
+      return {
+        name: `update-embeddings-${i}`,
+        data: { tokenAddresses: chunk },
+        opts: {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 5000,
+          },
         },
-      },
-    ).then((res) => res.json())) as BirdEyeResponse;
+      };
+    });
 
-    const data = result.data.items.map((item) => item.value).slice(0, 512);
+    await this.transactionListenerQueue.addBulk(queueBatchData);
+  }
 
-    while (data.length < 512) {
-      data.unshift(0);
+  onApplicationBootstrap() {
+    const envName = 'UPDATE_EMBEDDINGS_ON_BOOTSTRAP';
+    if (process.env[envName] !== '1') {
+      this.l.debug(
+        `Application Bootstrap: Skipping Update Embeddings (Set ${envName}=1 to enable)`,
+      );
+      return;
     }
-    return data;
+    this.l.debug('Application Bootstrap: Updating Embeddings');
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.updateEmbeddings().then(() => {
+      this.l.debug('Application Bootstrap: Embeddings Updated');
+    });
   }
 }

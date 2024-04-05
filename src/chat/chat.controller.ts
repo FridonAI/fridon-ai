@@ -8,13 +8,14 @@ import {
   CreateChatResponseDto,
   GetChatResponseDto,
   GetChatsResponseDto,
+  TransactionCanceledRequestDto,
 } from './chat.dto';
 import { ChatId } from './domain/chat-id.value-object';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth, Wallet, WalletSession } from '@lib/auth';
 import { TransactionListenerService } from 'src/blockchain/transaction-listener/transaction-listener.service';
 import { EventBus } from '@nestjs/cqrs';
-import { TransactionCouldnotSendEvent } from '../blockchain/events/transaction.event';
+import { TransactionCanceledEvent } from 'src/blockchain/events/transaction.event';
 
 @Controller('chats')
 @ApiTags('chat')
@@ -94,18 +95,22 @@ export class ChatHttpController {
     @Param() { chatId }: ChatIdDto,
     @Body() body: CreateChatMessageInfoRequestDto,
   ): Promise<void> {
-    if (body.transactionId !== undefined) {
-      await this.transactionListenerService.registerTransactionListener(
-        body.transactionId,
-        { chatId, personality: body.personality },
-      );
-    } else if (body.message !== undefined) {
-      return this.eventBus.publish(
-        new TransactionCouldnotSendEvent({
-          message: body.message,
-          aux: { chatId: chatId, personality: body.personality },
-        }),
-      );
-    }
+    await this.transactionListenerService.registerTransactionListener(
+      body.transactionId,
+      { chatId, personality: body.personality },
+    );
+  }
+
+  @Post(':chatId/transaction-cancel')
+  async transactionCancel(
+    @Param() { chatId }: ChatIdDto,
+    @Body() body: TransactionCanceledRequestDto,
+  ): Promise<void> {
+    await this.eventBus.publish(
+      new TransactionCanceledEvent({
+        reason: body.message,
+        aux: { chatId, personality: body.personality },
+      }),
+    );
   }
 }

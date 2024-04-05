@@ -30,8 +30,8 @@ export class CoinSimilarityResponseDto extends BaseDto<CoinSimilarityResponseDto
 export class CoinSimilarityRequestDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'So11111111111111111111111111111111111111112' })
-  address: string;
+  @ApiProperty({ example: 'sol' })
+  coin: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -93,13 +93,22 @@ export class PointsResponseDto extends BaseDto<PointsResponseDto> {
 }
 // Symmetry
 export class SymmetryBasketDto {
-  @ApiProperty({ example: 'Solana LSD' })
+  @ApiProperty({ example: ['DFL', 'SOL'] })
+  tokens: string[];
+
+  @ApiProperty({ example: 2 })
+  tvl: number;
+
+  @ApiProperty({ example: 'LSD' })
+  symbol: string;
+
+  @ApiProperty({ example: 'Solana Defi Index' })
   name: string;
 }
 
 export class SymmetryBasketResponseDto extends BaseDto<SymmetryBasketResponseDto> {
-  @ApiProperty({ example: 10 })
-  points: number;
+  @ApiProperty({ type: SymmetryBasketDto, isArray: true })
+  data: SymmetryBasketDto[];
 }
 
 export class SymmetryDefiOperationsRequestBodyDto {
@@ -227,7 +236,7 @@ export class BalanceOperationRequestBodyDto {
   @IsNotEmpty()
   @ApiProperty({ example: BalanceOperationType.Deposited })
   @Transform(({ value }) => value.toLowerCase())
-  operation: WrapperType<BalanceOperationType>;
+  operation: string;
 
   @IsString()
   @IsNotEmpty()

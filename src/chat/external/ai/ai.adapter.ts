@@ -3,10 +3,14 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ChatId } from 'src/chat/domain/chat-id.value-object';
 import { AiChatMessageCreatedDto, AiChatMessageInfoCreatedDto } from './ai.dto';
 import { randomUUID } from 'crypto';
+import { Redis } from 'ioredis';
 
 export class AiAdapter {
   private logger = new Logger(AiAdapter.name);
-  constructor(@Inject('AI_SERVICE') private client: ClientProxy) {}
+  constructor(
+    @Inject('AI_SERVICE') private client: ClientProxy,
+    private readonly redis: Redis,
+  ) {}
 
   emitChatMessageCreated(
     chatId: ChatId,
@@ -29,8 +33,8 @@ export class AiAdapter {
     this.client.emit(eventName, event);
   }
 
-  emitChatMessageInfoCreated(chatId: ChatId, message: string) {
-    const eventName = 'chat_message_info_created';
+  async emitChatMessageInfoCreated(chatId: ChatId, message: string) {
+    const eventName = chatId.value;
     const event = new AiChatMessageInfoCreatedDto({
       chatId: chatId.value,
       user: { walletId: chatId.value },
@@ -45,5 +49,6 @@ export class AiAdapter {
     );
 
     this.client.emit(eventName, event);
+    await this.redis.lpush(eventName, JSON.stringify(event));
   }
 }

@@ -140,7 +140,7 @@ export class BlockchainService {
           mintAddress,
         );
         balances.push(
-          ...(await this.tools.convertPositionsToBalances(positions)),
+          ...(await this.tools.convertPositionsToBalances(positions, 'Borrow')),
         );
       } else if (operation == BalanceOperationType.Deposited) {
         const positions = await this.kaminoFactory.getKaminoDepositions(
@@ -148,11 +148,16 @@ export class BlockchainService {
           mintAddress,
         );
         balances.push(
-          ...(await this.tools.convertPositionsToBalances(positions)),
+          ...(await this.tools.convertPositionsToBalances(
+            positions,
+            'Deposit',
+          )),
         );
       } else if (operation == BalanceOperationType.All) {
-        const positions =
-          await this.kaminoFactory.getKaminoBalances(walletAddress);
+        const positions = await this.kaminoFactory.getKaminoBalances(
+          walletAddress,
+          mintAddress,
+        );
         balances.push(
           ...(await this.tools.convertPositionsToBalances(positions)),
         );
@@ -183,6 +188,7 @@ export class BlockchainService {
           ...(await this.symmetryFactory.getWalletBaskets(
             walletAddress,
             this.connection.rpcEndpoint,
+            mintAddress,
           )),
         );
       }

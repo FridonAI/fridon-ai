@@ -4,12 +4,13 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.media.createMany({
     data: [
-      { id: 'dfl' },
-      { id: 'mad lads' },
-      { id: 'bonk' },
-      { id: 'okay' },
-      { id: 'parcl' },
-      { id: 'tensorians' },
+      { id: 'madlads' },
+      { id: 'jup' },
+      { id: 'kamino' },
+      { id: 'jito' },
+      { id: 'wormhole' },
+      { id: 'tensor' },
+      { id: 'metaplex' },
     ],
   });
 }

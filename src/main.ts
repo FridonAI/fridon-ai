@@ -27,7 +27,11 @@ async function bootstrap() {
   });
 
   app.use(morgan('tiny'));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
   app.enableCors();
 
   await app.startAllMicroservices();

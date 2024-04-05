@@ -9,7 +9,9 @@ import {
   TransactionConfirmedHandler,
   TransactionSkippedHandler,
   TransactionFailedHandler,
+  TransactionCanceledHandler,
 } from './event-handlers/blockchain.evet-handlers';
+import { Redis } from 'ioredis';
 
 @Module({
   imports: [
@@ -32,6 +34,14 @@ import {
     TransactionConfirmedHandler,
     TransactionSkippedHandler,
     TransactionFailedHandler,
+    TransactionCanceledHandler,
+    {
+      provide: Redis,
+      useValue: new Redis({
+        host: process.env['REDIS_HOST'],
+        port: parseInt(process.env['REDIS_PORT'] || '6379'),
+      }),
+    },
   ],
 })
 export class ChatModule {}
