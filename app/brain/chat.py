@@ -5,7 +5,7 @@ from pydantic.v1 import BaseModel
 
 from app.brain.router import get_category
 from app.brain.schema import CoinSearcherAdapter, DefiTalkerAdapter, MediaQueryExtractAdapter, \
-    CoinChartSimilarityAdapter
+    CoinChartSimilarityAdapter, CoinTAQueryExtractAdapter
 
 
 class Chat:
@@ -34,7 +34,8 @@ class Chat:
 
             if isinstance(adapter, (CoinSearcherAdapter, DefiTalkerAdapter, MediaQueryExtractAdapter)):
                 final_response = response
-
+            elif isinstance(adapter, CoinTAQueryExtractAdapter) and self.personality == "Normal":
+                final_response = response
             else:
                 final_response = await get_response_generator_chain(self.personality).ainvoke(
                     {"query": message, "response": response},

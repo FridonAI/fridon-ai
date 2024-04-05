@@ -1,14 +1,14 @@
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
-from langchain_core.output_parsers import StrOutputParser
 
 from app.brain.memory import get_chat_history
 from app.brain.retriever import get_coins_retriever
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter,
     CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter,
-    DefiSymmetryBasketsAdapter, MediaInfoAdapter
+    DefiSymmetryBasketsAdapter, CoinTAQueryExtractAdapter, MediaInfoAdapter
 )
 from app.brain.templates import get_prompt
 from app.settings import settings
@@ -68,6 +68,17 @@ def get_defi_transfer_extract_chain(
         prompt
         | llm
         | DefiTransferAdapter.parser()
+    )
+
+
+def get_coin_ta_extract_chain(
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
+):
+    prompt = get_prompt('coin_extractor')
+    return (
+            prompt
+            | llm
+            | CoinTAQueryExtractAdapter.parser()
     )
 
 
@@ -202,9 +213,9 @@ def get_error_chain(
 ):
     prompt = get_prompt('error', personality)
     return (
-        prompt
-        | llm
-        | StrOutputParser()
+            prompt
+            | llm
+            | StrOutputParser()
     )
 
 
@@ -214,9 +225,9 @@ def get_off_topic_chain(
 ):
     prompt = get_prompt('off_topic', personality)
     return (
-        prompt
-        | llm
-        | StrOutputParser()
+            prompt
+            | llm
+            | StrOutputParser()
     )
 
 
@@ -242,6 +253,8 @@ def get_chain(category, personality):
             return get_defi_talker_chain(personality)
         case "MediaTalker":
             return get_media_query_extract(personality)
+        case "CoinTA":
+            return get_coin_ta_extract_chain()
         case "MediaInfo":
             return get_media_info_chain(personality)
 
