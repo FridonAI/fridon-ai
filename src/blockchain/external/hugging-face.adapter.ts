@@ -8,7 +8,7 @@ type ModelResponse = ModelResponseError | ModelResponseSuccess;
 export class HuggingFaceAdapter {
   async getEmbeddings(arr: number[][]): Promise<ModelResponseSuccess> {
     const modelUrl =
-      'https://kt60ga6c7qc0otgc.us-east-1.aws.endpoints.huggingface.cloud';
+      'https://hqiceznf7q3ppcsl.eu-west-1.aws.endpoints.huggingface.cloud';
 
     const response = await fetch(modelUrl, {
       method: 'POST',
