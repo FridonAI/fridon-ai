@@ -17,7 +17,7 @@ import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { Injectable } from '@nestjs/common';
 import { AuxType } from '../events/transaction.event';
 import { TransactionListenerService } from '../transaction-listener/transaction-listener.service';
-import { PRIORITY_FEE } from '../utils/constants';
+import { COMPUTE_LIMIT, PRIORITY_FEE } from '../utils/constants';
 
 export type TransactionComputeOpts = {
   computePrice?: number;
@@ -127,6 +127,11 @@ export class TransactionFactory {
       microLamports: PRIORITY_FEE,
     });
     instructions.push(priorityPrice);
+
+    const limit = ComputeBudgetProgram.setComputeUnitLimit({
+      units: COMPUTE_LIMIT,
+    });
+    instructions.push(limit);
 
     const message = new TransactionMessage({
       instructions: instructions,

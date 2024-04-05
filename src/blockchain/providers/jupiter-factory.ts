@@ -80,6 +80,7 @@ export class JupiterFactory {
           feeAccount: accountInfo ? feeAccount.toBase58() : undefined,
           quoteResponse: quote,
           dynamicComputeUnitLimit: true,
+          prioritizationFeeLamports: 'auto',
         },
       });
 
