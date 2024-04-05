@@ -63,6 +63,7 @@
     "pgvector": "^0.1.8",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
+    "ts-node": "^10.9.1",
     "spl": "npm::@solana/spl-token@0.4.1"
   },
   "devDependencies": {
@@ -91,7 +92,6 @@
     "swc-loader": "^0.2.6",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
-    "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
   },
