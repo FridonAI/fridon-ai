@@ -92,7 +92,7 @@ defi_transfer = Route(
 
 
 media_action = Route(
-    name="DiscordAction",
+    name="MediaAction",
     utterances=[
         "Follow Solana on media, please.",
         "Unfollow Tensorians on media.",
@@ -105,10 +105,28 @@ media_action = Route(
     ]
 )
 
+media_query = Route(
+    name="MediaInfo",
+    utterances=[
+        "Which medias can I follow?",
+        "What are my medias list?",
+        "What are the available medias to follow?",
+        "Can you tell me which medias I'm following?",
+        "What are the medias I'm following?",
+        "What are the medias I can follow?",
+        "Show me all medias list please",
+        "Can you show me the medias list?",
+        "What medias do you support?",
+        "Which contents do I follow?",
+        "What contents are available to follow?",
+    ]
+)
 
 media_talker = Route(
     name="MediaTalker",
     utterances=[
+        "What are today newson my media?",
+        "What news are today?",
         "What is the latest news on my media?",
         "Summarize the latest news on my Defiland's announcements.",
         "What is the today's news on Twitter?",
@@ -227,6 +245,7 @@ routes = [
     coin_search,
     media_action,
     media_talker,
+    media_query,
     off_topic,
 ]
 

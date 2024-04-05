@@ -13,13 +13,13 @@ async def _send_action(
     if not api_url:
         raise Exception("API_URL not set in environment variables")
 
-    try:
-        resp = requests.post(f"{api_url}/medias/{action}", json=request).json()
-    except Exception as e:
-        print(e)
-        return f'Failed to {action} server'
-    print("Response", resp)
-    return resp
+    resp = requests.post(f"{api_url}/medias/{action}", json=request)
+
+    if 500 > resp.status_code >= 400:
+        return "Something went wrong!"
+    if resp.status_code >= 500:
+        return "Something went wrong! Please try again later."
+    return f"Media successfully {action}ed!"
 
 
 async def follow_server(
@@ -52,11 +52,14 @@ async def get_available_servers() -> str:
         raise Exception("API_URL not set in environment variables")
 
     resp = requests.get(f"{api_url}/medias/").json()
-    print("Available Servers Response", resp)
-    return 'bonk, madlads, symmetry'
-    # if resp['status'] == 200:
-    # return ', '.join(server for server in resp['medias'])
-    # return resp['data']
+    print("Available Medias Response", resp)
+    if "statusCode" in resp:
+        if 500 > resp["statusCode"] >= 400:
+            return resp.get("message", "Something went wrong!")
+        if resp["statusCode"] >= 500:
+            return "Something went wrong! Please try again later."
+
+    return 'Currently available medias: ' + ', '.join(server for server in resp['medias'])
 
 
 async def get_wallet_servers(wallet_id) -> str:
@@ -64,20 +67,44 @@ async def get_wallet_servers(wallet_id) -> str:
     if not api_url:
         raise Exception("API_URL not set in environment variables")
 
-    # resp = requests.get(f"{api_url}/medias/wallet/{wallet_id}").json()
-    # print(resp)
-    return "gaimin, jupiter"
-    # if resp['status'] == 200:
-    # return ', '.join(server for server in resp['medias'])
-    # return resp['data']
+    resp = requests.get(f"{api_url}/medias/wallet/{wallet_id}").json()
+    print("Wallet followed medias Response", resp)
+    if "statusCode" in resp:
+        if 500 > resp["statusCode"] >= 400:
+            return resp.get("message", "Something went wrong!")
+        if resp["statusCode"] >= 500:
+            return "Something went wrong! Please try again later."
+    if len(resp['medias']) == 0:
+        return "You are not following any media."
+    return 'Your followed medias: ' + ', '.join(server for server in resp['medias'])
 
 
 async def get_media_text(
+        wallet_id: str,
         servers: list[str],
         date: str,
 ) -> str:
     def all_servers():
         return len(servers) == 1 and servers[0] == "all"
+
+    api_url = os.environ["API_URL"]
+    if not api_url:
+        raise Exception("API_URL not set in environment variables")
+
+    resp = requests.get(f"{api_url}/medias/wallet/{wallet_id}").json()
+    print("Wallet followed medias Response", resp)
+    if "statusCode" in resp:
+        if 500 > resp["statusCode"] >= 400:
+            return resp.get("message", "Something went wrong!")
+        if resp["statusCode"] >= 500:
+            return "Something went wrong! Please try again later."
+
+    wallet_medias = resp['medias']
+
+    if all_servers():
+        servers = wallet_medias
+    else:
+        servers = [server for server in servers if server in wallet_medias]
 
     whole_text = ""
     with open('./data/media.json', 'r') as f:
@@ -85,10 +112,9 @@ async def get_media_text(
         for media, obj in data.items():
             if not all_servers() and media not in servers:
                 continue
-            server_obj = Media.parse_obj(obj)
-            for content in server_obj.contents:
-                if date <= content.created_at:
-                    whole_text += str(content)
+            for content in obj['contents']:
+                if date <= content['createdAt']:
+                    whole_text += content['content']
     return whole_text
 
 

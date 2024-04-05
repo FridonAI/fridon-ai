@@ -156,16 +156,16 @@ class DiscordActionAdapter(Adapter):
     status: bool
     comment: str | None
     action: Literal["follow", "unfollow"] | None
-    server: str | None
+    media: str | None
 
     async def get_response(self, chat_id, wallet_id, *args, **kwargs):
         if not self.status:
             return self.comment
 
         if self.action == "follow":
-            return await follow_server(self.server, wallet_id)
+            return await follow_server(self.media, wallet_id)
         elif self.action == "unfollow":
-            return await unfollow_server(self.server, wallet_id)
+            return await unfollow_server(self.media, wallet_id)
         return "Unknown action received, nor follow or unfollow."
 
     @staticmethod
@@ -177,7 +177,7 @@ class DiscordActionAdapter(Adapter):
         servers = await get_available_servers()
         return {
             "query": inp["query"],
-            "servers_list": servers,
+            "medias_list": servers,
         }
 
 
@@ -200,14 +200,21 @@ class CoinChartSimilarityAdapter(Adapter):
 
 
 class MediaQueryExtractAdapter(Adapter):
-    servers: list[str]
+    medias: list[str]
     days: int
     query: str
 
     async def get_response(self, chat_id, wallet_id, personality, *args, **kwargs):
+        print("Getting response")
         date = (datetime.date.today() - datetime.timedelta(days=self.days)).isoformat()
-        whole_text = await get_media_text(self.servers, date)
+        print("Date", date, self.medias)
+        whole_text = await get_media_text(wallet_id, self.medias, date)
+        if not whole_text:
+            return "No data found for the given medias."
         retriever = get_media_retriever(whole_text)
+        print("Retriever")
+
+
 
         def get_media_talker_chain(
                 personality,
@@ -248,5 +255,20 @@ class MediaQueryExtractAdapter(Adapter):
         servers = await get_wallet_servers(inp["wallet_id"])
         return {
             "query": inp["query"],
-            "user_servers_list": servers,
+            "user_medias_list": servers,
         }
+
+
+class MediaInfoAdapter(Adapter):
+    mine: bool = False
+
+    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
+        if self.mine:
+            medias = await get_wallet_servers(wallet_id)
+        else:
+            medias = await get_available_servers()
+        return medias
+
+    @staticmethod
+    def parser() -> PydanticOutputParser:
+        return PydanticOutputParser(pydantic_object=MediaInfoAdapter)

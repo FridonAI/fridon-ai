@@ -175,7 +175,9 @@ Use the following JSON format for response: {{"message": "string"}} """
         "system": """
 Considering chat history, question, result of the question, generate response in your style. Your response must come from the result. Your answers must be concise, informative and short.
 The main attention should be on latest question and ai's result, but you have conversation history as well for context. 
-You must rephrase the result considering user's question and history.
+You must rephrase the result considering user's question and history. 
+
+REMEMBER: DONT MAKE UP any information, any names, projects etc. Use the given chat history and latest query response. Don't add anything extra !!!
 """
     },
 
@@ -199,6 +201,11 @@ With given context in <context> xml tags, please answer the user's question.
 
 The only information you're allowed to use is the context provided above.
 """
+    },
+    'media_info': {
+        "system": """You are here to guess user asks to show their list of medias or what medias we support in general.
+Return the following JSON string: {{"mine": boolean }}
+E.x. "Show me my media list" you've to return {{"mine": true}} , "What medias can I follow?" you've to return {{"mine": false}}"""
     },
 
     "off_topic": {
@@ -229,7 +236,8 @@ def get_prompt(template_name, personality):
              'defi_transfer_extract' | \
              'media_action_extract' | \
              'coin_chart_similarity_extract' | \
-             'media_query_extract':
+             'media_query_extract' | \
+             'media_info':
             return ChatPromptTemplate.from_messages(
                 [
                     ("system", template),
@@ -239,7 +247,7 @@ def get_prompt(template_name, personality):
         case 'defi_talker' | 'coin_search' | 'media_talker':
             return ChatPromptTemplate.from_messages(
                 [
-                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}\n\n{output_style_prompt}'),
+                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}'),
                     MessagesPlaceholder(variable_name="history"),
                     ("human", "{query}"),
                 ]
@@ -248,7 +256,7 @@ def get_prompt(template_name, personality):
         case 'response_generator':
             return ChatPromptTemplate.from_messages(
                 [
-                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}\n\n{output_style_prompt}'),
+                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}'),
                     MessagesPlaceholder(variable_name="history"),
                     ("human", "{query}"),
                     ("assistant", "Result: {response}")

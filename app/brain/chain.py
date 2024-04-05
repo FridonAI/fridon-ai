@@ -7,7 +7,8 @@ from app.brain.memory import get_chat_history
 from app.brain.retriever import get_coins_retriever
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter,
-    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter, DefiSymmetryBasketsAdapter
+    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter,
+    DefiSymmetryBasketsAdapter, MediaInfoAdapter
 )
 from app.brain.templates import get_prompt
 from app.settings import settings
@@ -74,7 +75,7 @@ def get_discord_action_extract_chain(
         personality,
         llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
-    prompt = get_prompt('discord_action_extract', personality)
+    prompt = get_prompt('media_action_extract', personality)
     return (
         RunnableLambda(DiscordActionAdapter.input_formatter)
         | prompt
@@ -105,6 +106,18 @@ def get_media_query_extract(
         | prompt
         | llm
         | MediaQueryExtractAdapter.parser()
+    )
+
+
+def get_media_info_chain(
+        personality,
+        llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
+):
+    prompt = get_prompt('media_info', personality)
+    return (
+        prompt
+        | llm
+        | MediaInfoAdapter.parser()
     )
 
 
@@ -221,7 +234,7 @@ def get_chain(category, personality):
             return get_defi_transfer_extract_chain(personality)
         case "CoinSearch":
             return get_coin_search_chain(personality)
-        case "DiscordAction":
+        case "MediaAction":
             return get_discord_action_extract_chain(personality)
         case "CoinChartSimilarity":
             return get_coin_chart_similarity_extract_chain(personality)
@@ -229,6 +242,8 @@ def get_chain(category, personality):
             return get_defi_talker_chain(personality)
         case "MediaTalker":
             return get_media_query_extract(personality)
+        case "MediaInfo":
+            return get_media_info_chain(personality)
 
     return get_off_topic_chain(personality)
 
