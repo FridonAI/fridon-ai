@@ -50,8 +50,8 @@ def get_chart_similar_coins(coin, start_date):
 
 def _read_ohlcv_date(symbol: str) -> pd.DataFrame:
     time_to = int(datetime.now().timestamp())
-    time_from = int((time_to - timedelta(days=60).total_seconds()))
-    resp = requests.get(f'https://api.kraken.com/0/public/OHLC?pair={symbol.upper()}USD&interval=60&since={time_from}')
+    time_from = int((time_to - timedelta(days=120).total_seconds()))
+    resp = requests.get(f'https://api.kraken.com/0/public/OHLC?pair={symbol.upper()}USD&interval=1440&since={time_from}')
     data = resp.json()['result'][f'{symbol.upper()}USD']
     df = pd.DataFrame(data, columns=['time', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count'])
     df.drop(columns=['vwap', 'count'], inplace=True)
