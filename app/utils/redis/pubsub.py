@@ -43,5 +43,6 @@ class QueueGetter:
         message = await self.redis_pool.blpop([queue_name], timeout=90)
         if message is None or len(message) == 0:
             return "Something wrong happened!"
-        return message[0]
+        # print('Got message 2', message)
+        return json.loads(message[1]).get("data", "Something wrong happened!")
 
