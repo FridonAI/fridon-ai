@@ -259,7 +259,7 @@ def get_prompt(template_name, personality):
                     ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}'),
                     MessagesPlaceholder(variable_name="history"),
                     ("human", "{query}"),
-                    ("assistant", "Result: {response}")
+                    ("assistant", "{response}")
                 ]
             )
 

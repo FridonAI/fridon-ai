@@ -76,7 +76,7 @@ async def get_wallet_servers(wallet_id) -> str:
             return "Something went wrong! Please try again later."
     if len(resp['medias']) == 0:
         return "You are not following any media."
-    return 'Your followed medias: ' + ', '.join(server for server in resp['medias'])
+    return 'Your followed media(s): ' + ', '.join(server for server in resp['medias'])
 
 
 async def get_media_text(
