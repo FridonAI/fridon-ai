@@ -108,7 +108,7 @@ export class CoinSimilarityService {
   }
 
   private async getBirdEyeData(tokenAddress: string): Promise<number[]> {
-    const timeTo = new Date().getTime();
+    const timeTo = parseInt(new Date().getTime() / 1000 + '');
     const timeFrom = timeTo - 60 * 60 * 24 * 30;
     const data = await this.birdEyeAdapter.getHistoryPrice(
       tokenAddress,
