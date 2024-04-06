@@ -4,12 +4,15 @@ import { ChatId } from 'src/chat/domain/chat-id.value-object';
 import { AiChatMessageCreatedDto, AiChatMessageInfoCreatedDto } from './ai.dto';
 import { randomUUID } from 'crypto';
 import { Redis } from 'ioredis';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 export class AiAdapter {
   private logger = new Logger(AiAdapter.name);
   constructor(
     @Inject('AI_SERVICE') private client: ClientProxy,
     private readonly redis: Redis,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   emitChatMessageCreated(
@@ -44,11 +47,29 @@ export class AiAdapter {
       },
     });
 
+    const queueId = await this.getChatQueueId(chatId);
     this.logger.debug(
-      `Emitting event[${eventName}] with data: ${JSON.stringify(event, null, 2)}`,
+      `Emitting event[${eventName}/${queueId}] with data: ${JSON.stringify(event, null, 2)}`,
     );
 
     this.client.emit(eventName, event);
     await this.redis.lpush(eventName, JSON.stringify(event));
+    if (queueId) {
+      await this.redis.lpush(queueId, JSON.stringify(event));
+    } else {
+      this.logger.warn(`QueueId not found for chatId: ${chatId.value}`);
+    }
+  }
+
+  async getChatQueueId(chatId: ChatId): Promise<string | undefined> {
+    return this.cacheManager.get<string>(this.getChatQueueIdKey(chatId));
+  }
+
+  async setChatQueueId(chatId: ChatId, queueId: string) {
+    return this.cacheManager.set(this.getChatQueueIdKey(chatId), queueId);
+  }
+
+  getChatQueueIdKey(chatId: ChatId) {
+    return `chat-queue-id:${chatId.value}`;
   }
 }

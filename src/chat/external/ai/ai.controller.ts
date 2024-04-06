@@ -6,6 +6,7 @@ import { BaseDto } from '@lib/common';
 import { randomUUID } from 'crypto';
 import { ChatService } from 'src/chat/chat.service';
 import { ChatId } from 'src/chat/domain/chat-id.value-object';
+import { AiAdapter } from './ai.adapter';
 
 const eventName = 'response_received';
 
@@ -29,6 +30,7 @@ export class AiEventsController {
 
   constructor(
     private readonly eventsService: EventsService,
+    private readonly aiAdapter: AiAdapter,
     private readonly chatService: ChatService,
   ) {}
 
@@ -45,6 +47,13 @@ export class AiEventsController {
       } catch (error) {
         return value;
       }
+    }
+
+    if (event.data.id) {
+      await this.aiAdapter.setChatQueueId(
+        new ChatId(event.chat_id),
+        event.data.id,
+      );
     }
 
     this.logger.debug(
