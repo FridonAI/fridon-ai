@@ -87,6 +87,8 @@ defi_transfer = Route(
         "I want to transfer 10000000 bonk to abcde.sol",
         "Let's send 1000 pyth to 3bNVe2bKqazEnFZjmLegdwCWkANDXoUKdAMvTcL4AV4P",
         "Can you transfer 1000 jup to 3bNVe2bKqazEnFZjmLegdwCWkANDXoUKdAMvTcL4AV4P?",
+        "Transfer 0.05 sol to adsd.sol",
+        "Please, send 0.015 wif to dflzeke.sol"
     ]
 )
 
