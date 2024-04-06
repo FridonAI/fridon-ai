@@ -13,6 +13,7 @@ class DataInput(CamelModel):
 class DataRequestInput(CamelModel):
     message: str | dict | None = None
     serialized_transaction: list[int] | None = None
+    id: str | None = None
 
 
 class Request(CamelModel):
@@ -33,8 +34,8 @@ class ResponseDto(CamelModel):
         return json.dumps({"data": self.dict()})
 
     @staticmethod
-    def from_params(chat_id: str, wallet_id: str, message: str | dict | None, serialized_transaction: dict | None, aux: dict):
-        return ResponseDto(chat_id=chat_id, user=UserInput(wallet_id=wallet_id), data=DataRequestInput(message=message, serialized_transaction=serialized_transaction), aux=aux)
+    def from_params(chat_id: str, wallet_id: str, message: str | dict | None, serialized_transaction: dict | None, id: str, aux: dict):
+        return ResponseDto(chat_id=chat_id, user=UserInput(wallet_id=wallet_id), data=DataRequestInput(message=message, serialized_transaction=serialized_transaction, id=id), aux=aux)
 
 
 

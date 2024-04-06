@@ -1,4 +1,5 @@
 import json
+import uuid
 
 from dependency_injector.wiring import Provide, inject
 
@@ -22,10 +23,12 @@ async def _send_and_wait(chat_id, wallet_id, request_url, request, pub, queue_ge
         if resp["statusCode"] >= 500:
             return "Something went wrong! Please try again later."
 
-    await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, None, resp["data"]["serializedTx"], {})))
+    queue_name = str(uuid.uuid4())
 
-    print("Waiting for response", chat_id)
-    response = await queue_getter.get(queue_name=chat_id)
+    await pub.publish("response_received", str(ResponseDto.from_params(chat_id, wallet_id, None, resp["data"]["serializedTx"], queue_name, {})))
+
+    print("Waiting for response", queue_name)
+    response = await queue_getter.get(queue_name=queue_name)
     print("Got Response", response)
     return response
 
