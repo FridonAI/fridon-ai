@@ -32,6 +32,8 @@ class Settings(BaseSettings):
 
     REDIS_HOST: str
 
+    LITERAL_API_KEY: Optional[str]
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'

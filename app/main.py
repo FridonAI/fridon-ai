@@ -46,7 +46,7 @@ if __name__ == "__main__":
     container.config.redis_host.from_env("REDIS_HOST", "localhost")
     container.config.redis_password.from_env("REDIS_PASSWORD", None)
     container.init_resources()
-    container.wire(modules=[__name__, "app.adapters.blockchain"])
+    container.wire(modules=[__name__, "app.adapters.blockchain", "app.services.process_user_message_service"])
 
     loop = asyncio.get_event_loop()
     user_task = loop.create_task(user_message_handler())

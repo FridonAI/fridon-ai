@@ -1,6 +1,8 @@
 from dependency_injector import containers, providers
+from literalai import LiteralClient
 
 from app import services
+from app.settings import settings
 from app.utils import redis
 
 
@@ -31,3 +33,9 @@ class Container(containers.DeclarativeContainer):
     process_user_message_service = providers.Factory(
         services.ProcessUserMessageService,
     )
+
+    literal_client = providers.Factory(
+        LiteralClient,
+        api_key=settings.LITERAL_API_KEY,
+    )
+

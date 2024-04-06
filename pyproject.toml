@@ -24,6 +24,7 @@ pandas = "^2.2.1"
 numpy = "^1.26.4"
 matplotlib = "^3.8.4"
 pandas-ta = "^0.3.14b0"
+literalai = "^0.0.401"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
