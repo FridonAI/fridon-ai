@@ -5,7 +5,7 @@ async function main() {
   await prisma.media.createMany({
     data: [
       { id: 'madlads' },
-      { id: 'jup' },
+      { id: 'jupiter' },
       { id: 'kamino' },
       { id: 'jito' },
       { id: 'wormhole' },
