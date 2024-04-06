@@ -66,7 +66,11 @@ export class AiAdapter {
   }
 
   async setChatQueueId(chatId: ChatId, queueId: string) {
-    return this.cacheManager.set(this.getChatQueueIdKey(chatId), queueId);
+    return this.cacheManager.set(
+      this.getChatQueueIdKey(chatId),
+      queueId,
+      5 * 60 * 1000, // 5 minutes
+    );
   }
 
   getChatQueueIdKey(chatId: ChatId) {
