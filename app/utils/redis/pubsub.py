@@ -40,9 +40,9 @@ class QueueGetter:
         self.redis_pool = redis_pool
 
     async def get(self, queue_name: str) -> str:
-        message = await self.redis_pool.blpop([queue_name], timeout=60)
+        message = await self.redis_pool.blpop([queue_name], timeout=90)
         if message is None or len(message) == 0:
-            return "Something wrong happened!"
+            return "Transaction may skipped or something wrong happened!"
         # print('Got message 2', message)
-        return json.loads(message[1]).get("data", "Something wrong happened!")
+        return json.loads(message[1]).get("data", "Transaction may skipped or something wrong happened!")
 
