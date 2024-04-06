@@ -15,7 +15,7 @@ export class TransactionConfirmedHandler {
   async handle(event: TransactionConfirmedEvent) {
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
-      'Transaction Confirmed',
+      `Transaction with id ${event.transactionId} Confirmed`,
       event.aux.personality,
     );
   }
@@ -28,7 +28,7 @@ export class TransactionSkippedHandler {
   async handle(event: TransactionSkippedEvent) {
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
-      'Transaction Skipped',
+      `Transaction with id ${event.transactionId} Skipped`,
       event.aux.personality,
     );
   }
@@ -41,7 +41,7 @@ export class TransactionFailedHandler {
   async handle(event: TransactionFailedEvent) {
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
-      'Transaction Failed',
+      `Transaction with id ${event.transactionId} Failed`,
       event.aux.personality,
     );
   }
