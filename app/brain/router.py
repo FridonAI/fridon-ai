@@ -100,8 +100,9 @@ media_action = Route(
         "Unfollow Tensorians on media.",
         "Follow Madlad on media.",
         "Unfollow OkayBear on media.",
-        "Follow bonk please",
-        "Unfollow pyth please",
+        "Follow jupiter please.",
+        "Follow bonk please.",
+        "Unfollow pyth please.",
         "Can you follow Jupiter on media?",
         "Could you unfollow Drift on media?",
     ]
