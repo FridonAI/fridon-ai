@@ -16,7 +16,10 @@ async def _send_action(
     resp = requests.post(f"{api_url}/medias/{action}", json=request)
 
     if 500 > resp.status_code >= 400:
-        return "Something went wrong!"
+        try:
+            return resp.json().get("message", "Something went wrong!")
+        except:
+            return "Something went wrong!"
     if resp.status_code >= 500:
         return "Something went wrong! Please try again later."
     return f"Media successfully {action}ed!"
