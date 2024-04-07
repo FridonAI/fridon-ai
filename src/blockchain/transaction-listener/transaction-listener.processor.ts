@@ -58,7 +58,7 @@ export class TransactionListenerProcessor extends WorkerHost {
     }
 
     // 3. Transaction Skipped
-    const retryMaxCount = 20;
+    const retryMaxCount = 10;
     if (job.data.count >= retryMaxCount) {
       this.logger.debug(
         `Transaction[${txId}] has been skipped after ${retryMaxCount} retries`,
