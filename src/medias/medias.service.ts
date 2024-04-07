@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaService } from 'nestjs-prisma';
 
@@ -22,11 +22,15 @@ export class MediasService {
           this.logger.error(
             `Media[${media}] already followed by wallet[${walletAddress}]`,
           );
-          return;
+          throw new BadRequestException(`You are already following ${media}`);
         }
 
-        this.logger.error(e.message);
-        return;
+        if (e.code === 'P2003') {
+          this.logger.error(`${media} not found`);
+          throw new BadRequestException(`Media ${media} not found`);
+        }
+
+        throw new BadRequestException(e.message);
       }
       this.logger.error(e);
     }
@@ -48,7 +52,7 @@ export class MediasService {
           this.logger.error(
             `Media[${media}] not followed by wallet[${walletAddress}]`,
           );
-          return;
+          throw new BadRequestException(`You are not following ${media}`);
         }
 
         this.logger.error(e.message);
