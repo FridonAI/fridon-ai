@@ -14,7 +14,7 @@ export class UpdateKaminoReserve {
     readonly connection: Connection,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async execute() {
     this.l.log('Called Update Token List Cron Job');
     this.cacheManager;
@@ -83,7 +83,11 @@ export class UpdateKaminoReserve {
       vaultInformation.push(data);
     });
 
-    await this.cacheManager.set('kamino-vaults', vaultInformation);
+    await this.cacheManager.set(
+      'kamino-vaults',
+      vaultInformation,
+      24 * 60 * 60 * 1000,
+    );
   }
 }
 

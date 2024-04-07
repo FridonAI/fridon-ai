@@ -12,12 +12,12 @@ export class UpdateCoinPrices {
     private tools: BlockchainTools,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async execute() {
     this.l.log('Called Update Token Prices Cron Job');
 
     const coinPrices = await this.tools.fetchCoinPrices();
 
-    await this.cacheManager.set('coinPrices', coinPrices);
+    await this.cacheManager.set('coinPrices', coinPrices, 300 * 1000);
   }
 }

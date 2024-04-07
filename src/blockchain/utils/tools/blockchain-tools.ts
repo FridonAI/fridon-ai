@@ -39,44 +39,49 @@ export class BlockchainTools {
   ) {}
 
   async fetchCoinPrices() {
-    const coinIds = await this.getMintAddresses();
-    const requestUrl =
-      'https://public-api.birdeye.so/public/multi_price?list_address=';
+    try {
+      const coinIds = await this.getMintAddresses();
+      const requestUrl =
+        'https://public-api.birdeye.so/public/multi_price?list_address=';
 
-    const coinPricesChunks = await Promise.all(
-      _.chunk(coinIds, 100).map(async (coinIdsChunk) => {
-        const response = await fetch(
-          requestUrl.concat(coinIdsChunk.join(',')),
-          {
-            headers: {
-              'X-API-KEY': '1ce5e10d345740ecb60ef4bb960d0385',
+      const coinPricesChunks = await Promise.all(
+        _.chunk(coinIds, 100).map(async (coinIdsChunk) => {
+          const response = await fetch(
+            requestUrl.concat(coinIdsChunk.join(',')),
+            {
+              headers: {
+                'X-API-KEY': '1ce5e10d345740ecb60ef4bb960d0385',
+              },
             },
-          },
-        );
-        const parsedJson: BirdeyeTokensPriceJson = await response.json();
-        return parsedJson.data;
-      }),
-    );
+          );
+          const parsedJson: BirdeyeTokensPriceJson = await response.json();
+          return parsedJson.data;
+        }),
+      );
 
-    const coinPrices = coinPricesChunks.flat();
+      const coinPrices = coinPricesChunks.flat();
 
-    const prices = coinPrices
-      .flatMap((coins) => {
-        return Object.entries(coins)
-          .map(([key, value]) => {
-            if (!value) return undefined;
-            return {
-              address: key,
-              price: value.value
-                ? parseFloat(value.value.toFixed(10))
-                : undefined,
-            };
-          })
-          .filter((item: any) => item) as BirdeyePrice[];
-      })
-      .flat();
+      const prices = coinPrices
+        .flatMap((coins) => {
+          return Object.entries(coins)
+            .map(([key, value]) => {
+              if (!value) return undefined;
+              return {
+                address: key,
+                price: value.value
+                  ? parseFloat(value.value.toFixed(10))
+                  : undefined,
+              };
+            })
+            .filter((item: any) => item) as BirdeyePrice[];
+        })
+        .flat();
 
-    return prices;
+      return prices;
+    } catch (error) {
+      console.error('Error fetching coin prices', error);
+      throw new HttpException('Error fetching coin prices', 500);
+    }
   }
 
   async getCoinPrices(): Promise<BirdeyePrice[]> {
@@ -89,7 +94,7 @@ export class BlockchainTools {
 
     const tokenPrices = await this.fetchCoinPrices();
 
-    await this.cacheManager.set('coinPrices', tokenPrices);
+    await this.cacheManager.set('coinPrices', tokenPrices, 300 * 1000);
 
     return tokenPrices;
   }
@@ -154,7 +159,7 @@ export class BlockchainTools {
 
     const tokenList = await this.fetchTokenList();
 
-    await this.cacheManager.set('tokenList', tokenList);
+    await this.cacheManager.set('tokenList', tokenList, 24 * 60 * 60 * 1000);
 
     return tokenList;
   }

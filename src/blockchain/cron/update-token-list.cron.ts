@@ -18,6 +18,6 @@ export class UpdateTokenList {
 
     const tokenList = await this.tools.fetchTokenList();
 
-    await this.cacheManager.set('tokenList', tokenList);
+    await this.cacheManager.set('tokenList', tokenList, 24 * 60 * 60 * 1000);
   }
 }
