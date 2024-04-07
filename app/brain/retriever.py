@@ -1,10 +1,20 @@
+import json
+
 from langchain_community.document_loaders import JSONLoader
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 
 
+retriever = None
+
+
 def get_coins_retriever():
+    global retriever
+
+    if retriever:
+        return retriever
+
     loader = JSONLoader(
         file_path='./data/coin-description.json',
         jq_schema='.[]',
@@ -18,8 +28,21 @@ def get_coins_retriever():
     embeddings = OpenAIEmbeddings()
     db = FAISS.from_documents(texts, embeddings)
 
-    coins_retriever = db.as_retriever()
-    return coins_retriever
+    retriever = db.as_retriever()
+
+    return retriever
+
+
+def get_coin_description(coin):
+    if coin is None:
+        return ""
+    with open('./data/coin-description.json') as f:
+        data = json.load(f)
+        for coin_name, desc in data.items():
+            if coin_name.lower() == coin.lower():
+                return desc
+
+    return ""
 
 
 def get_media_retriever(whole_text):
