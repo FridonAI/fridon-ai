@@ -138,6 +138,7 @@ export class BlockchainService {
         const positions = await this.kaminoFactory.getKaminoBorrows(
           walletAddress,
           mintAddress,
+          currency,
         );
         if (positions.length == 0) {
           if (mintAddress) {
@@ -163,6 +164,7 @@ export class BlockchainService {
         const positions = await this.kaminoFactory.getKaminoDepositions(
           walletAddress,
           mintAddress,
+          currency,
         );
         if (positions.length == 0) {
           if (mintAddress) {
@@ -191,6 +193,7 @@ export class BlockchainService {
           await this.kaminoFactory.getKaminoBalances(
             walletAddress,
             mintAddress,
+            currency,
           );
         if (deposits.length === 0 && borrows.length === 0) {
           if (mintAddress) {
