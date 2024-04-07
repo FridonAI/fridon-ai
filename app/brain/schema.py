@@ -14,7 +14,7 @@ from app.adapters.coins import get_chart_similar_coins, get_coin_ta
 from app.adapters.medias.discord import get_available_servers, follow_server, unfollow_server, \
     get_media_text, get_wallet_servers
 from app.brain.memory import get_chat_history
-from app.brain.retriever import get_media_retriever
+from app.brain.retriever import get_media_retriever, get_coin_description, get_coins_retriever
 from app.brain.templates import get_prompt
 from app.settings import settings
 
@@ -143,15 +143,37 @@ class DefiTalkerAdapter(Adapter):
         return PydanticOutputParser(pydantic_object=DefiTalkerAdapter)
 
 
-class CoinSearcherAdapter(Adapter):
-    message: str
+class CoinProjectSearcherAdapter(Adapter):
+    project: str | None
+    query: str
 
-    async def get_response(self, chat_id, wallet_id, *args, **kwargs):
-        return self.message
+    async def get_response(self, chat_id, wallet_id, personality, *args, **kwargs):
+        coin_descr = get_coin_description(self.project)
+        retriever = get_coins_retriever()
+
+        def get_coin_searcher_chain(
+                coin_desc,
+                llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
+        ):
+            prompt = get_prompt('coin_project_search', personality)
+            prefix = "Pick coins which are similar to the followin coin description by features, characteristics and goals. Give ecosystem smallest priority during comparison.\n<description>{coin_desc}</description>"
+            return (
+                {
+                    "query": lambda x: x["query"],
+                    "project_description": lambda x: prefix.format(coin_desc=coin_desc) if coin_desc else "",
+                    "context": RunnableLambda(lambda x: x['query']) | retriever,
+                }
+                | prompt
+                | llm
+                | StrOutputParser()
+            )
+        chain = get_coin_searcher_chain(coin_descr)
+        response = await chain.ainvoke({"query": self.query})
+        return response
 
     @staticmethod
     def parser() -> PydanticOutputParser:
-        return PydanticOutputParser(pydantic_object=DefiTalkerAdapter)
+        return PydanticOutputParser(pydantic_object=CoinProjectSearcherAdapter)
 
 
 class DiscordActionAdapter(Adapter):

@@ -186,15 +186,16 @@ coin_chart_similarity = Route(
 )
 
 
-coin_search = Route(
-    name="CoinSearch",
+coin_project_search = Route(
+    name="CoinProjectSearch",
     utterances=[
-        "Give me list of coins which are in top 100 and are AI based.",
-        "Find coins which have the same chart as Wif between 1-25 Dec 2023.",
-        "Search for coins which have bullish divergence and are in top 100 market cap.",
-        "Give me coins from solana ecosystem which are in top 100 market cap.",
-        "What coins are similar to rndr?",
-        "Which coins have AI product?",
+        "Give me list of coin projects which are in top 100 and are AI based.",
+        "Give me projects which are like Solana please.",
+        "What coin projects are similar to Render.",
+        "I want you to give me layer 1 projects.",
+        "Could you give me dapin projects like Gaimin?",
+        "Which coins are like Pyth project?",
+        "Can you give me coins like Solana please?",
     ]
 )
 
@@ -264,7 +265,7 @@ routes = [
     defi_talker,
     defi_transfer,
     coin_chart_similarity,
-    coin_search,
+    coin_project_search,
     media_action,
     media_talker,
     media_query,

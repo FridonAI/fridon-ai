@@ -4,7 +4,7 @@ from app.brain.chain import get_chain, get_chat_history, get_error_chain, get_re
 from pydantic.v1 import BaseModel
 
 from app.brain.router import get_category
-from app.brain.schema import CoinSearcherAdapter, DefiTalkerAdapter, MediaQueryExtractAdapter, \
+from app.brain.schema import CoinProjectSearcherAdapter, DefiTalkerAdapter, MediaQueryExtractAdapter, \
     CoinChartSimilarityAdapter, CoinTAQueryExtractAdapter
 
 
@@ -32,7 +32,7 @@ class Chat:
             print(f"Got adapter", adapter)
             response = await adapter.get_response(self.chat_id, self.wallet_id, self.personality)
 
-            if isinstance(adapter, (CoinSearcherAdapter, DefiTalkerAdapter, MediaQueryExtractAdapter)):
+            if isinstance(adapter, (CoinProjectSearcherAdapter, DefiTalkerAdapter, MediaQueryExtractAdapter)):
                 final_response = response
             elif isinstance(adapter, CoinTAQueryExtractAdapter) and self.personality == "Normal":
                 final_response = response
@@ -50,7 +50,7 @@ class Chat:
             print("Error in Chat.process", e)
             chain = get_error_chain(self.personality)
             final_response = await chain.ainvoke({"query": message})
-            # raise e
+            raise e
 
         return final_response
 

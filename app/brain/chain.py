@@ -4,11 +4,10 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 
 from app.brain.memory import get_chat_history
-from app.brain.retriever import get_coins_retriever
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter,
-    CoinSearcherAdapter, DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter,
-    DefiSymmetryBasketsAdapter, CoinTAQueryExtractAdapter, MediaInfoAdapter
+    DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter,
+    DefiSymmetryBasketsAdapter, CoinTAQueryExtractAdapter, MediaInfoAdapter, CoinProjectSearcherAdapter
 )
 from app.brain.templates import get_prompt
 from app.settings import settings
@@ -25,6 +24,7 @@ def get_defi_stake_borrow_lend_extract_chain(
         | DefiStakeBorrowLendAdapter.parser()
     )
 
+
 def get_defi_swap_extract_chain(
         personality,
         llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
@@ -36,6 +36,7 @@ def get_defi_swap_extract_chain(
         | DefiSwapAdapter.parser()
     )
 
+
 def get_defi_symmetry_baskets_extract_chain(
         personality,
         llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
@@ -46,6 +47,7 @@ def get_defi_symmetry_baskets_extract_chain(
         | llm
         | DefiSymmetryBasketsAdapter.parser()
     )
+
 
 def get_defi_balance_extract_chain(
         personality,
@@ -149,26 +151,17 @@ def get_defi_talker_chain(
     )
 
 
-def get_coin_search_chain(
+def get_coin_project_search_chain(
         personality,
         llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
-    prompt = get_prompt('coin_search', personality)
-    return RunnableWithMessageHistory(
-        (
-            {
-                "query": lambda x: x["query"],
-                "context": RunnableLambda(lambda x: x["query"]) | get_coins_retriever(),
-                "history": lambda x: x["history"]
-            }
-            | prompt
+    prompt = get_prompt('coin_project_search_extractor', personality)
+    return (
+            prompt
             | llm
-            | CoinSearcherAdapter.parser()
-        ),
-        get_chat_history,
-        input_messages_key="query",
-        history_messages_key="history",
+            | CoinProjectSearcherAdapter.parser()
     )
+
 
 
 def get_media_talker_chain(
@@ -243,8 +236,8 @@ def get_chain(category, personality):
             return get_defi_symmetry_baskets_extract_chain(personality)
         case "DeFiTransfer":
             return get_defi_transfer_extract_chain(personality)
-        case "CoinSearch":
-            return get_coin_search_chain(personality)
+        case "CoinProjectSearch":
+            return get_coin_project_search_chain(personality)
         case "MediaAction":
             return get_discord_action_extract_chain(personality)
         case "CoinChartSimilarity":
