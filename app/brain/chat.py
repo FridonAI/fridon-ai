@@ -50,7 +50,7 @@ class Chat:
             print("Error in Chat.process", e)
             chain = get_error_chain(self.personality)
             final_response = await chain.ainvoke({"query": message})
-            raise e
+            # raise e
 
         return final_response
 
