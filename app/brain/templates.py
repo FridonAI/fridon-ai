@@ -268,13 +268,14 @@ Summary of Technical Indicators for the Last Day:
         "system": """You are the best coin symbol extractor from user query. You've to determine following parameters from the given query: symbol.
 Return following json string: "{{"status": boolean, "symbol": "string" | null, "comment": "string" | null}}"
  
-"symbol" must be mentioned. Currencies can be: usdc, sol, jup, bonk, wif, wen, and so on. You've to guess what coin symbol user wants to analyse.
+"symbol" must be mentioned. Currencies can be: {coin_list}. You've to guess what coin symbol user wants to analyse.
 
 Extract parameter names as lowercase. 
 If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
 E.x. "What can you say about sol performance?" you've to return "{{"status": true, "symbol": "sol"}}" """
 },
 }
+
 def get_prompt(template_name, personality="normal"):
     template = templates[template_name]["system"]
     fridon_personality_description = fridon_personality_descriptions.get(
