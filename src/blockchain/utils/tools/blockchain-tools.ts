@@ -11,6 +11,10 @@ import { Position } from '@hubbleprotocol/kamino-lending-sdk';
 import { NumberFormatter } from './number-formatter';
 import { TokenBalance } from '../../providers/wallet-factory';
 import _ from 'lodash';
+import { Connection } from '@solana/web3.js';
+import { PublicKey } from '@metaplex-foundation/js';
+import { WSOL_MINT_ADDRESS } from '../constants';
+import { TokenAmount } from './token-amount';
 
 const STRICT_TOKEN_LIST_URL = 'https://token.jup.ag/strict';
 type BirdeyeTokensPrice = {
@@ -37,6 +41,46 @@ export class BlockchainTools {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private numberFormatter: NumberFormatter,
   ) {}
+
+  async getTokenBalanceSpl(
+    connection: Connection,
+    walletAddress: PublicKey,
+    tokenAccount: PublicKey,
+  ) {
+    if (tokenAccount.equals(WSOL_MINT_ADDRESS)) {
+      const accountInfo = await connection.getAccountInfo(
+        new PublicKey(walletAddress),
+      );
+
+      if (!accountInfo) {
+        throw new HttpException('Sol Account not found', 404);
+      }
+
+      return new TokenAmount(accountInfo!.lamports, 9, true);
+    }
+
+    const balance = await connection.getParsedTokenAccountsByOwner(
+      walletAddress,
+      { mint: tokenAccount },
+      'confirmed',
+    );
+
+    if (balance.value.length > 1) {
+      throw new HttpException('Multiple token accounts found', 404);
+    }
+
+    if (balance.value.length === 0) {
+      throw new HttpException('Token account not found', 404);
+    }
+
+    const result = balance.value.map((val) => {
+      const tokenAmount = val.account.data.parsed.info.tokenAmount;
+      return new TokenAmount(tokenAmount.amount, tokenAmount.decimals, true);
+    })[0];
+    if (!result) throw new HttpException('Token account not found', 404);
+
+    return result;
+  }
 
   async fetchCoinPrices() {
     try {
@@ -346,6 +390,7 @@ export class BlockchainTools {
 
 export enum SymbolMapper {
   solana = 'sol',
+  jupiter = 'jup',
   wif = '$WIF',
   myro = '$MYRO',
   milk = '$MILK',

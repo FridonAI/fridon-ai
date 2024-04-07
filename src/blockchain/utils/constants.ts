@@ -27,3 +27,5 @@ export const PRIORITY_FEE = 25000000;
 export const COMPUTE_LIMIT = 400000;
 export const SWAP_FEE_BPS = 7;
 export const DEFAULT_SLIPPAGE = 0.5;
+export const NEW_TOKEN_FEE = 2039280;
+export const TRANSFER_FEE = 5000;

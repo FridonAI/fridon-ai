@@ -131,6 +131,7 @@ export class KaminoFactory {
       reserve.stats.decimals,
       false,
     ).toWei();
+
     const kaminoAction = await KaminoAction.buildDepositTxns(
       market,
       tokenAmount.toString(),

@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { Connection } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { getDestinationAddress, getTokenSupply } from './utils/connection';
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
 import { TokenAmount } from './utils/tools/token-amount';
@@ -21,6 +21,7 @@ import {
 } from './providers/symmetry-api-factory';
 import { PointsFactory } from './providers/points-factory';
 import { JupiterFactory } from './providers/jupiter-factory';
+import { TRANSFER_FEE } from './utils/constants';
 
 @Injectable()
 export class BlockchainService {
@@ -41,6 +42,29 @@ export class BlockchainService {
     toToken: string,
     amount: number,
   ) {
+    if (amount <= 0) {
+      throw new HttpException('Amount must be greater than 0', 403);
+    }
+
+    try {
+      new PublicKey(walletAddress);
+    } catch (error) {
+      throw new HttpException('Invalid wallet address', 403);
+    }
+
+    const accountInfo = await this.connection.getAccountInfo(
+      new PublicKey(walletAddress),
+    );
+
+    if (!accountInfo) {
+      throw new HttpException('Sol Account not found', 404);
+    }
+
+    const solBalance = new TokenAmount(accountInfo!.lamports, 9, true).toWei();
+    if (solBalance.lt(TRANSFER_FEE)) {
+      throw new HttpException(`Insufficient balance for Fees!`, 403);
+    }
+
     const fromMintAddress = await this.tools.convertSymbolToMintAddress(
       this.tools.getCurrencySymbol(fromToken),
     );
@@ -48,6 +72,16 @@ export class BlockchainService {
     const toMintAddress = await this.tools.convertSymbolToMintAddress(
       this.tools.getCurrencySymbol(toToken),
     );
+
+    const tokenBalance = await this.tools.getTokenBalanceSpl(
+      this.connection,
+      new PublicKey(walletAddress),
+      new PublicKey(fromMintAddress),
+    );
+
+    if (parseFloat(tokenBalance.fixed()) < amount) {
+      throw new HttpException('Insufficient balance', 403);
+    }
 
     const tokenInfo = await getTokenSupply(fromMintAddress, this.connection);
 
@@ -80,6 +114,16 @@ export class BlockchainService {
     currency: string,
     amount: number,
   ): Promise<Uint8Array> {
+    try {
+      new PublicKey(from);
+    } catch (error) {
+      throw new HttpException('Invalid wallet address', 403);
+    }
+
+    if (amount <= 0) {
+      throw new HttpException('Amount must be greater than 0', 403);
+    }
+
     // convert symbol if needed
     currency = this.tools.getCurrencySymbol(currency);
 
@@ -88,7 +132,7 @@ export class BlockchainService {
     const tokenInfo = await getTokenSupply(mintAddress, this.connection);
 
     if (!tokenInfo) {
-      throw new HttpException('Token not found', 404);
+      throw new HttpException(`Token ${currency} not found`, 404);
     }
 
     const receiver = await getDestinationAddress(this.connection, to);
@@ -99,6 +143,16 @@ export class BlockchainService {
 
     const decimals = tokenInfo.value.decimals;
     const amountBN = new TokenAmount(amount, decimals, false).toWei();
+
+    const tokenBalance = await this.tools.getTokenBalanceSpl(
+      this.connection,
+      new PublicKey(from),
+      new PublicKey(mintAddress),
+    );
+
+    if (tokenBalance.toWei().toNumber() < amountBN.toNumber()) {
+      throw new HttpException('Insufficient balance', 403);
+    }
 
     const transferTransaction =
       await this.tokenProgramTransactionFactory.generateTransferTransaction(
@@ -120,6 +174,11 @@ export class BlockchainService {
     operation: BalanceOperationType,
     currency?: string | undefined,
   ): Promise<BalanceType[]> {
+    try {
+      new PublicKey(walletAddress);
+    } catch (error) {
+      throw new HttpException('Invalid wallet address', 403);
+    }
     const balances: BalanceType[] = [];
 
     let mintAddress = currency
@@ -269,8 +328,40 @@ export class BlockchainService {
     currency: string,
     amount: number,
   ) {
+    try {
+      new PublicKey(walletAddress);
+    } catch (error) {
+      throw new HttpException('Invalid wallet address', 403);
+    }
+    const accountInfo = await this.connection.getAccountInfo(
+      new PublicKey(walletAddress),
+    );
+
+    if (!accountInfo) {
+      throw new HttpException('Sol Account not found', 404);
+    }
+
+    const solBalance = new TokenAmount(accountInfo!.lamports, 9, true).toWei();
+    if (solBalance.lt(TRANSFER_FEE)) {
+      throw new HttpException(`Insufficient balance for Fees!`, 403);
+    }
+
     const mintAddress = await this.tools.convertSymbolToMintAddress(currency);
     const instance = this.getProviderInstance(provider);
+
+    const tokenBalance = await this.tools.getTokenBalanceSpl(
+      this.connection,
+      new PublicKey(walletAddress),
+      new PublicKey(mintAddress),
+    );
+
+    if (parseFloat(tokenBalance.fixed()) < amount) {
+      throw new HttpException('Insufficient balance', 403);
+    }
+
+    if (amount <= 0) {
+      throw new HttpException('Amount must be greater than 0', 403);
+    }
 
     switch (operation) {
       case OperationType.Supply:
@@ -307,6 +398,11 @@ export class BlockchainService {
     amount: number,
     operation: SymmetryOperationType,
   ) {
+    try {
+      new PublicKey(walletAddress);
+    } catch (error) {
+      throw new HttpException('Invalid wallet address', 403);
+    }
     if (operation === SymmetryOperationType.Deposit) {
       return await this.symmetryFactory.depositBasketApi(
         walletAddress,

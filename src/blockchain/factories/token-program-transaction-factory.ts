@@ -1,12 +1,15 @@
 import {
   Connection,
+  PublicKey,
   PublicKeyInitData,
   TransactionInstruction,
 } from '@solana/web3.js';
 import { TokenProgramInstructionFactory } from './token-program-instruction-factory';
 import BigNumber from 'bignumber.js';
 import { TransactionFactory } from './transaction-factory';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
+import { TokenAmount } from '../utils/tools/token-amount';
+import { NEW_TOKEN_FEE, TRANSFER_FEE } from '../utils/constants';
 
 @Injectable()
 export class TokenProgramTransactionFactory {
@@ -22,6 +25,17 @@ export class TokenProgramTransactionFactory {
     amount: BigNumber,
     connection: Connection,
   ) {
+    const accountInfo = await connection.getAccountInfo(new PublicKey(from));
+
+    if (!accountInfo) {
+      throw new HttpException('Sol Account not found', 404);
+    }
+
+    const solBalance = new TokenAmount(accountInfo!.lamports, 9, true).toWei();
+    if (solBalance.lt(TRANSFER_FEE)) {
+      throw new HttpException(`Insufficient balance for Fees!`, 403);
+    }
+
     const payer = from;
 
     const txInstructions: TransactionInstruction[] = [];
@@ -35,8 +49,13 @@ export class TokenProgramTransactionFactory {
         connection,
       );
 
-    if (!!createAssociatedTokenInstructions)
+    if (!!createAssociatedTokenInstructions) {
+      if (solBalance.lt(TRANSFER_FEE + NEW_TOKEN_FEE)) {
+        throw new HttpException(`Insufficient balance for Fees!`, 403);
+      }
+
       txInstructions.push(createAssociatedTokenInstructions);
+    }
 
     // Create Transfer instructions
     txInstructions.push(
