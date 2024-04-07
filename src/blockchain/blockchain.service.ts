@@ -394,7 +394,7 @@ export class BlockchainService {
 
   async getSymmetryOperations(
     walletAddress: string,
-    basketMintAddress: string,
+    basketName: string,
     amount: number,
     operation: SymmetryOperationType,
   ) {
@@ -403,10 +403,11 @@ export class BlockchainService {
     } catch (error) {
       throw new HttpException('Invalid wallet address', 403);
     }
+
     if (operation === SymmetryOperationType.Deposit) {
       return await this.symmetryFactory.depositBasketApi(
         walletAddress,
-        basketMintAddress,
+        basketName,
         amount,
       );
     }

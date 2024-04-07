@@ -222,16 +222,19 @@ export class SymmetryApiFactory {
 
   async depositBasketApi(
     walletAddress: string,
-    basketMintAddress: string,
+    basketName: string,
     amount: number,
   ): Promise<VersionedTransaction> {
     const payer = new PublicKey(walletAddress);
-    basketMintAddress;
+    basketName;
+    const basketMintAddress = '4RofqKG4d6jfUD2HjtWb2F9UkLJvJ7P3kFmyuhX7H88d';
+
     const depositParameters = {
       user: walletAddress,
       basket: basketMintAddress,
       amount,
     };
+
     const request = await fetch(SYMMETRY_DEPOSIT_BASKET_API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

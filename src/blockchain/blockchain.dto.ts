@@ -119,13 +119,13 @@ export class SymmetryDefiOperationsRequestBodyDto {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'FSmR7QfFvtvqDMo4w5e39UtEubiY4q8T27wnNCJgQSxz' })
-  basketAddress: string;
+  @ApiProperty({ example: 'dflfam' })
+  basketName: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ example: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' })
-  tokenAddress: string;
+  @ApiProperty({ example: 'usdc' })
+  currency: string;
 
   @IsNumber()
   @ApiProperty({ example: 10 })

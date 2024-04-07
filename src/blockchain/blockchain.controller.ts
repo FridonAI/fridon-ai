@@ -122,7 +122,7 @@ export class BlockchainController {
   async symmetryOperations(@Body() body: SymmetryDefiOperationsRequestBodyDto) {
     const result = await this.blockchainService.getSymmetryOperations(
       body.walletAddress,
-      body.basketAddress,
+      body.basketName,
       body.amount,
       body.operation,
     );
