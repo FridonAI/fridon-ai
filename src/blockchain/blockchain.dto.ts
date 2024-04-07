@@ -18,6 +18,7 @@ export class CoinSimilarityResponseDto extends BaseDto<CoinSimilarityResponseDto
         {
           symbol: 'Sol',
           address: 'So11111111111111111111111111111111111111112',
+          chain: 'solana',
         },
       ],
     },
@@ -25,6 +26,7 @@ export class CoinSimilarityResponseDto extends BaseDto<CoinSimilarityResponseDto
   data: {
     symbol: string;
     address: string;
+    chain: string;
   }[];
 }
 export class CoinSimilarityRequestDto {

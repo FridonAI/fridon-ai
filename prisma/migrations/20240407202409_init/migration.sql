@@ -9,6 +9,7 @@ CREATE TABLE "price_vectors" (
     "id" SERIAL NOT NULL,
     "symbol" TEXT NOT NULL,
     "address" TEXT NOT NULL,
+    "chain" TEXT NOT NULL,
     "values" vector(512) NOT NULL,
     "embedding" vector(1024) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

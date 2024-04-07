@@ -19,6 +19,7 @@ model PriceVectors {
   id        Int                         @id @default(autoincrement())
   symbol    String
   address   String
+  chain     String
   values    Unsupported("vector(512)")
   embedding Unsupported("vector(1024)")
 
