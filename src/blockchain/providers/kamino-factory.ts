@@ -64,6 +64,21 @@ export class KaminoFactory {
     return result;
   }
 
+  private async getMintAddresses(market: KaminoMarket) {
+    const { reserves } = market;
+
+    const mintAddresses: string[] = [];
+    reserves.forEach((reserve) => {
+      const {
+        stats: { mintAddress },
+      } = reserve;
+      mintAddresses.push(mintAddress.toBase58());
+    });
+
+    return mintAddresses;
+  }
+
+
   private getMarketAddress(mintAddress: string): MarketInfo | undefined {
     // Check for wif, bonk,wen, pyth and return altcoins market lut address
     if (
@@ -106,7 +121,7 @@ export class KaminoFactory {
     const reserve = this.getReserve(market, mintAddress);
 
     if (!reserve) {
-      throw new HttpException("Couldn't find reserve", 404);
+      throw new HttpException(`Couldn't find reserve on Kamino to deposit.`, 404);
     }
 
     const tokenAmount = new TokenAmount(
@@ -159,7 +174,7 @@ export class KaminoFactory {
 
     const reserve = this.getReserve(market, mintAddress);
     if (!reserve) {
-      throw new HttpException("Couldn't find reserve", 404);
+      throw new HttpException("Couldn't find reserve on Kamino to Borrow.", 404);
     }
 
     const tokenAmount = new TokenAmount(
@@ -210,7 +225,7 @@ export class KaminoFactory {
 
     const reserve = this.getReserve(market, mintAddress);
     if (!reserve) {
-      throw new HttpException("Couldn't find reserve", 404);
+      throw new HttpException("Couldn't find reserve on Kamino to Repay", 404);
     }
 
     const tokenAmount = new TokenAmount(
@@ -266,7 +281,7 @@ export class KaminoFactory {
     const reserve = this.getReserve(market, mintAddress);
 
     if (!reserve) {
-      throw new HttpException("Couldn't find reserve", 404);
+      throw new HttpException("Couldn't find reserve on Kamino to Withdraw.", 404);
     }
 
     const tokenAmount = new TokenAmount(
@@ -320,19 +335,26 @@ export class KaminoFactory {
       throw new HttpException("Couldn't load market", 403);
     }
 
+    const mintAddresses = await this.getMintAddresses(market);
+    if (mintAddress) {
+      if (!mintAddresses.includes(mintAddress)) {
+        throw new HttpException('Mint address not supported on Kamino', 404);
+      }
+    }
+
     const obligations = await market.getObligationByWallet(
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
     );
 
     if (!obligations) {
-      throw new HttpException("Couldn't get balance", 403); // User is new
+      const message = mintAddress ? `Your balance for ${mintAddress} is 0` : "Your Kamino balance is 0";
+      throw new HttpException(message, 403); // User is new
     }
 
     const deposits = this.getDeposits(obligations);
     const borrows = this.getBorrows(obligations);
 
-    console.log('mintAddress', mintAddress);
     if (mintAddress) {
       return deposits.filter((x) =>
         x.mintAddress.equals(new PublicKey(mintAddress)),
@@ -355,20 +377,28 @@ export class KaminoFactory {
       throw new HttpException("Couldn't load market", 403);
     }
 
+    const mintAddresses = await this.getMintAddresses(market);
+    if (mintAddress) {
+      if (!mintAddresses.includes(mintAddress)) {
+        throw new HttpException('Mint address not supported on Kamino', 404);
+      }
+    }
+
     const obligations = await market.getObligationByWallet(
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
     );
 
     if (!obligations) {
-      throw new HttpException("Couldn't get balance", 403); // User is new
+      const message = mintAddress ? `Your deposit balance for ${mintAddress} is 0` : "Your Kamino balance is 0";
+      throw new HttpException(message, 403); // User is new
     }
 
     if (mintAddress) {
       const deposit = this.getDeposit(obligations, new PublicKey(mintAddress));
 
       if (!deposit) {
-        throw new HttpException("Couldn't find deposited asset", 403);
+        throw new HttpException(`Your deposit balance for ${mintAddress} is 0`, 403);
       }
 
       return [deposit];
@@ -390,20 +420,30 @@ export class KaminoFactory {
       throw new HttpException("Couldn't load market", 403);
     }
 
+    const mintAddresses = await this.getMintAddresses(market);
+    if (mintAddress) {
+      if (!mintAddresses.includes(mintAddress)) {
+        throw new HttpException('Mint address not supported on Kamino', 404);
+      }
+    }
+
     const obligations = await market.getObligationByWallet(
       new PublicKey(walletAddress),
       new VanillaObligation(PROGRAM_ID),
     );
 
     if (!obligations) {
-      throw new HttpException("Couldn't get balance", 403); // User is new
+      const message = mintAddress ? `Your deposit balance for ${mintAddress} is 0` : "Your Kamino balance is 0";
+
+      throw new HttpException(message, 403); // User is new
     }
 
     if (mintAddress) {
       const borrowed = this.getBorrow(obligations, new PublicKey(mintAddress));
 
       if (!borrowed) {
-        throw new HttpException("Couldn't find borrowed asset", 403);
+        const message = mintAddress ? `Your borrow balance for ${mintAddress} is 0` : "Your Kamino balance is 0";
+        throw new HttpException(message, 403);
       }
 
       return [borrowed];
@@ -444,7 +484,7 @@ export class KaminoBalances {
   constructor(
     readonly _nativeObligation: KaminoObligation,
     readonly utils: NumberFormatter,
-  ) {}
+  ) { }
 
   get nativeObligation() {
     return this._nativeObligation;

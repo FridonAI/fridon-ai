@@ -33,7 +33,7 @@ export class BlockchainService {
     private readonly pointsFactory: PointsFactory,
     private readonly symmetryFactory: SymmetryApiFactory,
     private readonly jupiterFactory: JupiterFactory,
-  ) {}
+  ) { }
 
   async swapTokens(
     walletAddress: string,
@@ -139,6 +139,20 @@ export class BlockchainService {
           walletAddress,
           mintAddress,
         );
+        if (positions.length == 0) {
+          if (mintAddress) {
+            return [{
+              amount: '0',
+              mintAddress: mintAddress,
+              symbol: await this.tools.convertMintAddressToSymbol(mintAddress),
+              value: '0',
+              type: 'Borrow'
+            }]
+          }
+
+          throw new HttpException('Your borrowed balance on Kamino is 0', 404);
+        }
+
         balances.push(
           ...(await this.tools.convertPositionsToBalances(positions, 'Borrow')),
         );
@@ -147,6 +161,19 @@ export class BlockchainService {
           walletAddress,
           mintAddress,
         );
+        if (positions.length == 0) {
+          if (mintAddress) {
+            return [{
+              amount: '0',
+              mintAddress: mintAddress,
+              symbol: await this.tools.convertMintAddressToSymbol(mintAddress),
+              value: '0',
+              type: 'Deposit'
+            }]
+          }
+
+          throw new HttpException('Your deposit balance on Kamino is 0', 404);
+        }
         balances.push(
           ...(await this.tools.convertPositionsToBalances(
             positions,
@@ -158,6 +185,18 @@ export class BlockchainService {
           walletAddress,
           mintAddress,
         );
+        if (positions.length == 0) {
+          if (mintAddress) {
+            return [{
+              amount: '0',
+              mintAddress: mintAddress,
+              symbol: await this.tools.convertMintAddressToSymbol(mintAddress),
+              value: '0',
+            }]
+          }
+
+          throw new HttpException('Your balance on Kamino is 0', 404);
+        }
         balances.push(
           ...(await this.tools.convertPositionsToBalances(positions)),
         );
