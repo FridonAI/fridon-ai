@@ -219,14 +219,25 @@ export class BlockchainService {
       provider == BalanceProviderType.All
     ) {
       // If mint address we need exact token balance, if no lets fetch all ones
-      const newBalances = await this.walletFactory.getWalletBalances(
+      const tokenBalances = await this.walletFactory.getWalletBalances(
         walletAddress,
         await this.tools.getMintAddresses(),
         mintAddress ? [mintAddress] : [],
       );
 
+      if (tokenBalances.length == 0) {
+        if (mintAddress) {
+          throw new HttpException(
+            `${currency?.toUpperCase()} token account not found, you do not have this token in your wallet.`,
+            404,
+          );
+        }
+
+        throw new HttpException('Your Wallet balance is 0', 404);
+      }
+
       balances.push(
-        ...(await this.tools.convertTokenBalancesToBalances(newBalances)),
+        ...(await this.tools.convertTokenBalancesToBalances(tokenBalances)),
       );
     }
 

@@ -249,9 +249,6 @@ export class BalanceDto {
   @ApiProperty({ example: 'Sol' })
   symbol: string;
 
-  @ApiProperty({ example: '6Uj4wUCtHKieQ7upZivYnQZnzGdfg3xEbSV5YJmsiV3e' })
-  mintAddress: string;
-
   @ApiProperty({ example: '10' })
   amount: string;
 

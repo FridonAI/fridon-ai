@@ -109,7 +109,12 @@ export class BlockchainController {
 
     balances.sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
     return new BalanceOperationResponseDto({
-      data: balances,
+      data: balances.map((item) => ({
+        symbol: item.symbol,
+        amount: item.amount,
+        value: item.value,
+        type: item.type,
+      })),
     });
   }
 
