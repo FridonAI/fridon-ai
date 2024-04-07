@@ -325,6 +325,7 @@ export class KaminoFactory {
   async getKaminoBalances(
     walletAddress: string,
     mintAddress: string | undefined,
+    currency?: string | undefined,
   ) {
     const market = await KaminoMarket.load(
       this.connection,
@@ -348,7 +349,7 @@ export class KaminoFactory {
     );
 
     if (!obligations) {
-      const message = mintAddress ? `Your balance for ${mintAddress} is 0` : "Your Kamino balance is 0";
+      const message = mintAddress ? `Your balance for ${currency} is 0` : "Your Kamino balance is 0";
       throw new HttpException(message, 403); // User is new
     }
 
@@ -367,6 +368,7 @@ export class KaminoFactory {
   async getKaminoDepositions(
     walletAddress: string,
     mintAddress: string | undefined,
+    currency?: string | undefined,
   ) {
     const market = await KaminoMarket.load(
       this.connection,
@@ -380,7 +382,7 @@ export class KaminoFactory {
     const mintAddresses = await this.getMintAddresses(market);
     if (mintAddress) {
       if (!mintAddresses.includes(mintAddress)) {
-        throw new HttpException('Mint address not supported on Kamino', 404);
+        throw new HttpException(`${currency} not supported on Kamino.`, 404);
       }
     }
 
@@ -390,7 +392,7 @@ export class KaminoFactory {
     );
 
     if (!obligations) {
-      const message = mintAddress ? `Your deposit balance for ${mintAddress} is 0` : "Your Kamino balance is 0";
+      const message = currency ? `Your deposit balance for ${currency} is 0` : "Your Kamino balance is 0";
       throw new HttpException(message, 403); // User is new
     }
 
@@ -398,7 +400,7 @@ export class KaminoFactory {
       const deposit = this.getDeposit(obligations, new PublicKey(mintAddress));
 
       if (!deposit) {
-        throw new HttpException(`Your deposit balance for ${mintAddress} is 0`, 403);
+        throw new HttpException(`Your deposit balance for ${currency} is 0`, 403);
       }
 
       return [deposit];
@@ -410,6 +412,7 @@ export class KaminoFactory {
   async getKaminoBorrows(
     walletAddress: string,
     mintAddress: string | undefined,
+    currency?: string | undefined,
   ) {
     const market = await KaminoMarket.load(
       this.connection,
@@ -433,7 +436,7 @@ export class KaminoFactory {
     );
 
     if (!obligations) {
-      const message = mintAddress ? `Your deposit balance for ${mintAddress} is 0` : "Your Kamino balance is 0";
+      const message = currency ? `Your deposit balance for ${currency} is 0` : "Your Kamino balance is 0";
 
       throw new HttpException(message, 403); // User is new
     }
@@ -442,7 +445,7 @@ export class KaminoFactory {
       const borrowed = this.getBorrow(obligations, new PublicKey(mintAddress));
 
       if (!borrowed) {
-        const message = mintAddress ? `Your borrow balance for ${mintAddress} is 0` : "Your Kamino balance is 0";
+        const message = currency ? `Your borrow balance for ${currency} is 0` : "Your Kamino balance is 0";
         throw new HttpException(message, 403);
       }
 
