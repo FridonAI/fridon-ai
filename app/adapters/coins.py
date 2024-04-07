@@ -51,8 +51,15 @@ def get_chart_similar_coins(coin, start_date):
 def _read_ohlcv_date(symbol: str) -> pd.DataFrame:
     time_to = int(datetime.now().timestamp())
     time_from = int((time_to - timedelta(days=120).total_seconds()))
-    resp = requests.get(f'https://api.kraken.com/0/public/OHLC?pair={symbol.upper()}USD&interval=1440&since={time_from}')
-    data = resp.json()['result'][f'{symbol.upper()}USD']
+    resp = requests.get(
+        f'https://api.kraken.com/0/public/OHLC?pair={symbol.upper()}USD&interval=1440&since={time_from}')
+
+    response_data = resp.json()
+
+    if resp.status_code != 200 or len(response_data['error']) > 0:
+        raise Exception(f"Failed to fetch data from Kraken API. Status code: {resp.status_code}")
+
+    data = response_data['result'][f'{symbol.upper()}USD']
     df = pd.DataFrame(data, columns=['time', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count'])
     df.drop(columns=['vwap', 'count'], inplace=True)
     df.rename(columns={'time': 'date'}, inplace=True)
@@ -94,3 +101,9 @@ def get_coin_ta(coin):
                                     ]]
 
     return str(last_day_summary)
+
+
+def get_coin_list():
+    with open("./data/coins-list.json", "r") as f:
+        coin_list = json.load(f)
+        return [coin["symbol"] for coin in coin_list]

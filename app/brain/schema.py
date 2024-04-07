@@ -282,7 +282,10 @@ class CoinTAQueryExtractAdapter(Adapter):
     comment: str | None
 
     async def get_response(self, chat_id, wallet_id, personality, *args, **kwargs):
-        last_day_summary = get_coin_ta(self.symbol)
+        try:
+            last_day_summary = get_coin_ta(self.symbol)
+        except Exception as e:
+            return f"Unfortunately, I don't have information about {self.symbol.upper()} for this moment."
 
         def get_coin_ta_chain(
                 llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)

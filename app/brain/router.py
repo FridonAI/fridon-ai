@@ -252,6 +252,12 @@ coin_ta = Route(
         "Can you predict the price of wif?",
         "What is the future of jto?",
         "What is the technical analysis of jup?",
+        "What can you say about rndr performance?",
+        "What is the trend of boden?"
+        "What is the price prediction of \"bonk\"?",
+        "What can you say about \"sol\"?",
+        "Analyse wif price chart",
+        "Analyze \"boden\" to me please",
     ],
 )
 

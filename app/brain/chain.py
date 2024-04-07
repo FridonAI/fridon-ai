@@ -3,6 +3,7 @@ from langchain_core.runnables import RunnableLambda
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_openai import ChatOpenAI
 
+from app.adapters.coins import get_coin_list
 from app.brain.memory import get_chat_history
 from app.brain.retriever import get_coins_retriever
 from app.brain.schema import (
@@ -76,7 +77,11 @@ def get_coin_ta_extract_chain(
 ):
     prompt = get_prompt('coin_extractor')
     return (
-            prompt
+            {
+                "query": lambda x: x["query"],
+                "coin_list": lambda x: ''.join(get_coin_list()) + "and etc."
+            }
+            | prompt
             | llm
             | CoinTAQueryExtractAdapter.parser()
     )
