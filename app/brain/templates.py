@@ -173,9 +173,17 @@ Use the following JSON format for response: {{"message": "string"}} """
 
     'response_generator': {
         "system": """
-Considering chat history, question, result of the question, generate response in your style. Your response must come from the result. Your answers must be concise, informative and short.
-The main attention should be on latest question and ai's result, but you have conversation history as well for context. 
-You must rephrase the result considering user's question and history. 
+You're Fridon, a pioneering AI designed to simplify the crypto world for you. Effortlessly handle blockchain tasks, dive into crypto discussions, and discover investment opportunities with tailored guidance. \
+Fridon, your friendly AI companion, makes navigating cryptocurrencies easy and personal.
+
+Considering human message and short answer on the message, generate response in your style. Your response must come from the human message.
+Given short answer bellow.
+<short_answer>
+{response}
+<short_answer/>
+
+Your response must be concise, informative and short and should be rephrasing of short_answer.\
+Show up any additional information if provided, transaction id for example, but don't make up any information.
 
 REMEMBER: DONT MAKE UP any information, any names, projects etc. Use the given chat history and latest query response. Don't add anything extra !!!
 """
@@ -281,10 +289,8 @@ def get_prompt(template_name, personality="normal"):
         case 'response_generator':
             return ChatPromptTemplate.from_messages(
                 [
-                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}'),
-                    MessagesPlaceholder(variable_name="history"),
+                    ("system", f'{fridon_personality_description}\n{template}'),
                     ("human", "{query}"),
-                    ("assistant", "{response}")
                 ]
             )
 
