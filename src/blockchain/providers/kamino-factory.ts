@@ -78,7 +78,6 @@ export class KaminoFactory {
     return mintAddresses;
   }
 
-
   private getMarketAddress(mintAddress: string): MarketInfo | undefined {
     // Check for wif, bonk,wen, pyth and return altcoins market lut address
     if (
@@ -121,7 +120,10 @@ export class KaminoFactory {
     const reserve = this.getReserve(market, mintAddress);
 
     if (!reserve) {
-      throw new HttpException(`Couldn't find reserve on Kamino to deposit.`, 404);
+      throw new HttpException(
+        `Couldn't find reserve on Kamino to deposit.`,
+        404,
+      );
     }
 
     const tokenAmount = new TokenAmount(
@@ -174,7 +176,10 @@ export class KaminoFactory {
 
     const reserve = this.getReserve(market, mintAddress);
     if (!reserve) {
-      throw new HttpException("Couldn't find reserve on Kamino to Borrow.", 404);
+      throw new HttpException(
+        "Couldn't find reserve on Kamino to Borrow.",
+        404,
+      );
     }
 
     const tokenAmount = new TokenAmount(
@@ -281,7 +286,10 @@ export class KaminoFactory {
     const reserve = this.getReserve(market, mintAddress);
 
     if (!reserve) {
-      throw new HttpException("Couldn't find reserve on Kamino to Withdraw.", 404);
+      throw new HttpException(
+        "Couldn't find reserve on Kamino to Withdraw.",
+        404,
+      );
     }
 
     const tokenAmount = new TokenAmount(
@@ -349,7 +357,9 @@ export class KaminoFactory {
     );
 
     if (!obligations) {
-      const message = mintAddress ? `Your balance for ${currency} is 0` : "Your Kamino balance is 0";
+      const message = mintAddress
+        ? `Your balance for ${currency} is 0`
+        : 'Your Kamino balance is 0';
       throw new HttpException(message, 403); // User is new
     }
 
@@ -357,12 +367,27 @@ export class KaminoFactory {
     const borrows = this.getBorrows(obligations);
 
     if (mintAddress) {
-      return deposits.filter((x) =>
+      const filteredDeposits = deposits.filter((x) =>
         x.mintAddress.equals(new PublicKey(mintAddress)),
       );
+      const filteredBorrows = borrows.filter((x) =>
+        x.mintAddress.equals(new PublicKey(mintAddress)),
+      );
+
+      if (filteredDeposits.length == 0 && filteredBorrows.length == 0) {
+        throw new HttpException(`Your balance for ${currency} is 0`, 403);
+      }
+
+      return {
+        deposits: filteredDeposits,
+        borrows: filteredBorrows,
+      };
     }
 
-    return [...deposits, ...borrows];
+    return {
+      deposits,
+      borrows,
+    };
   }
 
   async getKaminoDepositions(
@@ -392,7 +417,9 @@ export class KaminoFactory {
     );
 
     if (!obligations) {
-      const message = currency ? `Your deposit balance for ${currency} is 0` : "Your Kamino balance is 0";
+      const message = currency
+        ? `Your deposit balance for ${currency} is 0`
+        : 'Your Kamino balance is 0';
       throw new HttpException(message, 403); // User is new
     }
 
@@ -400,7 +427,10 @@ export class KaminoFactory {
       const deposit = this.getDeposit(obligations, new PublicKey(mintAddress));
 
       if (!deposit) {
-        throw new HttpException(`Your deposit balance for ${currency} is 0`, 403);
+        throw new HttpException(
+          `Your deposit balance for ${currency} is 0`,
+          403,
+        );
       }
 
       return [deposit];
@@ -436,7 +466,9 @@ export class KaminoFactory {
     );
 
     if (!obligations) {
-      const message = currency ? `Your deposit balance for ${currency} is 0` : "Your Kamino balance is 0";
+      const message = currency
+        ? `Your deposit balance for ${currency} is 0`
+        : 'Your Kamino balance is 0';
 
       throw new HttpException(message, 403); // User is new
     }
@@ -445,7 +477,9 @@ export class KaminoFactory {
       const borrowed = this.getBorrow(obligations, new PublicKey(mintAddress));
 
       if (!borrowed) {
-        const message = currency ? `Your borrow balance for ${currency} is 0` : "Your Kamino balance is 0";
+        const message = currency
+          ? `Your borrow balance for ${currency} is 0`
+          : 'Your Kamino balance is 0';
         throw new HttpException(message, 403);
       }
 
@@ -487,7 +521,7 @@ export class KaminoBalances {
   constructor(
     readonly _nativeObligation: KaminoObligation,
     readonly utils: NumberFormatter,
-  ) { }
+  ) {}
 
   get nativeObligation() {
     return this._nativeObligation;

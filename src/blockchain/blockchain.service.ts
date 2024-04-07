@@ -33,7 +33,7 @@ export class BlockchainService {
     private readonly pointsFactory: PointsFactory,
     private readonly symmetryFactory: SymmetryApiFactory,
     private readonly jupiterFactory: JupiterFactory,
-  ) { }
+  ) {}
 
   async swapTokens(
     walletAddress: string,
@@ -141,13 +141,16 @@ export class BlockchainService {
         );
         if (positions.length == 0) {
           if (mintAddress) {
-            return [{
-              amount: '0',
-              mintAddress: mintAddress,
-              symbol: await this.tools.convertMintAddressToSymbol(mintAddress),
-              value: '0',
-              type: 'Borrow'
-            }]
+            return [
+              {
+                amount: '0',
+                mintAddress: mintAddress,
+                symbol:
+                  await this.tools.convertMintAddressToSymbol(mintAddress),
+                value: '0',
+                type: 'Borrow',
+              },
+            ];
           }
 
           throw new HttpException('Your borrowed balance on Kamino is 0', 404);
@@ -163,13 +166,16 @@ export class BlockchainService {
         );
         if (positions.length == 0) {
           if (mintAddress) {
-            return [{
-              amount: '0',
-              mintAddress: mintAddress,
-              symbol: await this.tools.convertMintAddressToSymbol(mintAddress),
-              value: '0',
-              type: 'Deposit'
-            }]
+            return [
+              {
+                amount: '0',
+                mintAddress: mintAddress,
+                symbol:
+                  await this.tools.convertMintAddressToSymbol(mintAddress),
+                value: '0',
+                type: 'Deposit',
+              },
+            ];
           }
 
           throw new HttpException('Your deposit balance on Kamino is 0', 404);
@@ -181,24 +187,30 @@ export class BlockchainService {
           )),
         );
       } else if (operation == BalanceOperationType.All) {
-        const positions = await this.kaminoFactory.getKaminoBalances(
-          walletAddress,
-          mintAddress,
-        );
-        if (positions.length == 0) {
+        const { deposits, borrows } =
+          await this.kaminoFactory.getKaminoBalances(
+            walletAddress,
+            mintAddress,
+          );
+        if (deposits.length === 0 && borrows.length === 0) {
           if (mintAddress) {
-            return [{
-              amount: '0',
-              mintAddress: mintAddress,
-              symbol: await this.tools.convertMintAddressToSymbol(mintAddress),
-              value: '0',
-            }]
+            return [
+              {
+                amount: '0',
+                mintAddress: mintAddress,
+                symbol:
+                  await this.tools.convertMintAddressToSymbol(mintAddress),
+                value: '0',
+              },
+            ];
           }
 
           throw new HttpException('Your balance on Kamino is 0', 404);
         }
+
         balances.push(
-          ...(await this.tools.convertPositionsToBalances(positions)),
+          ...(await this.tools.convertPositionsToBalances(deposits, 'Deposit')),
+          ...(await this.tools.convertPositionsToBalances(borrows, 'Borrow')),
         );
       }
     }
