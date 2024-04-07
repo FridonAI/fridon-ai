@@ -14,6 +14,7 @@ export class BirdEyeAdapter {
 
   async getHistoryPrice(
     tokenAddress: string,
+    chain: string,
     from: number,
     to: number,
   ): Promise<number[]> {
@@ -21,6 +22,7 @@ export class BirdEyeAdapter {
     const result = (await fetch(url, {
       headers: {
         'X-API-KEY': '1ce5e10d345740ecb60ef4bb960d0385',
+        'x-chain': chain,
       },
     }).then((res) => res.json())) as BirdEyeResponse;
 

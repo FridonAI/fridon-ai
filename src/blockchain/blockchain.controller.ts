@@ -51,6 +51,7 @@ export class BlockchainController {
         symbol: item.symbol,
         address: item.address,
         score: item.score,
+        chain: item.chain,
       })),
     });
   }

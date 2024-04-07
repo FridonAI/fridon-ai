@@ -8,6 +8,7 @@ import { readFileSync } from 'fs';
 export type TokenAddress = {
   symbol: string;
   address: string;
+  chain: string;
 };
 
 @Injectable()
@@ -27,7 +28,7 @@ export class CoinSimilarityService {
   async updateEmbeddingsBatch(tokenAddresses: TokenAddress[]) {
     const arr: number[][] = [];
     for (const token of tokenAddresses) {
-      const data = await this.getBirdEyeData(token.address);
+      const data = await this.getBirdEyeData(token.address, token.chain);
       arr.push(data);
     }
 
@@ -36,6 +37,7 @@ export class CoinSimilarityService {
       vector,
       symbol: tokenAddresses[index]!.symbol,
       address: tokenAddresses[index]!.address,
+      chain: tokenAddresses[index]!.chain,
       values: arr[index]!,
     }));
 
@@ -44,23 +46,24 @@ export class CoinSimilarityService {
       const values = pgvector.toSql(richResult[i]!.values);
       await this.prisma.$executeRaw`
           INSERT INTO price_vectors 
-          (embedding, symbol, address, values) 
+          (embedding, symbol, address, values, chain) 
           VALUES
-          (${embedding}::vector,${richResult[i]!.symbol}, ${richResult[i]!.address}, ${values}::vector)`;
+          (${embedding}::vector,${richResult[i]!.symbol}, ${richResult[i]!.address}, ${values}::vector,  ${richResult[i]!.chain})`;
     });
   }
 
   async getCoinSimilarity(symbol: string, from: number, to: number, k: number) {
-    const symbolAddress = this.getTokenAddresses().find(
+    const tokenInfo = this.getTokenAddresses().find(
       (token) => token.symbol === symbol,
-    )?.address;
+    );
 
-    if (!symbolAddress) {
+    if (!tokenInfo) {
       throw new BadRequestException(`Token[${symbol}] not found`);
     }
 
     const data = await this.birdEyeAdapter.getHistoryPrice(
-      symbolAddress,
+      tokenInfo.address,
+      tokenInfo.chain,
       from,
       to,
     );
@@ -73,18 +76,20 @@ export class CoinSimilarityService {
       symbol: string;
       score: number;
       address: string;
+      chain: string;
     }[];
 
     const res = await this.prisma.$queryRaw<ResultType>`
-        SELECT symbol, 1 - (embedding <=> ${vector}::vector) as score, address
+        SELECT symbol, 1 - (embedding <=> ${vector}::vector) as score, address, chain
         FROM price_vectors
-        WHERE address != ${symbolAddress}
+        WHERE address != ${tokenInfo.address}
         ORDER BY score DESC LIMIT ${k}`;
 
     return [
       {
         symbol: symbol,
-        address: symbolAddress,
+        address: tokenInfo.address,
+        chain: tokenInfo.chain,
         score: 1,
       },
       ...res,
@@ -107,11 +112,15 @@ export class CoinSimilarityService {
     }
   }
 
-  private async getBirdEyeData(tokenAddress: string): Promise<number[]> {
+  private async getBirdEyeData(
+    tokenAddress: string,
+    chain: string,
+  ): Promise<number[]> {
     const timeTo = parseInt(new Date().getTime() / 1000 + '');
     const timeFrom = timeTo - 60 * 60 * 24 * 30;
     const data = await this.birdEyeAdapter.getHistoryPrice(
       tokenAddress,
+      chain,
       timeFrom,
       timeTo,
     );
