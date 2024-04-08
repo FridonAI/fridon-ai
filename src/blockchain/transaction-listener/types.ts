@@ -1,4 +1,4 @@
-import { Queue, Worker, Job } from 'bullmq';
+import { Queue, Job } from 'bullmq';
 import { AuxType } from '../events/transaction.event';
 
 export type QueuePayload = {
