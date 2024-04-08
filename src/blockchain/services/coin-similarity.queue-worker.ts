@@ -26,6 +26,10 @@ export class CoinSimilarityEmbeddingsWorker extends WorkerHost {
 
   @OnWorkerEvent('failed')
   onError(obj: { id: number; failedReason: string }) {
+    if (!obj) {
+      this.logger.error(`Failed: unknown reason`);
+      return;
+    }
     this.logger.error(`Failed: ${obj.failedReason}`, `Embeddings[${obj.id}]`);
   }
 }

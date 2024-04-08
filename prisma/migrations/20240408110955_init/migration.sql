@@ -13,6 +13,7 @@ CREATE TABLE "price_vectors" (
     "values" vector(512) NOT NULL,
     "embedding" vector(1024) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "price_vectors_pkey" PRIMARY KEY ("id")
 );
@@ -58,6 +59,9 @@ CREATE TABLE "Media" (
 
     CONSTRAINT "Media_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "price_vectors_symbol_chain_key" ON "price_vectors"("symbol", "chain");
 
 -- CreateIndex
 CREATE INDEX "ChatMessage_chatId_idx" ON "ChatMessage"("chatId");
