@@ -208,7 +208,7 @@ E.x. "Which projects are similar to solana? you've to return {{"project": "solan
     'coin_project_search': {
         "system": """
 You are the best coin project searcher. User will ask you to search some crypto coin projects based on some criteria. \
-With given context please grab some projects those are most relevant to the user's query.
+With given context please grab some projects those are most relevant to the user's query. Explain why you've chosen these projects, why they are similar. \
 
 Get coin projects following the data bellow:
 {project_description}

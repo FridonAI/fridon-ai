@@ -234,7 +234,7 @@ class MediaQueryExtractAdapter(Adapter):
         print("Date", date, self.medias)
         whole_text = await get_media_text(wallet_id, self.medias, date)
         if not whole_text:
-            return "No data found for the given medias."
+            return "No data found for the given media(s) and time range."
         retriever = get_media_retriever(whole_text)
         print("Retriever")
 

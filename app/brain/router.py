@@ -31,6 +31,7 @@ defi_swap = Route(
         "Swap 100 usdc to sol",
         "Swap 100 bonk to usdc",
         "Swap 100 jup to sol",
+        "Could you Swap 100 jup to sol?",
         "Swap 100 wif to dfl",
         "Please, convert 1 sol to wif",
         "I want to swap 1000 bonk to sol",
@@ -99,7 +100,7 @@ media_action = Route(
         "Follow Solana on media, please.",
         "I want you to follow tensor on media.",
         "Unfollow Tensorians on media.",
-        "Follow Madlad on media.",
+        "Follow Madlads on media.",
         "Unfollow OkayBear on media.",
         "Follow jupiter please.",
         "Follow bonk please.",
@@ -126,6 +127,7 @@ media_query = Route(
         "What medias do you support?",
         "Which contents do I follow?",
         "What contents are available to follow?",
+        "Which social medias do I follow?",
     ]
 )
 
@@ -191,11 +193,12 @@ coin_project_search = Route(
     utterances=[
         "Give me list of coin projects which are in top 100 and are AI based.",
         "Give me projects which are like Solana please.",
-        "What coin projects are similar to Render.",
+        "What coin projects are similar to Render?",
         "I want you to give me layer 1 projects.",
         "Could you give me dapin projects like Gaimin?",
         "Which coins are like Pyth project?",
         "Can you give me coins like Solana please?",
+        "What coins are similar to rndr dapin project?",
     ]
 )
 
