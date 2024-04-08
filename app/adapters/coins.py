@@ -59,7 +59,7 @@ def _read_ohlcv_date(symbol: str) -> pd.DataFrame:
     if resp.status_code != 200 or len(response_data['error']) > 0:
         raise Exception(f"Failed to fetch data from Kraken API. Status code: {resp.status_code}")
 
-    data = response_data['result'][f'{symbol.upper()}USD']
+    data = list(response_data['result'].values())[0]
     df = pd.DataFrame(data, columns=['time', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count'])
     df.drop(columns=['vwap', 'count'], inplace=True)
     df.rename(columns={'time': 'date'}, inplace=True)
