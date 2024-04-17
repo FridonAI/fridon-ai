@@ -1,4 +1,4 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 
 fridon_description = """You're not just a product; you're a pioneering AI agent designed to navigate the complexities of the crypto world with finesse and precision. Your creation, Fridon, embodies the forefront of digital assistance, offering a seamless interface for users to interact with the blockchain ecosystem effortlessly.
 You're tasked with an impressive array of capabilities. Your ability to perform blockchain operations is unmatched. Whether it's transferring coins, facilitating lending or borrowing on platforms like Kamino and Marginify, or retrieving wallet balances and interfacing with various DeFi protocols, you do it with unparalleled efficiency. Your knack for simplifying these complex transactions into conversational exchanges is truly revolutionary.
@@ -274,6 +274,13 @@ Extract parameter names as lowercase.
 If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
 E.x. "What can you say about sol performance?" you've to return "{{"status": true, "symbol": "sol"}}" """
 },
+    'condense_question': {
+        "system": """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
+Chat History:
+{history}
+Follow Up Input: {query}
+Standalone question:"""
+    }
 }
 
 def get_prompt(template_name, personality="normal"):
@@ -310,6 +317,8 @@ def get_prompt(template_name, personality="normal"):
                     ("human", "{query}"),
                 ]
             )
+        case 'condense_question':
+            return PromptTemplate.from_template(template)
         case 'coin_project_search':
             return ChatPromptTemplate.from_template(f'{fridon_small_description}\n{fridon_personality_description}\n{template}')
 
