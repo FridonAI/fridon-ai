@@ -168,7 +168,6 @@ def get_coin_project_search_chain(
     )
 
 
-
 def get_media_talker_chain(
         personality,
         retriever,
@@ -197,11 +196,10 @@ def get_response_generator_chain(
         llm=ChatOpenAI(model=settings.GPT_MODEL, temperature=0)
 ):
     prompt = get_prompt('response_generator', personality)
-    return RunnableWithMessageHistory(
-        (prompt | llm | StrOutputParser()),
-        get_chat_history,
-        input_messages_key="query",
-        history_messages_key="history",
+    return (
+            prompt
+            | llm
+            | StrOutputParser()
     )
 
 
