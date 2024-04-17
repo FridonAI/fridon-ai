@@ -274,7 +274,7 @@ Extract parameter names as lowercase.
 If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
 E.x. "What can you say about sol performance?" you've to return "{{"status": true, "symbol": "sol"}}" """
 },
-    'condense_question': {
+    'question_condenser': {
         "system": """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
 Chat History:
 {history}
@@ -282,6 +282,7 @@ Follow Up Input: {query}
 Standalone question:"""
     }
 }
+
 
 def get_prompt(template_name, personality="normal"):
     template = templates[template_name]["system"]
@@ -317,7 +318,7 @@ def get_prompt(template_name, personality="normal"):
                     ("human", "{query}"),
                 ]
             )
-        case 'condense_question':
+        case 'question_condenser':
             return PromptTemplate.from_template(template)
         case 'coin_project_search':
             return ChatPromptTemplate.from_template(f'{fridon_small_description}\n{fridon_personality_description}\n{template}')
