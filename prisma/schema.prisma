@@ -24,7 +24,9 @@ model PriceVectors {
   embedding Unsupported("vector(1024)")
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@unique([symbol, chain])
   @@map("price_vectors")
 }
 

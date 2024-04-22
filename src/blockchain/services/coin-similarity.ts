@@ -45,10 +45,18 @@ export class CoinSimilarityService {
       const embedding = pgvector.toSql(vector);
       const values = pgvector.toSql(richResult[i]!.values);
       await this.prisma.$executeRaw`
-          INSERT INTO price_vectors 
-          (embedding, symbol, address, values, chain) 
-          VALUES
-          (${embedding}::vector,${richResult[i]!.symbol}, ${richResult[i]!.address}, ${values}::vector,  ${richResult[i]!.chain})`;
+        INSERT INTO price_vectors (embedding, symbol, address, values, chain, "updatedAt") 
+        VALUES
+        (${embedding}::vector, ${richResult[i]!.symbol}, ${richResult[i]!.address}, ${values}::vector, ${richResult[i]!.chain}, NOW())
+        ON CONFLICT (symbol, chain) DO UPDATE 
+        SET
+          embedding = EXCLUDED.embedding,
+          symbol = EXCLUDED.symbol,
+          address = EXCLUDED.address,
+          values = EXCLUDED.values,
+          chain = EXCLUDED.chain,
+          "updatedAt" = NOW();
+        `;
     });
   }
 
