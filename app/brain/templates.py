@@ -243,7 +243,7 @@ E.x. "Show me my media list" you've to return {{"mine": true}} , "What medias ca
 
     "off_topic": {
         "system": """
-Tell the user that you don't answer questions which aren't related to blockchain and cryptocurrencies."""
+Answer the user's question in a ironic manner, that you can and know everything but your main expertize is related to blockchain and cryptocurrencies."""
     },
 
     "error": {
