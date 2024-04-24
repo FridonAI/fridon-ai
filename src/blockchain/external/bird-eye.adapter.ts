@@ -21,7 +21,7 @@ export class BirdEyeAdapter {
     const url = `https://public-api.birdeye.so/defi/history_price?address=${tokenAddress}&time_from=${from}&time_to=${to}&type=1H`;
     const result = (await fetch(url, {
       headers: {
-        'X-API-KEY': '1ce5e10d345740ecb60ef4bb960d0385',
+        'X-API-KEY': '5a82ed0e9c1848ca8f4f34c9ec649608',
         'x-chain': chain,
       },
     }).then((res) => res.json())) as BirdEyeResponse;

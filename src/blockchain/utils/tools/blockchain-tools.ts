@@ -86,7 +86,7 @@ export class BlockchainTools {
     try {
       const coinIds = await this.getMintAddresses();
       const requestUrl =
-        'https://public-api.birdeye.so/public/multi_price?list_address=';
+        'https://public-api.birdeye.so/defi/multi_price?list_address=';
 
       const coinPricesChunks = await Promise.all(
         _.chunk(coinIds, 100).map(async (coinIdsChunk) => {
@@ -94,7 +94,7 @@ export class BlockchainTools {
             requestUrl.concat(coinIdsChunk.join(',')),
             {
               headers: {
-                'X-API-KEY': '1ce5e10d345740ecb60ef4bb960d0385',
+                'X-API-KEY': '5a82ed0e9c1848ca8f4f34c9ec649608',
               },
             },
           );
