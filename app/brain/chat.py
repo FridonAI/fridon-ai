@@ -59,8 +59,8 @@ class Chat:
         except Exception as e:
             print("Error in Chat.process", e)
             chain = get_error_chain(self.personality)
-            # final_response = await chain.ainvoke({"query": message})
-            raise e
+            final_response = await chain.ainvoke({"query": message})
+            # raise e
 
         return final_response
 
