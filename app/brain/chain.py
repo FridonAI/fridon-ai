@@ -250,7 +250,7 @@ def get_chain(category, personality):
             return get_defi_stake_borrow_lend_extract_chain(personality)
         case "DeFiBalance":
             return get_defi_balance_extract_chain(personality)
-        case "DeFiSwap":
+        case "DefiSwap":
             return get_defi_swap_extract_chain(personality)
         case "DefiSymmetryBaskets":
             return get_defi_symmetry_baskets_extract_chain(personality)
@@ -262,7 +262,7 @@ def get_chain(category, personality):
             return get_discord_action_extract_chain(personality)
         case "CoinChartSimilarity":
             return get_coin_chart_similarity_extract_chain(personality)
-        case "DeFiTalker":
+        case "DefiTalker":
             return get_defi_talker_chain(personality)
         case "MediaTalker":
             return get_media_query_extract(personality)
