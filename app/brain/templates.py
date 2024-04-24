@@ -275,11 +275,34 @@ If any must to parameters is unknown then return: "{{status: false, comment: "..
 E.x. "What can you say about sol performance?" you've to return "{{"status": true, "symbol": "sol"}}" """
 },
     'question_condenser': {
-        "system": """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
+        "system": """
+Given a conversation excerpt and a subsequent question, rephrase the follow-up question so it can stand on its own. This rephrasing should not involve changing any parameter names but should focus on clarifying and condensing the question.
+
+Additionally, identify and extract the category of the question based on its context. Use the provided categories, each described to clarify the type of user queries they include, and their examples to classify the question accurately.
+
+List of Question Categories with Descriptions and Examples:
+1. "DefiSwap": For requests involving the exchange of one cryptocurrency for another. Examples include "Swap 100 sol to usdc", "Could you swap 1000 usdt to sol?", etc.
+2. "DefiSymmetryBaskets": For inquiries about investment options in symmetry baskets, which are diversified cryptocurrency portfolios. Examples include "What are the symmetry baskets?", "What are the best symmetry baskets to invest in?", etc.
+3. "DeFiBalance": For queries about the balances, assets, or points a user owns on specific DeFi platforms. Examples include "Can you tell me my sol balance?", "What is my total balance in USD?", etc.
+4. "DeFiTransfer": For requests to transfer cryptocurrencies to another account or wallet address. Examples include "Transfer 100 sol to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD", "Send 100 bonk to ArSZESuVtg5ac7vN8mqmUUgi8Sn8HVh46vq3KmZ86UBY", etc.
+5. "MediaAction": For actions related to following or unfollowing entities on social media platforms. Examples include "Follow Solana on media, please.", "Unfollow OkayBear on media.", etc.
+6. "MediaInfo": For queries about the media platforms available for following or the ones a user is currently following. Examples include "Which medias can I follow?", "Show me all medias list please", etc.
+7. "MediaTalker": For inquiries about recent news or updates on the media platforms a user follows. Examples include "What are today's news on my media?", "Give me news summary of tensor for last 7 days please", etc.
+8. "DefiTalker": For general questions about DeFi, its platforms, or its technologies. Examples include "Hi, How are you?", "What is DeFi?", etc.
+9. "CoinChartSimilarity": For requests to identify coins with similar price charts over a specified period. User should request similar coins. Examples include "Give me coins which have the similar chart as Wif from 1 December 2023.", etc.
+10. "CoinProjectSearch": For queries about finding cryptocurrency projects based on specific criteria like technology, ranking, or similar features. Examples include "Give me list of coin projects which are in top 100 and are AI based.", "What coins are similar to rndr dapin project?", etc.
+11. "CoinTA": For queries involving technical, chart analysis or price predictions of specific cryptocurrencies. Examples include "Please analyse the chart of sol", "What is the price prediction of bonk?", "How bonk's chart looks like?", etc.
+12. "OffTopic": For queries that do not relate to the primary functions or topics of the system, such as personal advice, general knowledge, or unrelated requests. Examples include "Can you recommend the best stocks to buy?", "Can you write an email?", etc.
+
+The final output should be a JSON string in the following format:
+{{"category": "string", "query": "string"}}
+
+The category must match exactly one of the provided categories.
+
 Chat History:
 {history}
 Follow Up Input: {query}
-Standalone question:"""
+"""
     }
 }
 

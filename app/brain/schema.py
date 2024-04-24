@@ -143,6 +143,18 @@ class DefiTalkerAdapter(Adapter):
         return PydanticOutputParser(pydantic_object=DefiTalkerAdapter)
 
 
+class QueryExtractAdapter(Adapter):
+    query: str
+    category: str
+
+    async def get_response(self, chat_id, wallet_id, personality):
+        return self
+
+    @staticmethod
+    def parser() -> PydanticOutputParser:
+        return PydanticOutputParser(pydantic_object=QueryExtractAdapter)
+
+
 class CoinProjectSearcherAdapter(Adapter):
     project: str | None
     query: str

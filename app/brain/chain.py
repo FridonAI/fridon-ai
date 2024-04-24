@@ -8,7 +8,8 @@ from app.brain.memory import get_chat_history
 from app.brain.schema import (
     DefiStakeBorrowLendAdapter, DefiTransferAdapter, DefiBalanceAdapter, DefiTalkerAdapter,
     DiscordActionAdapter, CoinChartSimilarityAdapter, MediaQueryExtractAdapter, DefiSwapAdapter,
-    DefiSymmetryBasketsAdapter, CoinTAQueryExtractAdapter, MediaInfoAdapter, CoinProjectSearcherAdapter
+    DefiSymmetryBasketsAdapter, CoinTAQueryExtractAdapter, MediaInfoAdapter, CoinProjectSearcherAdapter,
+    QueryExtractAdapter
 )
 from app.brain.templates import get_prompt
 from app.settings import settings
@@ -176,7 +177,7 @@ def get_question_condenser_chain(
         (
             prompt
             | llm
-            | StrOutputParser()
+            | QueryExtractAdapter.parser()
         ),
         get_chat_history,
         input_messages_key="query",

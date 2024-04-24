@@ -4,7 +4,7 @@ from app.brain.chain import get_chain, get_chat_history, get_error_chain, get_re
     get_question_condenser_chain
 from pydantic.v1 import BaseModel
 
-from app.brain.router import get_category
+# from app.brain.router import get_category
 from app.brain.schema import CoinProjectSearcherAdapter, DefiTalkerAdapter, MediaQueryExtractAdapter, \
     CoinChartSimilarityAdapter, CoinTAQueryExtractAdapter
 
@@ -23,10 +23,15 @@ class Chat:
 
         try:
             condense_question_chain = get_question_condenser_chain()
+
             condense_question_chain = condense_question_chain.with_config(run_name="CondenseQuestion")
-            condensed_message = await condense_question_chain.ainvoke({"query": message}, config={"configurable": {"session_id": self.chat_id}})
+            res = await condense_question_chain.ainvoke({"query": message}, config={"configurable": {"session_id": self.chat_id}})
+
+            category = res.category
+            condensed_message = res.query
+
             print("Condensed message", condensed_message)
-            category = get_category(condensed_message)
+            # category = get_category(condensed_message)
             print("Category", category)
             chain = get_chain(category, self.personality)
             print("Took chain")
