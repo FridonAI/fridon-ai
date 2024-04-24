@@ -84,7 +84,7 @@ If swap synonym is used then map it to swap, like convert, exchange, you must be
 Return following json string: "{{"status": boolean, "currency": "string" | null, "wallet": "string" | null, "amount": number | null}}"
 
 "wallet" must be mentioned. There are two type of Solana addresses: 1. random characters in total length of 32 to 44. 2. endling with .sol suffix. 
-"currency" must be mentioned. Currencies can be: usdc, sol, jup, bonk, wif, wen, and so on. You've to guess what user wants to transfer and that's the currency.
+"currency" must be mentioned. Currencies can be: usdc, sol, jup, bonk, wif, wen, jto, and so on. You've to guess what user wants to transfer and that's the currency.
 
 Extract parameter names as lowercase. 
 If any must to parameters is unknown then return: "{{status: false, comment: "..."}}" Comment is which parameters you can't extract.
