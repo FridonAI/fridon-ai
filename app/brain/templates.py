@@ -147,13 +147,17 @@ If user mentions media names then extract them. Each of them should be in the us
 <user_media_names_list/>
 If the media is not in the list, but prompted media name is very similar to some media name in the list, then you can consider it as the media from the list.
     
-    - Days which is the duration of the news. If a user says latest, recent or similar words then extract the days as 1, \
+    - Days which is the duration of the news. If a user says latest, recent or similar words then extract the days as 10, \
 if user says last week then extract the days as 7,if user says last month the extract the days as 30, \
 last three months the extract the days as 90 and so on. Default value of days is 30, so if user doesn't mention duration then return days as 30.
 
 Also you have to return query, which is rephrased user's query which clearly states what has to be done, excluding repeating media names and days.
 
+
 Return the following JSON string: {{"days": number, "medias": ["string"], "query": "string" }}
+
+Remember - if not mentioned default value for days is 10.
+
 
 E.x. "Give me the latest updates of my media" you've to return {{"days": 1, "medias": ["all"], "What are the latest updates?"}}
 
