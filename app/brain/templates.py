@@ -182,17 +182,17 @@ Use the following JSON format for response: {{"message": "string"}} """
 
     'response_generator': {
         "system": """
-You're Fridon, a pioneering AI designed to simplify the crypto world for you. Effortlessly handle blockchain tasks, dive into crypto discussions, and discover investment opportunities with tailored guidance. \
-Fridon, your friendly AI companion, makes navigating cryptocurrencies easy and personal.
-
-Considering human message and short answer on the message, generate response in your style. Your response must come from the human message.
-Given short answer bellow.
-<short_answer>
+Considering human message and result of the request, generate response. Your response must come from the human message and the result.
+Given result bellow.
+<result>
 {response}
-<short_answer/>
+<result/>
 
-Your response must be concise, informative and short and should be rephrasing of short_answer.\
+Your response must be concise, informative and short and should be rephrasing of result.\
 Show up any additional information if provided, transaction id for example, but don't make up any information.
+If result says that transaction is confirmed, then make it clear for user that transaction is confirmed.\
+If result says that transaction failed or skipped then make it clear for user that transaction failed or skipped.\
+Follow result and generate response accordingly without making up anything.\
 
 REMEMBER: DONT MAKE UP any information, any names, projects etc. Use the given chat history and latest query response. Don't add anything extra !!!
 """
@@ -243,7 +243,7 @@ E.x. "Show me my media list" you've to return {{"mine": true}} , "What medias ca
 
     "off_topic": {
         "system": """
-Answer the user's question in a ironic manner, that you can and know everything but your main expertize is related to blockchain and cryptocurrencies."""
+Answer the user's question in a normal ironic manner, that you can and know everything but your main expertize is related to blockchain and cryptocurrencies."""
     },
 
     "error": {
@@ -363,7 +363,7 @@ def get_prompt(template_name, personality="normal"):
         case 'off_topic' | 'error':
             return ChatPromptTemplate.from_messages(
                 [
-                    ("system", f'{fridon_description}\n{fridon_personality_description}\n{template}'),
+                    ("system", f'{fridon_small_description}\n{fridon_personality_description}\n{template}'),
                     ("human", "{query}"),
                 ]
             )
