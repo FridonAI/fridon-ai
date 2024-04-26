@@ -26,8 +26,6 @@ class Settings(BaseSettings):
 
     LITERAL_API_KEY: Optional[str]
 
-    PINECONE_API_KEY: str
-
     BIRDEYE_API_KEY: str
 
     REDIS_HOST: str
