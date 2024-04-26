@@ -26,7 +26,8 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - DATABASE_URL=postgresql://user:pass@db:5432/app?schema=core_schema
-      - OPENAI_API_KEY=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
+    env_file:
+      - ../core/.env
     command: python -m app.main
 
   db:
