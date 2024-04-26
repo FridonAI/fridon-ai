@@ -94,7 +94,7 @@ export class BlockchainTools {
             requestUrl.concat(coinIdsChunk.join(',')),
             {
               headers: {
-                'X-API-KEY': '5a82ed0e9c1848ca8f4f34c9ec649608',
+                'X-API-KEY': process.env['BIRDEYE_API_KEY']!,
               },
             },
           );
