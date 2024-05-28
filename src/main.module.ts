@@ -13,6 +13,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { BullModule } from '@nestjs/bullmq';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UserModule } from './medias/medias.module';
+import { DataProviderModule } from './data-providers/data-provider.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UserModule } from './medias/medias.module';
     // Custom Modules
     AuthModule,
     ChatModule,
+    DataProviderModule,
     EventsModule.forRoot({ isGlobal: true }),
     BlockchainModule.forRoot(),
     UserModule,

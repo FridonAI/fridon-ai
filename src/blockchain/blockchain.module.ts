@@ -54,7 +54,7 @@ import { CoinSimilarityEmbeddingsWorker } from './services/coin-similarity.queue
     BirdEyeAdapter,
     CoinSimilarityEmbeddingsWorker,
   ],
-  exports: [TransactionFactory, TransactionListenerService],
+  exports: [TransactionFactory, TransactionListenerService, Connection],
 })
 export class BlockchainModule {
   static forRoot() {
