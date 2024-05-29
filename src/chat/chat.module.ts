@@ -12,6 +12,7 @@ import {
   TransactionCanceledHandler,
 } from './event-handlers/blockchain.evet-handlers';
 import { Redis } from 'ioredis';
+import { LeaderBoardService } from './leaderboard.service';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { Redis } from 'ioredis';
     TransactionSkippedHandler,
     TransactionFailedHandler,
     TransactionCanceledHandler,
+    LeaderBoardService,
     {
       provide: Redis,
       useValue: new Redis({

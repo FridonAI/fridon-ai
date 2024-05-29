@@ -1,12 +1,13 @@
 import { Controller, Logger } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
-import { AiChatMessageResponseGeneratedDto } from './ai.dto';
+import { AiChatMessageResponseGeneratedDto, AiScoreUpdatedDto } from './ai.dto';
 import { EventsService } from 'src/events/events.service';
 import { BaseDto } from '@lib/common';
 import { randomUUID } from 'crypto';
 import { ChatService } from 'src/chat/chat.service';
 import { ChatId } from 'src/chat/domain/chat-id.value-object';
 import { AiAdapter } from './ai.adapter';
+import { LeaderBoardService } from 'src/chat/leaderboard.service';
 
 const eventName = 'response_received';
 
@@ -32,6 +33,7 @@ export class AiEventsController {
     private readonly eventsService: EventsService,
     private readonly aiAdapter: AiAdapter,
     private readonly chatService: ChatService,
+    private readonly leaderBoardService: LeaderBoardService,
   ) {}
 
   @EventPattern(eventName)
@@ -102,5 +104,18 @@ export class AiEventsController {
       );
       return;
     }
+  }
+
+  @EventPattern('score_updated')
+  async scoreUpdatedEventHandler(event: AiScoreUpdatedDto): Promise<void> {
+    this.logger.debug(
+      `Received event[score_updated] from AI: ${JSON.stringify(event, null, 2)}`,
+    );
+
+    await this.leaderBoardService.updateScore({
+      chatId: event.chat_id,
+      walletId: event.user.wallet_id,
+      score: event.score,
+    });
   }
 }

@@ -39,3 +39,12 @@ export class AiChatMessageResponseGeneratedDto extends BaseDto<AiChatMessageResp
 export type AiAuxiliaryMessage = {
   traceId: string;
 };
+
+// Score Updated
+export class AiScoreUpdatedDto {
+  chat_id: string;
+  score: number;
+  user: {
+    wallet_id: string;
+  };
+}
