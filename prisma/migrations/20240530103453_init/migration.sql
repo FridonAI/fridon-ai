@@ -60,6 +60,27 @@ CREATE TABLE "Media" (
     CONSTRAINT "Media_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "WalletScoreHistory" (
+    "id" SERIAL NOT NULL,
+    "walletId" TEXT NOT NULL,
+    "score" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "WalletScoreHistory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Leaderboard" (
+    "walletId" TEXT NOT NULL,
+    "score" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Leaderboard_pkey" PRIMARY KEY ("walletId")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "price_vectors_symbol_chain_key" ON "price_vectors"("symbol", "chain");
 
@@ -74,6 +95,12 @@ CREATE INDEX "WalletMedia_mediaId_idx" ON "WalletMedia"("mediaId");
 
 -- CreateIndex
 CREATE INDEX "WalletMedia_walletId_idx" ON "WalletMedia"("walletId");
+
+-- CreateIndex
+CREATE INDEX "Leaderboard_walletId_score_idx" ON "Leaderboard"("walletId", "score");
+
+-- CreateIndex
+CREATE INDEX "Leaderboard_score_idx" ON "Leaderboard"("score");
 
 -- AddForeignKey
 ALTER TABLE "ChatMessage" ADD CONSTRAINT "ChatMessage_chatId_fkey" FOREIGN KEY ("chatId") REFERENCES "Chat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -81,3 +81,21 @@ model Media {
   updatedAt   DateTime      @updatedAt
   WalletMedia WalletMedia[]
 }
+
+model WalletScoreHistory {
+  id        Int      @id @default(autoincrement())
+  walletId  String
+  score     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Leaderboard {
+  walletId  String   @id
+  score     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([walletId, score])
+  @@index([score])
+}
