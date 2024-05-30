@@ -16,6 +16,7 @@ import { Auth, Wallet, WalletSession } from '@lib/auth';
 import { TransactionListenerService } from 'src/blockchain/transaction-listener/transaction-listener.service';
 import { EventBus } from '@nestjs/cqrs';
 import { TransactionCanceledEvent } from 'src/blockchain/events/transaction.event';
+import { TransactionType } from 'src/blockchain/transaction-listener/types';
 
 @Controller('chats')
 @ApiTags('chat')
@@ -97,6 +98,7 @@ export class ChatHttpController {
   ): Promise<void> {
     await this.transactionListenerService.registerTransactionListener(
       body.transactionId,
+      TransactionType.CHAT,
       { chatId, personality: body.personality },
     );
   }
@@ -109,6 +111,7 @@ export class ChatHttpController {
     await this.eventBus.publish(
       new TransactionCanceledEvent({
         reason: body.message,
+        transactionType: TransactionType.CHAT,
         aux: { chatId, personality: body.personality },
       }),
     );

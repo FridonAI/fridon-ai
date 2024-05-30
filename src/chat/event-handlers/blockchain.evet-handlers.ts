@@ -7,12 +7,15 @@ import {
 } from 'src/blockchain/events/transaction.event';
 import { ChatService } from '../chat.service';
 import { ChatId } from '../domain/chat-id.value-object';
+import { TransactionType } from 'src/blockchain/transaction-listener/types';
 
 @EventsHandler(TransactionConfirmedEvent)
 export class TransactionConfirmedHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionConfirmedEvent) {
+    if (event.transactionType === TransactionType.CHAT) return;
+
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       `Transaction with id ${event.transactionId} Confirmed`,
@@ -26,6 +29,8 @@ export class TransactionSkippedHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionSkippedEvent) {
+    if (event.transactionType === TransactionType.CHAT) return;
+
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       `Transaction with id ${event.transactionId} Skipped`,
@@ -39,6 +44,8 @@ export class TransactionFailedHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionFailedEvent) {
+    if (event.transactionType === TransactionType.CHAT) return;
+
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       `Transaction with id ${event.transactionId} Failed`,
@@ -52,6 +59,8 @@ export class TransactionCanceledHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionCanceledEvent) {
+    if (event.transactionType === TransactionType.CHAT) return;
+
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
       event.reason,

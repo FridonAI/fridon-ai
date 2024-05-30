@@ -17,6 +17,7 @@ import { Injectable } from '@nestjs/common';
 import { AuxType } from '../events/transaction.event';
 import { TransactionListenerService } from '../transaction-listener/transaction-listener.service';
 import { COMPUTE_LIMIT, PRIORITY_FEE } from '../utils/constants';
+import { TransactionType } from '../transaction-listener/types';
 
 export type TransactionComputeOpts = {
   computePrice?: number;
@@ -74,6 +75,7 @@ export class TransactionFactory {
 
       await this.transactionListenerService.registerTransactionListener(
         txId,
+        TransactionType.CHAT,
         aux,
       );
       return txId;

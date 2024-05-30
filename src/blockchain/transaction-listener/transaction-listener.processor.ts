@@ -41,6 +41,7 @@ export class TransactionListenerProcessor extends WorkerHost {
       return this.eventBus.publish(
         new TransactionFailedEvent({
           transactionId: txId,
+          transactionType: job.data.transactionType,
           aux: job.data.aux,
         }),
       );
@@ -52,6 +53,7 @@ export class TransactionListenerProcessor extends WorkerHost {
       return this.eventBus.publish(
         new TransactionConfirmedEvent({
           transactionId: txId,
+          transactionType: job.data.transactionType,
           aux: job.data.aux,
         }),
       );
@@ -66,6 +68,7 @@ export class TransactionListenerProcessor extends WorkerHost {
       return this.eventBus.publish(
         new TransactionSkippedEvent({
           transactionId: txId,
+          transactionType: job.data.transactionType,
           aux: job.data.aux,
         }),
       );
