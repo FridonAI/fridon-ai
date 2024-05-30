@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import getBlockHash from './actions/get-blockhash';
 import { Connection } from '@solana/web3.js';
+import { InterfaceSnippet } from './actions/interface';
+import { GetBlockHash } from './actions/get-blockhash';
+import { BlockchainTools } from 'src/blockchain/utils/tools/blockchain-tools';
 
-type DynamicFnType = (data: any, helpers: Helpers) => Promise<any>;
+type BlockchainDataProviderCls = new (connection: Connection, tools: BlockchainTools) => InterfaceSnippet<any, any>;
 
 export type Helpers = {
   connection: Connection;
@@ -10,8 +12,8 @@ export type Helpers = {
 
 @Injectable()
 export class DataProviderService {
-  constructor(private connection: Connection) {}
-  // async resolve(action: string): Promise<DynamicFnType> {
+  constructor(private connection: Connection, private tools: BlockchainTools) { }
+  // async resolve(action: string): Promise<BlockchainDataProviderCls> {
   //   try {
   //     const actionModulePath = join('./actions', `${action}`);
   //     console.log('actionModulePath', actionModulePath);
@@ -23,15 +25,17 @@ export class DataProviderService {
   // }
 
   async resolve(action: string, body: object): Promise<object> {
-    const fns: Record<string, DynamicFnType> = {
-      'get-blockhash': getBlockHash,
+    const fns: Record<string, BlockchainDataProviderCls> = {
+      'get-blockhash': GetBlockHash,
     };
 
-    const fn = fns[action];
-    if (!fn) {
+    const cls = fns[action];
+    if (!cls) {
       throw new BadRequestException(`No function found for action: ${action}`);
     }
 
-    return await fn(body, { connection: this.connection } as Helpers);
+    const instance = new cls(this.connection, this.tools);
+
+    return await instance.execute(body);
   }
 }

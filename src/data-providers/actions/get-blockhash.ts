@@ -1,9 +1,18 @@
-import { Helpers } from '../data-provider.service';
+import { Request } from "@nestjs/common";
+import { InterfaceSnippet } from "./interface";
 
-export default async function getBlockHash(
-  data: any,
-  providers: Helpers,
-): Promise<any> {
-  console.log('getBlockHash', data, providers);
-  return { message: 'test-getBlockHash', data };
+type Request = object;
+
+type Response = {
+  blockhash: string;
+};
+
+export class GetBlockHash extends InterfaceSnippet<Request, Response> {
+  async execute(data: Request): Promise<Response> {
+    console.log('data', data);
+
+    return {
+      blockhash: (await this.connection.getRecentBlockhash()).blockhash
+    };
+  }
 }
