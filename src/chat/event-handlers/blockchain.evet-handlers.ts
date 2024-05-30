@@ -14,7 +14,7 @@ export class TransactionConfirmedHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionConfirmedEvent) {
-    if (event.transactionType === TransactionType.CHAT) return;
+    if (event.transactionType !== TransactionType.CHAT) return;
 
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
@@ -29,7 +29,7 @@ export class TransactionSkippedHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionSkippedEvent) {
-    if (event.transactionType === TransactionType.CHAT) return;
+    if (event.transactionType !== TransactionType.CHAT) return;
 
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
@@ -44,7 +44,7 @@ export class TransactionFailedHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionFailedEvent) {
-    if (event.transactionType === TransactionType.CHAT) return;
+    if (event.transactionType !== TransactionType.CHAT) return;
 
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),
@@ -59,7 +59,7 @@ export class TransactionCanceledHandler {
   constructor(private readonly chatService: ChatService) {}
 
   async handle(event: TransactionCanceledEvent) {
-    if (event.transactionType === TransactionType.CHAT) return;
+    if (event.transactionType !== TransactionType.CHAT) return;
 
     await this.chatService.createChatMessageTransactionResponse(
       new ChatId(event.aux.chatId),

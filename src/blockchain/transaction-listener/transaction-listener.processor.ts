@@ -28,6 +28,7 @@ export class TransactionListenerProcessor extends WorkerHost {
 
   async process(job: TransactionListenerJob): Promise<any> {
     const txId = job.data.transactionId;
+    const txType = job.data.transactionType;
     const tx = await this.connection.getTransaction(txId, {
       commitment: 'confirmed',
       maxSupportedTransactionVersion: 0,
@@ -49,7 +50,7 @@ export class TransactionListenerProcessor extends WorkerHost {
 
     // 2. Confirmed Transaction
     if (tx && tx.transaction) {
-      this.logger.debug(`Transaction[${txId}] has succeeded`);
+      this.logger.debug(`Transaction[${txType}|${txId}] has succeeded`);
       return this.eventBus.publish(
         new TransactionConfirmedEvent({
           transactionId: txId,

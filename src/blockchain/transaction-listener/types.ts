@@ -3,7 +3,7 @@ import { AuxType } from '../events/transaction.event';
 
 export type QueuePayload = {
   transactionId: string;
-  transactionType: string;
+  transactionType: TransactionType;
   count: number;
   aux: AuxType;
 };
@@ -16,4 +16,5 @@ export const TRANSACTION_LISTENER_QUEUE = 'transaction-listener';
 
 export enum TransactionType {
   CHAT = 'chatTransaction',
+  PAYMENT = 'paymentTransaction',
 }

@@ -12,8 +12,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
 import { BullModule } from '@nestjs/bullmq';
 import { CqrsModule } from '@nestjs/cqrs';
-import { UserModule } from './medias/medias.module';
+import { MediaModule } from './medias/medias.module';
 import { DataProviderModule } from './data-providers/data-provider.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { DataProviderModule } from './data-providers/data-provider.module';
     DataProviderModule,
     EventsModule.forRoot({ isGlobal: true }),
     BlockchainModule.forRoot(),
+    MediaModule,
     UserModule,
   ],
   providers: [providePrismaClientExceptionFilter()],

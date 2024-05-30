@@ -6,4 +6,4 @@ import { MediaController } from './medias.controller';
   controllers: [MediaController],
   providers: [MediasService],
 })
-export class UserModule {}
+export class MediaModule {}
