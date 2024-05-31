@@ -4,6 +4,6 @@ from app.core.tools import BaseTool
 
 
 class KaminoPlugin(BasePlugin):
-    name = "kamino-borrow-lend"
-    description = "Kamino plugin that allows you to borrow and lend tokens on Kamino"
+    name = "kamino"
+    description = "Kamino Plugin"
     tools: type[list[BaseTool]] = TOOLS
