@@ -3,6 +3,7 @@ from langchain_core.tools import BaseTool as LangchainBaseTool
 from pydantic.v1 import BaseModel
 
 from app.core.utilities import BaseUtility
+from langchain_core.runnables import ensure_config
 
 
 class BaseToolInput(BaseModel):
@@ -16,4 +17,8 @@ class BaseTool(LangchainBaseTool):
     utility: BaseUtility
 
     def _run(self, *args, run_manager: CallbackManagerForToolRun | None = None, **kwargs) -> str:
-        return self.utility.run(*args, **kwargs)
+        return self.utility.run(
+        *args,
+            config=ensure_config().get("configurable", {}),
+            **kwargs,
+        )
