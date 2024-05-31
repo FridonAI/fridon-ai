@@ -38,7 +38,7 @@ class BlockchainUtility(BaseUtility):
 
         return resp["data"]["serializedTx"]
 
-    async def _send_and_wait(self, tx, chat_id, wallet_id):
+    async def _send_and_wait(self, tx, wallet_id, chat_id):
         queue_name = str(uuid.uuid4())
 
         await self.pub.publish(
