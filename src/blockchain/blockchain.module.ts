@@ -23,6 +23,7 @@ import { HuggingFaceAdapter } from './external/hugging-face.adapter';
 import { BirdEyeAdapter } from './external/bird-eye.adapter';
 import { COIN_SIMILARITY_EMBEDDINGS_QUEUE } from './services/types';
 import { CoinSimilarityEmbeddingsWorker } from './services/coin-similarity.queue-worker';
+import { GetBlockHash } from 'src/data-providers/actions/get-blockhash';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CoinSimilarityEmbeddingsWorker } from './services/coin-similarity.queue
     TransactionListenerService,
     CoinSimilarityService,
     HuggingFaceAdapter,
+    GetBlockHash,
     BirdEyeAdapter,
     CoinSimilarityEmbeddingsWorker,
   ],
