@@ -98,11 +98,11 @@ export class BlockchainService {
       toMintAddress,
       amountBN.toNumber(),
     );
-  }
+  } // +
 
   async getProtocolPoints(walletAddress: string, provider: PointsProviderType) {
     return this.pointsFactory.getPoints(walletAddress, provider);
-  }
+  } // +
 
   async getSymmetryBaskets(): Promise<SymmetryFundsType[]> {
     return await this.symmetryFactory.getAllBaskets();
@@ -166,7 +166,7 @@ export class BlockchainService {
     const serializedTransaction = transferTransaction.serialize();
 
     return serializedTransaction;
-  }
+  } // +
 
   async balanceOperations(
     walletAddress: string,
@@ -319,7 +319,7 @@ export class BlockchainService {
     }
 
     return balances;
-  }
+  } // +
 
   async defiOperations(
     walletAddress: string,
@@ -390,7 +390,7 @@ export class BlockchainService {
       default:
         throw new HttpException('Operation not supported', 403);
     }
-  }
+  } // +
 
   async getSymmetryOperations(
     walletAddress: string,
