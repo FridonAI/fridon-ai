@@ -1,5 +1,3 @@
-from pydantic.v1 import Field
-
 from app.community.plugins.greeter.utilities import HelloUtility
 from app.core.tools import BaseTool, BaseToolInput
 
@@ -14,5 +12,6 @@ HelloTool = BaseTool(
     args_schema = HelloToolInput,
     utility = HelloUtility(),
 )
+
 
 TOOLS = [HelloTool]
