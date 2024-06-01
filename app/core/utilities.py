@@ -19,11 +19,14 @@ class BaseUtility(BaseModel):
     def validate_environment(cls, values: dict) -> dict:
         return values
 
-    def run(self, *args, **kwargs) -> str: ...
+    def run(self, *args, **kwargs): ...
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class BlockchainUtility(BaseUtility):
-    request_url: str = f"{os.environ['API_URL']}/blockchain/defi-operation",
+    request_url: str = f"{os.environ.get('API_URL', 'hesoiam')}/blockchain/defi-operation",
     pub: Publisher = Provide["publisher"],
     queue_getter = Provide["queue_getter"],
 
@@ -59,7 +62,7 @@ class BlockchainUtility(BaseUtility):
 
 
 class RemoteUtility(BaseUtility):
-    request_url: str = f"{os.environ['API_URL']}/blockchain/points"
+    request_url: str = f"{os.environ.get('API_URL', 'hesoiam')}/blockchain/points"
 
     def _get_remote_response(self, request):
         response = requests.post(self.request_url, json=request).json()

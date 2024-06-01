@@ -1,4 +1,4 @@
-from greeter import GreeterPlugin
-from kamino import KaminoPlugin
+from app.community.plugins.greeter import GreeterPlugin
+from app.community.plugins.kamino import KaminoPlugin
 
-PLUGINS = [GreeterPlugin, KaminoPlugin]
+PLUGINS = [GreeterPlugin(), KaminoPlugin()]

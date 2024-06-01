@@ -12,6 +12,7 @@ class KaminoBorrowLendUtility(BlockchainUtility):
             operation: str,
             currency: str,
             amount: int,
+            *args,
             **kwargs
     ) -> dict:
         request = {
@@ -31,7 +32,7 @@ class KaminoBalanceUtility(RemoteUtility):
     description = "A utility that allows you to get your Kamino balance"
 
     @remote
-    async def run(self, /, config: dict) -> dict:
+    async def run(self, *args, **kwargs) -> dict:
         request = {
             "plugin": "kamino",
             "function": "balance",

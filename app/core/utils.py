@@ -1,8 +1,8 @@
 import functools
 
+from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_openai import ChatOpenAI
-from pydantic import Field
-from pydantic.v1 import BaseModel
+from langchain_core.pydantic_v1 import BaseModel, Field
 
 from app.core.utilities import BlockchainUtility, RemoteUtility
 
@@ -41,6 +41,7 @@ def remote(func):
         request["args"]["walletAddress"] = wallet_id
 
         return self._get_remote_response(request)
+    return wrapper
 
 
 llm = ChatOpenAI(model="gpt-4o", verbose=True)
@@ -49,7 +50,6 @@ llm = ChatOpenAI(model="gpt-4o", verbose=True)
 class CompleteTool(BaseModel):
     """A tool to mark the current agent's work as completed with appropriate answer and return control to the main assistant,
     who can re-route the dialog based on the user's needs. It collects all tool call results and returns them as a single answer."""
-
     answer: str
 
     class Config:
@@ -100,3 +100,23 @@ def create_modified_classes(plugins, base_class=ToAssistant):
         modified_classes.append(new_class)
 
     return modified_classes
+
+
+class Agent:
+    def __init__(self, runnable: Runnable):
+        self.runnable = runnable
+
+    def __call__(self, state, config: RunnableConfig):
+        while True:
+            result = self.runnable.invoke(state)
+
+            if not result.tool_calls and (
+                not result.content
+                or isinstance(result.content, list)
+                and not result.content[0].get("text")
+            ):
+                messages = state["messages"] + [("user", "Respond with a real output.")]
+                state = {**state, "messages": messages}
+            else:
+                break
+        return {"messages": result}
