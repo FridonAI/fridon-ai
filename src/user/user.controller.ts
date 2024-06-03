@@ -1,15 +1,17 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { TransactionListenerService } from 'src/blockchain/transaction-listener/transaction-listener.service';
 import { TransactionType } from 'src/blockchain/transaction-listener/types';
 import { PaymentBodyDto } from './user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Wallet, WalletSession } from '@lib/auth';
+import { UserService } from './user.service';
 
 @ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(
     private readonly transactionListenerService: TransactionListenerService,
+    private readonly userService: UserService,
   ) {}
 
   @Post('/purchase')
@@ -27,5 +29,10 @@ export class UserController {
         plugin: body.plugin,
       },
     );
+  }
+
+  @Get('/me/plugins')
+  async getPlugins(@Wallet() wallet: WalletSession) {
+    return this.userService.getUserPlugins(wallet.walletAddress);
   }
 }

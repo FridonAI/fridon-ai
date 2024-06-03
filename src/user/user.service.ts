@@ -8,6 +8,8 @@ export type AssignPluginDto = {
 
 @Injectable()
 export class UserService {
+  getUserPlugins(walletAddress: string) {
+  }
   // constructor(private readonly prisma: PrismaService) {}
 
   async assignPlugin(_: AssignPluginDto) {
