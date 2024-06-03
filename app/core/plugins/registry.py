@@ -15,9 +15,12 @@ class PluginRegistry(BaseModel):
     def plugins_list(self) -> list[type[BasePlugin]]:
         return list(self.plugins.values())
 
-    def register(self, plugin: type[BasePlugin]):
-        self.plugins[plugin.__name__] = plugin
-        return plugin
+    def register(self, name: str) -> callable:
+        def wrapper(plugin: type[BasePlugin]):
+            self.plugins[name] = plugin
+            return plugin
+
+        return wrapper
 
 var_plugin_registry = ContextVar("plugin_registry", default=PluginRegistry())
 
