@@ -41,6 +41,16 @@ async def user_message_handler(
         print(f"(Handler) Message Received: {request}")
         task = asyncio.create_task(task_runner(request, service, pub))
 
+
+@inject
+async def send_plugins(
+    pub: redis.Publisher = Provide["publisher"]
+):
+    for _ in range(36):
+        await pub.publish("plugins", [])
+        await asyncio.sleep(5)
+
+
 if __name__ == "__main__":
     container = Container()
     container.config.redis_host.from_env("REDIS_HOST", "localhost")
@@ -50,8 +60,9 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
     user_task = loop.create_task(user_message_handler())
+    plugins_sender = loop.create_task(send_plugins())
 
-    loop.run_until_complete(asyncio.gather(user_task))
+    loop.run_until_complete(asyncio.gather(user_task, plugins_sender))
 
     loop.close()
 
