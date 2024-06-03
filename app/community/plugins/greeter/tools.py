@@ -1,5 +1,6 @@
 from app.community.plugins.greeter.utilities import HelloUtility
-from app.core.tools import BaseTool, BaseToolInput
+from app.core.plugins.schemas import BaseToolInput
+from app.core.plugins.tools import BaseTool
 
 
 class HelloToolInput(BaseToolInput):
