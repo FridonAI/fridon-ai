@@ -1,8 +1,10 @@
 import { BaseEvent } from '@lib/common';
 
 export type AuxType = {
+  walletId: string;
   chatId: string;
   personality: string;
+  plugin?: string;
 };
 
 export class TransactionConfirmedEvent extends BaseEvent<TransactionConfirmedEvent> {

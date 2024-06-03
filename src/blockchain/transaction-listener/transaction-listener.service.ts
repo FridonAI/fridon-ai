@@ -1,5 +1,9 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { TRANSACTION_LISTENER_QUEUE, TransactionListenerQueue } from './types';
+import {
+  TRANSACTION_LISTENER_QUEUE,
+  TransactionListenerQueue,
+  TransactionType,
+} from './types';
 import { AuxType } from '../events/transaction.event';
 import { Injectable } from '@nestjs/common';
 
@@ -12,7 +16,7 @@ export class TransactionListenerService {
 
   async registerTransactionListener(
     transactionId: string,
-    transactionType: string,
+    transactionType: TransactionType,
     aux: AuxType,
   ) {
     await this.transactionListenerQueue.add(

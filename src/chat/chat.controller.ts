@@ -99,7 +99,7 @@ export class ChatHttpController {
     await this.transactionListenerService.registerTransactionListener(
       body.transactionId,
       TransactionType.CHAT,
-      { chatId, personality: body.personality },
+      { walletId: 'NaN', chatId, personality: body.personality },
     );
   }
 
@@ -112,7 +112,7 @@ export class ChatHttpController {
       new TransactionCanceledEvent({
         reason: body.message,
         transactionType: TransactionType.CHAT,
-        aux: { chatId, personality: body.personality },
+        aux: { walletId: 'NaN', chatId, personality: body.personality },
       }),
     );
   }

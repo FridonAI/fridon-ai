@@ -9,4 +9,8 @@ export class PaymentBodyDto {
   @IsString()
   @IsNotEmpty()
   transactionId: string;
+
+  @ApiProperty({ example: 'plugin_1' })
+  @IsString()
+  plugin: string;
 }

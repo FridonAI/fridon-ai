@@ -12,4 +12,9 @@ export class PluginsService {
   getPlugins(): Plugin[] {
     return this.pluginRepository.findAll();
   }
+
+  get(name: string): Plugin | null {
+    const plugins = this.pluginRepository.findAll();
+    return plugins.find((plugin) => plugin.name === name);
+  }
 }

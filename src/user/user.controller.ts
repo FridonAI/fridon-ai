@@ -3,6 +3,7 @@ import { TransactionListenerService } from 'src/blockchain/transaction-listener/
 import { TransactionType } from 'src/blockchain/transaction-listener/types';
 import { PaymentBodyDto } from './user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Wallet, WalletSession } from '@lib/auth';
 
 @ApiTags('user')
 @Controller('user')
@@ -12,11 +13,19 @@ export class UserController {
   ) {}
 
   @Post('/purchase')
-  async processPaymentTransaction(@Body() body: PaymentBodyDto) {
+  async processPaymentTransaction(
+    @Wallet() wallet: WalletSession,
+    @Body() body: PaymentBodyDto,
+  ) {
     await this.transactionListenerService.registerTransactionListener(
       body.transactionId,
       TransactionType.PAYMENT,
-      { chatId: 'NaN', personality: 'NaN' },
+      {
+        walletId: wallet.walletAddress,
+        chatId: 'NaN',
+        personality: 'NaN',
+        plugin: body.plugin,
+      },
     );
   }
 }
