@@ -9,13 +9,18 @@ import { DataProviderService } from './data-provider.service';
 @Controller('data')
 @ApiTags('data')
 export class DataProviderController {
-  constructor(private readonly service: DataProviderService) {}
+  constructor(private readonly service: DataProviderService) { }
 
-  @Post('/get')
+  @Post('/executor')
   async get(
     @Body() body: DataProviderRequestBodyDto,
   ): Promise<DataProviderResponseBodyDto> {
-    const data = await this.service.resolve(body.action, body.data);
+    console.log('body', body);
+
+    const data = await this.service.resolve(
+      `${body.plugin}-${body.function}`,
+      body.args,
+    );
 
     return { data: data };
   }
