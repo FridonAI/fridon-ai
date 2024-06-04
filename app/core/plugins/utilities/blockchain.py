@@ -13,7 +13,7 @@ from app.utils.redis import Publisher, QueueGetter
 
 class BlockchainUtility(BaseUtility):
     request_url: str = Field(
-        default=f"{os.environ.get('API_URL', 'hesoiam')}/blockchain/defi-operation",
+        default=f"{os.environ.get('API_URL')}/executor",
         exclude=True,
     )
 

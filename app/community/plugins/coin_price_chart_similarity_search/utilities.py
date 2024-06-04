@@ -38,7 +38,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
         if not api_url:
             raise Exception("API_URL not set in environment variables")
 
-        resp = requests.post(api_url + '/blockchain/coin-similarity', json=req).json()
+        resp = requests.post(api_url + '/executor', json=req).json()
 
         if "statusCode" in resp:
             if 500 > resp["statusCode"] >= 400:

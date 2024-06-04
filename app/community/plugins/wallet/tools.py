@@ -1,5 +1,6 @@
 from app.community.plugins.wallet.utilities import WalletBalanceUtility, WalletTransferUtility
-from app.core.tools import BaseTool, BaseToolInput
+from app.core.plugins.schemas import BaseToolInput
+from app.core.plugins.tools import BaseTool
 
 
 class WalletBalanceToolInput(BaseToolInput):

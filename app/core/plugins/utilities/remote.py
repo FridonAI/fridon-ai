@@ -10,7 +10,7 @@ from app.core.plugins.utilities.base import BaseUtility
 
 class RemoteUtility(BaseUtility):
     request_url: str = Field(
-        default=f"{os.environ.get('API_URL', 'hesoiam')}/blockchain/points",
+        default=f"{os.environ.get('API_URL')}/executor",
         exclude=True
     )
 
