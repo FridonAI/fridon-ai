@@ -6,8 +6,8 @@ import { PluginsEventListener } from './event-handlers/plugins-updated.redis-eve
 
 @Global()
 @Module({
-  providers: [PluginsService, PluginsRepository, PluginsEventListener],
-  controllers: [PluginsController],
+  providers: [PluginsService, PluginsRepository],
+  controllers: [PluginsController, PluginsEventListener],
   exports: [PluginsService],
 })
 export class PluginsModule {}
