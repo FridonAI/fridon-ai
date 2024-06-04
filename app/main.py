@@ -1,7 +1,9 @@
 import asyncio
+import json
 
 from dependency_injector.wiring import Provide, inject
 
+from app.core.plugins.registry import ensure_plugin_registry
 from app.services import ProcessUserMessageService
 from app.containers import Container
 from app.schema import ResponseDto
@@ -46,8 +48,10 @@ async def user_message_handler(
 async def send_plugins(
     pub: redis.Publisher = Provide["publisher"]
 ):
+    registry = ensure_plugin_registry()
+    plugins = [plugin_cls().to_json() for plugin_cls in registry.plugins.values()]
     for _ in range(36):
-        await pub.publish("plugins", [])
+        await pub.publish("plugins", json.dumps(plugins))
         await asyncio.sleep(5)
 
 

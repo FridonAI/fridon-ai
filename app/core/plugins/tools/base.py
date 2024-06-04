@@ -13,6 +13,7 @@ class BaseTool(LangchainBaseTool):
     description: str
     args_schema: type[BaseToolInput] | None = None
     utility: BaseUtility
+    examples: list[str] = []
 
     def _run(
         self,
@@ -40,3 +41,15 @@ class BaseTool(LangchainBaseTool):
             *args,
             **{**kwargs, **config_},
         )
+
+    @property
+    def parameters_as_str(self):
+        return self.args_schema.parameters_as_string()
+
+    def to_json(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "examples": self.examples,
+            "parameters": self.parameters_as_str
+        }
