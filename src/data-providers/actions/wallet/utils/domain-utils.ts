@@ -1,39 +1,11 @@
-import { Connection, PublicKey, PublicKeyInitData } from '@solana/web3.js';
+import { PublicKey } from '@metaplex-foundation/js';
+import { Connection } from '@solana/web3.js';
 import {
-  NameRegistryState,
   getHashedNameSync,
   getNameAccountKeySync,
+  NameRegistryState,
 } from '@bonfida/spl-name-service';
 import base58 from 'bs58';
-import { getAssociatedTokenAddress } from 'spl';
-
-export const connection = new Connection(
-  process.env['RPC_URL'] ??
-    'https://defiland-defiland-634e.mainnet.rpcpool.com/d396f84d-a693-47f8-b3c0-3d7f72bc83e3',
-);
-
-export async function findAssociatedTokenAddress(
-  walletAddress: PublicKeyInitData,
-  tokenMintAddress: PublicKeyInitData,
-) {
-  return await getAssociatedTokenAddress(
-    new PublicKey(tokenMintAddress),
-    new PublicKey(walletAddress),
-  );
-}
-
-export async function getLatestBlockHash(connection: Connection) {
-  return connection.getLatestBlockhash();
-}
-
-export async function getTokenSupply(
-  mintAddress: PublicKeyInitData,
-  connection: Connection,
-) {
-  const tokenInfo = await connection.getTokenSupply(new PublicKey(mintAddress));
-
-  return tokenInfo;
-}
 
 export async function getDestinationAddress(
   connection: Connection,
