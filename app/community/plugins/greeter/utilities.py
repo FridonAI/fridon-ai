@@ -1,4 +1,4 @@
-from app.core.utilities import BaseUtility
+from app.core.plugins.utilities import BaseUtility
 
 
 class HelloUtility(BaseUtility):

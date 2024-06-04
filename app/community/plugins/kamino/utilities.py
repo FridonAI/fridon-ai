@@ -1,24 +1,24 @@
-from app.core.utilities import BlockchainUtility, RemoteUtility
-from app.core.utils import blockchain, remote
+from app.core.plugins.utilities import BlockchainUtility, RemoteUtility, BaseUtility
 
 
 class KaminoBorrowLendUtility(BlockchainUtility):
     name = "kamino-borrow-lend"
     description = "A utility that allows you to borrow and lend tokens on Kamino"
 
-    @blockchain
-    async def run(
+    async def _arun(
             self,
             operation: str,
             currency: str,
             amount: int,
             *args,
+            wallet_id: str,
             **kwargs
     ) -> dict:
         request = {
             "plugin": "kamino",
             "function": "borrowlend",
             "args": {
+                "walletAddress": wallet_id,
                 "operation": operation,
                 "currency": currency,
                 "amount": amount,
@@ -31,11 +31,13 @@ class KaminoBalanceUtility(RemoteUtility):
     name = "kamino-balance"
     description = "A utility that allows you to get your Kamino balance"
 
-    @remote
-    async def run(self, *args, **kwargs) -> dict:
+    async def _arun(self, *args, wallet_id: str, **kwargs) -> dict:
         request = {
             "plugin": "kamino",
             "function": "balance",
+            "args": {
+                "walletAddress": wallet_id,
+            }
         }
 
         return request

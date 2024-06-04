@@ -6,4 +6,4 @@ from app.core.plugins.tools import BaseTool
 class BasePlugin(BaseModel):
     name: str
     description: str
-    tools: type[list[BaseTool]]
+    tools: list[BaseTool]

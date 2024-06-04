@@ -50,10 +50,13 @@ class BlockchainUtility(BaseUtility):
         return response
 
     async def arun(self, *args, wallet_id: str, chat_id: str, **kwargs) -> dict | str | Any:
-        request = self._arun(*args, **kwargs)
+        request = await self._arun(*args, **kwargs)
         request["args"]["walletAddress"] = wallet_id
 
         tx = await self._generate_tx(request)
         result = await self._send_and_wait(tx, wallet_id, chat_id)
 
         return result
+
+    class Config:
+        arbitrary_types_allowed = True
