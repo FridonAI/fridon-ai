@@ -44,7 +44,7 @@ class BaseTool(LangchainBaseTool):
 
     @property
     def parameters_as_str(self):
-        return self.args_schema.parameters_as_string()
+        return self.args_schema.class_parameters_as_string()
 
     def to_json(self):
         return {
