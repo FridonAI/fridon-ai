@@ -7,7 +7,7 @@ class UserInput(CamelModel):
 
 class DataInput(CamelModel):
     message: str | dict
-    personality: str | None = None
+    plugins: list[str] = ['greeter']
 
 
 class DataRequestInput(CamelModel):

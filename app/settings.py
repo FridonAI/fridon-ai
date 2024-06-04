@@ -1,8 +1,9 @@
+import os
 from typing import Optional
 from pydantic.v1 import BaseSettings
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv('.env')
 
 
 class Settings(BaseSettings):

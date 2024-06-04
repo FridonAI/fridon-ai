@@ -15,7 +15,7 @@ async def task_runner(
         service: ProcessUserMessageService,
         pub: redis.Publisher
 ):
-    response_message = await service.process(request.user.wallet_id, request.chat_id, request.data.personality, request.data.message)
+    response_message = await service.process(request.user.wallet_id, request.chat_id, request.data.plugins, request.data.message)
     response = ResponseDto.parse_obj(
         {
             'chat_id': request.chat_id,
@@ -50,7 +50,7 @@ async def send_plugins(
 ):
     registry = ensure_plugin_registry()
     plugins = [plugin_cls().to_json() for plugin_cls in registry.plugins.values()]
-    for _ in range(36):
+    for _ in range(5):
         await pub.publish("plugins", json.dumps(plugins))
         await asyncio.sleep(5)
 
