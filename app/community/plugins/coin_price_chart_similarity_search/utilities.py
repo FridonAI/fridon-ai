@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from app.core.utilities import BaseUtility
+from app.core.plugins.utilities import BaseUtility
 
 
 class CoinPriceChartSimilaritySearchUtility(BaseUtility):

@@ -1,4 +1,4 @@
-from app.core.plugins.utilities import BlockchainUtility, RemoteUtility, BaseUtility
+from app.core.plugins.utilities import BlockchainUtility, RemoteUtility
 
 
 class KaminoBorrowLendUtility(BlockchainUtility):

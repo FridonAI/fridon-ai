@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import requests
 
-from app.core.utilities import BaseUtility
+from app.core.plugins.utilities import BaseUtility
 
 
 class CoinTechnicalAnalyzerUtility(BaseUtility):

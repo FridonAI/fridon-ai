@@ -1,5 +1,6 @@
 from app.community.plugins.jupyter.utilities import JupyterSwapUtility
-from app.core.tools import BaseToolInput, BaseTool
+from app.core.plugins.schemas import BaseToolInput
+from app.core.plugins.tools import BaseTool
 
 
 class JupyterSwapToopInput(BaseToolInput):

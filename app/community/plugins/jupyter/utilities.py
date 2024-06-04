@@ -1,12 +1,9 @@
-from app.core.utilities import BlockchainUtility
-from app.core.utils import blockchain
-
+from app.core.plugins.utilities import BlockchainUtility
 
 class JupyterSwapUtility(BlockchainUtility):
     name = "jupyter-swap"
     description = "A utility that allows you to exchange one token to another using jupyter"
 
-    @blockchain
     async def run(
             self,
             from_token: str,
