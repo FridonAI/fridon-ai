@@ -5,8 +5,8 @@ from app.core.plugins.tools import BaseTool
 
 plugin_registry = ensure_plugin_registry()
 
-@plugin_registry.register(name="coin_price_chart_similarity_search")
+@plugin_registry.register(name="coin-price-chart-similarity-search")
 class CoinPriceChartSimilaritySearchPlugin(BasePlugin):
-    name = "coin_price_chart_similarity_search"
+    name = "coin-price-chart-similarity-search"
     description = "Search coins similar to a given coin by price chart similarity."
     tools: type[list[BaseTool]] = TOOLS

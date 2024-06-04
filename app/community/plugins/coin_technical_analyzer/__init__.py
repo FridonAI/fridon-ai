@@ -5,8 +5,8 @@ from app.core.plugins.tools import BaseTool
 
 plugin_registry = ensure_plugin_registry()
 
-@plugin_registry.register(name="coins_technical_analyzer")
+@plugin_registry.register(name="coin-technical-analyzer")
 class CoinsTechnicalAnalyzerPlugin(BasePlugin):
-    name = "coins_technical_analyzer"
+    name = "coin-technical-analyzer"
     description = "Analyze coin price charts by indicators and analyse them."
     tools: type[list[BaseTool]] = TOOLS

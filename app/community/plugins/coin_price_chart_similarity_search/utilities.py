@@ -8,7 +8,7 @@ from app.core.plugins.utilities import BaseUtility
 
 
 class CoinPriceChartSimilaritySearchUtility(BaseUtility):
-    name = "coin_price_chart_similarity_search"
+    name = "coin-price-chart-similarity-search"
     description = "A utility that allows you to search for similar coins by price chart of the given time range"
 
     async def run(

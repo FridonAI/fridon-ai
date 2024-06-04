@@ -1,18 +1,19 @@
 from app.community.plugins.coin_technical_analyzer.utilities import CoinTechnicalAnalyzerUtility
+from app.core.plugins.schemas import BaseToolInput
+from app.core.plugins.tools import BaseTool
 
 
-class CoinTechnicalAnalyzerToolInput:
+class CoinTechnicalAnalyzerToolInput(BaseToolInput):
     coin = str
     start_date = str
 
 
-class CoinTechnicalAnalyzerTool:
-    name = "coin_price_chart_similarity_search"
-    description = "A tool that allows you to search for similar coins by price chart of the given time range"
-
-    args_schema = CoinTechnicalAnalyzerToolInput
-    utility = CoinTechnicalAnalyzerUtility()
-
+CoinTechnicalAnalyzerTool = BaseTool(
+    name="CoinTechnicalAnalyzer",
+    description="A utility that allows you to analyze coin by technical indicators",
+    args_schema=CoinTechnicalAnalyzerToolInput,
+    utility=CoinTechnicalAnalyzerUtility()
+)
 
 TOOLS = [CoinTechnicalAnalyzerTool]
 
