@@ -1,5 +1,6 @@
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import ToolMessage
+from langchain_core.runnables import RunnableLambda
 from langgraph.checkpoint import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import tools_condition, ToolNode
@@ -7,8 +8,10 @@ from langgraph.prebuilt import tools_condition, ToolNode
 from app.core.graph.agents import create_agent
 from app.core.graph.chains import create_agent_chain
 from app.core.graph.prompts import create_agent_prompt, create_supervised_prompt
+from app.core.graph.routers import route_plugin_agent, route_supervisor_agent
 from app.core.graph.states import State
 from app.core.graph.tools import CompleteTool, create_plugin_wrapper_tool
+from app.core.graph.utils import prepare_plugin_agent, handle_tool_error
 from app.core.plugins import BasePlugin
 
 
@@ -34,38 +37,13 @@ def create_graph(
 
     workflow.add_node("supervisor", supervisor_agent)
 
-    def prepare_plugin_agent(state):
-        tool_call = state["messages"][-1].tool_calls[0]
-        return {
-            "messages": [state["messages"][-1], ToolMessage(tool_call_id=tool_call["id"], content="")]
-        }
-
-    def route_plugin_agent(
-            state,
-    ) -> str:
-        route = tools_condition(state)
-        if route == END:
-            return 'supervisor'
-        tool_calls = state["messages"][-1].tool_calls
-        did_cancel = any(tc["name"] == CompleteTool.__name__ for tc in tool_calls)
-        if did_cancel:
-            return 'supervisor'
-        return "tool_node"
-
-    def route_supervisor_agent(state: State) -> list[str]:
-        route = tools_condition(state)
-        if route == END:
-            return END
-        tool_calls = state["messages"][-1].tool_calls
-        if tool_calls:
-            return ["Enter"+wrapped_plugins_to_plugins[tc["name"]] for tc in tool_calls]
-
-        raise ValueError("Invalid route")
-
     all_tools = []
     for plugin in plugins:
         all_tools += plugin.tools
-    tool_node = ToolNode(all_tools)
+    tool_node = ToolNode(all_tools).with_fallbacks(
+        [RunnableLambda(handle_tool_error)],
+        exception_key="error"
+    )
 
     for plugin in plugins:
         agent_chain = create_agent_chain(
@@ -89,9 +67,12 @@ def create_graph(
             }
         )
 
+    def _route_supervisor_agent_wrapper(state):
+        return route_supervisor_agent(state, wrapped_plugins_to_plugins)
+
     workflow.add_conditional_edges(
         "supervisor",
-        route_supervisor_agent,
+        _route_supervisor_agent_wrapper,
         {**{
             "Enter"+plugin.name: "Enter"+plugin.name
             for plugin in plugins
