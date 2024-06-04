@@ -56,7 +56,20 @@ import { GetBlockHash } from 'src/data-providers/actions/get-blockhash';
     BirdEyeAdapter,
     CoinSimilarityEmbeddingsWorker,
   ],
-  exports: [TransactionFactory, TransactionListenerService, Connection],
+  exports: [
+    TransactionFactory,
+    TransactionListenerService,
+    Connection,
+    BlockchainTools,
+    TokenProgramInstructionFactory,
+    TokenProgramTransactionFactory,
+    TransactionFactory,
+    KaminoFactory,
+    JupiterFactory,
+    PointsFactory,
+    SymmetryApiFactory,
+    WalletFactory,
+  ],
 })
 export class BlockchainModule {
   static forRoot() {
