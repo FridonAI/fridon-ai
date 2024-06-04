@@ -40,37 +40,17 @@ def create_graph(
             "messages": [state["messages"][-1], ToolMessage(tool_call_id=tool_call["id"], content="")]
         }
 
-    for plugin in plugins:
-        agent_chain = create_agent_chain(
-            llm,
-            create_agent_prompt(plugin.name, plugin.description),
-            tools=plugin.tools + [CompleteTool],
-        )
-
-        agent = create_agent(agent_chain)
-        tool_node = ToolNode(plugin.tools)
-
-        def route_player_info(
-                state,
-        ) -> str:
-            route = tools_condition(state)
-            if route == END:
-                return 'supervisor'
-            tool_calls = state["messages"][-1].tool_calls
-            did_cancel = any(tc["name"] == CompleteTool.__name__ for tc in tool_calls)
-            if did_cancel:
-                return 'supervisor'
-            return plugin.name + "ToolNode"
-
-        workflow.add_node("Enter"+plugin.name, prepare_plugin_agent)
-        workflow.add_node(plugin.name, agent)
-
-        workflow.add_edge("Enter"+plugin.name, plugin.name)
-
-        workflow.add_node(plugin.name+"ToolNode", tool_node)
-
-        workflow.add_edge(plugin.name+"ToolNode", plugin.name)
-        workflow.add_conditional_edges(plugin.name, route_player_info)
+    def route_plugin_agent(
+            state,
+    ) -> str:
+        route = tools_condition(state)
+        if route == END:
+            return 'supervisor'
+        tool_calls = state["messages"][-1].tool_calls
+        did_cancel = any(tc["name"] == CompleteTool.__name__ for tc in tool_calls)
+        if did_cancel:
+            return 'supervisor'
+        return "tool_node"
 
     def route_supervisor_agent(state: State) -> list[str]:
         route = tools_condition(state)
@@ -82,14 +62,42 @@ def create_graph(
 
         raise ValueError("Invalid route")
 
+    all_tools = []
+    for plugin in plugins:
+        all_tools += plugin.tools
+    tool_node = ToolNode(all_tools)
+
+    for plugin in plugins:
+        agent_chain = create_agent_chain(
+            llm,
+            create_agent_prompt(plugin.name, plugin.description),
+            tools=plugin.tools + [CompleteTool],
+        )
+
+        agent = create_agent(agent_chain)
+
+        workflow.add_node("Enter"+plugin.name, prepare_plugin_agent)
+        workflow.add_node(plugin.name, agent)
+        workflow.add_edge("Enter"+plugin.name, plugin.name)
+        workflow.add_edge("tool_node", plugin.name)
+        workflow.add_conditional_edges(
+            plugin.name,
+            route_plugin_agent,
+            {
+                "tool_node": "tool_node",
+                "supervisor": "supervisor"
+            }
+        )
+
     workflow.add_conditional_edges(
         "supervisor",
         route_supervisor_agent,
-        {
-            plugin.name: "Enter"+plugin.name
+        {**{
+            "Enter"+plugin.name: "Enter"+plugin.name
             for plugin in plugins
-        }.update({END: END}),
+        }, END: END}
     )
+    workflow.add_node("tool_node", tool_node)
 
     workflow.set_entry_point("supervisor")
 
