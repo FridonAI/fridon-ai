@@ -1,3 +1,6 @@
+from langchain_openai.chat_models import ChatOpenAI
+from langgraph.checkpoint.aiosqlite import AsyncSqliteSaver
+
 import os
 
 os.environ["OPENAI_API_KEY"] = ""
@@ -8,25 +11,40 @@ os.environ["LANGCHAIN_PROJECT"] = "fridon"
 
 os.environ["PLAYER_TEMPLATE_PATH"] = "./data/templates/"
 
-from app.core.graph.workflows import graph
+from app.core.graph import create_graph
+from app.core.plugins.registry import ensure_plugin_registry
 
-config = {
-    "configurable": {
-        "thread_id": "1",
-        "wallet_id": "adasdasdad",
-        "chat_id": "bla"
+async def main():
+    registry = ensure_plugin_registry()
+    print(registry.plugins)
+
+    plugin = registry.plugins["kamino"]()
+
+    llm = ChatOpenAI(model="gpt-4o", temperature=0)
+
+    graph = create_graph(llm, [plugin], memory=AsyncSqliteSaver.from_conn_string(":memory:"))
+
+    config = {
+        "configurable": {
+            "thread_id": "1",
+            "wallet_id": "adasdasdad",
+            "chat_id": "bla"
+        }
     }
-}
+
+    async for s in graph.astream(
+            {
+                "messages": [
+                    "what's my balance?"
+                ],
+            },
+            config,
+            stream_mode="values"
+    ):
+        if "__end__" not in s:
+            s["messages"][-1].pretty_print()
 
 
-for s in graph.stream(
-    {
-        "messages": [
-            "are you all right?"
-        ],
-    },
-    config,
-    stream_mode="values"
-):
-    if "__end__" not in s:
-        s["messages"][-1].pretty_print()
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
