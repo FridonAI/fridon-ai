@@ -8,12 +8,13 @@ from pydantic.v1 import Field
 
 from app.core.plugins.utilities.base import BaseUtility
 from app.schema import ResponseDto
+from app.settings import settings
 from app.utils.redis import Publisher, QueueGetter
 
 
 class BlockchainUtility(BaseUtility):
     request_url: str = Field(
-        default=f"{os.environ.get('API_URL')}/executor",
+        default=f"{settings.API_URL}/executor",
         exclude=True,
     )
 

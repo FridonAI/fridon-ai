@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import requests
 
 from app.core.plugins.utilities import BaseUtility
+from app.settings import settings
 
 
 class CoinPriceChartSimilaritySearchUtility(BaseUtility):
@@ -34,11 +35,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
 
         print("Request", req)
 
-        api_url = os.environ["API_URL"]
-        if not api_url:
-            raise Exception("API_URL not set in environment variables")
-
-        resp = requests.post(api_url + '/executor', json=req).json()
+        resp = requests.post(settings.API_URL + '/executor', json=req).json()
 
         if "statusCode" in resp:
             if 500 > resp["statusCode"] >= 400:
