@@ -1,6 +1,6 @@
 import { PublicKey } from '@metaplex-foundation/js';
 import { InterfaceSnippet } from '../interface';
-import { HttpException } from '@nestjs/common';
+import { HttpException, Logger } from '@nestjs/common';
 import { Connection, PublicKeyInitData } from '@solana/web3.js';
 import { TokenAmount } from 'src/blockchain/utils/tools/token-amount';
 import { Registry } from 'src/data-providers/registry';
@@ -17,10 +17,13 @@ type Response = {
   serializedTx: number[];
 };
 
-@Registry('transfer-tokens')
+@Registry('wallet-transfer')
 export class TransferTokens extends InterfaceSnippet<Request, Response> {
+  private logger = new Logger(TransferTokens.name);
+
   async execute(data: Request): Promise<Response> {
-    console.log('data', data);
+    this.logger.log(`Executing action: ${TransferTokens.name}`);
+
     const { walletAddress: from, toAddress: to, currency, amount } = data;
 
     try {
@@ -74,6 +77,8 @@ export class TransferTokens extends InterfaceSnippet<Request, Response> {
       );
 
     const serializedTransaction = transferTransaction.serialize();
+
+    // Send Transaction
 
     return {
       serializedTx: Object.values(serializedTransaction),
