@@ -1,6 +1,6 @@
 import { PublicKey } from '@metaplex-foundation/js';
 import { InterfaceSnippet } from '../interface';
-import { HttpException } from '@nestjs/common';
+import { HttpException, Logger } from '@nestjs/common';
 import { TokenAmount } from 'src/blockchain/utils/tools/token-amount';
 import { TRANSFER_FEE } from '../shared/contants';
 import { Registry } from 'src/data-providers/registry';
@@ -17,7 +17,11 @@ type Response = {
 
 @Registry('kamino-repay')
 export class KaminoRepay extends InterfaceSnippet<Request, Response> {
+  private logger = new Logger(KaminoRepay.name);
+
   async execute(data: Request): Promise<Response> {
+    this.logger.log(`Executing action: ${KaminoRepay.name}`);
+
     const { walletAddress, currency, amount } = data;
 
     try {

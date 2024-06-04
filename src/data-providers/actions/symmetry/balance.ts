@@ -2,7 +2,7 @@ import { Registry } from 'src/data-providers/registry';
 import { InterfaceSnippet } from '../interface';
 import { BalanceOperationType, BalanceType } from '../shared/types';
 import { PublicKey } from '@metaplex-foundation/js';
-import { HttpException } from '@nestjs/common';
+import { HttpException, Logger } from '@nestjs/common';
 
 type Request = {
   walletAddress: string;
@@ -14,7 +14,11 @@ type Response = BalanceType[];
 
 @Registry('symmetry-balance')
 export class SymmetryBalance extends InterfaceSnippet<Request, Response> {
+  private logger = new Logger(SymmetryBalance.name);
+
   async execute(data: Request): Promise<Response> {
+    this.logger.log(`Executing action: ${SymmetryBalance.name}`);
+
     const { walletAddress, currency } = data;
 
     try {

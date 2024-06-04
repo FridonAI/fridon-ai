@@ -1,4 +1,4 @@
-import { HttpException } from '@nestjs/common';
+import { HttpException, Logger } from '@nestjs/common';
 import { InterfaceSnippet } from '../interface';
 import { PublicKey } from '@metaplex-foundation/js';
 import { TokenAmount } from 'src/blockchain/utils/tools/token-amount';
@@ -30,9 +30,13 @@ type Response = {
   serializedTx: number[];
 };
 
-@Registry('swap-tokens')
+@Registry('jupiter-swap')
 export class SwapTokens extends InterfaceSnippet<Request, Response> {
+  private logger = new Logger(SwapTokens.name);
+
   async execute(data: Request): Promise<Response> {
+    this.logger.log(`Executing action: ${SwapTokens.name}`);
+
     const { walletAddress, fromToken, toToken, amount } = data;
     if (amount <= 0) {
       throw new HttpException('Amount must be greater than 0', 403);
@@ -90,6 +94,8 @@ export class SwapTokens extends InterfaceSnippet<Request, Response> {
       toMintAddress,
       amountBN.toNumber(),
     );
+
+    console.log("versionedTx", versionedTx.serialize());
 
     return {
       serializedTx: Object.values(versionedTx.serialize()),

@@ -1,21 +1,26 @@
-import { HttpException } from '@nestjs/common';
+import { HttpException, Logger } from '@nestjs/common';
 import { InterfaceSnippet } from '../interface';
-import { BalanceOperationType, BalanceType } from '../shared/types';
+import { BalanceType } from '../shared/types';
 import { PublicKey } from '@metaplex-foundation/js';
 import { Registry } from 'src/data-providers/registry';
 
 type Request = {
   walletAddress: string;
   currency: string;
-  operation: BalanceOperationType;
 };
 
 type Response = BalanceType[];
 
 @Registry('wallet-balance')
 export class WalletBalance extends InterfaceSnippet<Request, Response> {
+  private logger = new Logger(WalletBalance.name);
+
   async execute(data: Request): Promise<Response> {
+    this.logger.log(`Executing action: ${WalletBalance.name}`);
+
     const { walletAddress, currency } = data;
+
+    this.logger.log(`walletAddress: ${walletAddress}, currency: ${currency}`);
     try {
       new PublicKey(walletAddress);
     } catch (error) {
