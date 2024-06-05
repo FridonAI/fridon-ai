@@ -29,9 +29,9 @@ async def task_runner(
             'aux': request.aux
         }
     )
+    print("oe")
     await pub.publish("response_received", str(response))
-    await pub.publish("scores_updated", json.dumps({"walletId": request.user.wallet_id, "score": "10", "pluginsUsed": ["kamino", "jupyter"]}))
-
+    await pub.publish("scores_updated", json.dumps({"chatId": request.chat_id, "walletId": request.user.wallet_id, "score": 10, "pluginsUsed": ["kamino", "jupyter"]}))
 
 @inject
 async def user_message_handler(
@@ -57,6 +57,8 @@ async def send_plugins(
 
 
 if __name__ == "__main__":
+    from app.settings import settings
+    print(settings.OPENAI_API_KEY)
     container = Container()
     container.config.redis_host.from_env("REDIS_HOST", "localhost")
     container.config.redis_password.from_env("REDIS_PASSWORD", None)
