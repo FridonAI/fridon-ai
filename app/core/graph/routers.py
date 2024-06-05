@@ -14,7 +14,7 @@ def route_plugin_agent(
     tool_calls = state["messages"][-1].tool_calls
     did_cancel = any(tc["name"] == CompleteTool.__name__ for tc in tool_calls)
     if did_cancel:
-        return 'supervisor'
+        return 'leave_tool'
     return "tool_node"
 
 

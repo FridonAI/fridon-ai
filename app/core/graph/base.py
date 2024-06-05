@@ -11,7 +11,7 @@ from app.core.graph.prompts import create_agent_prompt, create_supervised_prompt
 from app.core.graph.routers import route_plugin_agent, route_supervisor_agent
 from app.core.graph.states import State
 from app.core.graph.tools import CompleteTool, create_plugin_wrapper_tool
-from app.core.graph.utils import prepare_plugin_agent, handle_tool_error
+from app.core.graph.utils import prepare_plugin_agent, handle_tool_error, leave_tool
 from app.core.plugins import BasePlugin
 
 
@@ -37,7 +37,7 @@ def create_graph(
 
     workflow.add_node("supervisor", supervisor_agent)
 
-    all_tools = []
+    all_tools = [CompleteTool]
     for plugin in plugins:
         all_tools += plugin.tools
     tool_node = ToolNode(all_tools).with_fallbacks(
@@ -63,6 +63,7 @@ def create_graph(
             route_plugin_agent,
             {
                 "tool_node": "tool_node",
+                "leave_tool": "leave_tool",
                 "supervisor": "supervisor"
             }
         )
@@ -78,6 +79,10 @@ def create_graph(
             for plugin in plugins
         }, END: END}
     )
+
+    workflow.add_node("leave_tool", leave_tool)
+    workflow.add_edge("leave_tool", "supervisor")
+
     workflow.add_node("tool_node", tool_node)
 
     workflow.set_entry_point("supervisor")
