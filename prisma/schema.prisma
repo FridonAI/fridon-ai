@@ -99,3 +99,14 @@ model Leaderboard {
   @@index([walletId, score])
   @@index([score])
 }
+
+model WalletPlugin {
+  walletId  String
+  pluginId  String
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([walletId, pluginId])
+}

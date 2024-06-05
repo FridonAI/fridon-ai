@@ -81,6 +81,17 @@ CREATE TABLE "Leaderboard" (
     CONSTRAINT "Leaderboard_pkey" PRIMARY KEY ("walletId")
 );
 
+-- CreateTable
+CREATE TABLE "WalletPlugin" (
+    "walletId" TEXT NOT NULL,
+    "pluginId" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "WalletPlugin_pkey" PRIMARY KEY ("walletId","pluginId")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "price_vectors_symbol_chain_key" ON "price_vectors"("symbol", "chain");
 

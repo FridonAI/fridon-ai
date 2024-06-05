@@ -41,10 +41,16 @@ export class TransactionConfirmedHandler {
       return;
     }
 
+    // date is now plus 3 month
+    const expirationDate = new Date();
+    expirationDate.setMonth(expirationDate.getMonth() + 3);
+
     this.logger.debug(`Plugin[${plugin.name}] found`);
     await this.userService.assignPlugin({
-      userId: event.aux.walletId,
-      plugin: plugin,
+      walletId: event.aux.walletId,
+      pluginId: plugin,
+      // ToDo: Calculate expiration date, default now plus 3 month
+      expiresAt: expirationDate,
     });
   }
 }
