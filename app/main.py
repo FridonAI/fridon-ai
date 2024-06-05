@@ -15,7 +15,7 @@ async def task_runner(
         service: ProcessUserMessageService,
         pub: redis.Publisher
 ):
-    response_message = await service.process(request.user.wallet_id, request.chat_id, request.data.plugins, request.data.message)
+    response_message, used_agents = await service.process(request.user.wallet_id, request.chat_id, request.data.plugins, request.data.message)
     response = ResponseDto.parse_obj(
         {
             'chat_id': request.chat_id,
@@ -29,9 +29,8 @@ async def task_runner(
             'aux': request.aux
         }
     )
-    print("oe")
     await pub.publish("response_received", str(response))
-    await pub.publish("scores_updated", json.dumps({"chatId": request.chat_id, "walletId": request.user.wallet_id, "score": 10, "pluginsUsed": ["kamino", "jupyter"]}))
+    await pub.publish("scores_updated", json.dumps({"chatId": request.chat_id, "walletId": request.user.wallet_id, "score": 10, "pluginsUsed": used_agents}))
 
 @inject
 async def user_message_handler(

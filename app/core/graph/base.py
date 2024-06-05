@@ -52,7 +52,7 @@ def create_graph(
             tools=plugin.tools + [CompleteTool],
         )
 
-        agent = create_agent(agent_chain)
+        agent = create_agent(agent_chain, plugin.name)
 
         workflow.add_node("Enter"+plugin.name, prepare_plugin_agent)
         workflow.add_node(plugin.name, agent)

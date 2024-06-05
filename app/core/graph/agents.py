@@ -2,7 +2,8 @@ from langchain_core.runnables import Runnable, RunnableConfig
 
 
 class Agent:
-    def __init__(self, runnable: Runnable):
+    def __init__(self, runnable: Runnable, name: str = 'Agent'):
+        self.name = name
         self.runnable = runnable
 
     def __call__(self, state, config: RunnableConfig):
@@ -18,8 +19,8 @@ class Agent:
                 state = {**state, "messages": messages}
             else:
                 break
-        return {"messages": result}
+        return {"messages": result, "used_agents": [self.name] if self.name != "Agent" else []}
 
 
-def create_agent(runnable: Runnable) -> Agent:
-    return Agent(runnable)
+def create_agent(runnable: Runnable, name: str = 'Agent') -> Agent:
+    return Agent(runnable, name)

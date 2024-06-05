@@ -32,7 +32,7 @@ class ProcessUserMessageService:
         graph = create_graph(llm, plugins, memory=AsyncSqliteSaver.from_conn_string(":memory:"))
         return graph
 
-    async def process(self, wallet_id: str, chat_id: str, plugin_names: list[str], message: str) -> str:
+    async def process(self, wallet_id: str, chat_id: str, plugin_names: list[str], message: str):
         graph = self._prepare_graph(plugin_names)
         config = {
             "configurable": {
@@ -53,7 +53,7 @@ class ProcessUserMessageService:
                 response = s["messages"][-1]
                 response.pretty_print()
 
-        print("Response: ", response)
+        used_agents = (await graph.aget_state(config)).values.get("used_agents", [])
 
         self._send_literal_message(chat_id, wallet_id, "user_message", f"User", message)
         self._send_literal_message(chat_id, wallet_id, "assistant_message", f"Fridon", response.content)
