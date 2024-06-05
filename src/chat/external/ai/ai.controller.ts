@@ -106,15 +106,16 @@ export class AiEventsController {
     }
   }
 
-  @EventPattern('score_updated')
+  @EventPattern('scores_updated')
   async scoreUpdatedEventHandler(event: AiScoreUpdatedDto): Promise<void> {
     this.logger.debug(
       `Received event[score_updated] from AI: ${JSON.stringify(event, null, 2)}`,
     );
 
     await this.leaderBoardService.updateScore({
-      chatId: event.chat_id,
-      walletId: event.user.wallet_id,
+      chatId: event.chatId,
+      walletId: event.walletId,
+      plugins: event.pluginsUsed,
       score: event.score,
     });
   }

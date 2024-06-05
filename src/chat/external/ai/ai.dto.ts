@@ -42,9 +42,8 @@ export type AiAuxiliaryMessage = {
 
 // Score Updated
 export class AiScoreUpdatedDto {
-  chat_id: string;
+  walletId: string;
   score: number;
-  user: {
-    wallet_id: string;
-  };
+  pluginsUsed: string[];
+  chatId: string;
 }

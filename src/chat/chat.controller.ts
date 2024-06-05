@@ -86,9 +86,7 @@ export class ChatHttpController {
       body.personality,
     );
 
-    return new CreateChatMessageResponseDto({
-      messageId: res.id.value,
-    });
+    return new CreateChatMessageResponseDto({ messageId: res.id.value });
   }
 
   @Post(':chatId/transaction')

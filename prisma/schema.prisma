@@ -85,6 +85,7 @@ model Media {
 model WalletScoreHistory {
   id        Int      @id @default(autoincrement())
   walletId  String
+  chatId    String
   score     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

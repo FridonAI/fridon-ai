@@ -9,18 +9,19 @@ export class LeaderBoardService {
     chatId: string;
     walletId: string;
     score: number;
+    plugins: string[];
   }): Promise<void> {
     await this.prisma.walletScoreHistory.create({
       data: {
         score: obj.score,
         walletId: obj.walletId,
+        chatId: obj.chatId,
       },
     });
+
     await this.prisma.leaderboard.upsert({
       where: { walletId: obj.walletId },
-      update: {
-        score: { increment: obj.score },
-      },
+      update: { score: { increment: obj.score } },
       create: {
         walletId: obj.walletId,
         score: obj.score,

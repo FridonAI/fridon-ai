@@ -64,6 +64,7 @@ CREATE TABLE "Media" (
 CREATE TABLE "WalletScoreHistory" (
     "id" SERIAL NOT NULL,
     "walletId" TEXT NOT NULL,
+    "chatId" TEXT NOT NULL,
     "score" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
