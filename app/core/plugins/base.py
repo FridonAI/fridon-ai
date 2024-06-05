@@ -10,9 +10,9 @@ class BasePlugin(BaseModel):
     name: str
     description: str
     tools: list[BaseTool]
-    owner: str
+    owner: str = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     type: Literal["subscription", "nft"] = "subscription"
-    price: float = .0
+    price: float | int = 0
 
     @property
     def examples(self) -> list[str]:
@@ -24,6 +24,7 @@ class BasePlugin(BaseModel):
             "name": self.name,
             "description": self.description,
             "type": self.type,
+            "owner": self.owner,
             "examples": self.examples,
             "functions": [tool.to_json() for tool in self.tools],
             "price": self.price
