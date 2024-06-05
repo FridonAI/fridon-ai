@@ -39,11 +39,11 @@ class CoinTechnicalAnalyzerUtility(BaseUtility):
 
     async def run(
             self,
-            coin: str,
+            coin_name: str,
             *args,
             **kwargs
     ) -> str:
-        df = self._read_ohlcv_date(coin)
+        df = self._read_ohlcv_date(coin_name)
         df.ta.macd(append=True)
         df.ta.rsi(append=True)
         df.ta.bbands(append=True)

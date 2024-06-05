@@ -4,8 +4,7 @@ from app.core.plugins.tools import BaseTool
 
 
 class CoinTechnicalAnalyzerToolInput(BaseToolInput):
-    coin = str
-    start_date = str
+    coin_name = str
 
 
 CoinTechnicalAnalyzerTool = BaseTool(

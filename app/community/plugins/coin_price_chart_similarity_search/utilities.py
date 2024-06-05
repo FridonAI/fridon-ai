@@ -14,7 +14,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
 
     async def run(
             self,
-            coin: str,
+            coin_name: str,
             start_date: str,
             *args,
             **kwargs
@@ -27,7 +27,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
             end_date = datetime.now()
 
         req = {
-            "coin": coin,
+            "coin": coin_name,
             "from": int(start_date.timestamp()),
             "to": int(end_date.timestamp()),
             "topK": 3
@@ -46,7 +46,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
         print("Response", resp)
         return json.dumps({
             "type": "similar_coins",
-            "coin": coin,
+            "coin": coin_name,
             "start_date_timestamp": int(start_date.timestamp()),
             "end_date_timestamp": int(end_date.timestamp()),
             "start_date": start_date.strftime("%d %B %Y"),
