@@ -30,6 +30,7 @@ async def task_runner(
         }
     )
     await pub.publish("response_received", str(response))
+    await pub.publish("scores_updated", json.dumps({"walletId": request.user.wallet_id, "score": "10", "pluginsUsed": ["kamino", "jupyter"]}))
 
 
 @inject

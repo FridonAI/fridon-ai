@@ -10,6 +10,7 @@ class BasePlugin(BaseModel):
     name: str
     description: str
     tools: list[BaseTool]
+    owner: str
     type: Literal["subscription", "nft"] = "subscription"
     price: float = .0
 
