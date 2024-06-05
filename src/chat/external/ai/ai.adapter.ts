@@ -20,12 +20,14 @@ export class AiAdapter {
     walletId: string,
     message: string,
     personality: string,
+    plugins: string[],
   ) {
     const eventName = 'chat_message_created';
     const event = new AiChatMessageCreatedDto({
       chatId: chatId.value,
       user: { walletId: walletId },
       data: { message, personality },
+      plugins: plugins,
       aux: { traceId: randomUUID() },
     });
 

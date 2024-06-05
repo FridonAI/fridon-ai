@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import {
@@ -7,6 +7,7 @@ import {
   TransactionFailedHandler,
 } from './event-handlers/blockchain.evet-handlers';
 
+@Global()
 @Module({
   controllers: [UserController],
   providers: [
@@ -15,5 +16,6 @@ import {
     TransactionSkippedHandler,
     TransactionFailedHandler,
   ],
+  exports: [UserService],
 })
 export class UserModule {}

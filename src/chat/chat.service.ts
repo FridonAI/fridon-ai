@@ -4,12 +4,14 @@ import { ChatMessageId } from './domain/chat-message-id.value-object';
 import { randomUUID } from 'crypto';
 import { AiAdapter } from './external/ai/ai.adapter';
 import { ChatRepository } from './chat.repository';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ChatService {
   constructor(
     private readonly aiAdapter: AiAdapter,
     private readonly chatRepository: ChatRepository,
+    private readonly userService: UserService,
   ) {}
 
   async getChats(walletId: string): Promise<{ id: ChatId; title?: string }[]> {
@@ -53,12 +55,14 @@ export class ChatService {
       content: message,
       personality,
     });
+    const userPlugins = await this.userService.getUserPlugins(walletId);
 
     this.aiAdapter.emitChatMessageCreated(
       chatId,
       walletId,
       message,
       personality,
+      userPlugins.map((plugin) => plugin.pluginId),
     );
 
     return { id: chatMessageId };

@@ -13,8 +13,8 @@ export type AssignPluginDto = {
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  getUserPlugins(walletAddress: string): Promise<WalletPlugin[]> {
-    const res = this.prisma.walletPlugin.findMany({
+  async getUserPlugins(walletAddress: string): Promise<WalletPlugin[]> {
+    const res = await this.prisma.walletPlugin.findMany({
       where: {
         walletId: walletAddress,
         expiresAt: { gte: new Date() },
@@ -25,7 +25,7 @@ export class UserService {
   }
 
   async assignPlugin(body: AssignPluginDto) {
-    this.prisma.walletPlugin.upsert({
+    await this.prisma.walletPlugin.upsert({
       where: {
         walletId_pluginId: { walletId: body.walletId, pluginId: body.pluginId },
       },
