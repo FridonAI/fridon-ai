@@ -9,4 +9,5 @@ plugin_registry = ensure_plugin_registry()
 class GreeterPlugin(BasePlugin):
     name = "greeter"
     description = "A simple plugin that greets the user"
+    owner = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     tools: type[list[BaseTool]] = TOOLS

@@ -9,4 +9,6 @@ plugin_registry = ensure_plugin_registry()
 class CoinPriceChartSimilaritySearchPlugin(BasePlugin):
     name = "coin-price-chart-similarity-search"
     description = "Search coins similar to a given coin by price chart similarity."
+    owner = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
+    price = 1000000
     tools: type[list[BaseTool]] = TOOLS
