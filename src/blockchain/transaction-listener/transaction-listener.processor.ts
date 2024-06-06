@@ -29,6 +29,7 @@ export class TransactionListenerProcessor extends WorkerHost {
   async process(job: TransactionListenerJob): Promise<any> {
     const txId = job.data.transactionId;
     const txType = job.data.transactionType;
+
     const tx = await this.connection.getTransaction(txId, {
       commitment: 'confirmed',
       maxSupportedTransactionVersion: 0,

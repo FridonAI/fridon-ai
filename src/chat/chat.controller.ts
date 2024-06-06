@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
   ChatIdDto,
@@ -7,6 +7,8 @@ import {
   CreateChatMessageResponseDto,
   CreateChatResponseDto,
   GetChatResponseDto,
+  GetChatsHistoryResponseDto,
+  GetChatsRequestDto,
   GetChatsResponseDto,
   TransactionCanceledRequestDto,
 } from './chat.dto';
@@ -38,6 +40,33 @@ export class ChatHttpController {
       chats: res.map((chat) => ({
         id: chat.id.value,
         title: chat.title ?? 'New Chat',
+      })),
+    });
+  }
+
+  @Get('/history')
+  async getChatHistory(
+    @Wallet() wallet: WalletSession,
+    @Query() query: GetChatsRequestDto,
+  ) {
+    const res = await this.chatService.getChatHistory(
+      wallet.walletAddress,
+      query.limit ?? 100,
+    );
+
+    return new GetChatsHistoryResponseDto({
+      data: res.map((chat) => ({
+        walletId: chat.walletId,
+        createdAt: chat.createdAt.getTime(),
+        updatedAt: chat.updatedAt.getTime(),
+        messages: chat.messages.map((m) => ({
+          id: m.id,
+          content: m.content,
+          messageType: m.messageType,
+          personality: m.personality,
+          createdAt: m.createdAt.getTime(),
+          updatedAt: m.updatedAt.getTime(),
+        })),
       })),
     });
   }

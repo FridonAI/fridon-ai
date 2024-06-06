@@ -1,6 +1,7 @@
 import { BaseDto } from '@lib/common';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsOptional, Max, Min } from 'class-validator';
 
 // Shared
 export class ChatIdDto extends BaseDto<ChatIdDto> {
@@ -28,6 +29,55 @@ export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
     content: string;
     messageType: 'Query' | 'Response';
   }[];
+}
+
+export class GetChatsRequestDto extends BaseDto<GetChatsRequestDto> {
+  @ApiPropertyOptional({ description: 'Number of results to return per page.' })
+  @Min(1)
+  @Max(101)
+  @IsOptional()
+  @IsNumber()
+  @Transform((a) => Number(a.value))
+  limit?: number;
+}
+
+export class GetChatsHistoryItemResponseDto extends BaseDto<GetChatsHistoryItemResponseDto> {
+  @ApiProperty({
+    example: { walletId: '11111111-1111-1111-1111-111111111111' },
+  })
+  walletId: string;
+
+  @ApiProperty({ example: 1618225200000 })
+  createdAt: number;
+
+  @ApiProperty({ example: 1618225200000 })
+  updatedAt: number;
+
+  @ApiProperty({
+    example: [
+      {
+        id: '11111111-1111-1111-1111-111111111111',
+        content: 'Hello',
+        messageType: 'Query',
+        personality: 'Yoda',
+        createdAt: 1618225200000,
+        updatedAt: 1618225200000,
+      },
+    ],
+  })
+  messages: {
+    id: string;
+    content: string;
+    messageType: string;
+    personality: string | null;
+    createdAt: number;
+    updatedAt: number;
+  }[];
+}
+
+export class GetChatsHistoryResponseDto extends BaseDto<GetChatsHistoryResponseDto> {
+  @ApiProperty({ type: GetChatsHistoryItemResponseDto, isArray: true })
+  data: GetChatsHistoryItemResponseDto[];
 }
 
 // Create Chat

@@ -9,7 +9,7 @@ import { DataProviderService } from './data-provider.service';
 @Controller('data')
 @ApiTags('data')
 export class DataProviderController {
-  constructor(private readonly service: DataProviderService) { }
+  constructor(private readonly service: DataProviderService) {}
 
   @Post('/executor')
   async get(

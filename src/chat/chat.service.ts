@@ -22,6 +22,25 @@ export class ChatService {
     }));
   }
 
+  async getChatHistory(walletId: string, limit: number) {
+    const chats = await this.chatRepository.getChatHistory(walletId, limit);
+
+    return chats.map((chat) => ({
+      id: new ChatId(chat.id),
+      walletId: chat.walletId,
+      messages: chat.messages.map((message) => ({
+        id: message.id,
+        content: message.content,
+        messageType: message.messageType,
+        personality: message.personality,
+        createdAt: message.createdAt,
+        updatedAt: message.updatedAt,
+      })),
+      createdAt: chat.createdAt,
+      updatedAt: chat.updatedAt,
+    }));
+  }
+
   async createChat(walletId: string): Promise<{ id: ChatId }> {
     const chatId = new ChatId(randomUUID());
     await this.chatRepository.createChat(chatId, walletId);
