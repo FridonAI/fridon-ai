@@ -37,14 +37,6 @@ def create_graph(
 
     workflow.add_node("supervisor", supervisor_agent)
 
-    all_tools = [CompleteTool]
-    for plugin in plugins:
-        all_tools += plugin.tools
-    tool_node = ToolNode(all_tools).with_fallbacks(
-        [RunnableLambda(handle_tool_error)],
-        exception_key="error"
-    )
-
     for plugin in plugins:
         agent_chain = create_agent_chain(
             llm,
@@ -52,17 +44,23 @@ def create_graph(
             tools=plugin.tools + [CompleteTool],
         )
 
+        tool_node = ToolNode(plugin.tools + [CompleteTool]).with_fallbacks(
+            [RunnableLambda(handle_tool_error)],
+            exception_key="error"
+        )
+
         agent = create_agent(agent_chain, plugin.name)
 
         workflow.add_node("Enter"+plugin.name, prepare_plugin_agent)
         workflow.add_node(plugin.name, agent)
         workflow.add_edge("Enter"+plugin.name, plugin.name)
-        workflow.add_edge("tool_node", plugin.name)
+        workflow.add_node(plugin.name+"_tools", tool_node)
+        workflow.add_edge(plugin.name+"_tools", plugin.name)
         workflow.add_conditional_edges(
             plugin.name,
             route_plugin_agent,
             {
-                "tool_node": "tool_node",
+                "tool_node": plugin.name+"_tools",
                 "leave_tool": "leave_tool",
                 "supervisor": "supervisor"
             }
@@ -83,7 +81,6 @@ def create_graph(
     workflow.add_node("leave_tool", leave_tool)
     workflow.add_edge("leave_tool", "supervisor")
 
-    workflow.add_node("tool_node", tool_node)
 
     workflow.set_entry_point("supervisor")
 
