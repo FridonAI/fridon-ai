@@ -7,6 +7,20 @@ from app.utils import redis
 
 
 class Container(containers.DeclarativeContainer):
+
+    wiring_config = containers.WiringConfiguration(
+        modules=[
+            "__main__",
+            "app.community.plugins.wallet.utilities",
+            "app.core.plugins.utilities.blockchain",
+            "app.services.process_user_message_service"
+        ],
+        packages=[
+            "app.community.plugins",
+            "app.core.plugins.utilities",
+        ]
+    )
+
     config = providers.Configuration()
 
     redis_pool = providers.Resource(

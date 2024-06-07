@@ -14,19 +14,14 @@ from app.utils.redis import Publisher, QueueGetter
 
 class BlockchainUtility(BaseUtility):
     request_url: str = Field(
-        default=f"{settings.API_URL}/executor",
+        default=f"{settings.API_URL}/data/executor",
         exclude=True,
     )
-
-    pub: Publisher = Field(default=Provide["publisher"], exclude=True)
-
-    queue_getter: QueueGetter = Field(default=Provide["queue_getter"], exclude=True)
 
     async def _generate_tx(self, request: dict[str, Any]) -> str | dict | Any:
         async with aiohttp.ClientSession() as session:
             async with session.post(self.request_url, json=request) as resp:
                 resp = await resp.json()
-
                 if "statusCode" in resp:
                     if 500 > resp["statusCode"] >= 400:
                         return resp.get("message", "Something went wrong!")
@@ -36,26 +31,30 @@ class BlockchainUtility(BaseUtility):
                 return resp["data"]["serializedTx"]
 
     async def _send_and_wait(
-        self, tx: dict | None, wallet_id: str, chat_id: str
+            self,
+            tx: dict | None,
+            wallet_id: str,
+            chat_id: str,
+            pub: Publisher = Provide["publisher"],
+            queue_getter: QueueGetter = Provide["queue_getter"],
     ) -> str:
         queue_name = str(uuid.uuid4())
 
-        await self.pub.publish(
+        await pub.publish(
             "response_received",
             str(ResponseDto.from_params(chat_id, wallet_id, None, tx, queue_name, {})),
         )
 
         print("Waiting for response", queue_name)
-        response = await self.queue_getter.get(queue_name=queue_name)
+        response = await queue_getter.get(queue_name=queue_name)
         print("Got Response", response)
         return response
 
-    async def arun(self, *args, wallet_id: str, chat_id: str, **kwargs) -> dict | str | Any:
-        request = await self._arun(*args, **kwargs)
-        request["args"]["walletAddress"] = wallet_id
+    async def arun(self, *args, chat_id: str, **kwargs) -> dict | str | Any:
+        request = await self._arun(*args,  **kwargs)
 
         tx = await self._generate_tx(request)
-        result = await self._send_and_wait(tx, wallet_id, chat_id)
+        result = await self._send_and_wait(tx, kwargs.get("wallet_id", ""), chat_id)
 
         return result
 
