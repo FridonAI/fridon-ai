@@ -95,7 +95,7 @@ export class SwapTokens extends InterfaceSnippet<Request, Response> {
       amountBN.toNumber(),
     );
 
-    console.log("versionedTx", versionedTx.serialize());
+    console.log('versionedTx', versionedTx.serialize());
 
     return {
       serializedTx: Object.values(versionedTx.serialize()),

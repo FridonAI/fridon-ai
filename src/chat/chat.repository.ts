@@ -16,6 +16,25 @@ export class ChatRepository {
     return chats;
   }
 
+  async getChatHistory(walletId: string, limit: number) {
+    const chats = await this.prisma.chat.findMany({
+      where: { walletId },
+      include: {
+        messages: {
+          orderBy: {
+            createdAt: 'asc',
+          },
+          take: limit,
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    return chats;
+  }
+
   async createChat(chatId: ChatId, walletId: string): Promise<void> {
     await this.prisma.chat.create({
       data: { id: chatId.value, walletId },

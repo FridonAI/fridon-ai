@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { WalletPlugin } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { EventsService } from 'src/events/events.service';
 // import { PrismaService } from 'nestjs-prisma';
 
 export type AssignPluginDto = {
@@ -11,7 +12,10 @@ export type AssignPluginDto = {
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventsService: EventsService,
+  ) {}
 
   async getUserPlugins(walletAddress: string): Promise<WalletPlugin[]> {
     const res = await this.prisma.walletPlugin.findMany({
@@ -37,6 +41,12 @@ export class UserService {
       update: {
         expiresAt: body.expiresAt,
       },
+    });
+
+    // todo: call sendTo method.
+    this.eventsService.sendTo(body.walletId, 'user.plugin-assigned', {
+      pluginId: body.pluginId,
+      expiresAt: body.expiresAt,
     });
   }
 }
