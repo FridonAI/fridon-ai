@@ -7,7 +7,7 @@ plugin_registry = ensure_plugin_registry()
 
 @plugin_registry.register(name="jupyter")
 class JupyterPlugin(BasePlugin):
-    name = "jupyter"
-    description = "Jupyter Plugin"
+    name = "Jupyter"
+    description = "Jupyter swapper plugin"
     owner = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     tools: type[list[BaseTool]] = TOOLS

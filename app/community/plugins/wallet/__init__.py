@@ -6,7 +6,7 @@ from app.core.plugins.tools import BaseTool
 plugin_registry = ensure_plugin_registry()
 
 @plugin_registry.register(name="wallet")
-class KaminoPlugin(BasePlugin):
-    name = "wallet"
-    description = "Wallet Plugin"
+class WalletPlugin(BasePlugin):
+    name = "Wallet"
+    description = "Plugin with wallet related operations."
     tools: type[list[BaseTool]] = TOOLS

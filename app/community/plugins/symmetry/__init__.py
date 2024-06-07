@@ -7,7 +7,7 @@ plugin_registry = ensure_plugin_registry()
 
 @plugin_registry.register(name="symmetry")
 class SymmetryPlugin(BasePlugin):
-    name = "symmetry"
-    description = "Symmetry Plugin"
+    name = "Symmetry"
+    description = "Symmetry operations supporter plugin."
     owner = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     tools: type[list[BaseTool]] = TOOLS

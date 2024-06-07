@@ -7,7 +7,7 @@ plugin_registry = ensure_plugin_registry()
 
 @plugin_registry.register(name="coin-price-chart-similarity-search")
 class CoinPriceChartSimilaritySearchPlugin(BasePlugin):
-    name = "coin-price-chart-similarity-search"
+    name = "Coin Price Chart Similarity Search"
     description = "Search coins similar to a given coin by price chart similarity."
     owner = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     price = 1000000
