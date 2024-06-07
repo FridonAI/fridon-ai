@@ -28,7 +28,6 @@ class ProcessUserMessageService:
         except Exception as e:
             print(f"Error sending message to literal: {e}")
 
-
     @staticmethod
     async def _prepare_memory() -> BaseCheckpointSaver:
         pool = AsyncConnectionPool(
@@ -44,7 +43,7 @@ class ProcessUserMessageService:
         registry = ensure_plugin_registry()
         plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]
 
-        llm = ChatOpenAI(model="gpt-4o", temperature=0, api_key=settings.OPENAI_API_KEY)
+        llm = ChatOpenAI(model="gpt-4o", temperature=0, api_key=settings.OPENAI_API_KEY, verbose=True)
 
         memory = await self._prepare_memory()
 
@@ -71,9 +70,7 @@ class ProcessUserMessageService:
             if "__end__" not in s:
                 response = s["messages"][-1]
                 response.pretty_print()
-
         used_agents = (await graph.aget_state(config)).values.get("used_agents", [])
-
         self._send_literal_message(chat_id, wallet_id, "user_message", f"User", message)
         self._send_literal_message(chat_id, wallet_id, "assistant_message", f"Fridon", response.content)
-        return response.content
+        return response.content, used_agents
