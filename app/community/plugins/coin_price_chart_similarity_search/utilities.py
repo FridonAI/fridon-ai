@@ -35,7 +35,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
 
         print("Request", req)
 
-        resp = requests.post(settings.API_URL + '/executor', json=req).json()
+        resp = requests.post(settings.API_URL + '/blockchain/coin-similarity', json=req).json()
 
         if "statusCode" in resp:
             if 500 > resp["statusCode"] >= 400:

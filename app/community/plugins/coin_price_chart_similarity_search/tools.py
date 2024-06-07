@@ -4,8 +4,8 @@ from app.core.plugins.tools import BaseTool
 
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
-    coin_name = str
-    start_date = str
+    coin_name: str
+    start_date: str
 
 
 CoinPriceChartSimilaritySearchTool = BaseTool(

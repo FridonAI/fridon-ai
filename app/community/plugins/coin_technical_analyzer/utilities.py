@@ -1,16 +1,28 @@
-import json
-import os
 from datetime import datetime, timedelta
 
 import pandas as pd
+import pandas_ta as ta
 import requests
 
-from app.core.plugins.utilities import BaseUtility
+from app.core.plugins.utilities.llm import LLMUtility
 
 
-class CoinTechnicalAnalyzerUtility(BaseUtility):
+class CoinTechnicalAnalyzerUtility(LLMUtility):
     name = "coin-technical-analyzer"
-    description = "A utility that allows you to analyze coin by technical indicators"
+    description = "A utility that allows you to analyze coin by technical indicators."
+    llm_job_description = """Assume the role as a leading Technical Analysis (TA) expert in the stock market, \
+a modern counterpart to Charles Dow, John Bollinger, and Alan Andrews. \
+Your mastery encompasses both stock fundamentals and intricate technical indicators. \
+You possess the ability to decode complex market dynamics, \
+providing clear insights and recommendations backed by a thorough understanding of interrelated factors. \
+Your expertise extends to practical tools like the pandas_ta module, \
+allowing you to navigate data intricacies with ease. \
+As a TA authority, your role is to decipher market trends, make informed predictions, and offer valuable perspectives.
+
+given {symbol} TA data as below on the last trading day, what will be the next few days possible crypto price movement? 
+
+Summary of Technical Indicators for the Last Day:
+{last_day_summary}"""
 
     def _read_ohlcv_date(self, symbol: str) -> pd.DataFrame:
         time_to = int(datetime.now().timestamp())
@@ -19,6 +31,8 @@ class CoinTechnicalAnalyzerUtility(BaseUtility):
             f'https://api.kraken.com/0/public/OHLC?pair={symbol.upper()}USD&interval=1440&since={time_from}')
 
         response_data = resp.json()
+
+        print("Coin Responseeee", response_data)
 
         if resp.status_code != 200 or len(response_data['error']) > 0:
             raise Exception(f"Failed to fetch data from Kraken API. Status code: {resp.status_code}")
@@ -37,12 +51,12 @@ class CoinTechnicalAnalyzerUtility(BaseUtility):
         df = df.iloc[:-1]
         return df
 
-    async def run(
+    async def _arun(
             self,
             coin_name: str,
             *args,
             **kwargs
-    ) -> str:
+    ) -> dict:
         df = self._read_ohlcv_date(coin_name)
         df.ta.macd(append=True)
         df.ta.rsi(append=True)
@@ -68,4 +82,7 @@ class CoinTechnicalAnalyzerUtility(BaseUtility):
                                         'PSARl_0.02_0.2', 'PSARs_0.02_0.2'
                                         ]]
 
-        return str(last_day_summary)
+        return {
+            "last_day_summary": str(last_day_summary),
+            "symbol": coin_name
+        }
