@@ -19,7 +19,7 @@ def create_graph(
     llm: BaseChatModel, plugins: list[BasePlugin], memory: BaseCheckpointSaver
 ):
     plugins_to_wrapped_plugins = {
-        p.name: create_plugin_wrapper_tool(type(p)) for p in plugins
+        p.name: create_plugin_wrapper_tool(p, type(p).__name__) for p in plugins
     }
     wrapped_plugins_to_plugins = {
         wp.__name__: pname for pname, wp in plugins_to_wrapped_plugins.items()
@@ -48,7 +48,7 @@ def create_graph(
     for plugin in plugins:
         agent_chain = create_agent_chain(
             llm,
-            create_agent_prompt(plugin.name, plugin.description),
+            create_agent_prompt(plugin.name, plugin.full_description),
             tools=plugin.tools + [CompleteTool],
         )
 

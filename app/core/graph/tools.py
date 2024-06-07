@@ -3,15 +3,11 @@ from pydantic.v1 import BaseConfig, BaseModel, Field, create_model
 from app.core.plugins import BasePlugin
 
 
-def create_plugin_wrapper_tool(plugin: type[BasePlugin]) -> type[BaseModel]:
+def create_plugin_wrapper_tool(plugin: BasePlugin, class_name: str) -> type[BaseModel]:
     return create_model(
-        f"To{plugin.__name__}",
-        __config__=type("Config", (BaseConfig,), {"schema_extra": {
-            "example": {
-                "request": "What are withdraw requirements?",
-            }
-        }}),
-        __doc__="Transfer control to the assistant",
+        f"To{class_name}",
+        __config__=type("Config", (BaseConfig,), {"schema_extra": {"example"+i: {"request": example }for i, example in enumerate(plugin.examples)}}),
+        __doc__="Transfer control to the assistant " + plugin.full_description,
         request=(str, Field(description="Requests from the user."))
     )
 

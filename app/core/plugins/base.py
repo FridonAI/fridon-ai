@@ -19,6 +19,13 @@ class BasePlugin(BaseModel):
         examples = reduce(lambda a, b: a + b, [tool.examples for tool in self.tools], [])
         return examples
 
+    @property
+    def full_description(self):
+        description = self.description + "\n Here are following functionalities of this plugin: \n"
+        for tool in self.tools:
+            description += "\t" + tool.name + ": " + tool.description + "\n"
+        return description
+
     def to_json(self) -> dict:
         return {
             "name": self.name,
