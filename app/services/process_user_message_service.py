@@ -2,6 +2,7 @@ from dependency_injector.wiring import inject, Provide
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_core.messages import HumanMessage
 from langgraph.checkpoint import BaseCheckpointSaver
+from langgraph.checkpoint.aiosqlite import AsyncSqliteSaver
 
 from app.core.graph import create_graph
 from app.core.plugins.registry import ensure_plugin_registry
@@ -45,13 +46,13 @@ class ProcessUserMessageService:
 
         llm = ChatOpenAI(model="gpt-4o", temperature=0, api_key=settings.OPENAI_API_KEY)
 
-        memory = self._prepare_memory()
+        memory = await self._prepare_memory()
 
-        graph = create_graph(llm, plugins, memory=memory)
+        graph = create_graph(llm, plugins, memory=AsyncSqliteSaver.from_conn_string(":memory:"))
         return graph
 
     async def process(self, wallet_id: str, chat_id: str, plugin_names: list[str], message: str):
-        graph = self._prepare_graph(plugin_names)
+        graph = await self._prepare_graph(plugin_names)
         config = {
             "configurable": {
                 "thread_id": chat_id,
