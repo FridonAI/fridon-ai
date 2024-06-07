@@ -7,7 +7,7 @@ class UserInput(CamelModel):
 
 class DataInput(CamelModel):
     message: str | dict
-    plugins: list[str] = ['greeter']
+    plugins: list[str] = ["greeter", "kamino", "jupyter", "symmetry", "coin-price-chart-similarity-search", "coin-technical-analyzer"]
 
 
 class DataRequestInput(CamelModel):

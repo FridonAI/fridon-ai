@@ -18,16 +18,20 @@ async def main():
     registry = ensure_plugin_registry()
     print(registry.plugins)
 
-    plugin = registry.plugins["kamino"]()
+    plugin_names = ["greeter", "kamino", "wallet", "jupyter", "symmetry", "coin-price-chart-similarity-search",
+                    "coin-technical-analyzer"]
+    registry = ensure_plugin_registry()
 
-    llm = ChatOpenAI(model="gpt-4o", temperature=0)
+    plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]
 
-    graph = create_graph(llm, [plugin], memory=AsyncSqliteSaver.from_conn_string(":memory:"))
+    llm = ChatOpenAI(model="gpt-4o", temperature=0, api_key=settings.OPENAI_API_KEY, verbose=True)
+
+    graph = create_graph(llm, plugins, memory=AsyncSqliteSaver.from_conn_string(":memory:"))
 
     config = {
         "configurable": {
             "thread_id": "1",
-            "wallet_id": "adasdasdad",
+            "wallet_id": "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
             "chat_id": "bla"
         }
     }
@@ -35,7 +39,7 @@ async def main():
     async for s in graph.astream(
             {
                 "messages": [
-                    "what's my balance?"
+                    "transfer 10 sol please",
                 ],
             },
             config,
