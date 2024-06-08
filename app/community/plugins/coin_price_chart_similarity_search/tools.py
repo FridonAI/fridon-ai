@@ -1,3 +1,4 @@
+from app.community.helpers.utilities import DatetimeExtractorUtility
 from app.community.plugins.coin_price_chart_similarity_search.utilities import CoinPriceChartSimilaritySearchUtility
 from app.core.plugins.schemas import BaseToolInput
 from app.core.plugins.tools import BaseTool
@@ -5,7 +6,7 @@ from app.core.plugins.tools import BaseTool
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
     coin_name: str
-    start_date: str
+    start_date: str | None = None
 
 
 CoinPriceChartSimilaritySearchTool = BaseTool(
@@ -16,4 +17,15 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
 )
 
 
-TOOLS = [CoinPriceChartSimilaritySearchTool]
+class DatetimeExtractorToolInput(BaseToolInput):
+    user_input: str
+
+DatetimeExtractorTool = BaseTool(
+    name="datetime-extractor",
+    description="Use only when user mentions date and extraction is needed",
+    args_schema=DatetimeExtractorToolInput,
+    utility=DatetimeExtractorUtility()
+)
+
+
+TOOLS = [CoinPriceChartSimilaritySearchTool, DatetimeExtractorTool]

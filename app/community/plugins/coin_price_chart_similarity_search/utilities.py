@@ -1,5 +1,4 @@
 import json
-import os
 from datetime import datetime, timedelta
 
 import requests
@@ -12,7 +11,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
     async def run(
             self,
             coin_name: str,
-            start_date: str,
+            start_date: str | None = None,
             *args,
             **kwargs
     ) -> str:
@@ -50,4 +49,3 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
             "end_date": end_date.strftime("%d %B %Y"),
             **resp,
         })
-
