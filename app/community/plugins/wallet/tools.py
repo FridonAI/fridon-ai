@@ -17,7 +17,7 @@ WalletBalanceTool = BaseTool(
 
 class WalletTransferToolInput(BaseToolInput):
     currency: str
-    amount: int
+    amount: int | float
     to_wallet_address: str
 
 
