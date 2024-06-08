@@ -12,7 +12,7 @@ export class PaymentBodyDto {
 
   @ApiProperty({ example: 'plugin_1' })
   @IsString()
-  plugin: string;
+  pluginId: string;
 }
 
 export class UserPluginsResponseDto {

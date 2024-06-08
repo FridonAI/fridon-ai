@@ -27,7 +27,7 @@ export class UserController {
         walletId: wallet.walletAddress,
         chatId: 'NaN',
         personality: 'NaN',
-        plugin: body.plugin,
+        plugin: body.pluginId,
       },
     );
   }
