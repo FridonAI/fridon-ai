@@ -76,6 +76,9 @@ CREATE TABLE "WalletScoreHistory" (
 CREATE TABLE "Leaderboard" (
     "walletId" TEXT NOT NULL,
     "score" INTEGER NOT NULL,
+    "pluginsUsed" INTEGER NOT NULL,
+    "myPluginsUsed" INTEGER NOT NULL,
+    "transactionsMade" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

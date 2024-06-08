@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ChatHttpController } from './chat.controller';
 import { ChatService } from './chat.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -13,7 +13,9 @@ import {
 } from './event-handlers/blockchain.evet-handlers';
 import { Redis } from 'ioredis';
 import { LeaderBoardService } from './leaderboard.service';
+import { LeaderboardHttpController } from './leaderboard.controller';
 
+@Global()
 @Module({
   imports: [
     ClientsModule.register([
@@ -27,7 +29,11 @@ import { LeaderBoardService } from './leaderboard.service';
       },
     ]),
   ],
-  controllers: [ChatHttpController, AiEventsController],
+  controllers: [
+    ChatHttpController,
+    AiEventsController,
+    LeaderboardHttpController,
+  ],
   providers: [
     ChatService,
     ChatRepository,
