@@ -14,7 +14,7 @@ class LLMUtility(BaseUtility):
     llm_job_description: str = Field(description="Explicit description of the llm what it should do.")
     structured_output: type[BaseModel] | None = None
 
-    async def arun(self, *args, **kwargs) -> BaseModel |dict | str | Any:
+    async def arun(self, *args, **kwargs) -> BaseModel | dict | str | Any:
         placeholders = await self._arun(*args, **kwargs)
 
         prompt = PromptTemplate.from_template(self.llm_job_description)

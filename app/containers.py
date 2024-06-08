@@ -13,7 +13,8 @@ class Container(containers.DeclarativeContainer):
             "__main__",
             "app.community.plugins.wallet.utilities",
             "app.core.plugins.utilities.blockchain",
-            "app.services.process_user_message_service"
+            "app.services.process_user_message_service",
+            "app.services.calculate_user_message_score_service",
         ],
         packages=[
             "app.community.plugins",
@@ -46,6 +47,10 @@ class Container(containers.DeclarativeContainer):
 
     process_user_message_service = providers.Factory(
         services.ProcessUserMessageService,
+    )
+
+    calculate_user_message_score_service = providers.Factory(
+        services.CalculateUserMessageScoreService,
     )
 
     literal_client = providers.Factory(

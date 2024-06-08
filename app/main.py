@@ -4,7 +4,7 @@ import json
 from dependency_injector.wiring import Provide, inject
 
 from app.core.plugins.registry import ensure_plugin_registry
-from app.services import ProcessUserMessageService
+from app.services import ProcessUserMessageService, CalculateUserMessageScoreService
 from app.containers import Container
 from app.schema import ResponseDto
 from app.utils import redis
@@ -13,6 +13,7 @@ from app.utils import redis
 async def task_runner(
         request,
         service: ProcessUserMessageService,
+        scorer_service: CalculateUserMessageScoreService,
         pub: redis.Publisher
 ):
     response_message, used_agents = await service.process(request.user.wallet_id, request.chat_id, request.data.plugins, request.data.message)
@@ -30,18 +31,22 @@ async def task_runner(
         }
     )
     await pub.publish("response_received", str(response))
-    await pub.publish("scores_updated", json.dumps({"chatId": request.chat_id, "walletId": request.user.wallet_id, "score": 10, "pluginsUsed": used_agents}))
+
+    score = await scorer_service.process(request.user.wallet_id, request.data.message, response_message, used_agents)
+    print("Score:", score)
+    await pub.publish("scores_updated", json.dumps({"chatId": request.chat_id, "walletId": request.user.wallet_id, "score": score, "pluginsUsed": used_agents}))
 
 @inject
 async def user_message_handler(
     sub: redis.Subscription = Provide["subscription"],
     pub: redis.Publisher = Provide["publisher"],
     service: ProcessUserMessageService = Provide["process_user_message_service"],
+    scorer_service: CalculateUserMessageScoreService = Provide["calculate_user_message_score_service"],
 ):
 
     async for request in sub.channel("chat_message_created"):
         print(f"(Handler) Message Received: {request}")
-        task = asyncio.create_task(task_runner(request, service, pub))
+        task = asyncio.create_task(task_runner(request, service, scorer_service, pub))
 
 
 @inject

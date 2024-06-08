@@ -1,1 +1,2 @@
 from app.services.process_user_message_service import ProcessUserMessageService
+from app.services.calculate_user_message_score_service import CalculateUserMessageScoreService
