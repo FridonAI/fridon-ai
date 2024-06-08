@@ -8,8 +8,6 @@ from app.core.plugins.utilities.llm import LLMUtility
 
 
 class CoinTechnicalAnalyzerUtility(LLMUtility):
-    name = "coin-technical-analyzer"
-    description = "A utility that allows you to analyze coin by technical indicators."
     llm_job_description = """Assume the role as a leading Technical Analysis (TA) expert in the stock market, \
 a modern counterpart to Charles Dow, John Bollinger, and Alan Andrews. \
 Your mastery encompasses both stock fundamentals and intricate technical indicators. \

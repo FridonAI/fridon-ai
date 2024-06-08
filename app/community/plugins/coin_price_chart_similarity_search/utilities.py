@@ -9,9 +9,6 @@ from app.settings import settings
 
 
 class CoinPriceChartSimilaritySearchUtility(BaseUtility):
-    name = "coin-price-chart-similarity-search"
-    description = "A utility that allows you to search for similar coins by price chart of the given time range"
-
     async def run(
             self,
             coin_name: str,

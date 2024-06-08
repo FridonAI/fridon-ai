@@ -2,9 +2,6 @@ from app.core.plugins.utilities import BlockchainUtility, RemoteUtility
 
 
 class KaminoBorrowLendUtility(BlockchainUtility):
-    name = "kamino-borrow-lend"
-    description = "A utility that allows you to borrow and lend tokens on Kamino"
-
     async def _arun(
             self,
             operation: str,
@@ -28,8 +25,6 @@ class KaminoBorrowLendUtility(BlockchainUtility):
 
 
 class KaminoBalanceUtility(RemoteUtility):
-    name = "kamino-balance"
-    description = "A utility that allows you to get your Kamino balance"
 
     async def _arun(self, *args, wallet_id: str, **kwargs) -> dict:
         request = {

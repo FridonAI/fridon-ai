@@ -2,9 +2,6 @@ from app.core.plugins.utilities import BlockchainUtility, RemoteUtility
 
 
 class WalletTransferUtility(BlockchainUtility):
-    name = "wallet-transfer"
-    description = "A utility that allows you to transfer tokens to another wallet"
-
     async def _arun(
             self,
             currency: str,
@@ -28,9 +25,6 @@ class WalletTransferUtility(BlockchainUtility):
 
 
 class WalletBalanceUtility(RemoteUtility):
-    name = "wallet-balance"
-    description = "A utility that allows you to get your wallet balances"
-
     async def _arun(self, *args, wallet_id, **kwargs) -> dict:
         request = {
             "plugin": "wallet",
