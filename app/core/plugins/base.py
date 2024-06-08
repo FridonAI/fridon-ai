@@ -27,8 +27,18 @@ class BasePlugin(BaseModel):
         return description
 
     def to_json(self) -> dict:
+        def slugify(text):
+            import re
+            import unicodedata
+            text = unicodedata.normalize('NFKD', text)
+            text = text.encode('ascii', 'ignore').decode('ascii')
+            text = re.sub(r'[^a-zA-Z0-9\s-]', '', text)
+            text = re.sub(r'[\s-]+', '-', text.strip().lower())
+            return text
+
         return {
             "name": self.name,
+            "slug": slugify(self.name),
             "description": self.description,
             "type": self.type,
             "owner": self.owner,
