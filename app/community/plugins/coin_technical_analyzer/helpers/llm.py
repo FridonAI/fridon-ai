@@ -23,7 +23,7 @@ def get_filter_chain() -> ChatPromptTemplate:
     providing clear insights and recommendations backed by a thorough understanding of interrelated factors."""),
         ("human", """Given Technical Analysis for {symbol} on the last trading day. \
     Check if users query satisfies the TA."""),
-        ("human", "Summary of Technical Indicators for the Last Day: \n\n {summary} \n\n  User's filter: {filter}"),
+        ("human", "Summary of Technical Indicators for the Last Day: \n\n {last_day_summary} \n\n  User's filter: {filter}"),
 
     ])
 

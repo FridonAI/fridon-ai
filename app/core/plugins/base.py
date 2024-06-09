@@ -27,7 +27,7 @@ class BasePlugin(BaseModel):
     def full_description(self):
         description = self.description + "\n Here are following functionalities of this plugin: \n"
         for tool in self.tools:
-            description += "\t" + tool.name + ": " + tool.description + "\n"
+            description += "\t" + "- " + tool.description + "\n"
         description += "Examples: \n" + self.examples_as_str
         return description
 

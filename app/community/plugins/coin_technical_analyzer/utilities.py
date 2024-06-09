@@ -122,8 +122,9 @@ class CoinTechnicalIndicatorsListUtility(BaseUtility):
 
 
 class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
-    async def _arun(self, filter: str, *args, **kwargs) -> list[dict]:
+    async def arun(self, filter: str, *args, **kwargs) -> list[dict]:
         token_summaries = ensure_data_store().read_token_summaries()
+
         chain = get_filter_chain()
 
         results = []
