@@ -30,8 +30,9 @@ class Publisher:
     def __init__(self, redis_pool: Redis) -> None:
         self.redis_pool = redis_pool
 
-    async def publish(self, channel_name: str, message: str) -> None:
-        print("Publishing message", message)
+    async def publish(self, channel_name: str, message: str, log: bool = True) -> None:
+        if log:
+            print("Publishing message", message)
         await self.redis_pool.publish(channel_name, message)
 
 
