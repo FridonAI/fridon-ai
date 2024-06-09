@@ -9,6 +9,7 @@ import { ChatId } from 'src/chat/domain/chat-id.value-object';
 import { AiAdapter } from './ai.adapter';
 import { LeaderBoardService } from 'src/chat/leaderboard.service';
 import { ChatMessageId } from 'src/chat/domain/chat-message-id.value-object';
+import { PluginsService } from 'src/plugins/plugins.service';
 
 const eventName = 'response_received';
 
@@ -35,6 +36,7 @@ export class AiEventsController {
     private readonly aiAdapter: AiAdapter,
     private readonly chatService: ChatService,
     private readonly leaderBoardService: LeaderBoardService,
+    private readonly pluginsService: PluginsService,
   ) {}
 
   @EventPattern(eventName)
@@ -124,5 +126,16 @@ export class AiEventsController {
       plugins: event.pluginsUsed,
       score: event.score,
     });
+
+    // update pluginsUsed plugin owners scores by 1
+    for (const pluginId of event.pluginsUsed) {
+      const pluginOwner = this.pluginsService.getPluginOwner(pluginId);
+      await this.leaderBoardService.updateScore({
+        // chatId: event.chatId,
+        walletId: pluginOwner,
+        score: event.score / 5,
+        myPluginsUsed: 1,
+      });
+    }
   }
 }

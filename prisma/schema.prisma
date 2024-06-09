@@ -96,10 +96,10 @@ model WalletScoreHistory {
 
 model Leaderboard {
   walletId         String   @id
-  score            Int
-  pluginsUsed      Int
-  myPluginsUsed    Int
-  transactionsMade Int
+  score            Float
+  pluginsUsed      Float
+  myPluginsUsed    Float
+  transactionsMade Float
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

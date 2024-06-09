@@ -20,11 +20,12 @@ CREATE TABLE "price_vectors" (
 
 -- CreateTable
 CREATE TABLE "ChatMessage" (
-    "id" TEXT NOT NULL,
-    "chatId" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "content" TEXT NOT NULL,
     "messageType" "MessageType" NOT NULL,
     "personality" TEXT,
+    "plugins" TEXT[],
+    "chatId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -75,10 +76,10 @@ CREATE TABLE "WalletScoreHistory" (
 -- CreateTable
 CREATE TABLE "Leaderboard" (
     "walletId" TEXT NOT NULL,
-    "score" INTEGER NOT NULL,
-    "pluginsUsed" INTEGER NOT NULL,
-    "myPluginsUsed" INTEGER NOT NULL,
-    "transactionsMade" INTEGER NOT NULL,
+    "score" DOUBLE PRECISION NOT NULL,
+    "pluginsUsed" DOUBLE PRECISION NOT NULL,
+    "myPluginsUsed" DOUBLE PRECISION NOT NULL,
+    "transactionsMade" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

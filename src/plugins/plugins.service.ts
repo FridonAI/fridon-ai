@@ -28,6 +28,15 @@ export class PluginsService {
       .filter((plugin) => plugin.price === 0);
   }
 
+  getPluginOwner(id: string): string {
+    const plugin = this.get(id);
+    if (!plugin) {
+      throw new Error(`Plugin[${id}] not found`);
+    }
+
+    return plugin.owner;
+  }
+
   async getSubscribersCount(pluginId: string): Promise<number> {
     const res = await this.prisma.walletPlugin.count({
       where: { pluginId },

@@ -134,7 +134,7 @@ export class ChatService {
       walletId,
       message,
       personality,
-      userPlugins.map((plugin) => plugin.pluginId),
+      userPlugins.map((plugin) => plugin.id),
     );
 
     return { id: chatMessageId };

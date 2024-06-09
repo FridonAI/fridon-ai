@@ -7,20 +7,22 @@ export class LeaderBoardService {
   constructor(private readonly prisma: PrismaService) {}
 
   async updateScore(obj: {
-    chatId: string;
+    chatId?: string;
     walletId: string;
     score?: number;
     transactionsMade?: number;
     plugins?: string[];
     myPluginsUsed?: number;
   }): Promise<void> {
-    await this.prisma.walletScoreHistory.create({
-      data: {
-        score: obj.score ?? 0,
-        walletId: obj.walletId,
-        chatId: obj.chatId,
-      },
-    });
+    if (obj.chatId) {
+      await this.prisma.walletScoreHistory.create({
+        data: {
+          score: obj.score ?? 0,
+          walletId: obj.walletId,
+          chatId: obj.chatId,
+        },
+      });
+    }
 
     await this.prisma.leaderboard.upsert({
       where: { walletId: obj.walletId },
