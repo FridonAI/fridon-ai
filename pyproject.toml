@@ -28,7 +28,6 @@ literalai = "^0.0.401"
 langgraph = "^0.0.61"
 aiosqlite = "^0.20.0"
 psycopg_pool = "^3.2.2"
-chromadb = "^0.5.0"
 langchain-community = "^0.2.4"
 aiocron = "^1.8"
 
