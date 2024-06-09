@@ -24,7 +24,7 @@ def create_agent_prompt(name: str, description: str) -> ChatPromptTemplate:
             (
                 "system",
                 f"You are a specialized assistant named '{name}' for handling user's requests using the provided tools."
-                "The primary assistant delegates work to you whenever the player needs help with their account information. "
+                "The primary assistant delegates work to you whenever the user needs help about your expertise-specific topic. "
                 "Use appropriate tools to satisfy all user's needs. "
                 "When you think that you gathered all the necessary information, call the *Complete* tool to let the primary assistant take control."
                 f"Your description: {description}"
