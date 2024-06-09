@@ -25,6 +25,8 @@ async def task_runner(
             },
             'data': {
                 'message': response_message,
+                'message_id': request.data.message_id,
+                'plugins_used': used_agents,
                 'serialized_transaction': None
             },
             'aux': request.aux
@@ -34,7 +36,15 @@ async def task_runner(
 
     score = await scorer_service.process(request.user.wallet_id, request.data.message, response_message, used_agents)
     print("Score:", score)
-    await pub.publish("scores_updated", json.dumps({"chatId": request.chat_id, "walletId": request.user.wallet_id, "score": score, "pluginsUsed": used_agents}))
+    await pub.publish(
+        "scores_updated",
+        json.dumps({
+            "chatId": request.chat_id,
+            "walletId": request.user.wallet_id,
+            "score": score,
+            "pluginsUsed": used_agents
+        })
+    )
 
 @inject
 async def user_message_handler(
