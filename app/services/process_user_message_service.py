@@ -70,7 +70,7 @@ class ProcessUserMessageService:
             if "__end__" not in s:
                 response = s["messages"][-1]
                 response.pretty_print()
-        used_agents = (await graph.aget_state(config)).values.get("used_agents", [])
+        used_agents = list(set((await graph.aget_state(config)).values.get("used_agents", [])))
         self._send_literal_message(chat_id, wallet_id, "user_message", f"User", message)
         self._send_literal_message(chat_id, wallet_id, "assistant_message", f"Fridon", response.content)
         return response.content, used_agents
