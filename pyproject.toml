@@ -28,6 +28,7 @@ literalai = "^0.0.401"
 langgraph = "^0.0.61"
 aiosqlite = "^0.20.0"
 psycopg_pool = "^3.2.2"
+chromadb = "^0.5.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
