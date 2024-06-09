@@ -25,7 +25,7 @@ class WalletTransferUtility(BlockchainUtility):
 
 
 class WalletBalanceUtility(RemoteUtility):
-    async def _arun(self, *args, wallet_id, **kwargs) -> dict:
+    async def _arun(self, *args, currency: str | None = None, wallet_id, **kwargs) -> dict:
         request = {
             "plugin": "wallet",
             "function": "balance",
@@ -33,5 +33,8 @@ class WalletBalanceUtility(RemoteUtility):
                 "walletAddress": wallet_id,
             }
         }
+
+        if currency is not None:
+            request["args"]["currency"] = currency
 
         return request
