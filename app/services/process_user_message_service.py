@@ -43,7 +43,7 @@ class ProcessUserMessageService:
         registry = ensure_plugin_registry()
         plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]
 
-        llm = ChatOpenAI(model="gpt-4o", temperature=0, api_key=settings.OPENAI_API_KEY, verbose=True)
+        llm = ChatOpenAI(model="gpt-4o", temperature=0, openai_api_key=settings.OPENAI_API_KEY, verbose=True)
 
         memory = await self._prepare_memory()
 

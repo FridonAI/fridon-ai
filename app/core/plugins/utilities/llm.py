@@ -18,7 +18,7 @@ class LLMUtility(BaseUtility):
         placeholders = await self._arun(*args, **kwargs)
 
         prompt = PromptTemplate.from_template(self.llm_job_description)
-        llm = ChatOpenAI(model="gpt-4o", temperature=0, api_key=settings.OPENAI_API_KEY, verbose=True)
+        llm = ChatOpenAI(model="gpt-4o", temperature=0, openai_api_key=settings.OPENAI_API_KEY, verbose=True)
 
         if self.structured_output is not None:
             llm = llm.with_structured_output(self.structured_output)
