@@ -6,7 +6,7 @@ from app.core.plugins import BasePlugin
 def create_plugin_wrapper_tool(plugin: BasePlugin, class_name: str) -> type[BaseModel]:
     return create_model(
         f"To{class_name}",
-        __config__=type("Config", (BaseConfig,), {"schema_extra": {"example"+i: {"request": example }for i, example in enumerate(plugin.examples)}}),
+        __config__=type("Config", (BaseConfig,), {"schema_extra": {"Example#"+str(i+1): {"request": example }for i, example in enumerate(plugin.examples)}}),
         __doc__="Transfer control to the assistant " + plugin.full_description,
         request=(str, Field(description="Full requests from the user."))
     )

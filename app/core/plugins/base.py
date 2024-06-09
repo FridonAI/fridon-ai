@@ -20,10 +20,15 @@ class BasePlugin(BaseModel):
         return examples
 
     @property
+    def examples_as_str(self) -> str:
+        return "\n".join(self.examples)
+
+    @property
     def full_description(self):
         description = self.description + "\n Here are following functionalities of this plugin: \n"
         for tool in self.tools:
             description += "\t" + tool.name + ": " + tool.description + "\n"
+        description += "Examples: \n" + self.examples_as_str
         return description
 
     def to_json(self) -> dict:
