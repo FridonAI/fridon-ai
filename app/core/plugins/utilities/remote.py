@@ -11,7 +11,7 @@ from app.settings import settings
 
 class RemoteUtility(BaseUtility):
     request_url: str = Field(
-        default=f"{settings.API_URL}/executor",
+        default=f"{settings.API_URL}/data/executor",
         exclude=True
     )
 
@@ -29,5 +29,4 @@ class RemoteUtility(BaseUtility):
 
     async def arun(self, *args, **kwargs) -> dict | str | Any:
         request = await self._arun(*args, **kwargs)
-
-        return self._get_remote_response(request)
+        return await self._get_remote_response(request)

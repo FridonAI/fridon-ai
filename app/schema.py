@@ -7,11 +7,14 @@ class UserInput(CamelModel):
 
 class DataInput(CamelModel):
     message: str | dict
+    message_id: str | None = None
     plugins: list[str] = ["greeter", "wallet", "kamino", "jupyter", "symmetry", "coin-price-chart-similarity-search", "coin-technical-analyzer"]
 
 
 class DataRequestInput(CamelModel):
     message: str | dict | None = None
+    message_id: str | None = None
+    plugins_used: list[str] | None = None
     serialized_transaction: list[int] | None = None
     id: str | None = None
 

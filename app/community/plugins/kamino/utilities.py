@@ -26,7 +26,14 @@ class KaminoBorrowLendUtility(BlockchainUtility):
 
 class KaminoBalanceUtility(RemoteUtility):
 
-    async def _arun(self, *args, wallet_id: str, **kwargs) -> dict:
+    async def _arun(
+            self,
+            *args,
+            wallet_id: str,
+            operation: str | None = None,
+            currency: str | None = None,
+            **kwargs
+    ) -> dict:
         request = {
             "plugin": "kamino",
             "function": "balance",
@@ -34,5 +41,10 @@ class KaminoBalanceUtility(RemoteUtility):
                 "walletAddress": wallet_id,
             }
         }
+
+        if operation is not None:
+            request["args"]["operation"] = operation
+        if currency is not None:
+            request["args"]["currency"] = currency
 
         return request

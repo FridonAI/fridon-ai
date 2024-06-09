@@ -12,6 +12,10 @@ FridonRagTool = BaseTool(
     description="Use this tool to answer questions about FridonAI",
     args_schema=FridonRagInput,
     utility=FridonRagUtility(),
+    examples=[
+        "Who are you?",
+        "What plugins do you have?",
+    ]
 )
 
 

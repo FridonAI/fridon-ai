@@ -4,7 +4,7 @@ from app.core.plugins.tools import BaseTool
 
 
 class SymmetryBalanceToolInput(BaseToolInput):
-    wallet_id: str
+    pass
 
 
 SymmetryBalanceTool = BaseTool(
@@ -12,6 +12,10 @@ SymmetryBalanceTool = BaseTool(
     description="A utility that allows you to get balances from Symmetry",
     args_schema=SymmetryBalanceToolInput,
     utility=SymmetryBalanceUtility(),
+    examples=[
+        "Can you show me my balances on Symmetry?",
+        "Show me my basket balances on symmetry please.",
+    ]
 )
 
 

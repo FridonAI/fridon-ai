@@ -14,6 +14,7 @@ JupyterSwapTool = BaseTool(
     description="A utility that allows you to exchange one token to another using jupyter",
     args_schema=JupyterSwapToopInput,
     utility=JupyterSwapUtility(),
+    examples=["swap 10 sol to usdc", "swap 10 usdc to bonk"],
 )
 
 TOOLS = [JupyterSwapTool]
