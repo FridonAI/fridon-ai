@@ -17,22 +17,23 @@ export class ChatRepository {
   }
 
   async getChatHistory(walletId: string, limit: number) {
-    const chats = await this.prisma.chat.findMany({
-      where: { walletId },
-      include: {
-        messages: {
-          orderBy: {
-            createdAt: 'asc',
-          },
-          take: limit,
+    const messages = await this.prisma.chatMessage.findMany({
+      where: {
+        Chat: {
+          walletId: walletId,
         },
+        messageType: 'Query',
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: 'desc',
+      },
+      take: limit,
+      include: {
+        Chat: true,
       },
     });
 
-    return chats;
+    return messages;
   }
 
   async createChat(chatId: ChatId, walletId: string): Promise<void> {
@@ -54,5 +55,14 @@ export class ChatRepository {
     chatMessagePrisma: Prisma.ChatMessageCreateArgs['data'],
   ): Promise<void> {
     await this.prisma.chatMessage.create({ data: chatMessagePrisma });
+  }
+
+  async updateChatMessage(messageId: string, pluginsUsed: string[]) {
+    await this.prisma.chatMessage.update({
+      where: { id: messageId },
+      data: {
+        plugins: pluginsUsed,
+      },
+    });
   }
 }

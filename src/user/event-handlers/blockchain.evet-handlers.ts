@@ -20,7 +20,7 @@ export class PurchaseTransactionConfirmedHandler {
     private readonly pluginsService: PluginsService,
     private readonly userService: UserService,
     private readonly connection: Connection,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(
     PurchaseTransactionConfirmedHandler.name,
@@ -106,7 +106,6 @@ export class PurchaseTransactionConfirmedHandler {
       return false;
     }
 
-
     // Check if sender is walletId
     const accountKeys = transaction.transaction.message.accountKeys;
     const senderAccount = accountKeys.find(
@@ -141,7 +140,6 @@ export class PurchaseTransactionConfirmedHandler {
           destination: string;
           source: string;
         };
-
 
         if (destination === creatorTokenAccount.toBase58()) {
           const expectedAmount = requiredAmount * creatorFee;

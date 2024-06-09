@@ -17,6 +17,7 @@ export class AiAdapter {
 
   emitChatMessageCreated(
     chatId: ChatId,
+    messageId: string,
     walletId: string,
     message: string,
     personality: string,
@@ -26,7 +27,7 @@ export class AiAdapter {
     const event = new AiChatMessageCreatedDto({
       chatId: chatId.value,
       user: { walletId: walletId },
-      data: { message, personality },
+      data: { message, personality, messageId },
       plugins: plugins,
       aux: { traceId: randomUUID() },
     });

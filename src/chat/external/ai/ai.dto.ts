@@ -9,6 +9,7 @@ export class AiChatMessageCreatedDto extends BaseDto<AiChatMessageCreatedDto> {
   data: {
     message: string;
     personality: string;
+    messageId: string;
   };
   aux: AiAuxiliaryMessage;
 }
@@ -33,6 +34,8 @@ export class AiChatMessageResponseGeneratedDto extends BaseDto<AiChatMessageResp
     id?: string;
     message?: string;
     serialized_transaction?: number[];
+    messageId?: string;
+    pluginsUsed?: string[];
   };
   aux: AiAuxiliaryMessage;
 }

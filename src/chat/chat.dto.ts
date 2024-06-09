@@ -70,6 +70,7 @@ export class GetChatsHistoryItemResponseDto extends BaseDto<GetChatsHistoryItemR
     content: string;
     messageType: string;
     personality: string | null;
+    plugins: string[];
     createdAt: number;
     updatedAt: number;
   }[];

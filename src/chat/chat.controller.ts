@@ -64,6 +64,7 @@ export class ChatHttpController {
           content: m.content,
           messageType: m.messageType,
           personality: m.personality,
+          plugins: m.plugins,
           createdAt: m.createdAt.getTime(),
           updatedAt: m.updatedAt.getTime(),
         })),

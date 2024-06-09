@@ -31,12 +31,15 @@ model PriceVectors {
 }
 
 model ChatMessage {
-  id          String      @id
-  chatId      String
-  Chat        Chat        @relation(fields: [chatId], references: [id])
+  id String @id @db.Uuid
+
   content     String
   messageType MessageType
   personality String?
+  plugins     String[]
+
+  Chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

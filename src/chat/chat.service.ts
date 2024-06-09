@@ -6,6 +6,30 @@ import { AiAdapter } from './external/ai/ai.adapter';
 import { ChatRepository } from './chat.repository';
 import { UserService } from 'src/user/user.service';
 
+enum MessageType {
+  Query = 'Query',
+  Response = 'Response',
+  TransactionResponse = 'TransactionResponse',
+}
+
+type ChatMessage = {
+  id: string;
+  content: string;
+  messageType: MessageType;
+  personality: string | null;
+  plugins: string[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type Chat = {
+  id: string;
+  walletId: string;
+  messages: ChatMessage[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 @Injectable()
 export class ChatService {
   constructor(
@@ -23,7 +47,34 @@ export class ChatService {
   }
 
   async getChatHistory(walletId: string, limit: number) {
-    const chats = await this.chatRepository.getChatHistory(walletId, limit);
+    const messages = await this.chatRepository.getChatHistory(walletId, limit);
+
+    const chatMap = new Map<string, Chat>();
+
+    messages.forEach((message) => {
+      const chatId = message.chatId;
+      if (!chatMap.has(chatId)) {
+        chatMap.set(chatId, {
+          id: message.Chat.id,
+          walletId: message.Chat.walletId,
+          messages: [],
+          createdAt: message.Chat.createdAt,
+          updatedAt: message.Chat.updatedAt,
+        });
+      }
+
+      chatMap.get(chatId)?.messages.push({
+        id: message.id,
+        content: message.content,
+        messageType: message.messageType as MessageType,
+        personality: message.personality,
+        plugins: message.plugins,
+        createdAt: message.createdAt,
+        updatedAt: message.updatedAt,
+      });
+    });
+
+    const chats = Array.from(chatMap.values());
 
     return chats.map((chat) => ({
       id: new ChatId(chat.id),
@@ -33,6 +84,7 @@ export class ChatService {
         content: message.content,
         messageType: message.messageType,
         personality: message.personality,
+        plugins: message.plugins,
         createdAt: message.createdAt,
         updatedAt: message.updatedAt,
       })),
@@ -78,6 +130,7 @@ export class ChatService {
 
     this.aiAdapter.emitChatMessageCreated(
       chatId,
+      chatMessageId.value,
       walletId,
       message,
       personality,
@@ -109,7 +162,9 @@ export class ChatService {
 
   async createChatMessageAiResponse(
     chatId: ChatId,
+    messageId: ChatMessageId | undefined,
     data: string,
+    plugins: string[],
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
     await this.getChat(chatId);
@@ -119,7 +174,12 @@ export class ChatService {
       messageType: 'Response',
       chatId: chatId.value,
       content: data,
+      plugins,
     });
+
+    if (messageId) {
+      await this.chatRepository.updateChatMessage(messageId.value, plugins);
+    }
 
     return { id: chatMessageId };
   }

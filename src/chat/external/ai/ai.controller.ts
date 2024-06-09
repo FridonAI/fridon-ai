@@ -8,6 +8,7 @@ import { ChatService } from 'src/chat/chat.service';
 import { ChatId } from 'src/chat/domain/chat-id.value-object';
 import { AiAdapter } from './ai.adapter';
 import { LeaderBoardService } from 'src/chat/leaderboard.service';
+import { ChatMessageId } from 'src/chat/domain/chat-message-id.value-object';
 
 const eventName = 'response_received';
 
@@ -38,6 +39,7 @@ export class AiEventsController {
 
   @EventPattern(eventName)
   async process(event: AiChatMessageResponseGeneratedDto): Promise<void> {
+    console.log('event', JSON.stringify(event, null, 2));
     function replacer(key: string, value: any) {
       try {
         if (key === 'serialized_transaction') {
@@ -85,7 +87,11 @@ export class AiEventsController {
     if (event.data.message) {
       const { id } = await this.chatService.createChatMessageAiResponse(
         new ChatId(event.chat_id),
+        event.data.messageId
+          ? new ChatMessageId(event.data.messageId)
+          : undefined,
         event.data.message,
+        event.data.pluginsUsed ?? [],
       );
 
       this.logger.debug(
