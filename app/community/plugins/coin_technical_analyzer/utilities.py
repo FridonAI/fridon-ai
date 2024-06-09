@@ -30,8 +30,6 @@ Summary of Technical Indicators for the Last Day:
 
         response_data = resp.json()
 
-        print("Coin Responseeee", response_data)
-
         if resp.status_code != 200 or len(response_data['error']) > 0:
             raise Exception(f"Failed to fetch data from Kraken API. Status code: {resp.status_code}")
 

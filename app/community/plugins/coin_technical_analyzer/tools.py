@@ -11,7 +11,8 @@ CoinTechnicalAnalyzerTool = BaseTool(
     name="CoinTechnicalAnalyzer",
     description="A utility that allows you to analyze coin by technical indicators",
     args_schema=CoinTechnicalAnalyzerToolInput,
-    utility=CoinTechnicalAnalyzerUtility()
+    utility=CoinTechnicalAnalyzerUtility(),
+    examples=["analyze sol price chat for me", "what do you think about sol price?"]
 )
 
 TOOLS = [CoinTechnicalAnalyzerTool]

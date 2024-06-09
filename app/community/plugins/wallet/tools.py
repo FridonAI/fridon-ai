@@ -12,7 +12,11 @@ WalletBalanceTool = BaseTool(
     description="A utility that allows you to get your wallet balances",
     args_schema=WalletBalanceToolInput,
     utility=WalletBalanceUtility(),
-    examples=["get my sol balance", "what's my balance"]
+    examples=[
+        "get my sol balance",
+        "what's my balance",
+        "how much bonk I have?"
+    ]
 )
 
 
@@ -28,7 +32,7 @@ WalletTransferTool = BaseTool(
     args_schema=WalletTransferToolInput,
     utility=WalletTransferUtility(),
     examples=[
-        "please send 10 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
+        "please send 10 bonk to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
         "transfer 2 usdc to fridon.sol"
     ]
 )
