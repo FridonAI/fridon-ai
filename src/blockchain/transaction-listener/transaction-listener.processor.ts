@@ -50,16 +50,16 @@ export class TransactionListenerProcessor extends WorkerHost {
     }
 
     // 2. Confirmed Transaction
-    // if (tx && tx.transaction) {
-    this.logger.debug(`Transaction[${txType}|${txId}] has succeeded`);
-    return this.eventBus.publish(
-      new TransactionConfirmedEvent({
-        transactionId: txId,
-        transactionType: job.data.transactionType,
-        aux: job.data.aux,
-      }),
-    );
-    // }
+    if (tx && tx.transaction) {
+      this.logger.debug(`Transaction[${txType}|${txId}] has succeeded`);
+      return this.eventBus.publish(
+        new TransactionConfirmedEvent({
+          transactionId: txId,
+          transactionType: job.data.transactionType,
+          aux: job.data.aux,
+        }),
+      );
+    }
 
     // 3. Transaction Skipped
     const retryMaxCount = 10;

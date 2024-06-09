@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import { EventsHandler } from '@nestjs/cqrs';
 import { isNil } from 'lodash';
 import {
@@ -10,14 +10,17 @@ import { TransactionType } from 'src/blockchain/transaction-listener/types';
 import { PluginsService } from 'src/plugins/plugins.service';
 import { UserService } from '../user.service';
 import { Connection, ParsedInstruction } from '@solana/web3.js';
+import { getAssociatedTokenAddress } from 'spl';
+import { PublicKey } from '@metaplex-foundation/js';
 
+export const BONK_MINT_ADDRESS = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263';
 @EventsHandler(TransactionConfirmedEvent)
 export class PurchaseTransactionConfirmedHandler {
   constructor(
     private readonly pluginsService: PluginsService,
     private readonly userService: UserService,
     private readonly connection: Connection,
-  ) {}
+  ) { }
 
   private readonly logger = new Logger(
     PurchaseTransactionConfirmedHandler.name,
@@ -47,23 +50,19 @@ export class PurchaseTransactionConfirmedHandler {
 
     // Transaction Validation
     // todo: replace this with actual values.
-    // const destinationAddress = '9WP1Wk2wbbDYuuHz7fJmauMhEuPhLSQ1mk8ioY1s4TNj';
-    // const requiredAmount = 1000;
+    const destinationAddress = plugin.owner;
+    const creatorAddress = 'FhwPNk3vikQxfSfjtt3q2Mjrdj3rAsaF85yM7qiYA1wn';
+    const requiredAmount = plugin.price * 10 ** 5;
+    const creatorFee = 0.1;
 
-    // const flag = await this.validateTransaction(
-    //   event.transactionId,
-    //   event.aux.walletId,
-    //   requiredAmount,
-    //   destinationAddress,
-    // );
-
-    // flag;
-    // if (!flag) {
-    //   this.logger.debug(
-    //     `Transaction[${event.transactionId}] validation failed for plugin[${plugin.name}]`,
-    //   );
-    //   return;
-    // }
+    await this.validateTransaction(
+      event.transactionId,
+      event.aux.walletId,
+      requiredAmount,
+      destinationAddress,
+      creatorAddress,
+      creatorFee,
+    );
 
     // date is now plus 3 month
     const expirationDate = new Date();
@@ -83,8 +82,20 @@ export class PurchaseTransactionConfirmedHandler {
     walletId: string,
     requiredAmount: number,
     destinationAddress: string,
+    creatorAddress: string,
+    creatorFee: number,
   ) {
-    // todo: validation transaction walletAddress, price and payment.(BONK) plugin.price;
+    // Associated Token Account addresses of bonk
+    const destinationTokenAccount = await getAssociatedTokenAddress(
+      new PublicKey(BONK_MINT_ADDRESS),
+      new PublicKey(destinationAddress),
+    );
+
+    const creatorTokenAccount = await getAssociatedTokenAddress(
+      new PublicKey(BONK_MINT_ADDRESS),
+      new PublicKey(creatorAddress),
+    );
+
     const transaction = await this.connection.getParsedTransaction(txId, {
       commitment: 'confirmed',
       maxSupportedTransactionVersion: 0,
@@ -95,67 +106,79 @@ export class PurchaseTransactionConfirmedHandler {
       return false;
     }
 
-    let senderMatches = false;
-    let receiverMatches = false;
-    let priceMatches = false;
 
     // Check if sender is walletId
     const accountKeys = transaction.transaction.message.accountKeys;
     const senderAccount = accountKeys.find(
       (account) => account.pubkey.toBase58() === walletId && account.signer,
     );
-    senderMatches = !!senderAccount;
 
-    if (!senderMatches) {
-      console.log(`Sender does not match: expected ${walletId}`);
-
-      return false;
+    if (!senderAccount) {
+      throw new BadRequestException(
+        `Sender does not match: expected ${walletId}`,
+      );
     }
 
-    // Check if receiver is destinationAddress and price is 1000 BONK
     const instructions = transaction.transaction.message.instructions;
-    const filteredInstruction = (instructions as ParsedInstruction[])
+    const filteredInstructions = (instructions as ParsedInstruction[])
       .filter((instruction) => 'parsed' in instruction)
-      .find((parsedInstruction) =>
+      .filter((parsedInstruction) =>
         ['transfer', 'transferChecked'].includes(
           parsedInstruction.parsed?.type,
         ),
       );
 
-    if (
-      filteredInstruction &&
-      filteredInstruction.parsed &&
-      filteredInstruction.parsed.type === 'transferChecked'
-    ) {
-      const { destination, tokenAmount } = filteredInstruction.parsed.info;
-      if (destination === destinationAddress) {
-        receiverMatches = true;
-      } else {
-        console.log(
-          `Receiver does not match: expected ${destinationAddress}, got ${destination}`,
-        );
+    // Validatate creator and wallet price, destinations.
+    for (const filteredInstruction of filteredInstructions) {
+      if (
+        filteredInstruction &&
+        filteredInstruction.parsed &&
+        filteredInstruction.parsed.type === 'transfer'
+      ) {
+        const { destination, amount } = filteredInstruction.parsed.info as {
+          amount: string;
+          authority: string;
+          destination: string;
+          source: string;
+        };
 
-        return false;
-      }
 
-      if (tokenAmount.uiAmount === requiredAmount) {
-        priceMatches = true;
-      } else {
-        console.log(
-          `Price does not match: expected ${requiredAmount}, got ${tokenAmount.uiAmount}`,
-        );
+        if (destination === creatorTokenAccount.toBase58()) {
+          const expectedAmount = requiredAmount * creatorFee;
+          if (!this.isEqual(amount, expectedAmount)) {
+            throw new BadRequestException(
+              `Creator fee does not match: expected ${requiredAmount * creatorFee}, got ${amount}`,
+            );
+          }
+        }
 
-        return false;
+        if (destination === destinationTokenAccount.toBase58()) {
+          const expectedAmount = requiredAmount * (1 - creatorFee);
+          if (!this.isEqual(amount, expectedAmount)) {
+            throw new BadRequestException(
+              `Wallet price does not match: expected ${requiredAmount * (1 - creatorFee)}, got ${amount}`,
+            );
+          }
+        }
+
+        if (
+          destination !== creatorTokenAccount.toBase58() &&
+          destination !== destinationTokenAccount.toBase58()
+        ) {
+          throw new BadRequestException(
+            `Destination does not match: expected ${destinationAddress}, got ${destination}`,
+          );
+        }
       }
     }
 
-    if (senderMatches && receiverMatches && priceMatches) {
-      console.log('Transaction matches all criteria');
-      return true;
-    } else {
-      console.log('Transaction does not match criteria');
-      return false;
-    }
+    return true;
+  }
+
+  isEqual(amount: string, requiredAmount: number) {
+    const lowerBound = requiredAmount * 0.99;
+    const upperBound = requiredAmount * 1.01;
+    return parseInt(amount) >= lowerBound && parseInt(amount) <= upperBound;
   }
 }
 
