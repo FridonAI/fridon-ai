@@ -40,11 +40,26 @@ export class UserController {
       wallet.walletAddress,
     );
 
+    const purchaseInProgressPlugins =
+      await this.transactionListenerService.getPurchaseInProgressPlugins(
+        wallet.walletAddress,
+      );
+
     return {
-      plugins: pluginList.map((plugin) => ({
-        id: plugin.id,
-        expiresAt: plugin.expiresAt?.toISOString() ?? null,
-      })),
+      plugins: [
+        ...pluginList.map((plugin) => ({
+          id: plugin.id,
+          type: 'Purchased' as const,
+          expiresAt: plugin.expiresAt?.toISOString() ?? null,
+        })),
+        ...purchaseInProgressPlugins
+          .map((plugin) => ({
+            id: plugin,
+            type: 'PurchaseInProgress' as const,
+            expiresAt: null,
+          }))
+          .filter((plugin) => !pluginList.some((p) => p.id === plugin.id)),
+      ],
     };
   }
 }

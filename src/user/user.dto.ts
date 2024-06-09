@@ -17,7 +17,17 @@ export class PaymentBodyDto {
 
 export class UserPluginsResponseDto {
   @ApiProperty({
-    example: [{ id: 'plugin_1', expiresAt: '2022-01-01T00:00:00.000Z' }],
+    example: [
+      {
+        id: 'plugin_1',
+        expiresAt: '2022-01-01T00:00:00.000Z',
+        type: 'Purchased',
+      },
+    ],
   })
-  plugins: { id: string; expiresAt: string | null }[];
+  plugins: {
+    id: string;
+    expiresAt: string | null;
+    type: 'Purchased' | 'PurchaseInProgress';
+  }[];
 }
