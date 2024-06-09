@@ -42,8 +42,8 @@ export class UserController {
 
     return {
       plugins: pluginList.map((plugin) => ({
-        id: plugin.pluginId,
-        expiresAt: plugin.expiresAt.toISOString(),
+        id: plugin.id,
+        expiresAt: plugin.expiresAt?.toISOString() ?? null,
       })),
     };
   }

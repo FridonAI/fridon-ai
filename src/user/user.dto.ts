@@ -19,5 +19,5 @@ export class UserPluginsResponseDto {
   @ApiProperty({
     example: [{ id: 'plugin_1', expiresAt: '2022-01-01T00:00:00.000Z' }],
   })
-  plugins: { id: string; expiresAt: string }[];
+  plugins: { id: string; expiresAt: string | null }[];
 }

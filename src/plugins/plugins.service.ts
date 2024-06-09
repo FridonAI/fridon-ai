@@ -22,6 +22,12 @@ export class PluginsService {
     return plugins.find((plugin) => plugin.slug === slug);
   }
 
+  getFreePlugins(): Plugin[] {
+    return this.pluginRepository
+      .findAll()
+      .filter((plugin) => plugin.price === 0);
+  }
+
   async getSubscribersCount(pluginId: string): Promise<number> {
     const res = await this.prisma.walletPlugin.count({
       where: { pluginId },
