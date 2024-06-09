@@ -43,7 +43,6 @@ export class LeaderBoardService {
   async getLeaderboard(): Promise<LeaderboardResponseDto> {
     const leaderboard = await this.prisma.leaderboard.findMany({
       orderBy: { score: 'desc' },
-      take: 10,
     });
 
     return new LeaderboardResponseDto({
@@ -51,9 +50,9 @@ export class LeaderBoardService {
         rank: index + 1,
         walletId: row.walletId,
         score: row.score,
-        pluginsUsed: 0,
-        myPluginsUsed: 0,
-        transactionsMade: 0,
+        pluginsUsed: row.pluginsUsed,
+        myPluginsUsed: row.myPluginsUsed,
+        transactionsMade: row.transactionsMade,
       })),
     });
   }

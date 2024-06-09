@@ -29,6 +29,7 @@
   "dependencies": {
     "@bonfida/spl-name-service": "^2.1.1",
     "@coral-xyz/anchor": "^0.29.0",
+    "@faker-js/faker": "^8.4.1",
     "@hubbleprotocol/kamino-lending-sdk": "^2.9.7",
     "@jup-ag/api": "^6.0.9",
     "@metaplex-foundation/js": "^0.18.3",
@@ -63,8 +64,8 @@
     "pgvector": "^0.1.8",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "ts-node": "^10.9.1",
-    "spl": "npm::@solana/spl-token@0.4.1"
+    "spl": "npm::@solana/spl-token@0.4.1",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
