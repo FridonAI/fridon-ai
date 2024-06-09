@@ -9,7 +9,7 @@ class WalletBalanceToolInput(BaseToolInput):
 
 WalletBalanceTool = BaseTool(
     name="wallet-balance",
-    description="A utility that allows you to get your wallet balances",
+    description="A utility that allows you to get your coin balances on the wallet",
     args_schema=WalletBalanceToolInput,
     utility=WalletBalanceUtility(),
     examples=[

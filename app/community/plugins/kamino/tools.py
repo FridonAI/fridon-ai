@@ -6,14 +6,14 @@ from app.core.plugins.tools import BaseTool
 
 
 class KaminoBorrowLendToolInput(BaseToolInput):
-    operation: Literal['borrow', 'lend', 'repay', 'withdraw']
+    operation: Literal['borrow', 'supply', 'repay', 'withdraw']
     currency: str
     amount: int | float
 
 
 KaminoBorrowLendTool = BaseTool(
     name="kamino-borrow-lend",
-    description="A utility that allows you to borrow and lend tokens on Kamino",
+    description="Only use that tool for Kamino operations such as borrow, supply, repay and withdraw coins on Kamino",
     args_schema=KaminoBorrowLendToolInput,
     utility=KaminoBorrowLendUtility(),
     examples=[
@@ -26,16 +26,16 @@ KaminoBorrowLendTool = BaseTool(
 
 
 class KaminoBalanceToolInput(BaseToolInput):
-    operation: str | None = None
+    operation: Literal['borrow', 'supply', 'repay', 'withdraw'] | None = None
     currency: str | None = None
 
 
 KaminoBalanceTool = BaseTool(
     name="kamino-balance",
-    description="A utility that allows you to get your Kamino balance",
+    description="Only use that tool to get your Kamino balances, how much you've supplied or borrowed specific coins",
     args_schema=KaminoBalanceToolInput,
     utility=KaminoBalanceUtility(),
-    examples=["get my balances on kamino please", "how much sol is lend on kamino?"]
+    examples=["get my balances on kamino please", "how much sol is supplied on kamino?"]
 )
 
 TOOLS = [KaminoBorrowLendTool, KaminoBalanceTool]
