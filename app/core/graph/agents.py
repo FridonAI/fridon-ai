@@ -39,7 +39,7 @@ class SupervisorAgent(Agent):
 
         tcs = list(grouped_tool_calls.values())
 
-        result.tool_calls = [] if len(tcs) == 0 else tcs
+        result.tool_calls = [] if len(tcs) == 0 else [tcs[0]]
 
         return {"messages": result, "used_agents": []}
 

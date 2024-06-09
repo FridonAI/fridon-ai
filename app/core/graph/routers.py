@@ -24,6 +24,7 @@ def route_supervisor_agent(state: State, wrapped_plugins_to_plugins) -> list[str
         return END
     tool_calls = state["messages"][-1].tool_calls
     if tool_calls:
-        return ["Enter" + wrapped_plugins_to_plugins[tc["name"]] for tc in tool_calls]
+        return "Enter" + wrapped_plugins_to_plugins[tool_calls[0]["name"]]
+        # return ["Enter" + wrapped_plugins_to_plugins[tc["name"]] for tc in tool_calls]
 
     raise ValueError("Invalid route")
