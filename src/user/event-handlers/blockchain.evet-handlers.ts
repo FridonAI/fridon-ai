@@ -12,14 +12,16 @@ import { UserService } from '../user.service';
 import { Connection, ParsedInstruction } from '@solana/web3.js';
 
 @EventsHandler(TransactionConfirmedEvent)
-export class TransactionConfirmedHandler {
+export class PurchaseTransactionConfirmedHandler {
   constructor(
     private readonly pluginsService: PluginsService,
     private readonly userService: UserService,
     private readonly connection: Connection,
   ) {}
 
-  private readonly logger = new Logger(TransactionConfirmedHandler.name);
+  private readonly logger = new Logger(
+    PurchaseTransactionConfirmedHandler.name,
+  );
 
   async handle(event: TransactionConfirmedEvent) {
     if (event.transactionType !== TransactionType.PAYMENT) return;
@@ -45,22 +47,23 @@ export class TransactionConfirmedHandler {
 
     // Transaction Validation
     // todo: replace this with actual values.
-    const destinationAddress = '9WP1Wk2wbbDYuuHz7fJmauMhEuPhLSQ1mk8ioY1s4TNj';
-    const requiredAmount = 1000;
+    // const destinationAddress = '9WP1Wk2wbbDYuuHz7fJmauMhEuPhLSQ1mk8ioY1s4TNj';
+    // const requiredAmount = 1000;
 
-    const flag = await this.validateTransaction(
-      event.transactionId,
-      event.aux.walletId,
-      requiredAmount,
-      destinationAddress,
-    );
+    // const flag = await this.validateTransaction(
+    //   event.transactionId,
+    //   event.aux.walletId,
+    //   requiredAmount,
+    //   destinationAddress,
+    // );
 
-    if (!flag) {
-      this.logger.debug(
-        `Transaction[${event.transactionId}] validation failed for plugin[${plugin.name}]`,
-      );
-      return;
-    }
+    // flag;
+    // if (!flag) {
+    //   this.logger.debug(
+    //     `Transaction[${event.transactionId}] validation failed for plugin[${plugin.name}]`,
+    //   );
+    //   return;
+    // }
 
     // date is now plus 3 month
     const expirationDate = new Date();
@@ -69,7 +72,7 @@ export class TransactionConfirmedHandler {
     this.logger.debug(`Plugin[${plugin.name}] found`);
     await this.userService.assignPlugin({
       walletId: event.aux.walletId,
-      pluginId: plugin.name,
+      pluginId: plugin.slug,
       // ToDo: Calculate expiration date, default now plus 3 month
       expiresAt: expirationDate,
     });

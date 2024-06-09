@@ -5,10 +5,12 @@ import {
   TransactionType,
 } from './types';
 import { AuxType } from '../events/transaction.event';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class TransactionListenerService {
+  private readonly logger = new Logger(TransactionListenerService.name);
+
   constructor(
     @InjectQueue(TRANSACTION_LISTENER_QUEUE)
     private readonly transactionListenerQueue: TransactionListenerQueue,
@@ -19,6 +21,9 @@ export class TransactionListenerService {
     transactionType: TransactionType,
     aux: AuxType,
   ) {
+    this.logger.debug(
+      `Registering transaction listener for "${transactionType}" transaction[${transactionId}]`,
+    );
     await this.transactionListenerQueue.add(
       transactionId,
       {

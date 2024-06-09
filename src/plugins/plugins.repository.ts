@@ -1,6 +1,20 @@
 import { Injectable } from '@nestjs/common';
 
-export type Plugin = any;
+export type Plugin = {
+  name: string;
+  slug: string;
+  description: string;
+  type: string;
+  owner: string;
+  examples: any[];
+  functions: {
+    name: string;
+    description: string;
+    examples: any[];
+    parameters: string;
+  }[];
+  price: number;
+};
 
 @Injectable()
 export class PluginsRepository {

@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import {
-  TransactionConfirmedHandler,
+  PurchaseTransactionConfirmedHandler,
   TransactionSkippedHandler,
   TransactionFailedHandler,
 } from './event-handlers/blockchain.evet-handlers';
@@ -12,7 +12,7 @@ import {
   controllers: [UserController],
   providers: [
     UserService,
-    TransactionConfirmedHandler,
+    PurchaseTransactionConfirmedHandler,
     TransactionSkippedHandler,
     TransactionFailedHandler,
   ],

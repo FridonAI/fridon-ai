@@ -13,8 +13,8 @@ export class PluginsService {
     return this.pluginRepository.findAll();
   }
 
-  get(name: string): Plugin | null {
+  get(slug: string): Plugin | undefined {
     const plugins = this.pluginRepository.findAll();
-    return plugins.find((plugin) => plugin.name === name);
+    return plugins.find((plugin) => plugin.slug === slug);
   }
 }
