@@ -8,13 +8,13 @@ class BaseCron(BaseModel):
     name: str
     schedule: str
 
-    def __call__(self) -> None:
+    async def arun(self) -> None:
         print(f"Running cron job {self.name} - {datetime.now()}")
-        self._process()
+        await self._process()
 
-    def start(self) -> None:
-        self()
-        crontab(self.schedule, self)
+    async def start(self) -> None:
+        await self.arun()
+        crontab(self.schedule, self.arun)
 
-    def _process(self) -> None: ...
+    async def _process(self) -> None: ...
 

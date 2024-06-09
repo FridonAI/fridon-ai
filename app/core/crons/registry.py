@@ -13,10 +13,10 @@ class CronRegistry(BaseModel):
         self.crons.append(cron())
         return cron
 
-    def start_crons(self) -> None:
+    async def start_crons(self) -> None:
         print(self.crons)
         for cron in self.crons:
-            cron.start()
+            await cron.start()
 
 var_cron_registry = ContextVar("cron_registry", default=CronRegistry())
 
