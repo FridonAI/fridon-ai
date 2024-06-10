@@ -46,6 +46,21 @@ export class ChatService {
     }));
   }
 
+  async getChatNotifications(walletId: string) {
+    const notificationChat =
+      await this.chatRepository.getChatNotifications(walletId);
+
+    return {
+      messages: notificationChat
+        ? notificationChat?.messages.map((message) => ({
+            id: message.id,
+            content: message.content,
+            messageType: message.messageType,
+          }))
+        : [],
+    };
+  }
+
   async getChatHistory(walletId: string, limit: number) {
     const messages = await this.chatRepository.getChatHistory(walletId, limit);
 

@@ -71,6 +71,24 @@ export class ChatHttpController {
       })),
     });
   }
+  @Get('/notifications')
+  async getChatNotifications(@Wallet() wallet: WalletSession) {
+    const res = await this.chatService.getChatNotifications(
+      wallet.walletAddress,
+    );
+
+    return new GetChatResponseDto({
+      messages: res.messages
+        .map((m) => {
+          return {
+            id: m.id,
+            content: m.content,
+            messageType: m.messageType,
+          };
+        })
+        .filter(Boolean) as GetChatResponseDto['messages'],
+    });
+  }
 
   @Post()
   async createChat(

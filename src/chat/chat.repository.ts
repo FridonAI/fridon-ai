@@ -7,6 +7,29 @@ import { Prisma } from '@prisma/client';
 export class ChatRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getChatNotifications(walletId: string) {
+    const chatId = await this.prisma.chatNotifications.findUnique({
+      where: { walletId },
+    });
+
+    if (!chatId) {
+      return undefined;
+    }
+
+    const notificationChat = await this.prisma.chat.findUnique({
+      where: {
+        id: chatId.chatId,
+      },
+      include: {
+        messages: {
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    });
+
+    return notificationChat;
+  }
+
   async getChats(walletId: string) {
     const chats = await this.prisma.chat.findMany({
       where: { walletId },
