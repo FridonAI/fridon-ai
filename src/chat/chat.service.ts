@@ -56,6 +56,7 @@ export class ChatService {
             id: message.id,
             content: message.content,
             messageType: message.messageType,
+            date: message.createdAt,
           }))
         : [],
     };

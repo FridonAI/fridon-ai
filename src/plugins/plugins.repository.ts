@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 export type Plugin = {
   name: string;
   slug: string;
+  imageUrl?: string | null;
   description: string;
   type: string;
   owner: string;

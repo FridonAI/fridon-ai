@@ -10,6 +10,7 @@ import {
   GetChatsHistoryResponseDto,
   GetChatsRequestDto,
   GetChatsResponseDto,
+  GetNotificationResponseDto,
   TransactionCanceledRequestDto,
 } from './chat.dto';
 import { ChatId } from './domain/chat-id.value-object';
@@ -77,16 +78,17 @@ export class ChatHttpController {
       wallet.walletAddress,
     );
 
-    return new GetChatResponseDto({
+    return new GetNotificationResponseDto({
       messages: res.messages
         .map((m) => {
           return {
             id: m.id,
             content: m.content,
             messageType: m.messageType,
+            date: m.date.toISOString(),
           };
         })
-        .filter(Boolean) as GetChatResponseDto['messages'],
+        .filter(Boolean) as GetNotificationResponseDto['messages'],
     });
   }
 

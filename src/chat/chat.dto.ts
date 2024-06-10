@@ -31,6 +31,23 @@ export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
   }[];
 }
 
+export class GetNotificationResponseDto extends BaseDto<GetNotificationResponseDto> {
+  @ApiProperty({
+    example: [
+      { id: 'id1', content: 'Hello', messageType: 'Query' },
+      { id: 'id2', content: 'Hi', messageType: 'Response' },
+      { id: 'id3', content: 'Hello', messageType: 'Query' },
+      { id: 'id4', content: 'U blind my G?', messageType: 'Response' },
+    ],
+  })
+  messages: {
+    id: string;
+    content: string;
+    messageType: 'Notification';
+    date: string;
+  }[];
+}
+
 export class GetChatsRequestDto extends BaseDto<GetChatsRequestDto> {
   @ApiPropertyOptional({ description: 'Number of results to return per page.' })
   @Min(1)

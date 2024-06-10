@@ -1,5 +1,8 @@
 import { Controller, Logger } from '@nestjs/common';
-import { NotificationsMessageUpdateDto } from './notifications.dto';
+import {
+  NotificationResponseGeneratedMessageDto,
+  NotificationsMessageUpdateDto,
+} from './notifications.dto';
 import { EventPattern } from '@nestjs/microservices';
 import { PrismaService } from 'nestjs-prisma';
 import { randomUUID } from 'crypto';
@@ -13,13 +16,16 @@ export class NotificationsEventsController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventsService: EventsService,
-  ) { }
+  ) {}
 
-  @EventPattern('notifications_recieved')
+  @EventPattern('notifications_received')
   async messageUpdateEventHandler(
     event: NotificationsMessageUpdateDto,
   ): Promise<void> {
-    event;
+    console.log('event', JSON.stringify(event));
+
+    const timestamp = new Date().toISOString();
+
     const { slug, message } = event;
 
     // 1) Using slug Query all the user who has this plugin.
@@ -75,9 +81,6 @@ export class NotificationsEventsController {
       })),
     ];
 
-    // 3) Send the ws notification to the user.
-    this.sendBatchWebSocketNotifications(walletIds, message);
-
     // // Update message to chat--> chatMessage
     for (const walletId of walletIds) {
       const chatId = notifications.find(
@@ -89,16 +92,18 @@ export class NotificationsEventsController {
         throw new Error(`No chatId found for walletId ${walletId}`);
       }
 
+      const messageId = randomUUID() as string;
+
       await this.prisma.chat.upsert({
         where: { id: chatId },
         create: {
           id: chatId,
           messages: {
             create: {
-              id: randomUUID() as string,
+              id: messageId,
               content: message,
               messageType: MessageType.Notification,
-              createdAt: new Date(),
+              createdAt: timestamp,
             },
           },
           walletId,
@@ -106,28 +111,31 @@ export class NotificationsEventsController {
         update: {
           messages: {
             create: {
-              id: randomUUID() as string,
+              id: messageId,
               content: message,
               messageType: MessageType.Notification,
-              createdAt: new Date(),
+              createdAt: timestamp,
             },
           },
         },
       });
-    }
-  }
 
-  private sendBatchWebSocketNotifications(
-    walletIds: string[],
-    message: string,
-  ) {
-    this.logger.log(
-      `Sent batch notification to wallets ${walletIds.join(', ')}: ${message}`,
-    );
-    walletIds.map((walletId) => {
-      this.eventsService.sendTo(walletId, 'chat.notification', {
-        message,
-      });
-    });
+      // 3) Send the ws notification to the user.
+      this.logger.log(
+        `Sent batch notification to wallets ${walletId}: ${message}`,
+      );
+
+      this.eventsService.sendTo(
+        walletId,
+        'chat.response-generated',
+        new NotificationResponseGeneratedMessageDto({
+          type: 'notification',
+          id: messageId,
+          message: message,
+          chatId: 'notifications',
+          date: timestamp,
+        }),
+      );
+    }
   }
 }
