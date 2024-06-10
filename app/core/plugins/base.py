@@ -14,6 +14,7 @@ class BasePlugin(BaseModel):
     type: Literal["subscription", "nft"] = "subscription"
     price: float | int = 0
     image_url: str | None = None
+    exclude: bool = False
 
     @property
     def examples(self) -> list[str]:

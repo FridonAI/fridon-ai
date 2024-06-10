@@ -17,7 +17,7 @@ async def read_token_summary(
 ) -> dict | None:
     try:
         async with session.get(
-            f"https://api.kraken.com/0/public/OHLC?pair={symbol.upper()}USD&interval=1440&since={int(datetime.now().timestamp() - 120 * 24 * 60 * 60)}"
+           f"https://api.kraken.com/0/public/OHLC?pair={symbol.upper()}USD&interval=1440&since={int(datetime.now().timestamp() - 120 * 24 * 60 * 60)}"
         ) as resp:
             response_data = await resp.json()
 

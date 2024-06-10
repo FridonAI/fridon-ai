@@ -8,8 +8,6 @@ from app.community.plugins.coin_technical_analyzer.helpers.llm import (
 )
 from app.core.crons import BaseCron
 from app.core.crons.registry import ensure_cron_registry
-import os
-import json
 
 registry = ensure_cron_registry()
 

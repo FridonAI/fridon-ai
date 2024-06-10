@@ -42,6 +42,7 @@ class ProcessUserMessageService:
     async def _prepare_graph(self, plugin_names):
         registry = ensure_plugin_registry()
         plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]
+        plugins = [p for p in plugins if p.exclude is False]
 
         llm = ChatOpenAI(model="gpt-4o", temperature=0, openai_api_key=settings.OPENAI_API_KEY, verbose=True)
 
