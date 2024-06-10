@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Literal
 
 import pandas as pd
 import pandas_ta as ta
@@ -137,3 +138,10 @@ class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
             results.extend([x.dict() for x in curr_results if x.binary_score == 'yes'])
 
         return results
+
+
+class CoinBulishSearchUtility(BaseUtility):
+    async def arun(self, filter: Literal["strong bulish", "bullish", "neutral", "bearish", "strong bearish"], *args, **kwargs) -> list[dict]:
+        token_tags = ensure_data_store().read_token_tags()
+
+        return [x for x in token_tags if x["tag"] == filter]

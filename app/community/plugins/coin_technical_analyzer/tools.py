@@ -1,7 +1,9 @@
+from typing import Literal
 from app.community.plugins.coin_technical_analyzer.utilities import (
     CoinTechnicalAnalyzerUtility,
     CoinTechnicalIndicatorsListUtility,
     CoinTechnicalIndicatorsSearchUtility,
+    CoinBulishSearchUtility
 )
 from app.core.plugins.schemas import BaseToolInput
 from app.core.plugins.tools import BaseTool
@@ -45,5 +47,22 @@ CoinTechnicalIndicatorsSearchTool = BaseTool(
     examples=["What are coins that have RSI > 30?", "List all coins havind MACD > 0 and RSI < 10"]
 )
 
+class CoinBullishSearchToolInput(BaseToolInput):
+    filter: Literal["strong bullish", "bullish", "neutral", "bearish", "strong bearish"]
 
-TOOLS = [CoinTechnicalAnalyzerTool, CoinTechnicalIndicatorsListTool, CoinTechnicalIndicatorsSearchTool]
+
+CoinBullishSearchTool = BaseTool(
+    name="coin-bullish-search",
+    description="A utility that allows you to search coins by technical indicators",
+    args_schema=CoinBullishSearchToolInput,
+    utility=CoinBulishSearchUtility(),
+    examples=["Show me bulish coins", "What are bulish coins for this moment?", "Give me strongly bearish coins"]
+)
+
+
+TOOLS = [
+    CoinTechnicalAnalyzerTool,
+    CoinTechnicalIndicatorsListTool,
+    CoinTechnicalIndicatorsSearchTool,
+    CoinBullishSearchTool,
+]
