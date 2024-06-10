@@ -14,7 +14,16 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
     description="A tool that allows you to search for similar coins by price chart of the given time range",
     args_schema=CoinPriceChartSimilaritySearchToolInput,
     utility=CoinPriceChartSimilaritySearchUtility(),
-    examples=["Give me coins similar to bonk price chart from december 2023", "Show me coins similar to solana price chart"]
+    examples=[
+        {
+            "request": "Give me coins similar to bonk price chart from december 2023",
+            "response": "",
+        },
+        {
+            "request": "Show me coins similar to solana price chart",
+            "response": "",
+        }
+    ]
 )
 
 

@@ -17,10 +17,22 @@ KaminoBorrowLendTool = BaseTool(
     args_schema=KaminoBorrowLendToolInput,
     utility=KaminoBorrowLendUtility(),
     examples=[
-        "borrow 10 usdc from kamino",
-        "lend 10 sol to kamino",
-        "repay 10 usdc from kamino",
-        "withdraw 10 sol from kamino"
+        {
+            "request": "borrow 10 sol from kamino",
+            "response": "You borrowed 10 sol successfully!",
+        },
+        {
+            "request": "supply 10 usdc to kamino",
+            "response": "Lending transaction skipped, please try again.",
+        },
+        {
+            "request": "repay 10 usdc from kamino",
+            "response": "Repay finished successfully!",
+        },
+        {
+            "request": "withdraw 10 sol from kamino",
+            "response": "Withdraw finished successfully!",
+        }
     ]
 )
 
@@ -35,7 +47,16 @@ KaminoBalanceTool = BaseTool(
     description="Only use that tool to get your Kamino balances, how much you've supplied or borrowed specific coins",
     args_schema=KaminoBalanceToolInput,
     utility=KaminoBalanceUtility(),
-    examples=["get my balances on kamino please", "how much sol is supplied on kamino?"]
+    examples=[
+        {
+            "request": "get my balances on kamino please",
+            "response": "Currently you have 10 usdc borrowed and 10 sol supplied.",
+        },
+        {
+            "request": "how much sol is supplied on kamino?",
+            "response": "You currently have 10 sol supplied.",
+        },
+    ]
 )
 
 TOOLS = [KaminoBorrowLendTool, KaminoBalanceTool]

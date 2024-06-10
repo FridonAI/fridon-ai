@@ -13,9 +13,19 @@ WalletBalanceTool = BaseTool(
     args_schema=WalletBalanceToolInput,
     utility=WalletBalanceUtility(),
     examples=[
-        "get my sol balance",
-        "what's my balance",
-        "how much bonk I have?"
+        {
+            "request": "what's my balance",
+            "response": "Currently you have 10 usdc and 10000000 bonk which is 288$ usd.",
+        },
+        {
+            "request": "how much bonk I have?",
+            "response": "You have 10000000 bonk with value 288$ usd.",
+        },
+
+        {
+            "request": "how much sol I have?",
+            "response": "You have 10 sol with value 1700$ usd.",
+        },
     ]
 )
 
@@ -32,8 +42,14 @@ WalletTransferTool = BaseTool(
     args_schema=WalletTransferToolInput,
     utility=WalletTransferUtility(),
     examples=[
-        "please send 10 bonk to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
-        "transfer 2 usdc to fridon.sol"
+        {
+            "request": "transfer 10 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
+            "response": "Transfer finished successfully!",
+        },
+        {
+            "request": "transfer 10 bonk to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
+            "response": "Transaction skipped, please try again.",
+        }
     ]
 )
 
