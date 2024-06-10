@@ -19,9 +19,18 @@ CoinTechnicalAnalyzerTool = BaseTool(
     args_schema=CoinTechnicalAnalyzerToolInput,
     utility=CoinTechnicalAnalyzerUtility(),
     examples=[
-        "analyze bonk price chat for me",
-        "what do you think about sol price?",
-        "what about bonk coin?"
+        {
+            "request": "what about bonk coin?",
+            "response": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/chart-analyzer.png",
+        },
+        {
+            "request": "analyze bonk price chat for me",
+            "response": "",
+        },
+        {
+            "request": "what do you think about sol price?",
+            "response": "",
+        },
     ]
 )
 
@@ -35,7 +44,16 @@ CoinTechnicalIndicatorsListTool = BaseTool(
     description="A utility that allows you to list all available coin technical indicators",
     args_schema=CoinTechnicalIndicatorsListToolInput,
     utility=CoinTechnicalIndicatorsListUtility(),
-    examples=["list all technical indicators", "what are the technical indicators?"]
+    examples=[
+        {
+            "request": "list technical indicators",
+            "response": "",
+        },
+        {
+            "request": "what are the technical indicators?",
+            "response": "",
+        },
+    ]
 )
 
 
@@ -48,7 +66,17 @@ CoinTechnicalIndicatorsSearchTool = BaseTool(
     description="A utility that allows you to search coins by technical indicators",
     args_schema=CoinTechnicalIndicatorsSearchToolInput,
     utility=CoinTechnicalIndicatorsSearchUtility(),
-    examples=["What are coins that have RSI > 30?", "List all coins havind MACD > 0 and RSI < 10"]
+    examples=[
+        {
+            "request": "What are coins that have RSI > 30?",
+            "response": "",
+            "image_url": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/search-coins-by-indicators.png",
+        },
+        {
+            "request": "List all coins havind MACD > 0 and RSI < 10",
+            "response": "",
+        },
+    ]
 )
 
 class CoinBullishSearchToolInput(BaseToolInput):
@@ -60,7 +88,22 @@ CoinBullishSearchTool = BaseTool(
     description="A utility that allows you to search coins by technical indicators",
     args_schema=CoinBullishSearchToolInput,
     utility=CoinBulishSearchUtility(),
-    examples=["Show me bulish coins", "What are bulish coins for this moment?", "Give me strongly bearish coins"]
+    examples=[
+        {
+            "request": "Show me bulish coins",
+            "response": "",
+            "image_url": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/bullish-coins.png",
+        },
+        {
+            "request": "What are bullish coins for this moment?",
+            "response": "",
+
+        },
+        {
+            "request": "Give me strongly bearish coins",
+            "response": ""
+        }
+    ]
 )
 
 

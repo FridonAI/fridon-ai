@@ -13,8 +13,14 @@ FridonRagTool = BaseTool(
     args_schema=FridonRagInput,
     utility=FridonRagUtility(),
     examples=[
-        "Who are you?",
-        "What plugins do you have?",
+        {
+            "request": "Who are you?",
+            "response": "",
+        },
+        {
+            "request": "What plugins do you have?",
+            "response": "",
+        }
     ]
 )
 

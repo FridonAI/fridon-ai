@@ -13,7 +13,7 @@ class BaseTool(LangchainBaseTool):
     description: str
     args_schema: type[BaseToolInput] | None = None
     utility: BaseUtility
-    examples: list[str] = []
+    examples: list[dict] = []
 
     def _run(
         self,

@@ -15,6 +15,7 @@ class Container(containers.DeclarativeContainer):
             "app.core.plugins.utilities.blockchain",
             "app.services.process_user_message_service",
             "app.services.calculate_user_message_score_service",
+            "app.community.plugins.bonk_notifier.crons",
         ],
         packages=[
             "app.community.plugins",

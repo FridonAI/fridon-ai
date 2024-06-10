@@ -12,9 +12,18 @@ SolanaEducatorTool = BaseTool(
     args_schema=SolanaEducatorInput,
     utility=SolanaBonkUtility(),
     examples=[
-        "What's staking?",
-        "What's solana?",
-        "How can I swap coins on solana?",
+        {
+            "request": "What's staking?",
+            "response": "",
+        },
+        {
+            "request": "What's solana?",
+            "response": "",
+        },
+        {
+            "request": "How can I swap coins on solana?",
+            "response": "",
+        }
     ]
 )
 

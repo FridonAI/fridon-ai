@@ -13,8 +13,15 @@ SymmetryBalanceTool = BaseTool(
     args_schema=SymmetryBalanceToolInput,
     utility=SymmetryBalanceUtility(),
     examples=[
-        "Can you show me my balances on Symmetry?",
-        "Show me my basket balances on symmetry please.",
+        {
+            "request": "get my balances on symmetry please",
+            "response": "",
+        },
+
+        {
+            "request": "how much sol is supplied on symmetry?",
+            "response": "",
+        },
     ]
 )
 

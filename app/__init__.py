@@ -10,4 +10,3 @@ def _preload_modules():
     from app.core.crons.registry import ensure_cron_registry
     asyncio.get_event_loop().run_until_complete(ensure_cron_registry().start_crons())
 
-_preload_modules()

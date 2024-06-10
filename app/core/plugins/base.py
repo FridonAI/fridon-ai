@@ -17,13 +17,17 @@ class BasePlugin(BaseModel):
     exclude: bool = False
 
     @property
-    def examples(self) -> list[str]:
+    def examples(self) -> list[dict]:
         examples = reduce(lambda a, b: a + b, [tool.examples for tool in self.tools], [])
         return examples
 
     @property
+    def request_examples(self) -> list[str]:
+        return [example["request"] for example in self.examples]
+
+    @property
     def examples_as_str(self) -> str:
-        return "\n".join(self.examples)
+        return "\n".join(self.request_examples)
 
     @property
     def slug(self) -> str:
