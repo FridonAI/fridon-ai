@@ -66,7 +66,7 @@ export class PurchaseTransactionConfirmedHandler {
 
     // date is now plus 3 month
     const expirationDate = new Date();
-    expirationDate.setMonth(expirationDate.getMonth() + 3);
+    expirationDate.setMonth(expirationDate.getMonth() + 1);
 
     this.logger.debug(`Plugin[${plugin.name}] found`);
     await this.userService.assignPlugin({

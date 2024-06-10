@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class PaymentBodyDto {
   @ApiProperty({
@@ -7,8 +7,8 @@ export class PaymentBodyDto {
       '4UcEfkYziTjiRHy9xEiuJogDHGkNSZ74isv1WgeBcQBpvx2XMfP9bsczo95Vg6dLL2G341UDaSzZzLLXstxM6MTg',
   })
   @IsString()
-  @IsNotEmpty()
-  transactionId: string;
+  @IsOptional()
+  transactionId?: string;
 
   @ApiProperty({ example: 'plugin_1' })
   @IsString()
