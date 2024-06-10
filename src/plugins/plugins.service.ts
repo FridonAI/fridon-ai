@@ -22,6 +22,14 @@ export class PluginsService {
     return plugins.find((plugin) => plugin.slug === slug);
   }
 
+  getDefaultPlugins(): Plugin[] {
+    const defaultPluginSlugs = ['solana-bonk-educator', 'fridon', 'wallet'];
+
+    return this.pluginRepository
+      .findAll()
+      .filter((plugin) => defaultPluginSlugs.includes(plugin.slug));
+  }
+
   getFreePlugins(): Plugin[] {
     return this.pluginRepository
       .findAll()

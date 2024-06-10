@@ -31,7 +31,7 @@ export class UserService {
       },
     });
 
-    const freePlugins = this.pluginsService.getFreePlugins();
+    const freePlugins = this.pluginsService.getDefaultPlugins();
 
     const result: UserPluginsResponseDto = [
       ...res.map((plugin) => ({
