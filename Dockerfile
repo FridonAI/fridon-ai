@@ -28,4 +28,4 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 3000
-CMD yarn prisma migrate reset -f && yarn start:prod 
+CMD yarn prisma migrate deploy && yarn start:prod 
