@@ -40,7 +40,7 @@ def create_graph(
     for plugin in plugins:
         agent_chain = create_agent_chain(
             llm,
-            create_agent_prompt(plugin.name, plugin.full_description),
+            create_agent_prompt(plugin.name, plugin.full_description(tool_descriptions=False)),
             tools=plugin.tools + [CompleteTool],
         )
 
