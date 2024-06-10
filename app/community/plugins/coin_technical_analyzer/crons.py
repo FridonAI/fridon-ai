@@ -15,7 +15,7 @@ registry = ensure_cron_registry()
 @registry.register
 class CoinTechnicalsCron(BaseCron):
     name = "Coin Technicals"
-    schedule = "* */1 * * *"
+    schedule = "0 */5 * * *"
     token_list_path = "./data/coins-list.json"
 
     async def _process(self) -> None:
