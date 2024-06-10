@@ -21,7 +21,8 @@ CoinTechnicalAnalyzerTool = BaseTool(
     examples=[
         {
             "request": "what about bonk coin?",
-            "response": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/chart-analyzer.png",
+            "response": "",
+            "image_url": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/chart-analyzer.png",
         },
         {
             "request": "analyze bonk price chat for me",
