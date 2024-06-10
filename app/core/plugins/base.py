@@ -13,6 +13,7 @@ class BasePlugin(BaseModel):
     owner: str = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     type: Literal["subscription", "nft"] = "subscription"
     price: float | int = 0
+    image_url: str | None = None
 
     @property
     def examples(self) -> list[str]:
