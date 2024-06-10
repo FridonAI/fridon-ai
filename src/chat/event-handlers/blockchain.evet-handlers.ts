@@ -8,10 +8,14 @@ import {
 import { ChatService } from '../chat.service';
 import { ChatId } from '../domain/chat-id.value-object';
 import { TransactionType } from 'src/blockchain/transaction-listener/types';
+import { LeaderBoardService } from '../leaderboard.service';
 
 @EventsHandler(TransactionConfirmedEvent)
 export class TransactionConfirmedHandler {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly leaderboardService: LeaderBoardService,
+  ) {}
 
   async handle(event: TransactionConfirmedEvent) {
     if (event.transactionType !== TransactionType.CHAT) return;
@@ -21,6 +25,11 @@ export class TransactionConfirmedHandler {
       `Transaction with id ${event.transactionId} Confirmed`,
       event.aux.personality,
     );
+
+    await this.leaderboardService.updateScore({
+      walletId: event.aux.walletId,
+      transactionsMade: 1,
+    });
   }
 }
 
