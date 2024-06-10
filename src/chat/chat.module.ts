@@ -14,6 +14,7 @@ import {
 import { Redis } from 'ioredis';
 import { LeaderBoardService } from './leaderboard.service';
 import { LeaderboardHttpController } from './leaderboard.controller';
+import { NotificationsEventsController } from './external/notifications/notifications.controller';
 
 @Global()
 @Module({
@@ -32,6 +33,7 @@ import { LeaderboardHttpController } from './leaderboard.controller';
   controllers: [
     ChatHttpController,
     AiEventsController,
+    NotificationsEventsController,
     LeaderboardHttpController,
   ],
   providers: [

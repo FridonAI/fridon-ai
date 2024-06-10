@@ -51,6 +51,7 @@ enum MessageType {
   Query
   Response
   TransactionResponse
+  Notification
 }
 
 model Chat {
@@ -61,6 +62,16 @@ model Chat {
   updatedAt DateTime      @updatedAt
 
   @@index(walletId)
+}
+
+model ChatNotifications {
+  id Int @id @default(autoincrement())
+
+  walletId String @unique
+  chatId   String @unique @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model WalletMedia {
