@@ -3,6 +3,7 @@ import json
 
 from dependency_injector.wiring import Provide, inject
 
+from app import _preload_modules
 from app.core.plugins.registry import ensure_plugin_registry
 from app.services import ProcessUserMessageService, CalculateUserMessageScoreService
 from app.containers import Container
@@ -66,7 +67,7 @@ async def send_plugins(
     registry = ensure_plugin_registry()
     plugins = [plugin_cls().to_json() for plugin_cls in registry.plugins.values()]
     while True:
-        await pub.publish("plugins", json.dumps(plugins), False)
+        await pub.publish("plugins", json.dumps(plugins))
         await asyncio.sleep(5)
 
 
@@ -77,7 +78,9 @@ if __name__ == "__main__":
     container.config.redis_host.from_env("REDIS_HOST", "localhost")
     container.config.redis_password.from_env("REDIS_PASSWORD", None)
     container.init_resources()
-    container.wire()
+    container.wire(modules=["app.community.plugins.bonk_notifier.crons"])
+
+    _preload_modules()
 
     loop = asyncio.get_event_loop()
     user_task = loop.create_task(user_message_handler())
