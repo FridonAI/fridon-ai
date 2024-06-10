@@ -24,16 +24,8 @@ class BasePlugin(BaseModel):
     def examples_as_str(self) -> str:
         return "\n".join(self.examples)
 
-    def full_description(self, tool_descriptions=True):
-        description = self.description
-        if tool_descriptions:
-            description += "\n Here are following functionalities of this plugin: \n"
-            for tool in self.tools:
-                description += "\t" + tool.name + ": " + tool.description + "\n"
-        description += "Examples: \n" + self.examples_as_str
-        return description
-
-    def to_json(self) -> dict:
+    @property
+    def slug(self) -> str:
         def slugify(text):
             import re
             import unicodedata
@@ -42,10 +34,21 @@ class BasePlugin(BaseModel):
             text = re.sub(r'[^a-zA-Z0-9\s-]', '', text)
             text = re.sub(r'[\s-]+', '-', text.strip().lower())
             return text
+        return slugify(self.name)
 
+    def full_description(self, tool_descriptions=True):
+        description = "Name: " + self.name + " - " + self.description
+        if tool_descriptions:
+            description += "\n Here are following functionalities of this plugin: \n"
+            for tool in self.tools:
+                description += "\t" + tool.name + ": " + tool.description + "\n"
+        description += "Examples: \n" + self.examples_as_str
+        return description
+
+    def to_json(self) -> dict:
         return {
             "name": self.name,
-            "slug": slugify(self.name),
+            "slug": self.slug,
             "description": self.description,
             "type": self.type,
             "owner": self.owner,

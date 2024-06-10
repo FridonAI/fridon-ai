@@ -49,7 +49,7 @@ def create_graph(
             exception_key="error"
         )
 
-        agent = create_agent(agent_chain, plugin.name)
+        agent = create_agent(agent_chain, plugin.slug)
 
         workflow.add_node("Enter"+plugin.name, prepare_plugin_agent)
         workflow.add_node(plugin.name, agent)
