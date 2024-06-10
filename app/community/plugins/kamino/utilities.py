@@ -1,19 +1,21 @@
+from typing import Literal
+
 from app.core.plugins.utilities import BlockchainUtility, RemoteUtility
 
 
 class KaminoBorrowLendUtility(BlockchainUtility):
     async def _arun(
             self,
-            operation: str,
+            operation: Literal['borrow', 'supply', 'repay', 'withdraw'],
             currency: str,
-            amount: int,
+            amount: int | float,
             *args,
             wallet_id: str,
             **kwargs
     ) -> dict:
         request = {
             "plugin": "kamino",
-            "function": "borrowlend",
+            "function": operation,
             "args": {
                 "walletAddress": wallet_id,
                 "operation": operation,

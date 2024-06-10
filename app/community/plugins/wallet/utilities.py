@@ -5,7 +5,7 @@ class WalletTransferUtility(BlockchainUtility):
     async def _arun(
             self,
             currency: str,
-            amount: int,
+            amount: int | float,
             to_wallet_address: str,
             wallet_id: str,
             *args,

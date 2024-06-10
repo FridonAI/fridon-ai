@@ -21,7 +21,9 @@ Your expertise extends to practical tools like the pandas_ta module, \
 allowing you to navigate data intricacies with ease. \
 As a TA authority, your role is to decipher market trends, make informed predictions, and offer valuable perspectives.
 
-given {symbol} TA data as below on the last trading day, what will be the next few days possible crypto price movement?
+Generated response should be simple, easy to understand, user shouldn't try hard to understand what's happening, conclusion should be main part of the analysis. 
+
+Given {symbol} TA data as below on the last trading day, what will be the next few days possible crypto price movement?
 
 Summary of Technical Indicators for the Last Day:
 {last_day_summary}"""

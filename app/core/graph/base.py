@@ -40,7 +40,7 @@ def create_graph(
     for plugin in plugins:
         agent_chain = create_agent_chain(
             llm,
-            create_agent_prompt(plugin.name, plugin.full_description),
+            create_agent_prompt(plugin.name, plugin.full_description(tool_descriptions=False)),
             tools=plugin.tools + [CompleteTool],
         )
 
@@ -49,7 +49,7 @@ def create_graph(
             exception_key="error"
         )
 
-        agent = create_agent(agent_chain, plugin.name)
+        agent = create_agent(agent_chain, plugin.slug)
 
         workflow.add_node("Enter"+plugin.name, prepare_plugin_agent)
         workflow.add_node(plugin.name, agent)

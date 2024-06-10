@@ -5,7 +5,7 @@ class JupyterSwapUtility(BlockchainUtility):
             self,
             from_token: str,
             to_token: str,
-            amount: int,
+            amount: int | float,
             *args,
             wallet_id: str,
             **kwargs
