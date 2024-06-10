@@ -134,6 +134,12 @@ export class NotificationsEventsController {
           message: message,
           chatId: 'notifications',
           date: timestamp,
+          name: slug
+            .split('-')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' '),
+          imageUrl:
+            'https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/bonkheadog.png',
         }),
       );
     }

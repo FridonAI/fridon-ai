@@ -11,4 +11,6 @@ export class NotificationResponseGeneratedMessageDto extends BaseDto<Notificatio
   chatId: string;
   message: string;
   date: string;
+  name: string;
+  imageUrl?: string | undefined;
 }
