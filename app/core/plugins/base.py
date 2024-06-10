@@ -50,6 +50,7 @@ class BasePlugin(BaseModel):
         return {
             "name": self.name,
             "slug": self.slug,
+            "imageUrl": self.image_url,
             "description": self.description,
             "type": self.type,
             "owner": self.owner,

@@ -12,3 +12,4 @@ class BonkBullishNotifierPlugin(BasePlugin):
     price = 1000
     tools: type[list[BaseTool]] = []
     exclude = True
+    image_url = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/bonkheadog.png"

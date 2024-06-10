@@ -11,3 +11,4 @@ class SolanaBonkEducatorPlugin(BasePlugin):
     description = "Plugin for solana-bonk education with bonk examples."
     owner = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     tools: type[list[BaseTool]] = TOOLS
+    image_url = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/solana-bonk-educator.png"
