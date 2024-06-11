@@ -67,7 +67,7 @@ async def send_plugins(
     registry = ensure_plugin_registry()
     plugins = [plugin_cls().to_json() for plugin_cls in registry.plugins.values()]
     while True:
-        await pub.publish("plugins", json.dumps(plugins))
+        await pub.publish("plugins", json.dumps(plugins), log=False)
         await asyncio.sleep(5)
 
 

@@ -14,7 +14,6 @@ async def read_bonk_summary() -> dict | None:
                 response_data = await resp.json()
 
                 if resp.status != 200 or len(response_data["error"]) > 0:
-                    print(response_data)
                     raise Exception(
                         f"Failed to fetch data from Kraken API. Status code: {resp.status}"
                     )
