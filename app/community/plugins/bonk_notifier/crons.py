@@ -31,7 +31,7 @@ class BonkBullishNotifierCron(BaseCron):
             json.dumps(
                 {
                     "slug": "bonk-bullish-notifier",
-                    "message": "BONK is showing bearish signals. MACD histogram is negative, RSI is below 50, and Stochastic Oscillator is below 20. Chaikin Money Flow indicates money outflow.",
+                    "message": "BONK is showing bullish signals. The MACD histogram is positive, RSI is above 50, and CMF indicates buying pressure. Optimism encouraged.",
                 }
             ),
         )
