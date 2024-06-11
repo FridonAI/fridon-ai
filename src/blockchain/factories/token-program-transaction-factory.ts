@@ -1,5 +1,7 @@
 import {
+  ComputeBudgetProgram,
   Connection,
+  LAMPORTS_PER_SOL,
   PublicKey,
   PublicKeyInitData,
   TransactionInstruction,
@@ -66,6 +68,12 @@ export class TokenProgramTransactionFactory {
         amount.toNumber(),
       ),
     );
+
+    const price = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 0.005 * LAMPORTS_PER_SOL,
+    });
+
+    txInstructions.push(price);
 
     const transaction = await this.transactionFactory.generateTransactionV0(
       txInstructions,
