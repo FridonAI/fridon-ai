@@ -8,7 +8,7 @@ from app.settings import settings
 
 
 class CoinPriceChartSimilaritySearchUtility(BaseUtility):
-    async def run(
+    async def arun(
             self,
             coin_name: str,
             start_date: str | None = None,

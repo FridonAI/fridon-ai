@@ -33,7 +33,7 @@ There are several things to take into account:
 
 class ScoreOutput(BaseModel):
     "What score should be assigned to user's message"
-    score: int = Field(description="Score from 0 to 2")
+    score: float | int = Field(description="Score from 0 to 2")
 
 llm = ChatOpenAI(model="gpt-4o", temperature=0, openai_api_key=settings.OPENAI_API_KEY, verbose=True)
 
