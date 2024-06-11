@@ -28,7 +28,7 @@ export class PluginsService {
       'coin-technical-analyzer',
       'fridon',
       'wallet',
-      'jupyter',
+      'jupiter',
     ];
 
     return this.pluginRepository
