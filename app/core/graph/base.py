@@ -32,7 +32,7 @@ def create_graph(
             llm,
             prompt=create_supervised_prompt(),
             tools=list(plugins_to_wrapped_plugins.values()),
-            always_tool_call=True
+            always_tool_call=False
         )
     )
 
