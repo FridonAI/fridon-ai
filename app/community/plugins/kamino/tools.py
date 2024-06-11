@@ -8,7 +8,7 @@ from app.core.plugins.tools import BaseTool
 class KaminoBorrowLendToolInput(BaseToolInput):
     operation: Literal['borrow', 'supply', 'repay', 'withdraw']
     currency: str
-    amount: int | float
+    amount: float | int
 
 
 KaminoBorrowLendTool = BaseTool(

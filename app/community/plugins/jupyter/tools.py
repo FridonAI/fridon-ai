@@ -6,7 +6,7 @@ from app.core.plugins.tools import BaseTool
 class JupyterSwapToopInput(BaseToolInput):
     from_token: str
     to_token: str
-    amount: int | float
+    amount: float
 
 
 JupyterSwapTool = BaseTool(

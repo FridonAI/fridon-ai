@@ -8,7 +8,7 @@ class KaminoBorrowLendUtility(BlockchainUtility):
             self,
             operation: Literal['borrow', 'supply', 'repay', 'withdraw'],
             currency: str,
-            amount: int | float,
+            amount: float | int,
             *args,
             wallet_id: str,
             **kwargs
