@@ -23,7 +23,13 @@ export class PluginsService {
   }
 
   getDefaultPlugins(): Plugin[] {
-    const defaultPluginSlugs = ['solana-bonk-educator', 'fridon', 'wallet'];
+    const defaultPluginSlugs = [
+      'solana-bonk-educator',
+      'coin-technical-analyzer',
+      'fridon',
+      'wallet',
+      'jupyter',
+    ];
 
     return this.pluginRepository
       .findAll()
