@@ -8,7 +8,6 @@ class UserInput(CamelModel):
 class DataInput(CamelModel):
     message: str | dict
     message_id: str | None = None
-    plugins: list[str] = ["wallet", "fridon", "solana-bonk-educator"]
 
 
 class DataRequestInput(CamelModel):
@@ -23,6 +22,7 @@ class Request(CamelModel):
     chat_id: str
     user: UserInput
     data: DataInput
+    plugins: list[str] = ["wallet", "fridon", "solana-bonk-educator"]
     aux: dict
 
 

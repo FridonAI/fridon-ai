@@ -17,7 +17,7 @@ async def task_runner(
         scorer_service: CalculateUserMessageScoreService,
         pub: redis.Publisher
 ):
-    response_message, used_agents = await service.process(request.user.wallet_id, request.chat_id, request.data.plugins, request.data.message)
+    response_message, used_agents = await service.process(request.user.wallet_id, request.chat_id, request.plugins, request.data.message)
     response = ResponseDto.parse_obj(
         {
             'chat_id': request.chat_id,
