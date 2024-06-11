@@ -13,7 +13,8 @@ def create_plugin_wrapper_tool(plugin: BasePlugin, class_name: str) -> type[Base
 
 class CompleteTool(BaseModel):
     """A tool to mark the current agent's work as completed with appropriate answer and return control to the main assistant,
-    who can re-route the dialog based on the user's needs. It collects all tool call results and returns them as a single answer."""
+    who can re-route the dialog based on the user's needs. It collects all tool call results and returns them as a single answer.
+    Tool doesn't make up any information and is 100% precise with generating answer."""
     answer: str
 
     class Config:
@@ -24,4 +25,7 @@ class CompleteTool(BaseModel):
             "example 2": {
                 "answer": "You've successfully borrowed 10 sol on kamino",
             },
+            "example 3": {
+                "answer": "Transaction skipped!"
+            }
         }

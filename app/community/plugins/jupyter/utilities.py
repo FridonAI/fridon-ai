@@ -11,7 +11,7 @@ class JupyterSwapUtility(BlockchainUtility):
             **kwargs
     ) -> dict:
         request = {
-            "plugin": "jupyter",
+            "plugin": "jupiter",
             "function": "swap",
             "args": {
                 "fromToken": from_token,

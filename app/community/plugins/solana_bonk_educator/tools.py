@@ -8,7 +8,7 @@ class SolanaEducatorInput(BaseToolInput):
 
 SolanaEducatorTool = BaseTool(
     name="solana-educator",
-    description="Use this tool to answer questions about solana, crypto, protocols, and more. Always use this tool.",
+    description="Always use this tool for answering questions about solana, crypto, blockchain protocols, bonk and so on.",
     args_schema=SolanaEducatorInput,
     utility=SolanaBonkUtility(),
     examples=[

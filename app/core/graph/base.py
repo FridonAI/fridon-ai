@@ -32,6 +32,7 @@ def create_graph(
             llm,
             prompt=create_supervised_prompt(),
             tools=list(plugins_to_wrapped_plugins.values()),
+            always_tool_call=True
         )
     )
 
@@ -42,6 +43,7 @@ def create_graph(
             llm,
             create_agent_prompt(plugin.name, plugin.full_description(tool_descriptions=False)),
             tools=plugin.tools + [CompleteTool],
+            always_tool_call=True
         )
 
         tool_node = ToolNode(plugin.tools + [CompleteTool]).with_fallbacks(

@@ -8,7 +8,6 @@ plugin_registry = ensure_plugin_registry()
 @plugin_registry.register(name="coin-technical-analyzer")
 class CoinsTechnicalAnalyzerPlugin(BasePlugin):
     name = "Coin Technical Analyzer"
-    description = "Analyze coin price charts by indicators and analyse them."
+    description = "Analyze coin price charts by indicators, search coins by indicators, find out what indicators we support."
     owner = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
-    price = 1000
     tools: type[list[BaseTool]] = TOOLS

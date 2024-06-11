@@ -33,6 +33,8 @@ class Settings(BaseSettings):
 
     LITERAL_API_KEY: Optional[str]
 
+    NUMBER_OF_COINS_ANALYZING: int = 15
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'

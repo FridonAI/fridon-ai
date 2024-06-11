@@ -42,7 +42,7 @@ class BasePlugin(BaseModel):
         return slugify(self.name)
 
     def full_description(self, tool_descriptions=True):
-        description = "Name: " + self.name + " - " + self.description
+        description = self.name + " - " + self.description
         if tool_descriptions:
             description += "\n Here are following functionalities of this plugin: \n"
             for tool in self.tools:

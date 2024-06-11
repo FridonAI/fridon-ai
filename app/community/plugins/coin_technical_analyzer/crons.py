@@ -8,6 +8,7 @@ from app.community.plugins.coin_technical_analyzer.helpers.llm import (
 )
 from app.core.crons import BaseCron
 from app.core.crons.registry import ensure_cron_registry
+from app.settings import settings
 
 registry = ensure_cron_registry()
 
@@ -20,7 +21,7 @@ class CoinTechnicalsCron(BaseCron):
 
     async def _process(self) -> None:
         data_store = ensure_data_store()
-        token_list = read_token_list(self.token_list_path)
+        token_list = read_token_list(self.token_list_path)[:settings.NUMBER_OF_COINS_ANALYZING]
         token_summary_list = await read_token_summary_list(token_list)
         data_store.update_token_summaries(token_summary_list)
         token_tags_list = await generate_token_tags_list(token_summary_list)

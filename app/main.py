@@ -42,7 +42,7 @@ async def task_runner(
         json.dumps({
             "chatId": request.chat_id,
             "walletId": request.user.wallet_id,
-            "score": score,
+            "score": round(score, 2),
             "pluginsUsed": used_agents
         })
     )
@@ -72,10 +72,6 @@ async def send_plugins(
             plugins.insert(0, plugins.pop(i))
             plugins[1], plugins[2] = plugins[2], plugins[1]
             break
-
-
-    print(plugins)
-
 
     while True:
         await pub.publish("plugins", json.dumps(plugins), log=False)
