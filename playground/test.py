@@ -18,7 +18,7 @@ async def main():
     registry = ensure_plugin_registry()
     print(registry.plugins)
 
-    plugin_names = ["greeter", "kamino", "wallet", "jupyter", "symmetry", "coin-price-chart-similarity-search",
+    plugin_names = ["greeter", "kamino", "wallet", "jupiter", "symmetry", "coin-price-chart-similarity-search",
                     "coin-technical-analyzer"]
     registry = ensure_plugin_registry()
 

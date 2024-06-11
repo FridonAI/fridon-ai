@@ -1,6 +1,6 @@
 from app.core.plugins.utilities import BlockchainUtility
 
-class JupyterSwapUtility(BlockchainUtility):
+class JupiterSwapUtility(BlockchainUtility):
     async def _arun(
             self,
             from_token: str,
