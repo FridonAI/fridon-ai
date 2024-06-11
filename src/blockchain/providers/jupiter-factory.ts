@@ -7,6 +7,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { Connection, PublicKey, VersionedTransaction } from '@solana/web3.js';
 import {
   DONATION_ADDRESS,
+  PRIORITY_FEE,
   SOL_MINT_ADDRESS,
   SWAP_FEE_BPS,
   SWAP_REFERRAL_PROGRAM_ADDRESS,
@@ -80,7 +81,7 @@ export class JupiterFactory {
           feeAccount: accountInfo ? feeAccount.toBase58() : undefined,
           quoteResponse: quote,
           dynamicComputeUnitLimit: true,
-          prioritizationFeeLamports: 'auto',
+          prioritizationFeeLamports: PRIORITY_FEE,
         },
       });
 
