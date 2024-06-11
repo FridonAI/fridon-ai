@@ -1,4 +1,5 @@
 import { PublicKey } from '@metaplex-foundation/js';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 export const SOL_MINT_ADDRESS = new PublicKey(
   '11111111111111111111111111111111',
@@ -23,7 +24,7 @@ export const SWAP_REFERRAL_PROGRAM_ADDRESS = new PublicKey(
   'REFER4ZgmyYx9c6He5XfaTMiGfdLwRnkV4RPp9t9iF3',
 );
 
-export const PRIORITY_FEE = 25000000;
+export const PRIORITY_FEE = 0.005 * LAMPORTS_PER_SOL;
 export const COMPUTE_LIMIT = 400000;
 export const SWAP_FEE_BPS = 7;
 export const DEFAULT_SLIPPAGE = 0.5;
