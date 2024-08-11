@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Union
 
 from app.community.plugins.kamino.utilities import KaminoBorrowLendUtility, KaminoBalanceUtility
 from app.core.plugins.schemas import BaseToolInput
@@ -8,7 +8,7 @@ from app.core.plugins.tools import BaseTool
 class KaminoBorrowLendToolInput(BaseToolInput):
     operation: Literal['borrow', 'supply', 'repay', 'withdraw']
     currency: str
-    amount: float | int
+    amount: Union[float, int]
 
 
 KaminoBorrowLendTool = BaseTool(

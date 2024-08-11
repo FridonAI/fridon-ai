@@ -1,10 +1,12 @@
+from typing import Union
+
 from app.community.plugins.wallet.utilities import WalletBalanceUtility, WalletTransferUtility
 from app.core.plugins.schemas import BaseToolInput
 from app.core.plugins.tools import BaseTool
 
 
 class WalletBalanceToolInput(BaseToolInput):
-    currency: str | None = None
+    currency: Union[str, None] = None
 
 
 WalletBalanceTool = BaseTool(
@@ -32,7 +34,7 @@ WalletBalanceTool = BaseTool(
 
 class WalletTransferToolInput(BaseToolInput):
     currency: str
-    amount: float | int
+    amount: Union[float, int]
     to_wallet_address: str
 
 

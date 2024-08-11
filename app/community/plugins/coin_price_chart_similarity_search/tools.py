@@ -1,3 +1,5 @@
+from typing import Union
+
 from app.community.helpers.utilities import DatetimeExtractorUtility
 from app.community.plugins.coin_price_chart_similarity_search.utilities import CoinPriceChartSimilaritySearchUtility
 from app.core.plugins.schemas import BaseToolInput
@@ -6,7 +8,7 @@ from app.core.plugins.tools import BaseTool
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
     coin_name: str
-    start_date: str | None = None
+    start_date: Union[str, None] = None
 
 
 CoinPriceChartSimilaritySearchTool = BaseTool(
