@@ -1,5 +1,5 @@
 from langchain_openai.chat_models import ChatOpenAI
-from langgraph.checkpoint.aiosqlite import AsyncSqliteSaver
+from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 
 import os
 

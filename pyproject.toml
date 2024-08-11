@@ -1,8 +1,12 @@
 [tool.poetry]
-name = "core"
+name = "fridon-ai"
 version = "0.1.0"
 description = ""
 authors = []
+
+packages = [
+    { include = "app"}
+]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
@@ -10,25 +14,25 @@ dependency-injector = "^4.41.0"
 async-timeout = "^4.0.3"
 redis = "^5.0.3"
 langchain = "^0.2.1"
-langchain-openai = "^0.1.8"
-semantic-router = "^0.0.46"
+langchain-openai = "^0.1.21"
+langchain-community = "^0.2.4"
+langgraph-checkpoint-sqlite = "^1.0.0"
+langgraph = "^0.2.3"
+
 fastapi-camelcase = "^2.0.0"
 python-dotenv = "^1.0.1"
 psycopg = "^3.1.18"
 psycopg-binary = "^3.1.18"
 jq = "^1.7.0"
 faiss-cpu = "^1.8.0"
-pinecone-client = {version = "^3.2.2", extras = ["grpc"]}
 pycoingecko = "^3.1.0"
 pandas = "^2.2.1"
 numpy = "^1.26.4"
 matplotlib = "^3.8.4"
 pandas-ta = "^0.3.14b0"
 literalai = "^0.0.401"
-langgraph = "^0.0.61"
 aiosqlite = "^0.20.0"
 psycopg_pool = "^3.2.2"
-langchain-community = "^0.2.4"
 aiocron = "^1.8"
 
 [tool.poetry.group.dev.dependencies]
@@ -45,39 +49,5 @@ pandas-ta = "^0.3.14b0"
 
 
 [build-system]
-requires = ["poetry"]
-build-backend = "poetry.masonry.api"
-
-[tool.isort]
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-line_length = 88
-
-[tool.mypy]
-strict = true
-exclude = [".venv", "alembic"]
-
-[tool.ruff]
-target-version = "py311"
-
-[tool.ruff.lint]
-select = [
-  "E",  # pycodestyle errors
-  "W",  # pycodestyle warnings
-  "F",  # pyflakes
-  "I",  # isort
-  "B",  # flake8-bugbear
-  "C4",  # flake8-comprehensions
-  "UP",  # pyupgrade
-]
-ignore = [
-  "E501",  # line too long, handled by black
-  "B008",  # do not perform function calls in argument defaults
-  "W191",  # indentation contains tabs
-  "B904",  # Allow raising exceptions without from e, for HTTPException
-]
-
-[tool.ruff.lint.pyupgrade]
-# Preserve types, even if a file imports `from __future__ import annotations`.
-keep-runtime-typing = true
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

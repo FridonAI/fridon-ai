@@ -79,8 +79,6 @@ async def send_plugins(
 
 
 if __name__ == "__main__":
-    from app.settings import settings
-    print(settings.OPENAI_API_KEY)
     container = Container()
     container.config.redis_host.from_env("REDIS_HOST", "localhost")
     container.config.redis_password.from_env("REDIS_PASSWORD", None)

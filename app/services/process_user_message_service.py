@@ -1,16 +1,12 @@
 from dependency_injector.wiring import inject, Provide
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_core.messages import HumanMessage
-from langgraph.checkpoint import BaseCheckpointSaver
-from langgraph.checkpoint.aiosqlite import AsyncSqliteSaver
+from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 
 from app.core.graph import create_graph
 from app.core.plugins.registry import ensure_plugin_registry
 
 from app.settings import settings
-
-from app.core.checkpoint import PostgresSaver
-from psycopg_pool import AsyncConnectionPool
 
 
 class ProcessUserMessageService:
@@ -28,17 +24,6 @@ class ProcessUserMessageService:
         except Exception as e:
             print(f"Error sending message to literal: {e}")
 
-    @staticmethod
-    async def _prepare_memory() -> BaseCheckpointSaver:
-        pool = AsyncConnectionPool(
-            conninfo=settings.POSTGRES_DB_URL,
-            max_size=20,
-        )
-
-        await PostgresSaver.acreate_tables(pool)
-
-        return PostgresSaver(async_connection=pool)
-
     async def _prepare_graph(self, plugin_names):
         registry = ensure_plugin_registry()
         plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]
@@ -46,9 +31,8 @@ class ProcessUserMessageService:
 
         llm = ChatOpenAI(model="gpt-4o", temperature=0, openai_api_key=settings.OPENAI_API_KEY, verbose=True)
 
-        memory = await self._prepare_memory()
-
-        graph = create_graph(llm, plugins, memory=AsyncSqliteSaver.from_conn_string(":memory:"))
+        async with AsyncSqliteSaver.from_conn_string(":memory:") as saver:
+            graph = create_graph(llm, plugins, memory=saver)
         return graph
 
     async def process(self, wallet_id: str, chat_id: str, plugin_names: list[str], message: str):
