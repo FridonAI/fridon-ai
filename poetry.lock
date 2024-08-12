@@ -2283,6 +2283,22 @@ files = [
 langchain-core = ">=0.2.22,<0.3"
 
 [[package]]
+name = "langgraph-checkpoint-postgres"
+version = "1.0.3"
+description = "Library with a Postgres implementation of LangGraph checkpoint saver."
+optional = false
+python-versions = "<4.0.0,>=3.9.0"
+files = [
+    {file = "langgraph_checkpoint_postgres-1.0.3-py3-none-any.whl", hash = "sha256:dd5b80c87099f9a051b1e14d1e93c5c0863561c67ec15adc58d25d803a407f8b"},
+    {file = "langgraph_checkpoint_postgres-1.0.3.tar.gz", hash = "sha256:00803a3ce16fe3b7b33140b36e39ce88ad226a22f6faea013d5cabdc48957b7e"},
+]
+
+[package.dependencies]
+langgraph-checkpoint = ">=1.0.1,<2.0.0"
+orjson = ">=3.10.1"
+psycopg = {version = ">=3.1.19", extras = ["binary"]}
+
+[[package]]
 name = "langgraph-checkpoint-sqlite"
 version = "1.0.0"
 description = "Library with a SQLite implementation of LangGraph checkpoint saver."
@@ -3296,6 +3312,7 @@ files = [
 ]
 
 [package.dependencies]
+psycopg-binary = {version = "3.2.1", optional = true, markers = "implementation_name != \"pypy\" and extra == \"binary\""}
 typing-extensions = ">=4.4"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
@@ -4848,4 +4865,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "d0222b0044669b69c5aa451d8486c0029faf1c8e5b16314e87f91ed511297cbb"
+content-hash = "c2b3e1f6c060744e4e5c09f9cc7ef7e8d6e1327f868ca0a12eabae687f9b9d8c"

@@ -1,13 +1,12 @@
 from dependency_injector.wiring import inject, Provide
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_core.messages import HumanMessage
-from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 from app.core.graph import create_graph
 from app.core.plugins.registry import ensure_plugin_registry
 
 from app.settings import settings
-
 
 class ProcessUserMessageService:
     @inject
@@ -24,38 +23,41 @@ class ProcessUserMessageService:
         except Exception as e:
             print(f"Error sending message to literal: {e}")
 
-    async def _prepare_graph(self, plugin_names):
+    async def _prepare_graph(self, plugin_names, memory):
         registry = ensure_plugin_registry()
         plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]
         plugins = [p for p in plugins if p.exclude is False]
 
         llm = ChatOpenAI(model="gpt-4o", temperature=0, openai_api_key=settings.OPENAI_API_KEY, verbose=True)
 
-        async with AsyncSqliteSaver.from_conn_string(":memory:") as saver:
-            graph = create_graph(llm, plugins, memory=saver)
+        graph = create_graph(llm, plugins, memory=memory)
         return graph
 
     async def process(self, wallet_id: str, chat_id: str, plugin_names: list[str], message: str):
-        graph = await self._prepare_graph(plugin_names)
-        config = {
-            "configurable": {
-                "thread_id": chat_id,
-                "wallet_id": wallet_id,
-                "chat_id": chat_id,
+        async with AsyncPostgresSaver.from_conn_string(settings.POSTGRES_DB_URL, pipeline=False) as memory:
+            await memory.setup()
+            graph = await self._prepare_graph(plugin_names, memory)
+            config = {
+                "configurable": {
+                    "thread_id": chat_id,
+                    "wallet_id": wallet_id,
+                    "chat_id": chat_id,
+                }
             }
-        }
-        response = ""
-        async for s in graph.astream(
-                {
-                    "messages": [HumanMessage(content=message)],
-                },
-                config,
-                stream_mode="values"
-        ):
-            if "__end__" not in s:
-                response = s["messages"][-1]
-                response.pretty_print()
-        used_agents = list(set((await graph.aget_state(config)).values.get("used_agents", [])))
-        self._send_literal_message(chat_id, wallet_id, "user_message", f"User", message)
-        self._send_literal_message(chat_id, wallet_id, "assistant_message", f"Fridon", response.content)
-        return response.content, used_agents
+            response = ""
+            async for s in graph.astream(
+                    {
+                        "messages": [HumanMessage(content=message)],
+                    },
+                    config,
+                    stream_mode="values"
+            ):
+                if "__end__" not in s:
+                    response = s["messages"][-1]
+                    response.pretty_print()
+
+            used_agents = list(set((await graph.aget_state(config)).values.get("used_agents", [])))
+            self._send_literal_message(chat_id, wallet_id, "user_message", f"User", message)
+            self._send_literal_message(chat_id, wallet_id, "assistant_message", f"Fridon", response.content)
+
+            return response.content, used_agents

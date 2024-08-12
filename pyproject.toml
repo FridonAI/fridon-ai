@@ -34,6 +34,7 @@ literalai = "^0.0.401"
 aiosqlite = "^0.20.0"
 psycopg_pool = "^3.2.2"
 aiocron = "^1.8"
+langgraph-checkpoint-postgres = "^1.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
