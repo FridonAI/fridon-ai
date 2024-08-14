@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, Literal
 from pydantic.v1 import BaseSettings
 from dotenv import load_dotenv
 
@@ -34,6 +34,8 @@ class Settings(BaseSettings):
     LITERAL_API_KEY: Optional[str]
 
     NUMBER_OF_COINS_ANALYZING: int = 15
+
+    ENV: Literal['test', 'mock', 'prod'] = 'mock'
 
     class Config:
         env_file = '.env'

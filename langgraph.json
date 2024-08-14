@@ -1,5 +1,9 @@
 {
-  "dependencies": ["."],
+  "python_version": "3.11",
+  "dockerfile_lines": [],
+  "dependencies": [
+    "."
+  ],
   "graphs": {
     "agent": "app/studio.py:test_chat"
   },
