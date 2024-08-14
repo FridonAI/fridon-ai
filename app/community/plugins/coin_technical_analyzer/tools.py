@@ -1,13 +1,19 @@
 from typing import Literal
+
+from app.core.plugins.schemas import BaseToolInput
+from app.core.plugins.tools import BaseTool
+from app.settings import settings
+
 from app.community.plugins.coin_technical_analyzer.utilities import (
-    CoinTechnicalAnalyzerUtility,
     CoinTechnicalIndicatorsListUtility,
     CoinTechnicalIndicatorsSearchUtility,
     CoinBulishSearchUtility
 )
-from app.core.plugins.schemas import BaseToolInput
-from app.core.plugins.tools import BaseTool
 
+if settings.ENV == 'mock':
+    from app.community.plugins.coin_technical_analyzer.mock.utilities import CoinTechnicalAnalyzerMockUtility as CoinTechnicalAnalyzerUtility
+else:
+    from app.community.plugins.coin_technical_analyzer.utilities import CoinTechnicalAnalyzerUtility
 
 class CoinTechnicalAnalyzerToolInput(BaseToolInput):
     coin_name: str

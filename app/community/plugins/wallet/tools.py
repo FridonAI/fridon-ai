@@ -1,9 +1,13 @@
 from typing import Union
 
-from app.community.plugins.wallet.utilities import WalletBalanceUtility, WalletTransferUtility
 from app.core.plugins.schemas import BaseToolInput
 from app.core.plugins.tools import BaseTool
+from app.settings import settings
 
+if settings.ENV == 'mock':
+    from app.community.plugins.wallet.mock.utilities import WalletBalanceMockUtility as WalletBalanceUtility, WalletTransferMockUtility as WalletTransferUtility
+else:
+    from app.community.plugins.wallet.utilities import WalletBalanceUtility, WalletTransferUtility
 
 class WalletBalanceToolInput(BaseToolInput):
     currency: Union[str, None] = None

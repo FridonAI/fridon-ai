@@ -1,10 +1,15 @@
 from typing import Union
 
-from app.community.helpers.utilities import DatetimeExtractorUtility
-from app.community.plugins.coin_price_chart_similarity_search.utilities import CoinPriceChartSimilaritySearchUtility
 from app.core.plugins.schemas import BaseToolInput
 from app.core.plugins.tools import BaseTool
+from app.settings import settings
 
+from app.community.helpers.utilities import DatetimeExtractorUtility
+
+if settings.ENV == 'mock':
+    from app.community.plugins.coin_price_chart_similarity_search.mock.utilities import CoinPriceChartSimilaritySearchMockUtility as CoinPriceChartSimilaritySearchUtility
+else:
+    from app.community.plugins.coin_price_chart_similarity_search.utilities import CoinPriceChartSimilaritySearchUtility
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
     coin_name: str
