@@ -14,6 +14,7 @@ class BaseTool(LangchainBaseTool):
     args_schema: type[BaseToolInput] | None = None
     utility: BaseUtility
     examples: list[dict] = []
+    helper: bool = False
 
     def _run(
         self,

@@ -60,7 +60,8 @@ CoinTechnicalIndicatorsListTool = BaseTool(
             "request": "what are the technical indicators?",
             "response": "",
         },
-    ]
+    ],
+    helper=True
 )
 
 
@@ -83,7 +84,8 @@ CoinTechnicalIndicatorsSearchTool = BaseTool(
             "request": "List all coins havind MACD > 0 and RSI < 10",
             "response": "",
         },
-    ]
+    ],
+    helper=True
 )
 
 class CoinBullishSearchToolInput(BaseToolInput):
@@ -110,7 +112,8 @@ CoinBullishSearchTool = BaseTool(
             "request": "Give me strongly bearish coins",
             "response": ""
         }
-    ]
+    ],
+    helper=True
 )
 
 
