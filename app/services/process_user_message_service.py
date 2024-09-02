@@ -46,16 +46,19 @@ class ProcessUserMessageService:
             }
             response = ""
             async for s in graph.astream(
-                    {
-                        "messages": [HumanMessage(content=message)],
-                    },
-                    config,
-                    stream_mode="values"
+                {
+                    "messages": [HumanMessage(content=message)],
+                },
+                config,
+                stream_mode="values"
             ):
                 if "__end__" not in s:
                     response = s["messages"][-1]
                     response.pretty_print()
-
+            if response.content == "":
+                result = response.additional_kwargs["tool_calls"][0]['function']['arguments']
+            else:
+                result = response.content
             used_agents = list(set((await graph.aget_state(config)).values.get("used_agents", [])))
             self._send_literal_message(chat_id, wallet_id, "user_message", f"User", message)
             self._send_literal_message(chat_id, wallet_id, "assistant_message", f"Fridon", response.content)

@@ -9,7 +9,7 @@ from app.core.graph.chains import create_agent_chain
 from app.core.graph.prompts import create_agent_prompt, create_supervised_prompt
 from app.core.graph.routers import route_plugin_agent, route_supervisor_agent
 from app.core.graph.states import State
-from app.core.graph.tools import CompleteTool, create_plugin_wrapper_tool
+from app.core.graph.tools import CompleteTool, create_plugin_wrapper_tool, FinalResponse
 from app.core.graph.utils import prepare_plugin_agent, handle_tool_error, leave_tool
 from app.core.plugins import BasePlugin
 
@@ -30,7 +30,7 @@ def create_graph(
         create_agent_chain(
             llm,
             prompt=create_supervised_prompt(),
-            tools=list(plugins_to_wrapped_plugins.values()),
+            tools=[*list(plugins_to_wrapped_plugins.values()), FinalResponse],
             always_tool_call=False
         )
     )
@@ -40,7 +40,7 @@ def create_graph(
     for plugin in plugins:
         agent_chain = create_agent_chain(
             llm,
-            create_agent_prompt(plugin.name, plugin.full_description(tool_descriptions=False)),
+            create_agent_prompt(plugin.name, plugin.full_description(tool_descriptions=False), plugin.output_format),
             tools=plugin.tools + [CompleteTool],
             always_tool_call=True
         )

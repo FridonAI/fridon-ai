@@ -13,3 +13,4 @@ class CoinPriceChartSimilaritySearchPlugin(BasePlugin):
     price = 1000
     tools: type[list[BaseTool]] = TOOLS
     image_url = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/chart-similarity-avatar.png"
+    json_format = True
