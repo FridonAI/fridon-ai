@@ -1,5 +1,8 @@
 from langchain_core.messages import ToolMessage
 
+from app.core.graph.models import structured_final_response_model
+from app.core.graph.states import State
+
 
 def prepare_plugin_agent(state):
     tool_call = state["messages"][-1].tool_calls[0]
@@ -20,6 +23,15 @@ def handle_tool_error(state) -> dict:
             for tc in tool_calls
         ]
     }
+
+def generate_structured_response(state: State):
+    messages = state["messages"]
+    for i in range(len(messages) - 1, -1, -1):
+        if messages[i].type == 'human':
+            response = structured_final_response_model.invoke(messages[i:])
+            return {
+                "final_response": response
+            }
 
 def leave_tool(state) -> dict:
     messages = []

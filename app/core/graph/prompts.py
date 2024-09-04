@@ -16,15 +16,10 @@ def create_supervised_prompt() -> ChatPromptTemplate:
                 "\nDon't make up any information just use provided information and messages. If some tool wasn't able to do its job say it don't pretend that everything is fine."
                 "If you are confused and user's question is appropriate for several tools ask question to specify and make it clear."
                 "\nIf the question is general and is about crypto, about coins, solana, bonk, blockchain protocols asking for some possible solutions use the `ToSolanaBonkEducatorPlugin` tool.\n"
-                "After you've called every tools for collecting answers call `FinalResponse` tool for generating final response.\n"
-                "REMEMBER: Always call `FinalResponse` tool at the end.\n"
+                "You user's message contains more than one requests please choose just one arbitrary and then notify that you do just one job at a time, when responding."
+                "Don't call the same assistant more than once.\n"
             ),
             ("placeholder", "{messages}"),
-            # (
-            #     "system",
-            #     "After you've called every tools for collecting answers call `FinalResponse` tool for generating final response.\n"
-            #     "REMEMBER: Always call `FinalResponse` tool at the end.\n"
-            # )
         ]
     )
 
@@ -35,7 +30,6 @@ def create_agent_prompt(name: str, description: str, output_format: str) -> Chat
             (
                 "system",
                 f"You are a specialized assistant named '{name}'. For handling user's requests using the provided tools."
-                "The primary assistant delegates work to you whenever the user needs help about your expertise-specific topic. "
                 "Use appropriate tools to satisfy all user's needs. "
                 "\nWhen you think that you gathered all the necessary information, call the *CompleteTool* tool to let the primary assistant take control,"
                 "But before that ensure that you called at least one tool. Don't make up information by yourself fist use some tools and then generate response."
