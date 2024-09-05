@@ -17,15 +17,16 @@ async def task_runner(
         scorer_service: CalculateUserMessageScoreService,
         pub: redis.Publisher
 ):
-    response_message, used_agents = await service.process(request.user.wallet_id, request.chat_id, request.plugins, request.data.message)
-    response = ResponseDto.parse_obj(
+    plugins = ["wallet", "fridon", "solana-bonk-educator", "coin-price-chart-similarity-search", "coin-technical-analyzer"]
+    response_message, used_agents = await service.process(request.user.wallet_id, request.chat_id, plugins, request.data.message)
+    response = ResponseDto.model_validate(
         {
             'chat_id': request.chat_id,
             'user': {
                 'wallet_id': request.user.wallet_id
             },
             'data': {
-                'message': response_message,
+                'message': json.dumps(response_message.structured_answers[0]) if response_message.structured_answers else response_message.text_answer,
                 'message_id': request.data.message_id,
                 'plugins_used': used_agents,
                 'serialized_transaction': None

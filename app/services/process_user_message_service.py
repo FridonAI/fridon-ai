@@ -1,3 +1,5 @@
+import json
+
 from dependency_injector.wiring import inject, Provide
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_core.messages import HumanMessage
@@ -55,12 +57,11 @@ class ProcessUserMessageService:
                 if "__end__" not in s:
                     response = s["messages"][-1]
                     response.pretty_print()
-            if response.content == "":
-                result = response.additional_kwargs["tool_calls"][0]['function']['arguments']
-            else:
-                result = response.content
-            used_agents = list(set((await graph.aget_state(config)).values.get("used_agents", [])))
-            self._send_literal_message(chat_id, wallet_id, "user_message", f"User", message)
-            self._send_literal_message(chat_id, wallet_id, "assistant_message", f"Fridon", response.content)
 
-            return response.content, used_agents
+            graph_state = await graph.aget_state(config)
+            used_agents = list(set(graph_state.values.get("used_agents", [])))
+            final_response = graph_state.values.get("final_response")
+            self._send_literal_message(chat_id, wallet_id, "user_message", f"User", message)
+            self._send_literal_message(chat_id, wallet_id, "assistant_message", f"Fridon", final_response.text_answer or json.dumps(final_response.structured_answers))
+
+            return final_response, used_agents
