@@ -18,7 +18,15 @@ def _prepare_graph(plugin_names):
 def test_chat():
     _preload_modules()
 
-    plugin_names = ["wallet", "fridon", "coin-technical-analyzer", "coin-price-chart-similarity-search", "jupiter"]
+    plugin_names = [
+        "wallet", 
+        "fridon",
+        "coin-technical-analyzer", 
+        "coin-price-chart-similarity-search", 
+        "jupiter",
+        "kamino",
+        "solana-bonk-educator",
+    ]
     graph = _prepare_graph(plugin_names)
 
     return graph
