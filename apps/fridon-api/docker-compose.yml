@@ -1,0 +1,56 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    restart: always
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://user:pass@db:5432/app?schema=api_schema
+    env_file:
+      - .env
+
+  # core:
+  #   build:
+  #     context: ../core/
+  #   container_name: core
+  #   environment:
+  #     - REDIS_HOST=redis
+  #     - REDIS_PORT=6379
+  #     - DATABASE_URL=postgresql://user:pass@db:5432/app?schema=core_schema
+  #   env_file:
+  #     - ../core/.env
+  #   command: python -m app.main
+
+  db:
+    build:
+      dockerfile: pgvector.dockerfile
+    ports:
+      - 5432:5432
+    restart: always
+    env_file:
+      - .env
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=redis
+    ports:
+      - 8081:8081
+
+volumes:
+  db:
+    name: db-db

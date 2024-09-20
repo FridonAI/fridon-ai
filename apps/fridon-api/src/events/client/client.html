@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script>
+      // Function to parse query string parameters
+      function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+      }
+
+      // Get 'walletId' from the query string
+      const paramName = 'walletId';
+      const walletId = getQueryParam(paramName);
+      if (!walletId) {
+        setTimeout(() => {
+          document.body.innerHTML += `<p>WalletId not found in the query string use <b>${paramName}</b> in queryString </p>`;
+        }, 0);
+      }
+
+      setTimeout(() => {
+        const socket = io(`http://localhost:3000?walletId=${walletId}`);
+
+        socket.on('connect', () => {
+          console.log(`Connected with walletId: ${walletId}`);
+          document.body.innerHTML += `Connected with walletId: ${walletId}`;
+        });
+
+        // Listening to a generic 'message' event
+        socket.on('chat.response-generated', (data) => {
+          console.log('Message received:', data);
+          document.body.innerHTML += `<p>Message: ${JSON.stringify(data)}</p>`; // Display in the webpage
+        });
+
+        socket.on('exception', (data) => {
+          console.log('Exception:', data);
+          document.body.innerHTML += `<p>Exception: ${JSON.stringify(data)}</p>`; // Display in the webpage
+        });
+
+        socket.on('disconnect', () => {
+          console.log('Disconnected');
+          document.body.innerHTML += '<p>Disconnected</p>'; // Display in the webpage
+        });
+      }, 1);
+
+      // Initialize the socket connection with dynamic 'walletId'
+    </script>
+  </head>
+  <body></body>
+</html>

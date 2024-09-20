@@ -1,0 +1,782 @@
+[
+  {
+    "symbol": "sol",
+    "chain": "solana",
+    "address": "So11111111111111111111111111111111111111112"
+  },
+  {
+    "symbol": "jup",
+    "chain": "solana",
+    "address": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"
+  },
+  {
+    "symbol": "w",
+    "chain": "solana",
+    "address": "85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ"
+  },
+  {
+    "symbol": "pyth",
+    "chain": "solana",
+    "address": "HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3"
+  },
+  {
+    "symbol": "jto",
+    "chain": "solana",
+    "address": "jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL"
+  },
+  {
+    "symbol": "wif",
+    "chain": "solana",
+    "address": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"
+  },
+  {
+    "symbol": "bonk",
+    "chain": "solana",
+    "address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
+  },
+  {
+    "symbol": "neon",
+    "chain": "solana",
+    "address": "NeonTjSjsuo3rexg9o6vHuMXw62f9V7zvmu8M8Zut44"
+  },
+  {
+    "symbol": "ray",
+    "chain": "solana",
+    "address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R"
+  },
+  {
+    "symbol": "bome",
+    "chain": "solana",
+    "address": "ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82"
+  },
+  {
+    "symbol": "hnt",
+    "chain": "solana",
+    "address": "hntyVP6YFm1Hg25TN9WGLqM12b8TQmcknKrdu1oxWux"
+  },
+  {
+    "symbol": "acf",
+    "chain": "solana",
+    "address": "2cZv8HrgcWSvC6n1uEiS48cEQGb1d3fiowP2rpa4wBL9"
+  },
+  {
+    "symbol": "honey",
+    "chain": "solana",
+    "address": "4vMsoUT2BWatFweudnQM1xedRLfJgJ7hswhcpz4xgBTy"
+  },
+  {
+    "symbol": "zeus",
+    "chain": "solana",
+    "address": "ZEUS1aR7aX8DFFJf5QjWj2ftDDdNTroMNGo8YoQm3Gq"
+  },
+  {
+    "symbol": "gmt",
+    "chain": "solana",
+    "address": "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx"
+  },
+  {
+    "symbol": "srm",
+    "chain": "solana",
+    "address": "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt"
+  },
+  {
+    "symbol": "oxy",
+    "chain": "solana",
+    "address": "z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M"
+  },
+  {
+    "symbol": "foxy",
+    "chain": "solana",
+    "address": "FoXyMu5xwXre7zEoSvzViRk3nGawHUp9kUh97y2NDhcq"
+  },
+  {
+    "symbol": "$ggem",
+    "chain": "solana",
+    "address": "GGEMxCsqM74URiXdY46VcaSW73a4yfHfJKrJrUmDVpEF"
+  },
+  {
+    "symbol": "boden",
+    "chain": "solana",
+    "address": "3psH1Mj1f7yUfaD5gh6Zj7epE8hhrMkMETgv5TshQA4o"
+  },
+  {
+    "symbol": "fida",
+    "chain": "solana",
+    "address": "EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp"
+  },
+  {
+    "symbol": "mew",
+    "chain": "solana",
+    "address": "MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5"
+  },
+  {
+    "symbol": "$cwif",
+    "chain": "solana",
+    "address": "7atgF8KQo4wJrD5ATGX7t1V2zVvykPJbFfNeVf1icFv1"
+  },
+  {
+    "symbol": "mplx",
+    "chain": "solana",
+    "address": "METAewgxyPbgwsseH8T16a39CQ5VyVxZi9zXiDPY18m"
+  },
+  {
+    "symbol": "orca",
+    "chain": "solana",
+    "address": "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE"
+  },
+  {
+    "symbol": "rndr",
+    "chain": "solana",
+    "address": "rndrizKT3MK1iimdxRdWabcF7Zg7AR5T4nud4EkHBof"
+  },
+  {
+    "symbol": "nos",
+    "chain": "solana",
+    "address": "nosXBVoaCTtYdLvKY6Csb4AC8JCdQKKAaWYtx2ZMoo7"
+  },
+  {
+    "symbol": "rlb",
+    "chain": "solana",
+    "address": "RLBxxFkseAZ4RgJH3Sqn8jXxhmGoz9jWxDNJMh8pL7a"
+  },
+  {
+    "symbol": "crown",
+    "chain": "solana",
+    "address": "GDfnEsia2WLAW5t8yx2X5j2mkfA74i5kwGdDuZHt7XmG"
+  },
+  {
+    "symbol": "zbc",
+    "chain": "solana",
+    "address": "zebeczgi5fSEtbpfQKVZKCJ3WgYXxjkMUkNNx7fLKAF"
+  },
+  {
+    "symbol": "jlp",
+    "chain": "solana",
+    "address": "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4"
+  },
+  {
+    "symbol": "shdw",
+    "chain": "solana",
+    "address": "SHDWyBxihqiCj6YekG2GUr7wqKLeLAMK1gHZck9pL6y"
+  },
+  {
+    "symbol": "mnde",
+    "chain": "solana",
+    "address": "MNDEFzGvMt87ueuHvVU9VcTqsAP5b3fTGPsHuuPA5ey"
+  },
+  {
+    "symbol": "acs",
+    "chain": "solana",
+    "address": "5MAYDfq5yxtudAhtfyuMBuHZjgAbaS9tbEyEQYAhDS5y"
+  },
+  {
+    "symbol": "mobile",
+    "chain": "solana",
+    "address": "mb1eu7TzEc71KxDpsmsKoucSSuuoGLv1drys1oP2jh6"
+  },
+  {
+    "symbol": "maps",
+    "chain": "solana",
+    "address": "MAPS41MDahZ9QdKXhVa4dWB9RuyfV4XqhyAZ8XcYepb"
+  },
+  {
+    "symbol": "atlas",
+    "chain": "solana",
+    "address": "ATLASXmbPQxBUYbxPsV97usA3fPQYEqzQBUHgiFCUsXx"
+  },
+  {
+    "symbol": "$myro",
+    "chain": "solana",
+    "address": "HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4"
+  },
+  {
+    "symbol": "smog",
+    "chain": "solana",
+    "address": "FS66v5XYtJAFo14LiPz5HT93EUMAHmYipCfQhLpU4ss8"
+  },
+  {
+    "symbol": "wen",
+    "chain": "solana",
+    "address": "WENWENvqqNya429ubCdR81ZmD69brwQaaBYY6p3LCpk"
+  },
+  {
+    "symbol": "media",
+    "chain": "solana",
+    "address": "ETAtLmCmsoiEEKfNrHKJ2kYy3MoABhU6NQvpSfij5tDs"
+  },
+  {
+    "symbol": "slerf",
+    "chain": "solana",
+    "address": "7BgBvyjrZX1YKz4oh9mjb8ZScatkkwb8DzFx7LoiVkM3"
+  },
+  {
+    "symbol": "phy",
+    "chain": "solana",
+    "address": "EswgBj2hZKdgovX2ihWSUDnuBg9VNbGmSGoH5yjNsPRa"
+  },
+  {
+    "symbol": "popcat",
+    "chain": "solana",
+    "address": "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr"
+  },
+  {
+    "symbol": "lfnty",
+    "chain": "solana",
+    "address": "LFNTYraetVioAPnGJht4yNg2aUZFXR776cMeN9VMjXp"
+  },
+  {
+    "symbol": "soeth",
+    "chain": "solana",
+    "address": "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk"
+  },
+  {
+    "symbol": "slnd",
+    "chain": "solana",
+    "address": "SLNDpmoWTVADgEdndyvWzroNL7zSi1dF9PC3xHGtPwp"
+  },
+  {
+    "symbol": "scs",
+    "chain": "solana",
+    "address": "SCSuPPNUSypLBsV4darsrYNg4ANPgaGhKhsA3GmMyjz"
+  },
+  {
+    "symbol": "hxd",
+    "chain": "solana",
+    "address": "3dgCCb15HMQSA4Pn3Tfii5vRk7aRqTH95LJjxzsG2Mug"
+  },
+  {
+    "symbol": "whales",
+    "chain": "solana",
+    "address": "GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1"
+  },
+  {
+    "symbol": "pip",
+    "chain": "solana",
+    "address": "HHjoYwUp5aU6pnrvN4s2pwEErwXNZKhxKGYjRJMoBjLw"
+  },
+  {
+    "symbol": "sc",
+    "chain": "solana",
+    "address": "6D7NaB2xsLd7cauWu1wKk6KBsJohJmP2qZH9GEfVi5Ui"
+  },
+  {
+    "symbol": "polis",
+    "chain": "solana",
+    "address": "poLisWXnNRwC6oBu1vHiuKQzFjGL4XDSu4g9qjz9qVk"
+  },
+  {
+    "symbol": "lst",
+    "chain": "solana",
+    "address": "LSTxxxnJzKDFSLr4dUkPcmCf5VyryEqzPLz5j4bpxFp"
+  },
+  {
+    "symbol": "atr",
+    "chain": "solana",
+    "address": "ATRLuHph8dxnPny4WSNW7fxkhbeivBrtWbY6BfB4xpLj"
+  },
+  {
+    "symbol": "like",
+    "chain": "solana",
+    "address": "3bRTivrVsitbmCTGtqwp7hxXPsybkjn4XLNtPsHqa3zR"
+  },
+  {
+    "symbol": "asv",
+    "chain": "solana",
+    "address": "AxaTJdRuuc3626FtPWdQCMcWPH6yzgxXKWbFCZN3TMgy"
+  },
+  {
+    "symbol": "cost",
+    "chain": "solana",
+    "address": "Av6qVigkb7USQyPXJkUvAEm4f599WTRvd75PUWBA9eNm"
+  },
+  {
+    "symbol": "mngo",
+    "chain": "solana",
+    "address": "MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac"
+  },
+  {
+    "symbol": "otk",
+    "chain": "solana",
+    "address": "octo82drBEdm8CSDaEKBymVn86TBtgmPnDdmE64PTqJ"
+  },
+  {
+    "symbol": "dpln",
+    "chain": "solana",
+    "address": "J2LWsSXx4r3pYbJ1fwuX5Nqo7PPxjcGPpUb2zHNadWKa"
+  },
+  {
+    "symbol": "sns",
+    "chain": "solana",
+    "address": "SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd"
+  },
+  {
+    "symbol": "khai",
+    "chain": "solana",
+    "address": "3TWgDvYBL2YPET2LxnWAwsMeoA8aL4DutNuwat2pKCjC"
+  },
+  {
+    "symbol": "btc",
+    "chain": "solana",
+    "address": "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh"
+  },
+  {
+    "symbol": "eth",
+    "chain": "solana",
+    "address": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"
+  },
+  {
+    "symbol": "aury",
+    "chain": "solana",
+    "address": "AURYydfxJib1ZkTir1Jn1J9ECYUtjb6rKQVmtYaixWPP"
+  },
+  {
+    "symbol": "taki",
+    "chain": "solana",
+    "address": "Taki7fi3Zicv7Du1xNAWLaf6mRK7ikdn77HeGzgwvo4"
+  },
+  {
+    "symbol": "mxm",
+    "chain": "solana",
+    "address": "H53UGEyBrB9easo9ego8yYk7o4Zq1G5cCtkxD3E3hZav"
+  },
+  {
+    "symbol": "moutai",
+    "chain": "solana",
+    "address": "45EgCwcPXYagBC7KqBin4nCFgEZWN7f3Y6nACwxqMCWX"
+  },
+  {
+    "symbol": "samo",
+    "chain": "solana",
+    "address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+  },
+  {
+    "symbol": "inf",
+    "chain": "solana",
+    "address": "5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"
+  },
+  {
+    "symbol": "kin",
+    "chain": "solana",
+    "address": "kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6"
+  },
+  {
+    "symbol": "chat",
+    "chain": "solana",
+    "address": "947tEoG318GUmyjVYhraNRvWpMX7fpBTDQFBoJvSkSG3"
+  },
+  {
+    "symbol": "hxro",
+    "chain": "solana",
+    "address": "HxhWkVpk5NS4Ltg5nij2G671CKXFRKPK8vy271Ub4uEK"
+  },
+  {
+    "symbol": "uxp",
+    "chain": "solana",
+    "address": "UXPhBoR3qG4UCiGNJfV7MqhHyFqKN68g45GoYvAeL2M"
+  },
+  {
+    "symbol": "gst",
+    "chain": "solana",
+    "address": "AFbX8oGjGpmVFywbVouvhQSRmiW2aR1mohfahi4Y2AdB"
+  },
+  {
+    "symbol": "fluxb",
+    "chain": "solana",
+    "address": "FLUXBmPhT3Fd1EDVFdg46YREqHBeNypn1h4EbnTzWERX"
+  },
+  {
+    "symbol": "step",
+    "chain": "solana",
+    "address": "StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT"
+  },
+  {
+    "symbol": "eurc",
+    "chain": "solana",
+    "address": "HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr"
+  },
+  {
+    "symbol": "abr",
+    "chain": "solana",
+    "address": "a11bdAAuV8iB2fu7X6AxAvDTo1QZ8FXB3kk5eecdasp"
+  },
+  {
+    "symbol": "baby",
+    "chain": "solana",
+    "address": "5hmf8Jt9puwoqiFQTb3vr22732ZTKYRLRw9Vo7tN3rcz"
+  },
+  {
+    "symbol": "brz",
+    "chain": "solana",
+    "address": "FtgGSFADXBtroxq8VCausXRr2of47QBf5AS1NtZCu4GD"
+  },
+  {
+    "symbol": "dio",
+    "chain": "solana",
+    "address": "BiDB55p4G3n1fGhwKFpxsokBMqgctL4qnZpDH1bVQxMD"
+  },
+  {
+    "symbol": "slite",
+    "chain": "solana",
+    "address": "7eJCLyW5KkvzdzkVXs1ukA1WfFjCcocXjVit64tYcown"
+  },
+  {
+    "symbol": "ponke",
+    "chain": "solana",
+    "address": "5z3EqYQo9HiCEs3R84RCDMu2n7anpDMxRhdK8PSWmrRC"
+  },
+  {
+    "symbol": "iot",
+    "chain": "solana",
+    "address": "iotEVVZLEywoTn1QdwNPddxPWszn3zFhEot3MfL9fns"
+  },
+  {
+    "symbol": "gari",
+    "chain": "solana",
+    "address": "CKaKtYvz6dKPyMvYq9Rh3UBrnNqYZAyd7iF4hJtjUvks"
+  },
+  {
+    "symbol": "slim",
+    "chain": "solana",
+    "address": "xxxxa1sKNGwFtw2kFn8XauW9xq8hBZ5kVtcSesTT9fW"
+  },
+  {
+    "symbol": "gene",
+    "chain": "solana",
+    "address": "GENEtH5amGSi8kHAtQoezp1XEXwZJ8vcuePYnXdKrMYz"
+  },
+  {
+    "symbol": "bobaoppa",
+    "chain": "solana",
+    "address": "bobaM3u8QmqZhY1HwAtnvze9DLXvkgKYk3td3t8MLva"
+  },
+  {
+    "symbol": "smole",
+    "chain": "solana",
+    "address": "9Ttyez3xiruyj6cqaR495hbBkJU6SUWdV6AmQ9MvbyyS"
+  },
+  {
+    "symbol": "silly",
+    "chain": "solana",
+    "address": "7EYnhQoR9YM3N7UoaKRoA44Uy8JeaZV3qyouov87awMs"
+  },
+  {
+    "symbol": "cwar",
+    "chain": "solana",
+    "address": "HfYFjMKNZygfMC8LsQ8LtpPsPxEJoXJx4M6tqi75Hajo"
+  },
+  {
+    "symbol": "crown",
+    "chain": "solana",
+    "address": "GDfnEsia2WLAW5t8yx2X5j2mkfA74i5kwGdDuZHt7XmG"
+  },
+  {
+    "symbol": "zbc",
+    "chain": "solana",
+    "address": "zebeczgi5fSEtbpfQKVZKCJ3WgYXxjkMUkNNx7fLKAF"
+  },
+  {
+    "symbol": "jlp",
+    "chain": "solana",
+    "address": "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4"
+  },
+  {
+    "symbol": "shdw",
+    "chain": "solana",
+    "address": "SHDWyBxihqiCj6YekG2GUr7wqKLeLAMK1gHZck9pL6y"
+  },
+  {
+    "symbol": "mnde",
+    "chain": "solana",
+    "address": "MNDEFzGvMt87ueuHvVU9VcTqsAP5b3fTGPsHuuPA5ey"
+  },
+  {
+    "symbol": "acs",
+    "chain": "solana",
+    "address": "5MAYDfq5yxtudAhtfyuMBuHZjgAbaS9tbEyEQYAhDS5y"
+  },
+  {
+    "symbol": "mobile",
+    "chain": "solana",
+    "address": "mb1eu7TzEc71KxDpsmsKoucSSuuoGLv1drys1oP2jh6"
+  },
+  {
+    "symbol": "maps",
+    "chain": "solana",
+    "address": "MAPS41MDahZ9QdKXhVa4dWB9RuyfV4XqhyAZ8XcYepb"
+  },
+  {
+    "symbol": "atlas",
+    "chain": "solana",
+    "address": "ATLASXmbPQxBUYbxPsV97usA3fPQYEqzQBUHgiFCUsXx"
+  },
+  {
+    "symbol": "$myro",
+    "chain": "solana",
+    "address": "HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4"
+  },
+  {
+    "symbol": "smog",
+    "chain": "solana",
+    "address": "FS66v5XYtJAFo14LiPz5HT93EUMAHmYipCfQhLpU4ss8"
+  },
+  {
+    "symbol": "wen",
+    "chain": "solana",
+    "address": "WENWENvqqNya429ubCdR81ZmD69brwQaaBYY6p3LCpk"
+  },
+  {
+    "symbol": "media",
+    "chain": "solana",
+    "address": "ETAtLmCmsoiEEKfNrHKJ2kYy3MoABhU6NQvpSfij5tDs"
+  },
+  {
+    "symbol": "slerf",
+    "chain": "solana",
+    "address": "7BgBvyjrZX1YKz4oh9mjb8ZScatkkwb8DzFx7LoiVkM3"
+  },
+  {
+    "symbol": "phy",
+    "chain": "solana",
+    "address": "EswgBj2hZKdgovX2ihWSUDnuBg9VNbGmSGoH5yjNsPRa"
+  },
+  {
+    "symbol": "popcat",
+    "chain": "solana",
+    "address": "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr"
+  },
+  {
+    "symbol": "lfnty",
+    "chain": "solana",
+    "address": "LFNTYraetVioAPnGJht4yNg2aUZFXR776cMeN9VMjXp"
+  },
+  {
+    "symbol": "soeth",
+    "chain": "solana",
+    "address": "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk"
+  },
+  {
+    "symbol": "slnd",
+    "chain": "solana",
+    "address": "SLNDpmoWTVADgEdndyvWzroNL7zSi1dF9PC3xHGtPwp"
+  },
+  {
+    "symbol": "scs",
+    "chain": "solana",
+    "address": "SCSuPPNUSypLBsV4darsrYNg4ANPgaGhKhsA3GmMyjz"
+  },
+  {
+    "symbol": "hxd",
+    "chain": "solana",
+    "address": "3dgCCb15HMQSA4Pn3Tfii5vRk7aRqTH95LJjxzsG2Mug"
+  },
+  {
+    "symbol": "whales",
+    "chain": "solana",
+    "address": "GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1"
+  },
+  {
+    "symbol": "pip",
+    "chain": "solana",
+    "address": "HHjoYwUp5aU6pnrvN4s2pwEErwXNZKhxKGYjRJMoBjLw"
+  },
+  {
+    "symbol": "sc",
+    "chain": "solana",
+    "address": "6D7NaB2xsLd7cauWu1wKk6KBsJohJmP2qZH9GEfVi5Ui"
+  },
+  {
+    "symbol": "polis",
+    "chain": "solana",
+    "address": "poLisWXnNRwC6oBu1vHiuKQzFjGL4XDSu4g9qjz9qVk"
+  },
+  {
+    "symbol": "lst",
+    "chain": "solana",
+    "address": "LSTxxxnJzKDFSLr4dUkPcmCf5VyryEqzPLz5j4bpxFp"
+  },
+  {
+    "symbol": "atr",
+    "chain": "solana",
+    "address": "ATRLuHph8dxnPny4WSNW7fxkhbeivBrtWbY6BfB4xpLj"
+  },
+  {
+    "symbol": "like",
+    "chain": "solana",
+    "address": "3bRTivrVsitbmCTGtqwp7hxXPsybkjn4XLNtPsHqa3zR"
+  },
+  {
+    "symbol": "asv",
+    "chain": "solana",
+    "address": "AxaTJdRuuc3626FtPWdQCMcWPH6yzgxXKWbFCZN3TMgy"
+  },
+  {
+    "symbol": "cost",
+    "chain": "solana",
+    "address": "Av6qVigkb7USQyPXJkUvAEm4f599WTRvd75PUWBA9eNm"
+  },
+  {
+    "symbol": "mngo",
+    "chain": "solana",
+    "address": "MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac"
+  },
+  {
+    "symbol": "otk",
+    "chain": "solana",
+    "address": "octo82drBEdm8CSDaEKBymVn86TBtgmPnDdmE64PTqJ"
+  },
+  {
+    "symbol": "dpln",
+    "chain": "solana",
+    "address": "J2LWsSXx4r3pYbJ1fwuX5Nqo7PPxjcGPpUb2zHNadWKa"
+  },
+  {
+    "symbol": "sns",
+    "chain": "solana",
+    "address": "SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd"
+  },
+  {
+    "symbol": "khai",
+    "chain": "solana",
+    "address": "3TWgDvYBL2YPET2LxnWAwsMeoA8aL4DutNuwat2pKCjC"
+  },
+  {
+    "symbol": "avax",
+    "chain": "solana",
+    "address": "KgV1GvrHQmRBY8sHQQeUKwTm2r2h8t4C8qt12Cw1HVE"
+  },
+  {
+    "symbol": "near",
+    "chain": "solana",
+    "address": "BYPsjxa3YuZESQz1dKuBw1QSFCSpecsm8nCQhY5xbU1Z"
+  },
+  {
+    "symbol": "ftm",
+    "chain": "solana",
+    "address": "EsPKhGTMf3bGoy4Qm7pCv3UCcWqAmbC1UGHBTDxRjjD4"
+  },
+  {
+    "symbol": "popcat",
+    "chain": "solana",
+    "address": "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr"
+  },
+  {
+    "symbol": "inj",
+    "chain": "ethereum",
+    "address": "0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30"
+  },
+  {
+    "symbol": "ethfi",
+    "chain": "ethereum",
+    "address": "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"
+  },
+  {
+    "symbol": "ton",
+    "chain": "ethereum",
+    "address": "0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1"
+  },
+  {
+    "symbol": "pepe",
+    "chain": "ethereum",
+    "address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+  },
+  {
+    "symbol": "rndr",
+    "chain": "ethereum",
+    "address": "0x6De037ef9aD2725EB40118Bb1702EBb27e4Aeb24"
+  },
+  {
+    "symbol": "bnb",
+    "chain": "ethereum",
+    "address": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+  },
+  {
+    "symbol": "xrp",
+    "chain": "bsc",
+    "address": "0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE"
+  },
+  {
+    "symbol": "shib",
+    "chain": "ethereum",
+    "address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+  },
+  {
+    "symbol": "link",
+    "chain": "ethereum",
+    "address": "0x514910771AF9Ca656af840dff83E8264EcF986CA"
+  },
+  {
+    "symbol": "uni",
+    "chain": "ethereum",
+    "address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+  },
+  {
+    "symbol": "matic",
+    "chain": "ethereum",
+    "address": "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0"
+  },
+  {
+    "symbol": "atom",
+    "chain": "bsc",
+    "address": "0x0Eb3a705fc54725037CC9e008bDede697f62F335"
+  },
+  {
+    "symbol": "op",
+    "chain": "optimism",
+    "address": "0x4200000000000000000000000000000000000042"
+  },
+  {
+    "symbol": "arb",
+    "chain": "arbitrum",
+    "address": "0x912CE59144191C1204E64559FE8253a0e49E6548"
+  },
+  {
+    "symbol": "kas",
+    "chain": "ethereum",
+    "address": "0x112b08621E27e10773ec95d250604a041f36C582"
+  },
+  {
+    "symbol": "mkr",
+    "chain": "ethereum",
+    "address": "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
+  },
+  {
+    "symbol": "gala",
+    "chain": "ethereum",
+    "address": "0xd1d2Eb1B1e90B638588728b4130137D262C87cae"
+  },
+  {
+    "symbol": "floki",
+    "chain": "ethereum",
+    "address": "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
+  },
+  {
+    "symbol": "aave",
+    "chain": "ethereum",
+    "address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
+  },
+  {
+    "symbol": "ena",
+    "chain": "ethereum",
+    "address": "0x57e114B691Db790C35207b2e685D4A43181e6061"
+  },
+  {
+    "symbol": "qnt",
+    "chain": "ethereum",
+    "address": "0x4a220E6096B25EADb88358cb44068A3248254675"
+  },
+  {
+    "symbol": "beam",
+    "chain": "ethereum",
+    "address": "0x62D0A8458eD7719FDAF978fe5929C6D342B0bFcE"
+  },
+  {
+    "symbol": "rbn",
+    "chain": "ethereum",
+    "address": "0x6123B0049F904d730dB3C36a31167D9d4121fA6B"
+  },
+  {
+    "symbol": "sand",
+    "chain": "polygon",
+    "address": "0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683"
+  }
+]
