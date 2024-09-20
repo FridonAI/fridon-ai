@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+      - redis
+    environment:
+      - UPDATE_EMBEDDINGS_ON_BOOTSTRAP=1
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://user:pass@db:5432/app?schema=api_schema
+    env_file:
+      - ./backend/.env
+
+  core:
+    build:
+      context: core
+      dockerfile: Dockerfile
+    env_file:
+      - ./core/.env
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_DB_URL=postgresql://user:pass@db:5432/app
+      - API_URL=http://api:3000
+    command: python -u -m app.main
+
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+
+  db:
+    build: 
+      context: core
+      dockerfile: pgvector.dockerfile
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: app
