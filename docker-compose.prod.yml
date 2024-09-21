@@ -32,7 +32,7 @@ services:
         tag: "{{.ID}}"
     env_file:
       - ./core/.env
-    command: python -u -m app.main
+    command: python -u -m fridon_brain.main
 
   db:
     build:
