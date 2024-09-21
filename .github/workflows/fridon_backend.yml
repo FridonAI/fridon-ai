@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - 'main'
+    paths:
+      - 'apps/fridon_backend/**'
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository }}_fridon_backend
 
 jobs:
   build-and-push-image:
@@ -36,7 +38,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: apps/fridon_backend
           file: ./Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
