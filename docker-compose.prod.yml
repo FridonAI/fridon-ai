@@ -1,12 +1,12 @@
 version: "3.8"
 services:
-  api:
-    image: ghcr.io/fridonai/api:main
+  fridon_backend:
+    image: ghcr.io/fridonai/fridon-ai_fridon_backend:main
     logging:
       driver: "awslogs"
       options:
         awslogs-region: "eu-central-1"
-        awslogs-group: "/aws/fridon/backend"
+        awslogs-group: "/aws/fridonai/fridon_backend"
         tag: "{{.ID}}"
     restart: always
     ports:
@@ -21,14 +21,14 @@ services:
     env_file:
       - .env
 
-  core:
-    image: ghcr.io/fridonai/core:main
+  fridon_brain:
+    image: ghcr.io/fridonai/fridon-ai_fridon_brain:main
     restart: always
     logging:
       driver: "awslogs"
       options:
         awslogs-region: "eu-central-1"
-        awslogs-group: "/aws/fridon/core"
+        awslogs-group: "/aws/fridonai/fridon_brain"
         tag: "{{.ID}}"
     env_file:
       - ./core/.env
