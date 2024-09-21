@@ -65,21 +65,21 @@ For more detailed information on LangChain Tools and Agents, refer to the [LangC
 
 ### Plugin Structure and Development
 
-At [`app/core/plugins`](app/core/plugins), we've created an underlying structure of plugins, tools, and utilities to simplify plugin development. This structure allows users to extend base classes and implement only the business logic as utilities, while correctly setting parameters such as plugin name, utility description, examples, and so on.
+At [`libs/core/plugins`](libs/core/plugins), we've created an underlying structure of plugins, tools, and utilities to simplify plugin development. This structure allows users to extend base classes and implement only the business logic as utilities, while correctly setting parameters such as plugin name, utility description, examples, and so on.
 
 The hierarchy is as follows:
 
-1. **Plugins**: Extend [`BasePlugin`](app/core/plugins/base.py)
-2. **Tools**: Extend [`BaseTool`](app/core/plugins/tools/base.py)
-3. **Utilities**: Extend [`BaseUtility`](app/core/plugins/utilities/base.py)
+1. **Plugins**: Extend [`BasePlugin`](libs/core/plugins/base.py)
+2. **Tools**: Extend [`BaseTool`](libs/core/plugins/tools/base.py)
+3. **Utilities**: Extend [`BaseUtility`](libs/core/plugins/utilities/base.py)
 
-Developers can refer to the existing plugins in the [`app/community/plugins/`](app/community/plugins/) directory for examples of how to implement new plugins.
+Developers can refer to the existing plugins in the [`libs/community/plugins/`](libs/community/plugins/) directory for examples of how to implement new plugins.
 
 There are several `BaseUtility` extensions available, which can be used depending on the utility's specific requirements:
 
-- [`BlockchainUtility`](app/core/plugins/utilities/blockchain.py): For blockchain-related operations
-- [`RemoteUtility`](app/core/plugins/utilities/remote.py): For making remote API calls
-- [`LLMUtility`](app/core/plugins/utilities/llm.py): For language model interactions
+- [`BlockchainUtility`](libs/core/plugins/utilities/blockchain.py): For blockchain-related operations
+- [`RemoteUtility`](libs/core/plugins/utilities/remote.py): For making remote API calls
+- [`LLMUtility`](libs/core/plugins/utilities/llm.py): For language model interactions
 
 By leveraging this structure, developers can focus on implementing the core functionality of their plugins without worrying about the underlying architecture.
 
@@ -87,7 +87,7 @@ By leveraging this structure, developers can focus on implementing the core func
 
 ### Put everything together
 
-- **Graph**: Manages the conversation flow and agent interactions. Defined in [`app/core/graph/`](app/core/graph/), it uses LLM models to process user messages and delegate tasks to appropriate plugins. The Graph component is responsible for:
+- **Graph**: Manages the conversation flow and agent interactions. Defined in [`libs/core/graph/`](libs/core/graph/), it uses LLM models to process user messages and delegate tasks to appropriate plugins. The Graph component is responsible for:
   - Dynamically building a network of LLM Agents, most of which are Plugins under the hood
   - Routing messages between agents
   - Managing states between agents
@@ -122,7 +122,7 @@ FridonAI implements a scoring system to incentivize user engagement and provide 
 - This score is then sent to the API repository (separate from this core repository).
 - The API stores the score and notifies the user of their earned points.
 
-The exact scoring criteria and implementation details can be found in the relevant scoring module within the codebase. [Score Module](app/score)
+The exact scoring criteria and implementation details can be found in the relevant scoring module within the codebase. [Scoring Module](libs/internals/scoring)
 
 
 
@@ -145,7 +145,7 @@ To set up the project locally:
 
 3. **Set Up Environment Variables**
 
-   Create a `.env` file in the root directory and add the necessary variables as defined in [`app/settings.py`](app/settings.py) and in [`.env.example`](.env.example)
+   Create a `.env` file in the root directory and add the necessary variables as defined in [`settings.py`](settings.py) and in [`.env.example`](.env.example)
 
 4. **Run the Application**
 

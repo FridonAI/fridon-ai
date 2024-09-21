@@ -46,12 +46,12 @@ The `LLMUtility` class simplifies interactions with language models. You can def
 
 When developing a new plugin:
 
-1. Create a new directory in `app/community/plugins/` for your plugin.
+1. Create a new directory in `libs/community/plugins/` for your plugin.
 2. Extend the appropriate base classes (`BasePlugin`, `BaseTool`, `BaseUtility`).
 3. Implement the required methods and properties.
 4. Use specialized utilities where appropriate to simplify development.
 
-For examples of plugin implementation, refer to the existing plugins in the [`app/community/plugins/`](../../community/plugins/) directory.
+For examples of plugin implementation, refer to the existing plugins in the [`libs/community/plugins/`](../../community/plugins/) directory.
 
 ## Plugin Registry
 
