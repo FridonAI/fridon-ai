@@ -1,8 +1,8 @@
 version: '3.8'
 services:
-  api:
+  fridon_backend:
     build:
-      context: backend
+      context: apps/fridon_backend
       dockerfile: Dockerfile
     restart: always
     ports:
@@ -16,21 +16,21 @@ services:
       - REDIS_PORT=6379
       - DATABASE_URL=postgresql://user:pass@db:5432/app?schema=api_schema
     env_file:
-      - ./backend/.env
+      - apps/fridon_backend/.env
 
-  core:
+  fridon_brain:
     build:
-      context: core
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/fridon_brain/Dockerfile
     env_file:
-      - ./core/.env
+      - apps/fridon_brain/.env
     environment:
       - POSTGRES_HOST=db
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - POSTGRES_DB_URL=postgresql://user:pass@db:5432/app
-      - API_URL=http://api:3000
-    command: python -u -m app.main
+      - API_URL=http://fridon_backend:3000
+    command: python -u -m fridon_brain.main
 
 
   redis:
@@ -40,8 +40,8 @@ services:
 
 
   db:
-    build: 
-      context: core
+    build:
+      context: .
       dockerfile: pgvector.dockerfile
     restart: always
     ports:

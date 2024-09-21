@@ -5,7 +5,7 @@
     "."
   ],
   "graphs": {
-    "agent": "app/studio.py:test_chat"
+    "agent": "apps/studio/main.py:test_chat"
   },
   "env": ".env"
 }

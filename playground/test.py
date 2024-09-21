@@ -11,8 +11,8 @@ os.environ["LANGCHAIN_PROJECT"] = "fridon"
 
 os.environ["PLAYER_TEMPLATE_PATH"] = "./data/templates/"
 
-from app.core.graph import create_graph
-from app.core.plugins.registry import ensure_plugin_registry
+from libs.core.graph import create_graph
+from libs.core.plugins.registry import ensure_plugin_registry
 
 async def main():
     registry = ensure_plugin_registry()
