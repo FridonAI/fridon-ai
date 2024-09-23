@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   fridon_backend:
     build:
@@ -30,7 +29,7 @@ services:
       - REDIS_PORT=6379
       - POSTGRES_DB_URL=postgresql://user:pass@db:5432/app
       - API_URL=http://fridon_backend:3000
-    command: python -u -m fridon_brain.main
+    command: python -u -m apps.fridon_brain.main
 
 
   redis:

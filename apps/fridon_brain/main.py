@@ -3,9 +3,9 @@ import json
 
 from dependency_injector.wiring import Provide, inject
 
-from fridon_brain import _preload_modules
-from fridon_brain.containers import Container
-from fridon_brain.services import (
+from apps.fridon_brain import _preload_modules
+from apps.fridon_brain.containers import Container 
+from apps.fridon_brain.services import (
     CalculateUserMessageScoreService,
     ProcessUserMessageService,
 )

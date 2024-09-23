@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 from literalai import LiteralClient
 
-from fridon_brain import services
+from apps.fridon_brain import services
 from libs.utils import redis
 from settings import settings
 
@@ -12,8 +12,8 @@ class Container(containers.DeclarativeContainer):
             "__main__",
             "libs.community.plugins.wallet.utilities",
             "libs.core.plugins.utilities.blockchain",
-            "fridon_brain.services.process_user_message_service",
-            "fridon_brain.services.calculate_user_message_score_service",
+            "apps.fridon_brain.services.process_user_message_service",
+            "apps.fridon_brain.services.calculate_user_message_score_service",
             "libs.community.plugins.bonk_notifier.crons",
         ],
         packages=[
