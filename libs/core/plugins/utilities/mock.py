@@ -5,6 +5,9 @@ from libs.core.plugins.utilities import BaseUtility
 class BaseMockUtility(BaseUtility):
     async def arun(self, *args, **kwargs) -> str:
         pass
+    model_config = {
+        'ignored_types': (dict,)
+    }
 
 class BlockchainMockUtility(BaseMockUtility):
     async def arun(self, *args, **kwargs) -> str:

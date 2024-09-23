@@ -4,7 +4,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from libs.core.graph import create_graph
 from libs.core.plugins.registry import ensure_plugin_registry
 from settings import settings
-from apps.studio.main import _preload_modules
+from apps.fridon_brain import _preload_modules
 
 
 def _prepare_graph(plugin_names):
