@@ -1,6 +1,5 @@
-import os
 from typing import Optional, Literal
-from pydantic.v1 import BaseSettings
+from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -38,8 +37,9 @@ class Settings(BaseSettings):
     ENV: Literal['test', 'mock', 'prod'] = 'mock'
 
     class Config:
-        env_file = '.env'
+        env_file = './apps/fridon_brain/.env'
         env_file_encoding = 'utf-8'
+        extra = 'ignore'
 
 
 settings = Settings()

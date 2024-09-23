@@ -16,8 +16,8 @@ registry = ensure_cron_registry()
 
 @registry.register
 class BonkBullishNotifierCron(BaseCron):
-    name = "Bonk Bullish Notifier"
-    schedule = "*/1 * * * *"
+    name: str = "Bonk Bullish Notifier"
+    schedule: str = "*/1 * * * *"
 
     async def _process(self, pub: Publisher = Provide["publisher"]) -> None:
         # bonk_summary = await read_bonk_summary()

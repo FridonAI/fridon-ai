@@ -2,7 +2,7 @@ from typing import Literal
 
 from langchain.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from settings import settings
 

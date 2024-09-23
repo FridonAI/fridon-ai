@@ -12,7 +12,7 @@ from libs.core.plugins.utilities.llm import LLMUtility
 
 
 class CoinTechnicalAnalyzerUtility(LLMUtility):
-    llm_job_description = """Assume the role as a leading Technical Analysis (TA) expert in the stock market, \
+    llm_job_description: str = """Assume the role as a leading Technical Analysis (TA) expert in the stock market, \
 a modern counterpart to Charles Dow, John Bollinger, and Alan Andrews. \
 Your mastery encompasses both stock fundamentals and intricate technical indicators. \
 You possess the ability to decode complex market dynamics, \

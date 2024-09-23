@@ -8,8 +8,8 @@ plugin_registry = ensure_plugin_registry()
 
 @plugin_registry.register(name="coin-technical-analyzer")
 class CoinsTechnicalAnalyzerPlugin(BasePlugin):
-    name = "Coin Technical Analyzer"
-    description = "AI plugin for analyze coin price charts by indicators, search coins by indicators."
-    owner = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
-    tools: type[list[BaseTool]] = TOOLS
-    image_url = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/coin-ta.png"
+    name: str = "Coin Technical Analyzer"
+    description: str = "AI plugin for analyze coin price charts by indicators, search coins by indicators."
+    owner: str = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
+    tools: list[BaseTool] = TOOLS
+    image_url: str = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/coin-ta.png"

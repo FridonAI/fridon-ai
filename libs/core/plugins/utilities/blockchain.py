@@ -3,7 +3,7 @@ from typing import Any
 
 import aiohttp
 from dependency_injector.wiring import Provide
-from pydantic.v1 import Field
+from pydantic import Field
 
 from libs.core.plugins.utilities.base import BaseUtility
 from libs.utils.redis import Publisher, QueueGetter

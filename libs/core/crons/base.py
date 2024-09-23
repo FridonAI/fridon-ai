@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from aiocron import crontab
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 
 class BaseCron(BaseModel):

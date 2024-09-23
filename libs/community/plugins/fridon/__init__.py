@@ -8,7 +8,7 @@ plugin_registry = ensure_plugin_registry()
 
 @plugin_registry.register("fridon")
 class FridonPlugin(BasePlugin):
-    name = "Fridon"
-    description = "Plugin for getting information about FridonAI"
-    owner = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
-    tools: type[list[BaseTool]] = TOOLS
+    name: str = "Fridon"
+    description: str = "Plugin for getting information about FridonAI"
+    owner: str = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
+    tools: list[BaseTool] = TOOLS

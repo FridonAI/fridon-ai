@@ -8,6 +8,6 @@ plugin_registry = ensure_plugin_registry()
 
 @plugin_registry.register(name="wallet")
 class WalletPlugin(BasePlugin):
-    name = "Wallet"
-    description = "Plugin with wallet related operations."
-    tools: type[list[BaseTool]] = TOOLS
+    name: str = "Wallet"
+    description: str = "Plugin with wallet related operations."
+    tools: list[BaseTool] = TOOLS

@@ -1,6 +1,6 @@
 from contextvars import ContextVar
 
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 from libs.core.crons.base import BaseCron
 

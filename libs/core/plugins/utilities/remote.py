@@ -2,7 +2,7 @@ import json
 from typing import Any
 
 import aiohttp
-from pydantic.v1 import Field
+from pydantic import Field
 
 from libs.core.plugins.utilities.base import BaseUtility
 from settings import settings

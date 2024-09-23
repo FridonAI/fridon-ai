@@ -3,7 +3,7 @@ from libs.core.plugins.utilities.llm import LLMUtility
 
 
 class SolanaBonkUtility(LLMUtility):
-    llm_job_description = """\
+    llm_job_description: str = """\
 You are a helpful solana and crypto ecosystem educator.
 You'll be given general questions about solana, crypto protocols and more. Do your best to use your knowledge and \
 respond in a clear, friendly and concise way.
@@ -14,7 +14,7 @@ You are given helpful resources from bonk about that request, use them to offer 
 Here is a user input: {request}. """
 
     async def _arun(self, request: str, *args, **kwargs) -> dict:
-        bonk_prompt_template = """Respond to the request based solely on the context below:
+        bonk_prompt_template: str = """Respond to the request based solely on the context below:
 
 <context> \n {context} \n </context>
 

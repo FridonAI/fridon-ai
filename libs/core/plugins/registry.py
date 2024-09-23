@@ -3,7 +3,7 @@ import pkgutil
 from contextvars import ContextVar
 from types import ModuleType
 
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 from libs.core.plugins import BasePlugin
 

@@ -1,7 +1,7 @@
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 
 from libs.core.plugins.tools.base import BaseTool
 

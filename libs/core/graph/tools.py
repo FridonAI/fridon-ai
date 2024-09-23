@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from pydantic.v1 import BaseConfig, BaseModel, Field, create_model
+from pydantic import BaseModel, Field, create_model, ConfigDict
 
 from libs.core.plugins import BasePlugin
 
@@ -10,9 +10,9 @@ def create_plugin_wrapper_tool(plugin: BasePlugin, class_name: str) -> type[Base
         f"To{class_name}",
         __config__=type(
             "Config",
-            (BaseConfig,),
+            (ConfigDict,),
             {
-                "schema_extra": {
+                "json_schema_extra": {
                     "Example#" + str(i + 1): {"request": example}
                     for i, example in enumerate(plugin.request_examples)
                 }
@@ -37,7 +37,7 @@ class CompleteTool(BaseModel):
     is_json: bool = Field(description="If the answer is json string or not.")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "plugin_status": True,
                 "answer": "Your sol balance is 20.",
@@ -66,7 +66,7 @@ class FinalResponse(BaseModel):
     )
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "structured_answers": [
                     '"data": {"sol": 12, "usdc": 10}}',
