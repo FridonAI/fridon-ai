@@ -18,7 +18,7 @@ langchain = "^0.3.0"
 langchain-openai = "^0.2.0"
 langchain-community = "^0.3.0"
 langgraph-checkpoint-sqlite = "^1.0.0"
-langgraph = "^0.2.3"
+langgraph = "^0.2.23"
 
 fastapi-camelcase = "^2.0.0"
 python-dotenv = "^1.0.1"

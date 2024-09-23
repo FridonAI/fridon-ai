@@ -2286,34 +2286,35 @@ msgpack = ">=1.1.0,<2.0.0"
 
 [[package]]
 name = "langgraph-checkpoint-postgres"
-version = "1.0.3"
+version = "1.0.7"
 description = "Library with a Postgres implementation of LangGraph checkpoint saver."
 optional = false
 python-versions = "<4.0.0,>=3.9.0"
 files = [
-    {file = "langgraph_checkpoint_postgres-1.0.3-py3-none-any.whl", hash = "sha256:dd5b80c87099f9a051b1e14d1e93c5c0863561c67ec15adc58d25d803a407f8b"},
-    {file = "langgraph_checkpoint_postgres-1.0.3.tar.gz", hash = "sha256:00803a3ce16fe3b7b33140b36e39ce88ad226a22f6faea013d5cabdc48957b7e"},
+    {file = "langgraph_checkpoint_postgres-1.0.7-py3-none-any.whl", hash = "sha256:0ad5ec97ad833990d60aa531f3dc2756a1fa7f610c81b241f464ef7a4195e1e2"},
+    {file = "langgraph_checkpoint_postgres-1.0.7.tar.gz", hash = "sha256:d13a17ba7642afbaf451b524aedadd1fb6ad6cd26991ec624d258dcad7bb0f40"},
 ]
 
 [package.dependencies]
-langgraph-checkpoint = ">=1.0.1,<2.0.0"
+langgraph-checkpoint = ">=1.0.8,<2.0.0"
 orjson = ">=3.10.1"
-psycopg = {version = ">=3.1.19", extras = ["binary"]}
+psycopg = ">=3.0.0,<4.0.0"
+psycopg-pool = ">=3.0.0,<4.0.0"
 
 [[package]]
 name = "langgraph-checkpoint-sqlite"
-version = "1.0.0"
+version = "1.0.3"
 description = "Library with a SQLite implementation of LangGraph checkpoint saver."
 optional = false
 python-versions = "<4.0.0,>=3.9.0"
 files = [
-    {file = "langgraph_checkpoint_sqlite-1.0.0-py3-none-any.whl", hash = "sha256:61501ee2be1bdb51aaf5ac005396d2f54c76e362d085d9d3c06b5415c061ef50"},
-    {file = "langgraph_checkpoint_sqlite-1.0.0.tar.gz", hash = "sha256:5dc748665a282314e3434c78c05c1f75a3bf8f548e5ae8e4aa146ebdbaa08ebf"},
+    {file = "langgraph_checkpoint_sqlite-1.0.3-py3-none-any.whl", hash = "sha256:4fcabc75f253d2a280b3d3bccb9a204fcfa5fd91485a0faec95b6034fada8d75"},
+    {file = "langgraph_checkpoint_sqlite-1.0.3.tar.gz", hash = "sha256:91b53dff61905910f79f077d568c9f407860f037745ce39b84db93d5dd0df186"},
 ]
 
 [package.dependencies]
 aiosqlite = ">=0.20.0,<0.21.0"
-langgraph-checkpoint = ">=1.0.1,<2.0.0"
+langgraph-checkpoint = ">=1.0.8,<2.0.0"
 
 [[package]]
 name = "langsmith"
@@ -3388,7 +3389,6 @@ files = [
 ]
 
 [package.dependencies]
-psycopg-binary = {version = "3.2.1", optional = true, markers = "implementation_name != \"pypy\" and extra == \"binary\""}
 typing-extensions = ">=4.4"
 tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
@@ -4961,4 +4961,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "578cc4cc4d5a6920dbe830ea3b55ae006978b6fa3f1ac5b877af77ac6d318070"
+content-hash = "2658781d018663af85a7b8e3c66c8eec1e3081266b6ad965fe66c389b680a9f9"
