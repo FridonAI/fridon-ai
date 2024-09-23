@@ -1,11 +1,11 @@
 {
-  "python_version": "3.11",
   "dockerfile_lines": [],
-  "dependencies": [
-    "."
-  ],
   "graphs": {
     "agent": "apps/studio/main.py:test_chat"
   },
-  "env": ".env"
+  "env": "apps/fridon_brain/.env",
+  "python_version": "3.11",
+  "dependencies": [
+    "."
+  ]
 }
