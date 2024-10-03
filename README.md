@@ -32,12 +32,13 @@ FridonAI's functionality is extended through a variety of plugins, which can be 
 
 **Fridon Assistant Integration / Chat Providing**
 
-Integrate FridonAI on your platform using an `API_KEY` to leverage subscribed plugins. This allows seamless usage of FridonAI's capabilities across various platforms.
+Integrate FridonAI on your platform using an `API_KEY` to leverage subscribed plugins. This allows seamless usage of FridonAI's capabilities across various platforms. *UPCOMING*
 
 **Community Participants:**
 
 - **Assistant Users**: Individuals who subscribe to and use desired plugins.
 - **Plugin Contributors**: Developers who create and contribute plugins, enhancing FridonAI's capabilities with blockchain operations, AI analytics, social network integrations, and more.
+- **Core Library Users**: Developers who install the FridonAI core library in their Python projects to easily create custom plugins and implement private crypto chat functionality. This allows for seamless integration of FridonAI's capabilities into existing systems or the creation of new, specialized crypto chat applications.
 
 ## Core Technical Overview
 
@@ -107,9 +108,9 @@ By leveraging this structure, developers can focus on implementing the core func
   - Publishing updates and notifications
   - Inter-service communication
 
-- You can see controller logic in `app/main.py` and service layer in `app/services`
+- You can see controller logic in `apps/fridon_brain/main.py` and service layer in `apps/fridon_brain/services`
 
-- A separate [Nest.js application](https://github.com/FridonAI/api) has been built in a different repository, which interacts with this core Python backend.
+- [Nest.js application](apps/fridon_backend/) serves as the primary backend for the entire system. It facilitates communication between the front-end and Fridon Brain using Redis. Additionally, it implements various auxiliary functions, including: blockchain transaction generation, signing, sending, waiting for confirmation and so on.
 
 
 ### Scoring
@@ -133,7 +134,7 @@ To set up the project locally:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/FridonAI/core.git
+   git clone https://github.com/FridonAI/fridon-ai.git
    ```
 
 2. **Install Dependencies**
@@ -145,24 +146,21 @@ To set up the project locally:
 
 3. **Set Up Environment Variables**
 
-   Create a `.env` file in the root directory and add the necessary variables as defined in [`settings.py`](settings.py) and in [`.env.example`](.env.example)
+   Create a `.env` file in the `apps/fridon_brain` directory and add the necessary variables as defined in [`settings.py`](settings.py) or in [`.env.example`](apps/fridon_brain/.env.example)
 
 4. **Run the Application**
 
    ```bash
-   poetry run python -u -m app.main
+   poetry run python -u -m apps.fridon_brain.main
    ```
 
-To set up the project with Docker, run:
+Run the whole project with Docker Compose:
 
 ```bash
-docker build -t fridon-core .
-docker run -p 8000:8000 fridon-core
+docker compose up --build
 ```
 
 ## Future Plans
-- Many interesting AI plugins
-- SDK to have core locally with just importing frodonai
 - Different api technology support
 
 ## Contribution
