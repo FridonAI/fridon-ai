@@ -162,6 +162,9 @@ docker compose up --build
 
 ## Future Plans
 - Different api technology support
+- Detailed documentation
+- More plugins
+
 
 ## Contribution
 

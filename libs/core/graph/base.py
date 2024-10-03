@@ -1,8 +1,11 @@
+from typing import Literal, Union
 from langchain_core.language_models import BaseChatModel
 from langchain_core.runnables import RunnableLambda
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from langchain_core.messages import HumanMessage
 
 from libs.core.graph.agents import create_agent
 from libs.core.graph.chains import create_agent_chain
@@ -17,6 +20,7 @@ from libs.core.graph.utils import (
     prepare_plugin_agent,
 )
 from libs.core.plugins import BasePlugin
+from settings import settings
 
 
 def create_graph(
@@ -94,3 +98,42 @@ def create_graph(
     workflow.set_entry_point("supervisor")
 
     return workflow.compile(checkpointer=memory)
+
+
+async def generate_response(
+    message: str, 
+    plugins: list[BasePlugin],
+    llm: BaseChatModel,
+    config: dict,
+    memory: Literal['postgres'] = 'postgres',
+    return_used_agents: bool = True,
+):
+    if memory != 'postgres':
+        raise ValueError('Only postgres is supported for now')
+    
+    async with AsyncPostgresSaver.from_conn_string(
+        settings.POSTGRES_DB_URL, pipeline=False
+    ) as memory:
+        await memory.setup()
+        graph = create_graph(llm, plugins, memory)
+        graph_config = {
+            "configurable": config
+        }
+        response = ""
+        async for s in graph.astream(
+            {
+                "messages": [HumanMessage(content=message)],
+            },
+            graph_config,
+            stream_mode="values",
+        ):
+            if "__end__" not in s:
+                response = s["messages"][-1]
+                response.pretty_print()
+
+        graph_state = await graph.aget_state(graph_config)
+        final_response = graph_state.values.get("final_response")
+        if return_used_agents:
+            used_agents = list(set(graph_state.values.get("used_agents", [])))
+            return final_response, used_agents
+        return final_response
