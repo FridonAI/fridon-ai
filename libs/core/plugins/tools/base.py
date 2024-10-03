@@ -64,7 +64,8 @@ class BaseTool(LangchainBaseTool):
             return result
 
         return json.dumps({
-            "type": "object",
+            "type": "fileObject",
+            "name": self.name,
             "tmp_file_id": temp_file_id,
             "path": f"tmp/{temp_file_id}.json",
         })

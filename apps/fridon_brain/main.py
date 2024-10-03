@@ -30,14 +30,25 @@ async def task_runner(
     response_message, used_agents = await service.process(
         request.user.wallet_id, request.chat_id, plugins, request.data.message
     )
+
+
+    def _get_structured_answer(answer) -> dict:
+        if answer.get("type") == 'fileObject':
+            with open(answer.get("path"), 'r') as f:
+                return {
+                    "id": answer.get("name"),
+                    "data": json.load(f)
+                }
+        return answer
+
+
     response = ResponseMessage.model_validate(
         {
             "chat_id": request.chat_id,
             "user": {"wallet_id": request.user.wallet_id},
             "data": {
-                "message": json.dumps(response_message.structured_answers[0])
-                if response_message.structured_answers
-                else response_message.text_answer,
+                "message": response_message.text_answer,
+                "structured_messages": [json.dumps(_get_structured_answer(ans)) for ans in response_message.structured_answers] if response_message.structured_answers else [],
                 "message_id": request.data.message_id,
                 "plugins_used": used_agents,
                 "serialized_transaction": None,

@@ -10,8 +10,9 @@ class DataInput(CamelModel):
     message_id: str | None = None
 
 
-class DataRequestInput(CamelModel):
+class ResultData(CamelModel):
     message: str | dict | None = None
+    structured_messages: list[str] = []
     message_id: str | None = None
     plugins_used: list[str] | None = None
     serialized_transaction: list[int] | None = None
@@ -29,7 +30,7 @@ class RequestMessage(CamelModel):
 class ResponseMessage(CamelModel):
     chat_id: str
     user: UserInput
-    data: DataRequestInput
+    data: ResultData
     aux: dict
 
     def __str__(self):
@@ -38,7 +39,7 @@ class ResponseMessage(CamelModel):
 
     @staticmethod
     def from_params(chat_id: str, wallet_id: str, message: str | dict | None, serialized_transaction: dict | None, id: str, aux: dict):
-        return ResponseMessage(chat_id=chat_id, user=UserInput(wallet_id=wallet_id), data=DataRequestInput(message=message, serialized_transaction=serialized_transaction, id=id), aux=aux)
+        return ResponseMessage(chat_id=chat_id, user=UserInput(wallet_id=wallet_id), data=ResultData(message=message, serialized_transaction=serialized_transaction, id=id), aux=aux)
 
 
 
