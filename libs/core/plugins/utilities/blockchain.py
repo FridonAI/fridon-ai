@@ -53,7 +53,7 @@ class BlockchainUtility(BaseUtility):
         print("Got Response", response)
         return response
 
-    async def arun(self, *args, chat_id: str, **kwargs) -> dict | str | Any:
+    async def arun(self, *args, chat_id: str, **kwargs) -> str:
         request = await self._arun(*args, **kwargs)
 
         tx = await self._generate_tx(request)

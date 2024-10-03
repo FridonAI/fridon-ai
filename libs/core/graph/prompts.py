@@ -16,8 +16,8 @@ def create_supervised_prompt() -> ChatPromptTemplate:
                 "\nDon't make up any information just use provided information and messages. If some tool wasn't able to do its job say it don't pretend that everything is fine."
                 "If you are confused and user's question is appropriate for several tools ask question to specify and make it clear."
                 "\nIf the question is general and is about crypto, about coins, solana, bonk, blockchain protocols asking for some possible solutions use the `ToSolanaBonkEducatorPlugin` tool.\n"
-                "You user's message contains more than one requests please choose just one arbitrary and then notify that you do just one job at a time, when responding."
-                "Don't call the same assistant more than once.\n",
+                "Don't call the same assistant more than once."
+                "When complete tool contains json data don't use it in text generation, imagine it doesn't exist at all. Just say that you've done your job is plugin_status is true otherwise if it's not done. Don't use any location for json data or offer any download or something like that!!!",
             ),
             ("placeholder", "{messages}"),
         ]

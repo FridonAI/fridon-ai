@@ -1,3 +1,4 @@
+from pydantic import Field
 from typing import Union
 
 from libs.community.helpers.utilities import DatetimeExtractorUtility
@@ -15,8 +16,8 @@ else:
     )
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
-    coin_name: str
-    start_date: Union[str, None] = None
+    coin_name: str = Field(description="The name of the cryptocurrency coin, don't modify from user input.")
+    start_date: Union[str, None] = Field(default=None, description="The start date for the price chart comparison.")
 
 
 CoinPriceChartSimilaritySearchTool = BaseTool(
@@ -24,6 +25,7 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
     description="A tool that allows you to search for similar coins by price chart of the given time range",
     args_schema=CoinPriceChartSimilaritySearchToolInput,
     utility=CoinPriceChartSimilaritySearchUtility(),
+    dump_json_data=True,
     examples=[
         {
             "request": "Give me coins similar to bonk price chart from december 2023",

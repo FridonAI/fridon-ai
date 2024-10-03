@@ -1,4 +1,6 @@
+import json
 from typing import Any
+import uuid
 
 from langchain.callbacks.manager import AsyncCallbackManager, CallbackManagerForToolRun
 from langchain_core.runnables import RunnableConfig, ensure_config
@@ -15,6 +17,7 @@ class BaseTool(LangchainBaseTool):
     utility: BaseUtility
     examples: list[dict] = []
     helper: bool = False
+    dump_json_data: bool = False
 
     def _run(
         self,
@@ -24,10 +27,15 @@ class BaseTool(LangchainBaseTool):
         **kwargs,
     ) -> str | Any:
         config_ = config.get("configurable", {})
-        return self.utility.run(
+        result = self.utility.run(
             *args,
             **{**kwargs, **config_},
         )
+        if self.dump_json_data and isinstance(result, dict):
+            result = self._dump_to_tmp(result)
+        elif isinstance(result, dict):
+            result = json.dumps(result)
+        return result
 
     async def _arun(
         self,
@@ -38,10 +46,29 @@ class BaseTool(LangchainBaseTool):
     ) -> str | Any:
         config = ensure_config()
         config_ = config.get("configurable", {})
-        return await self.utility.arun(
+        result = await self.utility.arun(
             *args,
             **{**kwargs, **config_},
         )
+        if self.dump_json_data and isinstance(result, dict):
+            result = self._dump_to_tmp(result)
+        return result
+    
+
+    def _dump_to_tmp(self, result: str | Any):
+        temp_file_id = str(uuid.uuid4())[:8]
+        try:
+            with open(f"tmp/{temp_file_id}.json", 'w') as f:
+                json.dump(result, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            return result
+
+        return json.dumps({
+            "type": "object",
+            "tmp_file_id": temp_file_id,
+            "path": f"tmp/{temp_file_id}.json",
+        })
+        
 
     @property
     def parameters_as_str(self):
