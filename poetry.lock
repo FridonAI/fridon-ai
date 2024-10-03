@@ -2256,28 +2256,28 @@ langchain-core = ">=0.3.0,<0.4.0"
 
 [[package]]
 name = "langgraph"
-version = "0.2.23"
+version = "0.2.34"
 description = "Building stateful, multi-actor applications with LLMs"
 optional = false
 python-versions = "<4.0,>=3.9.0"
 files = [
-    {file = "langgraph-0.2.23-py3-none-any.whl", hash = "sha256:fc8e2f2e03eef446bc4a8458cce04a77ad41f4bd4b7f0f514a5cdd436d11454b"},
-    {file = "langgraph-0.2.23.tar.gz", hash = "sha256:9f3e486994621c403f0d659a03b15f86ec77b4dfca6fe6ad69686ba60a6b5520"},
+    {file = "langgraph-0.2.34-py3-none-any.whl", hash = "sha256:93727158769f3dfad7cc5440405fca5a8cba77f79cbc0928b97f4341e561556f"},
+    {file = "langgraph-0.2.34.tar.gz", hash = "sha256:2a7f94d9a2cabbd13e09db6bd87aa99548e98613c4fe762329088b17138cec15"},
 ]
 
 [package.dependencies]
 langchain-core = ">=0.2.39,<0.4"
-langgraph-checkpoint = ">=1.0.2,<2.0.0"
+langgraph-checkpoint = ">=2.0.0,<3.0.0"
 
 [[package]]
 name = "langgraph-checkpoint"
-version = "1.0.10"
+version = "2.0.0"
 description = "Library with base interfaces for LangGraph checkpoint savers."
 optional = false
 python-versions = "<4.0.0,>=3.9.0"
 files = [
-    {file = "langgraph_checkpoint-1.0.10-py3-none-any.whl", hash = "sha256:3396734143fda0165964e4f0b73b39e77fbea9f13cb4da1ed16a5c41fc136e50"},
-    {file = "langgraph_checkpoint-1.0.10.tar.gz", hash = "sha256:f800f6d340a5301f4f0d3c17f1ec87b778ebe2c7a20c9ea5caf3d2eb0c6b464d"},
+    {file = "langgraph_checkpoint-2.0.0-py3-none-any.whl", hash = "sha256:a8d7dbfb86fc381ad9619e15de47eb37451b6051b2ce2749ee25cbb41935ef30"},
+    {file = "langgraph_checkpoint-2.0.0.tar.gz", hash = "sha256:884ea7fd7c06904865e8fdcae01233e469ad4bc22871d5376b76f8eeab33464c"},
 ]
 
 [package.dependencies]
@@ -2286,35 +2286,35 @@ msgpack = ">=1.1.0,<2.0.0"
 
 [[package]]
 name = "langgraph-checkpoint-postgres"
-version = "1.0.7"
+version = "2.0.0"
 description = "Library with a Postgres implementation of LangGraph checkpoint saver."
 optional = false
 python-versions = "<4.0.0,>=3.9.0"
 files = [
-    {file = "langgraph_checkpoint_postgres-1.0.7-py3-none-any.whl", hash = "sha256:0ad5ec97ad833990d60aa531f3dc2756a1fa7f610c81b241f464ef7a4195e1e2"},
-    {file = "langgraph_checkpoint_postgres-1.0.7.tar.gz", hash = "sha256:d13a17ba7642afbaf451b524aedadd1fb6ad6cd26991ec624d258dcad7bb0f40"},
+    {file = "langgraph_checkpoint_postgres-2.0.0-py3-none-any.whl", hash = "sha256:27a5c0acbdf96ed222e5ea0dcac4fed44cc132c6fe22ac951bab5e6bd30a63e4"},
+    {file = "langgraph_checkpoint_postgres-2.0.0.tar.gz", hash = "sha256:4655a9e047db9ba0c183f353922df659565bc92b8d4ee912b0bd8f00673c10a2"},
 ]
 
 [package.dependencies]
-langgraph-checkpoint = ">=1.0.8,<2.0.0"
+langgraph-checkpoint = ">=2.0.0,<3.0.0"
 orjson = ">=3.10.1"
 psycopg = ">=3.0.0,<4.0.0"
 psycopg-pool = ">=3.0.0,<4.0.0"
 
 [[package]]
 name = "langgraph-checkpoint-sqlite"
-version = "1.0.3"
+version = "2.0.0"
 description = "Library with a SQLite implementation of LangGraph checkpoint saver."
 optional = false
 python-versions = "<4.0.0,>=3.9.0"
 files = [
-    {file = "langgraph_checkpoint_sqlite-1.0.3-py3-none-any.whl", hash = "sha256:4fcabc75f253d2a280b3d3bccb9a204fcfa5fd91485a0faec95b6034fada8d75"},
-    {file = "langgraph_checkpoint_sqlite-1.0.3.tar.gz", hash = "sha256:91b53dff61905910f79f077d568c9f407860f037745ce39b84db93d5dd0df186"},
+    {file = "langgraph_checkpoint_sqlite-2.0.0-py3-none-any.whl", hash = "sha256:55e796830ea7f4dda4cce53ee7d5cc9f8cc789a730378a980e47fcbdf2babde1"},
+    {file = "langgraph_checkpoint_sqlite-2.0.0.tar.gz", hash = "sha256:e6bb27583e4d26f5c9aede40ea66eb6216bec9c2c8beb39408cd50a0b8bb9a7b"},
 ]
 
 [package.dependencies]
 aiosqlite = ">=0.20.0,<0.21.0"
-langgraph-checkpoint = ">=1.0.8,<2.0.0"
+langgraph-checkpoint = ">=2.0.0,<3.0.0"
 
 [[package]]
 name = "langsmith"
@@ -4961,4 +4961,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "2658781d018663af85a7b8e3c66c8eec1e3081266b6ad965fe66c389b680a9f9"
+content-hash = "bd9e96d4cd2f1e42909502a752915a0f7e1418d504c7015b5858094c95724903"

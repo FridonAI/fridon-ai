@@ -1,4 +1,4 @@
-FROM postgres:latest
+FROM postgres:16
 
 # Set environment variables for Postgres
 ENV POSTGRES_USER=user
