@@ -9,7 +9,7 @@ from apps.fridon_brain.services import (
     CalculateUserMessageScoreService,
     ProcessUserMessageService,
 )
-from libs.core.plugins.registry import ensure_plugin_registry
+from fridonai_core.plugins.registry import ensure_plugin_registry
 from libs.utils import redis
 from libs.utils.redis.schemas import ResponseMessage
 

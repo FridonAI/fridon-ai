@@ -5,7 +5,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
-from libs.core.plugins.utilities.base import BaseUtility
+from fridonai_core.plugins.utilities.base import BaseUtility
 from settings import settings
 
 

@@ -1,5 +1,5 @@
 
-from libs.core.plugins.utilities import BaseUtility
+from fridonai_core.plugins.utilities import BaseUtility
 
 
 class BaseMockUtility(BaseUtility):

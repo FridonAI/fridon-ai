@@ -5,7 +5,7 @@ from types import ModuleType
 
 from pydantic import BaseModel
 
-from libs.core.plugins import BasePlugin
+from fridonai_core.plugins import BasePlugin
 
 
 class PluginRegistry(BaseModel):

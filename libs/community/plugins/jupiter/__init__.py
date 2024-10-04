@@ -1,7 +1,7 @@
 from libs.community.plugins.jupiter.tools import TOOLS
-from libs.core.plugins import BasePlugin
-from libs.core.plugins.registry import ensure_plugin_registry
-from libs.core.plugins.tools import BaseTool
+from fridonai_core.plugins import BasePlugin
+from fridonai_core.plugins.registry import ensure_plugin_registry
+from fridonai_core.plugins.tools import BaseTool
 
 plugin_registry = ensure_plugin_registry()
 

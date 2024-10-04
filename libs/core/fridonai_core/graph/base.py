@@ -7,19 +7,19 @@ from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from langchain_core.messages import HumanMessage
 
-from libs.core.graph.agents import create_agent
-from libs.core.graph.chains import create_agent_chain
-from libs.core.graph.prompts import create_agent_prompt, create_supervised_prompt
-from libs.core.graph.routers import route_plugin_agent, route_supervisor_agent
-from libs.core.graph.states import State
-from libs.core.graph.tools import CompleteTool, create_plugin_wrapper_tool
-from libs.core.graph.utils import (
+from fridonai_core.graph.agents import create_agent
+from fridonai_core.graph.chains import create_agent_chain
+from fridonai_core.graph.prompts import create_agent_prompt, create_supervised_prompt
+from fridonai_core.graph.routers import route_plugin_agent, route_supervisor_agent
+from fridonai_core.graph.states import State
+from fridonai_core.graph.tools import CompleteTool, create_plugin_wrapper_tool
+from fridonai_core.graph.utils import (
     generate_structured_response,
     handle_tool_error,
     leave_tool,
     prepare_plugin_agent,
 )
-from libs.core.plugins import BasePlugin
+from fridonai_core.plugins import BasePlugin
 from settings import settings
 
 

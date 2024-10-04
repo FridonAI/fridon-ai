@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from libs.core.plugins.utilities.llm import LLMUtility
+from fridonai_core.plugins.utilities.llm import LLMUtility
 
 
 class DatetimeExtractorUtility(LLMUtility):

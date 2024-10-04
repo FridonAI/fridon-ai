@@ -4,7 +4,7 @@ from typing import Annotated, List, TypedDict, Union
 from langchain_core.messages import AnyMessage
 from langgraph.graph import add_messages
 
-from libs.core.graph.tools import FinalResponse
+from fridonai_core.graph.tools import FinalResponse
 
 
 class State(TypedDict):

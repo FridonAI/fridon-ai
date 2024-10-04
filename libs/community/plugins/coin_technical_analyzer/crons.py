@@ -6,8 +6,8 @@ from libs.community.plugins.coin_technical_analyzer.helpers.data import (
 from libs.community.plugins.coin_technical_analyzer.helpers.llm import (
     generate_token_tags_list,
 )
-from libs.core.crons import BaseCron
-from libs.core.crons.registry import ensure_cron_registry
+from fridonai_core.crons import BaseCron
+from fridonai_core.crons.registry import ensure_cron_registry
 from settings import settings
 
 registry = ensure_cron_registry()

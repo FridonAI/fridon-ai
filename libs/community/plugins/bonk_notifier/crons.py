@@ -7,8 +7,8 @@ from libs.community.plugins.bonk_notifier.helpers.llm import (
     generate_bonk_bullish_notification,
     generate_bonk_tag,
 )
-from libs.core.crons import BaseCron
-from libs.core.crons.registry import ensure_cron_registry
+from fridonai_core.crons import BaseCron
+from fridonai_core.crons.registry import ensure_cron_registry
 from libs.utils.redis.pubsub import Publisher
 
 registry = ensure_cron_registry()

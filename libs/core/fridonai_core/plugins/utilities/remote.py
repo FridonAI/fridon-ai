@@ -4,7 +4,7 @@ from typing import Any
 import aiohttp
 from pydantic import Field
 
-from libs.core.plugins.utilities.base import BaseUtility
+from fridonai_core.plugins.utilities.base import BaseUtility
 from settings import settings
 
 

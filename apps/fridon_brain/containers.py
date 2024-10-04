@@ -11,14 +11,12 @@ class Container(containers.DeclarativeContainer):
         modules=[
             "__main__",
             "libs.community.plugins.wallet.utilities",
-            "libs.core.plugins.utilities.blockchain",
             "apps.fridon_brain.services.process_user_message_service",
             "apps.fridon_brain.services.calculate_user_message_score_service",
             "libs.community.plugins.bonk_notifier.crons",
         ],
         packages=[
             "libs.community.plugins",
-            "libs.core.plugins.utilities",
         ],
     )
 

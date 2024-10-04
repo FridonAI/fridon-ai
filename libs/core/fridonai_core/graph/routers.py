@@ -1,8 +1,8 @@
 from langgraph.graph import END
 from langgraph.prebuilt import tools_condition
 
-from libs.core.graph.states import State
-from libs.core.graph.tools import CompleteTool
+from fridonai_core.graph.states import State
+from fridonai_core.graph.tools import CompleteTool
 
 
 def route_plugin_agent(

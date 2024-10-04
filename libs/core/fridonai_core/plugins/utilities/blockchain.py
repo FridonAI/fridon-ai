@@ -1,13 +1,10 @@
-import uuid
 from typing import Any
 
 import aiohttp
-from dependency_injector.wiring import Provide
 from pydantic import Field
 
-from libs.core.plugins.utilities.base import BaseUtility
-from libs.utils.redis import Publisher, QueueGetter
-from libs.utils.redis.schemas import ResponseMessage
+from fridonai_core.plugins.utilities.adapter_base import Adapter
+from fridonai_core.plugins.utilities.base import BaseUtility
 from settings import settings
 
 
@@ -16,6 +13,8 @@ class BlockchainUtility(BaseUtility):
         default=f"{settings.API_URL}/data/executor",
         exclude=True,
     )
+
+    communicator: Adapter = Field(exclude=True)
 
     async def _generate_tx(self, request: dict[str, Any]) -> str | dict | Any:
         async with aiohttp.ClientSession() as session:
@@ -34,22 +33,17 @@ class BlockchainUtility(BaseUtility):
         tx: dict | None,
         wallet_id: str,
         chat_id: str,
-        pub: Publisher = Provide["publisher"],
-        queue_getter: QueueGetter = Provide["queue_getter"],
+        
     ) -> str:
-        queue_name = str(uuid.uuid4())
 
-        await pub.publish(
+        response = await self.communicator.send(
             "response_received",
-            str(
-                ResponseMessage.from_params(
-                    chat_id, wallet_id, None, tx, queue_name, {}
-                )
-            ),
+            {
+                "chat_id": chat_id,
+                "wallet_id": wallet_id, 
+                "tx": tx,
+            }
         )
-
-        print("Waiting for response", queue_name)
-        response = await queue_getter.get(queue_name=queue_name)
         print("Got Response", response)
         return response
 

@@ -1,5 +1,5 @@
 from libs.community.helpers.chains import create_retriever_chain
-from libs.core.plugins.utilities.llm import LLMUtility
+from fridonai_core.plugins.utilities.llm import LLMUtility
 
 
 class SolanaBonkUtility(LLMUtility):

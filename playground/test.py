@@ -1,5 +1,6 @@
 from langchain_openai.chat_models import ChatOpenAI
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+from settings import settings
 
 import os
 
@@ -11,8 +12,8 @@ os.environ["LANGCHAIN_PROJECT"] = "fridon"
 
 os.environ["PLAYER_TEMPLATE_PATH"] = "./data/templates/"
 
-from libs.core.graph import create_graph
-from libs.core.plugins.registry import ensure_plugin_registry
+from fridonai_core.graph import create_graph
+from fridonai_core.plugins.registry import ensure_plugin_registry
 
 async def main():
     registry = ensure_plugin_registry()

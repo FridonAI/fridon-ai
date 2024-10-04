@@ -1,8 +1,11 @@
 [tool.poetry]
-name = "fridon-ai"
-version = "0.1.0"
-description = ""
+name = "fridonai-monorepo"
+version = "0.0.1"
+description = "FridonAI monorepo"
 authors = []
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/FridonAI/fridon-ai"
 
 packages = [
     { include = "apps"},
@@ -10,6 +13,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
+fridonai-core = { path = "libs/core", develop = true}
 python = ">=3.11,<3.13"
 dependency-injector = "^4.41.0"
 async-timeout = "^4.0.3"
@@ -17,9 +21,6 @@ redis = "^5.0.3"
 langchain = "^0.3.0"
 langchain-openai = "^0.2.0"
 langchain-community = "^0.3.0"
-langgraph-checkpoint-sqlite = "^2.0.0"
-langgraph-checkpoint-postgres = "^2.0.0"
-langgraph = "^0.2.23"
 
 fastapi-camelcase = "^2.0.0"
 python-dotenv = "^1.0.1"

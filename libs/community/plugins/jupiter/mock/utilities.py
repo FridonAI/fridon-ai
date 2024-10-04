@@ -1,4 +1,4 @@
-from libs.core.plugins.utilities.mock import BlockchainMockUtility
+from fridonai_core.plugins.utilities.mock import BlockchainMockUtility
 
 
 class JupiterSwapMockUtility(BlockchainMockUtility):

@@ -1,7 +1,7 @@
-from libs.core.plugins.tools import BaseTool
+from fridonai_core.plugins.tools import BaseTool
 from libs.community.plugins.wallet.tools import TOOLS
-from libs.core.plugins import BasePlugin
-from libs.core.plugins.registry import ensure_plugin_registry
+from fridonai_core.plugins import BasePlugin
+from fridonai_core.plugins.registry import ensure_plugin_registry
 
 plugin_registry = ensure_plugin_registry()
 

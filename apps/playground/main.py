@@ -1,7 +1,7 @@
 from langchain_openai.chat_models import ChatOpenAI
 
-from libs.core.graph.base import generate_response
-from libs.core.plugins.registry import ensure_plugin_registry
+from fridonai_core.graph.base import generate_response
+from fridonai_core.plugins.registry import ensure_plugin_registry
 from apps.fridon_brain import _preload_modules
 
 from settings import settings

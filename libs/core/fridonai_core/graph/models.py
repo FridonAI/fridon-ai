@@ -1,6 +1,6 @@
 from langchain_openai import ChatOpenAI
 
-from libs.core.graph.tools import FinalResponse
+from fridonai_core.graph.tools import FinalResponse
 from settings import settings
 
 chat_gpt_model = ChatOpenAI(

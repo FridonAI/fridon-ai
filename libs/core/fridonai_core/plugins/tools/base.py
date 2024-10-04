@@ -6,8 +6,8 @@ from langchain.callbacks.manager import AsyncCallbackManager, CallbackManagerFor
 from langchain_core.runnables import RunnableConfig, ensure_config
 from langchain_core.tools import BaseTool as LangchainBaseTool
 
-from libs.core.plugins.schemas import BaseToolInput
-from libs.core.plugins.utilities import BaseUtility
+from fridonai_core.plugins.schemas import BaseToolInput
+from fridonai_core.plugins.utilities import BaseUtility
 
 
 class BaseTool(LangchainBaseTool):

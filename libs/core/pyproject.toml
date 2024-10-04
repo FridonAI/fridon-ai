@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "fridonai-core"
+version = "0.0.1"
+description = "Core functionality for FridonAI"
+authors = []
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/FridonAI/fridon-ai"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+langchain = "^0.3.0"
+langchain-openai = "^0.2.0"
+langchain-community = "^0.3.0"
+langgraph-checkpoint-sqlite = "^2.0.0"
+langgraph-checkpoint-postgres = "^2.0.0"
+langgraph = "^0.2.23"
+python-dotenv = "^1.0.1"
+psycopg = "^3.1.18"
+psycopg-binary = "^3.1.18"
+aiosqlite = "^0.20.0"
+psycopg_pool = "^3.2.2"
+aiocron = "^1.8"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+

@@ -1,4 +1,4 @@
-from libs.core.plugins.utilities.mock import RemoteMockUtility
+from fridonai_core.plugins.utilities.mock import RemoteMockUtility
 
 
 class CoinPriceChartSimilaritySearchMockUtility(RemoteMockUtility):

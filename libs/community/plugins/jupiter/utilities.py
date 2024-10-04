@@ -1,4 +1,4 @@
-from libs.core.plugins.utilities import BlockchainUtility
+from fridonai_core.plugins.utilities import BlockchainUtility
 
 
 class JupiterSwapUtility(BlockchainUtility):

@@ -5,8 +5,8 @@ from libs.community.plugins.coin_technical_analyzer.utilities import (
     CoinTechnicalIndicatorsListUtility,
     CoinTechnicalIndicatorsSearchUtility,
 )
-from libs.core.plugins.schemas import BaseToolInput
-from libs.core.plugins.tools import BaseTool
+from fridonai_core.plugins.schemas import BaseToolInput
+from fridonai_core.plugins.tools import BaseTool
 from settings import settings
 
 if settings.ENV == "mock":

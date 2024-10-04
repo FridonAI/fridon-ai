@@ -1,6 +1,6 @@
 from libs.community.plugins.solana_bonk_educator.utilities import SolanaBonkUtility
-from libs.core.plugins.schemas import BaseToolInput
-from libs.core.plugins.tools import BaseTool
+from fridonai_core.plugins.schemas import BaseToolInput
+from fridonai_core.plugins.tools import BaseTool
 
 
 class SolanaEducatorInput(BaseToolInput):

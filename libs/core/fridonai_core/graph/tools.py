@@ -2,7 +2,7 @@ from typing import List, Union
 
 from pydantic import BaseModel, Field, create_model, ConfigDict
 
-from libs.core.plugins import BasePlugin
+from fridonai_core.plugins import BasePlugin
 
 
 def create_plugin_wrapper_tool(plugin: BasePlugin, class_name: str) -> type[BaseModel]:

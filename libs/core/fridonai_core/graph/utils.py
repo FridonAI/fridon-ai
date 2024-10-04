@@ -1,7 +1,7 @@
 from langchain_core.messages import ToolMessage
 
-from libs.core.graph.models import structured_final_response_model
-from libs.core.graph.states import State
+from fridonai_core.graph.models import structured_final_response_model
+from fridonai_core.graph.states import State
 
 
 def prepare_plugin_agent(state):

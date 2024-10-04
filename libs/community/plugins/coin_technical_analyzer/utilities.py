@@ -7,8 +7,8 @@ import requests
 
 from libs.community.plugins.coin_technical_analyzer.data import ensure_data_store
 from libs.community.plugins.coin_technical_analyzer.helpers.llm import get_filter_chain
-from libs.core.plugins.utilities.base import BaseUtility
-from libs.core.plugins.utilities.llm import LLMUtility
+from fridonai_core.plugins.utilities.base import BaseUtility
+from fridonai_core.plugins.utilities.llm import LLMUtility
 
 
 class CoinTechnicalAnalyzerUtility(LLMUtility):

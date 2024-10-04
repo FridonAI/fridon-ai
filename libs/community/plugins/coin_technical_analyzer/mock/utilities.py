@@ -1,4 +1,4 @@
-from libs.core.plugins.utilities.mock import LLMMockUtility
+from fridonai_core.plugins.utilities.mock import LLMMockUtility
 
 
 class CoinTechnicalAnalyzerMockUtility(LLMMockUtility):

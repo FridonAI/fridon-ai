@@ -4,8 +4,8 @@ from libs.community.plugins.kamino.utilities import (
     KaminoBalanceUtility,
     KaminoBorrowLendUtility,
 )
-from libs.core.plugins.schemas import BaseToolInput
-from libs.core.plugins.tools import BaseTool
+from fridonai_core.plugins.schemas import BaseToolInput
+from fridonai_core.plugins.tools import BaseTool
 
 
 class KaminoBorrowLendToolInput(BaseToolInput):

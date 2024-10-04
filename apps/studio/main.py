@@ -1,8 +1,8 @@
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.sqlite import SqliteSaver
 
-from libs.core.graph import create_graph
-from libs.core.plugins.registry import ensure_plugin_registry
+from fridonai_core.graph import create_graph
+from fridonai_core.plugins.registry import ensure_plugin_registry
 from settings import settings
 from apps.fridon_brain import _preload_modules
 

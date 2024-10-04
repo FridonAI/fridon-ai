@@ -2,7 +2,7 @@ from contextvars import ContextVar
 
 from pydantic import BaseModel
 
-from libs.core.crons.base import BaseCron
+from fridonai_core.crons.base import BaseCron
 
 
 class CronRegistry(BaseModel):

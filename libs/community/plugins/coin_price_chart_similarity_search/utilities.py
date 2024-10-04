@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from libs.core.plugins.utilities import BaseUtility
+from fridonai_core.plugins.utilities import BaseUtility
 from settings import settings
 
 

@@ -1,6 +1,6 @@
 from typing import Literal
 
-from libs.core.plugins.utilities.mock import BlockchainMockUtility, RemoteMockUtility
+from fridonai_core.plugins.utilities.mock import BlockchainMockUtility, RemoteMockUtility
 
 
 class KaminoBorrowLendMockUtility(BlockchainMockUtility):

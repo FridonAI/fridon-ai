@@ -1155,6 +1155,33 @@ files = [
 ]
 
 [[package]]
+name = "fridonai-core"
+version = "0.0.1"
+description = "Core functionality for FridonAI"
+optional = false
+python-versions = ">=3.11,<3.13"
+files = []
+develop = true
+
+[package.dependencies]
+aiocron = "^1.8"
+aiosqlite = "^0.20.0"
+langchain = "^0.3.0"
+langchain-community = "^0.3.0"
+langchain-openai = "^0.2.0"
+langgraph = "^0.2.23"
+langgraph-checkpoint-postgres = "^2.0.0"
+langgraph-checkpoint-sqlite = "^2.0.0"
+psycopg = "^3.1.18"
+psycopg-binary = "^3.1.18"
+psycopg_pool = "^3.2.2"
+python-dotenv = "^1.0.1"
+
+[package.source]
+type = "directory"
+url = "libs/core"
+
+[[package]]
 name = "frozenlist"
 version = "1.4.1"
 description = "A list-like structure which implements collections.abc.MutableSequence"
@@ -4961,4 +4988,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "bd9e96d4cd2f1e42909502a752915a0f7e1418d504c7015b5858094c95724903"
+content-hash = "bc4a4caf527d781667e9eed53b93317808c2383f8774ec3d1ca6e57316f12d29"

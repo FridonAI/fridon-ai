@@ -1,6 +1,6 @@
 from typing import Literal
 
-from libs.core.plugins.utilities import BlockchainUtility, RemoteUtility
+from fridonai_core.plugins.utilities import BlockchainUtility, RemoteUtility
 
 
 class KaminoBorrowLendUtility(BlockchainUtility):

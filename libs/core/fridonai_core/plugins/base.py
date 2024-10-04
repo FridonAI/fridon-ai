@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from libs.core.plugins.tools import BaseTool
+from fridonai_core.plugins.tools import BaseTool
 
 
 class BasePlugin(BaseModel):
