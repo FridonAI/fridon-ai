@@ -1,6 +1,8 @@
 
+from typing import Optional
+from pydantic import Field
 from fridonai_core.plugins.utilities import BaseUtility
-
+from fridonai_core.plugins.utilities.adapter_base import BaseAdapter
 
 class BaseMockUtility(BaseUtility):
     async def arun(self, *args, **kwargs) -> str:
@@ -10,6 +12,8 @@ class BaseMockUtility(BaseUtility):
     }
 
 class BlockchainMockUtility(BaseMockUtility):
+    communicator: Optional[BaseAdapter] = Field(default=None,exclude=True)
+
     async def arun(self, *args, **kwargs) -> str:
         return "Tx 12345 successfully completed!"
 

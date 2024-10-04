@@ -1,9 +1,9 @@
-from typing import Any
+from typing import Any, Optional
 
 import aiohttp
 from pydantic import Field
 
-from fridonai_core.plugins.utilities.adapter_base import Adapter
+from fridonai_core.plugins.utilities.adapter_base import BaseAdapter
 from fridonai_core.plugins.utilities.base import BaseUtility
 from settings import settings
 
@@ -14,7 +14,7 @@ class BlockchainUtility(BaseUtility):
         exclude=True,
     )
 
-    communicator: Adapter = Field(exclude=True)
+    communicator: Optional[BaseAdapter] = Field(default=None, exclude=True)
 
     async def _generate_tx(self, request: dict[str, Any]) -> str | dict | Any:
         async with aiohttp.ClientSession() as session:
@@ -33,9 +33,7 @@ class BlockchainUtility(BaseUtility):
         tx: dict | None,
         wallet_id: str,
         chat_id: str,
-        
     ) -> str:
-
         response = await self.communicator.send(
             "response_received",
             {

@@ -1,5 +1,6 @@
 from typing import Literal, Union
 
+from libs.community.adapters.redis_send_wait_adapter import BlockchainRedisSendWaitAdapter
 from libs.community.plugins.kamino.utilities import (
     KaminoBalanceUtility,
     KaminoBorrowLendUtility,
@@ -18,7 +19,7 @@ KaminoBorrowLendTool = BaseTool(
     name="kamino-borrow-lend",
     description="Only use that tool for Kamino operations such as borrow, supply, repay and withdraw coins on Kamino",
     args_schema=KaminoBorrowLendToolInput,
-    utility=KaminoBorrowLendUtility(),
+    utility=KaminoBorrowLendUtility(communicator=BlockchainRedisSendWaitAdapter()),
     examples=[
         {
             "request": "borrow 10 sol from kamino",

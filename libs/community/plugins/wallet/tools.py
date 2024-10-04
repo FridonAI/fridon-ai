@@ -2,6 +2,7 @@ from typing import Union
 
 from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
+from libs.community.adapters.redis_send_wait_adapter import BlockchainRedisSendWaitAdapter
 from settings import settings
 
 if settings.ENV == "mock":
@@ -54,7 +55,7 @@ WalletTransferTool = BaseTool(
     name="wallet-transfer",
     description="A utility that allows you to transfer tokens to another wallet",
     args_schema=WalletTransferToolInput,
-    utility=WalletTransferUtility(),
+    utility=WalletTransferUtility(communicator=BlockchainRedisSendWaitAdapter()),
     examples=[
         {
             "request": "transfer 10 usdc to 2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",

@@ -1,3 +1,4 @@
+from libs.community.adapters.redis_send_wait_adapter import BlockchainRedisSendWaitAdapter
 from libs.community.plugins.jupiter.utilities import JupiterSwapUtility
 from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
@@ -13,7 +14,7 @@ JupiterSwapTool = BaseTool(
     name="jupiter-swap",
     description="A utility that allows you to exchange one token to another using jupiter",
     args_schema=JupiterSwapToopInput,
-    utility=JupiterSwapUtility(),
+    utility=JupiterSwapUtility(communicator=BlockchainRedisSendWaitAdapter()),
     examples=[
         {
             "request": "swap 10 sol to usdc",
