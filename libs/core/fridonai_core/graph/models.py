@@ -1,10 +1,13 @@
+import os 
 from langchain_openai import ChatOpenAI
 
 from fridonai_core.graph.tools import FinalResponse
-from settings import settings
 
 chat_gpt_model = ChatOpenAI(
-    model="gpt-4o", temperature=0, api_key=settings.OPENAI_API_KEY, verbose=True
+    model="gpt-4o", 
+    temperature=0, 
+    api_key=os.environ.get("OPENAI_API_KEY"), 
+    verbose=True
 )
 
 

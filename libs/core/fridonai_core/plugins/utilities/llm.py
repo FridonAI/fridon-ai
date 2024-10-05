@@ -1,3 +1,4 @@
+import os
 from typing import Any
 
 from langchain_core.output_parsers import StrOutputParser
@@ -6,7 +7,6 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 from fridonai_core.plugins.utilities.base import BaseUtility
-from settings import settings
 
 
 class LLMUtility(BaseUtility):
@@ -22,7 +22,7 @@ class LLMUtility(BaseUtility):
         llm = ChatOpenAI(
             model="gpt-4o",
             temperature=0,
-            openai_api_key=settings.OPENAI_API_KEY,
+            openai_api_key=os.environ.get("OPENAI_API_KEY"),
             verbose=True,
         )
 

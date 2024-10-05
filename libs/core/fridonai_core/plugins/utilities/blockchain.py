@@ -5,12 +5,11 @@ from pydantic import Field
 
 from fridonai_core.plugins.utilities.adapter_base import BaseAdapter
 from fridonai_core.plugins.utilities.base import BaseUtility
-from settings import settings
 
 
 class BlockchainUtility(BaseUtility):
     request_url: str = Field(
-        default=f"{settings.API_URL}/data/executor",
+        default="http://localhost:3000/data/executor",
         exclude=True,
     )
 

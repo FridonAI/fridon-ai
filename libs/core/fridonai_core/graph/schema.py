@@ -1,6 +1,5 @@
 from typing import Union
-
-from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_core import BaseModel, Field
 
 
 class ResponseSchema(BaseModel):

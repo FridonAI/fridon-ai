@@ -1,9 +1,7 @@
 from dependency_injector.wiring import Provide, inject
-from langchain_openai.chat_models import ChatOpenAI
 
 from fridonai_core.graph.base import generate_response
 from fridonai_core.plugins.registry import ensure_plugin_registry
-from settings import settings
 
 
 class ProcessUserMessageService:
@@ -36,13 +34,6 @@ class ProcessUserMessageService:
     ):
         plugins = await self._prepare_plugins(plugin_names)
 
-        llm = ChatOpenAI(
-            model="gpt-4o",
-            temperature=0,
-            openai_api_key=settings.OPENAI_API_KEY,
-            verbose=True,
-        )
-
         config = {
             "thread_id": chat_id,
             "wallet_id": wallet_id,
@@ -52,7 +43,6 @@ class ProcessUserMessageService:
         final_response, used_agents = await generate_response(
             message,
             plugins,
-            llm,
             config,
             memory="postgres"
         )

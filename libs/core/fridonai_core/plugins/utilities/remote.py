@@ -5,11 +5,10 @@ import aiohttp
 from pydantic import Field
 
 from fridonai_core.plugins.utilities.base import BaseUtility
-from settings import settings
 
 
 class RemoteUtility(BaseUtility):
-    request_url: str = Field(default=f"{settings.API_URL}/data/executor", exclude=True)
+    request_url: str = Field(default="http://localhost:3000/data/executor", exclude=True)
 
     async def _get_remote_response(self, request):
         async with aiohttp.ClientSession() as session:
