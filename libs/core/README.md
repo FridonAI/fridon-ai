@@ -1,10 +1,17 @@
 # FridonAI Core
 
-This package contains the core functionality for FridonAI, including plugins, utilities, and graph-based processing.
+
+FridonAI Core is the foundational package for building AI-driven chatbot platforms, specifically designed for the crypto world. It provides a modular and extensible architecture for creating powerful, domain-specific AI assistants.
+
+## Features
+
+- **Modular Plugin Architecture**: Easily extend functionality through a well-structured plugin system.
+- **Dynamic Request Routing**: Efficiently navigate user requests to relevant plugins.
+- **Blockchain Utilities**: Built-in support for blockchain-related operations.
 
 ## Installation
 
-You can install this package using pip:
+Install the package using pip:
 
 ```bash
 pip install fridonai-core
@@ -12,11 +19,63 @@ pip install fridonai-core
 
 ## Usage
 
-Import and use the core components in your FridonAI projects:
+Here's a basic example of how to use FridonAI Core components:
 
 ```python
 from fridonai_core.plugins import BasePlugin, BaseTool, BaseUtility
+from fridonai_core.plugins.utilities import BlockchainUtility, RemoteUtility, LLMUtility
+
+# Create a custom plugin
+class MyCustomPlugin(BasePlugin):
+    # Plugin implementation
+
+# Create a custom tool
+class MyCustomTool(BaseTool):
+    # Tool implementation
+
+# Create a custom utility
+class MyCustomUtility(BaseUtility):
+    # Utility implementation
+
+# Use blockchain utility
+class MyBlockchainUtility(BlockchainUtility):
+    # Blockchain utility implementation
 ```
 
+## Plugin Structure
 
-For more detailed usage instructions, please refer to the FridonAI documentation.
+FridonAI Core uses a hierarchical structure for plugins:
+
+1. **Plugins**: Extend `BasePlugin`
+2. **Tools**: Extend `BaseTool`
+3. **Utilities**: Extend `BaseUtility`
+
+Specialized utilities are available for specific use cases:
+- `BlockchainUtility`: For blockchain operations
+- `RemoteUtility`: For making remote API calls
+- `LLMUtility`: For language model interactions
+
+## Graph-based Processing
+
+The core includes a Graph component that manages conversation flow and agent interactions. It's responsible for:
+
+- Building networks of LLM Agents (Plugins)
+- Routing messages between agents
+- Managing agent states
+- Creating chains with prompts and models
+- Parsing outputs
+- Composing independently implemented plugins
+
+## Documentation
+
+For more detailed usage instructions and API documentation, please visit our [main README](https://github.com/FridonAI/fridon-ai/blob/main/README.md).
+
+## Contributing
+
+We welcome contributions!
+
+## Stay Connected
+
+Follow us on Twitter for the latest updates and announcements:
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/FridonAI?style=social)](https://x.com/Fridon_AI)

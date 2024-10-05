@@ -1,6 +1,6 @@
 # What is FridonAI
 
-FridonAI is an artificial intelligence-driven chatbot platform specifically designed for the crypto world, particularly on the Solana blockchain. Featuring targeted plugins for specific tasks such as swapping USDC to Solana, analyzing coin charts, providing coin search, and more. FridonAI serves as a comprehensive crypto assistant with domain-specific plugins.
+FridonAI is an artificial intelligence-driven chatbot platform specifically designed for the crypto world, particularly on the Solana blockchain. Featuring targeted plugins for specific tasks such as analyzing coin charts, providing coin search, swapping USDC to Solana, and more. FridonAI serves as a comprehensive crypto assistant with domain-specific plugins.
 
 ## Features
 
@@ -40,9 +40,9 @@ Integrate FridonAI on your platform using an `API_KEY` to leverage subscribed pl
 - **Plugin Contributors**: Developers who create and contribute plugins, enhancing FridonAI's capabilities with blockchain operations, AI analytics, social network integrations, and more.
 - **Core Library Users**: Developers who install the FridonAI core library in their Python projects to easily create custom plugins and implement private crypto chat functionality. This allows for seamless integration of FridonAI's capabilities into existing systems or the creation of new, specialized crypto chat applications.
 
-## Core Technical Overview
+## Technical Overview
 
-The FridonAI core is responsible for navigating user requests to relevant plugins, utilizing specific functionalities from each valid plugin. It facilitates easy plugin creation and supports connection with external systems using Redis. The core also generates a score for each chat interaction with users.
+The FridonAI is responsible for navigating user requests to relevant plugins, utilizing specific functionalities from each valid plugin. It facilitates easy plugin creation and supports connection with external systems using Redis.
 
 Key features:
 - [Modular plugin architecture for easy extension](#plugin-structure-and-development)
@@ -129,8 +129,15 @@ The exact scoring criteria and implementation details can be found in the releva
 
 ## Getting Started
 
-To set up the project locally:
+Run the whole project with Docker Compose:
 
+```bash
+docker compose up --build
+```
+
+To set up the FridonAI Brain locally:
+
+*It will need Redis and Postgres to be runnning and configured in .env*
 1. **Clone the Repository**
 
    ```bash
@@ -154,12 +161,6 @@ To set up the project locally:
    poetry run python -u -m apps.fridon_brain.main
    ```
 
-Run the whole project with Docker Compose:
-
-```bash
-docker compose up --build
-```
-
 ## Future Plans
 - Different api technology support
 - Detailed documentation
@@ -173,6 +174,13 @@ We welcome contributions from the community. Developers can create new plugins o
 ## License
 
 This project is open-source and available under the [MIT License](LICENSE).
+
+
+## Stay Connected
+
+Follow us on Twitter for the latest updates and announcements:
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/FridonAI?style=social)](https://x.com/Fridon_AI)
 
 ---
 
