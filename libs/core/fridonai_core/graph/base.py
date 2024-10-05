@@ -1,10 +1,11 @@
+import os 
 from typing import Literal, Union
+from fridonai_core.graph.models import get_model
 from langchain_core.language_models import BaseChatModel
 from langchain_core.runnables import RunnableLambda
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode
-from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from langchain_core.messages import HumanMessage
 
 from fridonai_core.graph.agents import create_agent
@@ -20,7 +21,6 @@ from fridonai_core.graph.utils import (
     prepare_plugin_agent,
 )
 from fridonai_core.plugins import BasePlugin
-from settings import settings
 
 
 def create_graph(
@@ -103,23 +103,28 @@ def create_graph(
 async def generate_response(
     message: str, 
     plugins: list[BasePlugin],
-    llm: BaseChatModel,
     config: dict,
     memory: Literal['postgres'] = 'postgres',
     return_used_agents: bool = True,
+    llm: BaseChatModel = get_model("gpt"),
 ):
-    if memory != 'postgres':
-        raise ValueError('Only postgres is supported for now')
-    
-    async with AsyncPostgresSaver.from_conn_string(
-        settings.POSTGRES_DB_URL, pipeline=False
-    ) as memory:
-        await memory.setup()
+        
+    if memory not in ['postgres', 'sqlite']:
+        raise ValueError('Only postgres and sqlite are supported for now')
+
+    if memory == 'sqlite':
+        from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver as Saver
+        conn_string = ":memory:"
+    else: 
+        from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver as Saver
+        conn_string = os.environ.get("POSTGRES_DB_URL")
+
+    async with Saver.from_conn_string(conn_string) as memory:
+        if memory == 'postgres':
+            await memory.setup()
+
         graph = create_graph(llm, plugins, memory)
-        graph_config = {
-            "configurable": config
-        }
-        response = ""
+        graph_config = {"configurable": config}
         async for s in graph.astream(
             {
                 "messages": [HumanMessage(content=message)],
