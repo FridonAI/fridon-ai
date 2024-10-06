@@ -1,12 +1,14 @@
 from typing import Literal
 
+from fridonai_core.plugins.schemas import BaseToolInput
+from fridonai_core.plugins.tools import BaseTool
+from pydantic import Field
+
 from libs.community.plugins.coin_technical_analyzer.utilities import (
     CoinBulishSearchUtility,
     CoinTechnicalIndicatorsListUtility,
     CoinTechnicalIndicatorsSearchUtility,
 )
-from fridonai_core.plugins.schemas import BaseToolInput
-from fridonai_core.plugins.tools import BaseTool
 from settings import settings
 
 if settings.ENV == "mock":
@@ -20,7 +22,8 @@ else:
 
 
 class CoinTechnicalAnalyzerToolInput(BaseToolInput):
-    coin_name: str
+    coin_name: str = Field(..., description="The name of the coin to analyze")
+    interval: Literal["1h", "4h"] = Field(default="1h", description="The interval of the technical indicators")
 
 
 CoinTechnicalAnalyzerTool = BaseTool(
@@ -70,7 +73,8 @@ CoinTechnicalIndicatorsListTool = BaseTool(
 
 
 class CoinTechnicalIndicatorsSearchToolInput(BaseToolInput):
-    filter: str
+    interval: Literal["1h", "4h"] = Field(default="1h", description="The interval of the technical indicators")
+    filter: str = Field(..., description="The filter text queryto use for the technical indicators")
 
 
 CoinTechnicalIndicatorsSearchTool = BaseTool(
@@ -122,5 +126,5 @@ TOOLS = [
     CoinTechnicalAnalyzerTool,
     CoinTechnicalIndicatorsListTool,
     CoinTechnicalIndicatorsSearchTool,
-    CoinBullishSearchTool,
+    # CoinBullishSearchTool,
 ]

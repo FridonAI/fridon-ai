@@ -106,3 +106,45 @@ async def generate_token_tags_list(token_summaries: list[dict]) -> list[dict]:
         results.extend([x.dict() for x in curr_results])
 
     return results
+
+
+class FilterGenerationResponse(BaseModel):
+    filters: str = Field(..., description="The deltalake table filter expression.")
+
+
+def get_filter_generator_chain() -> ChatPromptTemplate:
+    llm = ChatOpenAI(
+        model="gpt-4o",
+        temperature=0,
+        openai_api_key=settings.OPENAI_API_KEY,
+        verbose=True,
+    )
+
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                "You are an expert in technical analysis and you are generating filters for DeltaLake datasets based on the query.",
+            ),
+            (
+                "human",
+                """
+                Given the dataset schema:
+
+                {schema}
+
+                And the following query:
+
+                {query}
+
+                Generate a DeltaLake filter expression that can be used to filter the dataset based on the query.
+
+                Return only the filter expression of type pyarrow.compute.Expression.
+
+                import pyarrow.compute as pc
+                """,
+            ),
+        ]
+    )
+
+    return prompt | llm.with_structured_output(FilterGenerationResponse)

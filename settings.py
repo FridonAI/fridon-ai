@@ -2,11 +2,10 @@ from typing import Optional, Literal
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv("./apps/fridon_brain/.env")
 
 
 class Settings(BaseSettings):
-
     OPENAI_API_KEY: str
     GPT_MODEL: str
 
@@ -34,12 +33,12 @@ class Settings(BaseSettings):
 
     NUMBER_OF_COINS_ANALYZING: int = 15
 
-    ENV: Literal['test', 'mock', 'prod'] = 'mock'
+    ENV: Literal["test", "mock", "prod"] = "mock"
 
     class Config:
-        env_file = './apps/fridon_brain/.env'
-        env_file_encoding = 'utf-8'
-        extra = 'ignore'
+        env_file = "./apps/fridon_brain/.env"
+        env_file_encoding = "utf-8"
+        extra = "ignore"
 
 
 settings = Settings()

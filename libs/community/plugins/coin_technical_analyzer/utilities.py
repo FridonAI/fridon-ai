@@ -3,12 +3,17 @@ from typing import Literal
 
 import pandas as pd
 import pandas_ta as ta
+import polars as pl
+import pyarrow.compute as pc
 import requests
-
-from libs.community.plugins.coin_technical_analyzer.data import ensure_data_store
-from libs.community.plugins.coin_technical_analyzer.helpers.llm import get_filter_chain
 from fridonai_core.plugins.utilities.base import BaseUtility
 from fridonai_core.plugins.utilities.llm import LLMUtility
+
+from libs.community.plugins.coin_technical_analyzer.data import ensure_data_store
+from libs.community.plugins.coin_technical_analyzer.helpers.llm import (
+    get_filter_generator_chain,
+)
+from libs.repositories import IndicatorsRepository
 
 
 class CoinTechnicalAnalyzerUtility(LLMUtility):
@@ -28,120 +33,72 @@ Given {symbol} TA data as below on the last trading day, what will be the next f
 Summary of Technical Indicators for the Last Day:
 {last_day_summary}"""
 
-    def _read_ohlcv_date(self, symbol: str) -> pd.DataFrame:
-        time_to = int(datetime.now().timestamp())
-        time_from = int((time_to - timedelta(days=120).total_seconds()))
-        resp = requests.get(
-            f"https://api.kraken.com/0/public/OHLC?pair={symbol.upper()}USD&interval=1440&since={time_from}"
-        )
+    async def _arun(self, coin_name: str, interval: Literal["1h", "4h"], *args, **kwargs) -> dict:
+        indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval}")
 
-        response_data = resp.json()
+        delta = {
+            "1h": timedelta(hours=1),
+            "4h": timedelta(hours=4),
+        }[interval]
 
-        if resp.status_code != 200 or len(response_data["error"]) > 0:
-            raise Exception(
-                f"Failed to fetch data from Kraken API. Status code: {resp.status_code}"
-            )
+        # df = indicators_repository.read(filters=(pc.field("coin") == coin_name) & (pc.field("timestamp") > int((datetime.now() - delta).timestamp() * 1000)))
+        df = indicators_repository.read(filters=(pc.field("coin") == coin_name), last_n=1)
 
-        data = list(response_data["result"].values())[0]
-        df = pd.DataFrame(
-            data,
-            columns=["time", "open", "high", "low", "close", "vwap", "volume", "count"],
-        )
-        df.drop(columns=["vwap", "count"], inplace=True)
-        df.rename(columns={"time": "date"}, inplace=True)
-        df["date"] = pd.to_datetime(df["date"], unit="s")
-        df["open"] = df["open"].astype(float)
-        df["high"] = df["high"].astype(float)
-        df["low"] = df["low"].astype(float)
-        df["close"] = df["close"].astype(float)
-        df["volume"] = df["volume"].astype(float)
-        df.set_index("date", inplace=True)
-        df = df.iloc[:-1]
-        return df
+        print(str(df.to_dicts()))
 
-    async def _arun(self, coin_name: str, *args, **kwargs) -> dict:
-        df = self._read_ohlcv_date(coin_name)
-        df.ta.macd(append=True)
-        df.ta.rsi(append=True)
-        df.ta.bbands(append=True)
-        df.ta.obv(append=True)
-
-        df.ta.sma(length=20, append=True)
-        df.ta.ema(length=50, append=True)
-        df.ta.stoch(append=True)
-        df.ta.adx(append=True)
-
-        df.ta.willr(append=True)
-        df.ta.cmf(append=True)
-        df.ta.psar(append=True)
-
-        df["OBV_in_million"] = df["OBV"] / 1e7
-        df["MACD_histogram_12_26_9"] = df["MACDh_12_26_9"]
-
-        last_day_summary = df.iloc[-1][
-            [
-                "close",
-                "MACD_12_26_9",
-                "MACD_histogram_12_26_9",
-                "RSI_14",
-                "BBL_5_2.0",
-                "BBM_5_2.0",
-                "BBU_5_2.0",
-                "SMA_20",
-                "EMA_50",
-                "OBV_in_million",
-                "STOCHk_14_3_3",
-                "STOCHd_14_3_3",
-                "ADX_14",
-                "WILLR_14",
-                "CMF_20",
-                "PSARl_0.02_0.2",
-                "PSARs_0.02_0.2",
-            ]
-        ]
-
-        return {"last_day_summary": str(last_day_summary), "symbol": coin_name}
+        return {"last_day_summary": str(df.to_dicts()), "symbol": coin_name}
 
 
 class CoinTechnicalIndicatorsListUtility(BaseUtility):
     async def arun(self, *args, **kwargs) -> list:
         return [
-            "close",
-            "MACD_12_26_9",
-            "MACD_histogram_12_26_9",
-            "RSI_14",
-            "BBL_5_2.0",
-            "BBM_5_2.0",
-            "BBU_5_2.0",
-            "SMA_20",
-            "EMA_50",
-            "OBV_in_million",
-            "STOCHk_14_3_3",
-            "STOCHd_14_3_3",
-            "ADX_14",
-            "WILLR_14",
-            "CMF_20",
-            "PSARl_0.02_0.2",
-            "PSARs_0.02_0.2",
+            field
+            for field in IndicatorsRepository.table_schema
+            if field not in ["coin", "date", "timestamp", "reason"]
         ]
 
 
 class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
-    async def arun(self, filter: str, *args, **kwargs) -> list[dict]:
-        token_summaries = ensure_data_store().read_token_summaries()
+    async def arun(
+        self, interval: Literal["1h", "4h"], filter: str, *args, **kwargs
+    ) -> list[dict]:
+        filter_generation_chain = get_filter_generator_chain()
 
-        chain = get_filter_chain()
+        repository = IndicatorsRepository(table_name=f"indicators_{interval}")
 
-        results = []
+        filter_expression = filter_generation_chain.invoke(
+            {
+                "schema": {
+                    field.name: str(field.type)
+                    for field in repository.table_schema
+                    if field.name not in ["reason"]
+                },
+                "query": filter
+            }
+        ).filters
 
-        for i in range(0, len(token_summaries), 5):
-            batch = token_summaries[i : i + 5]
+        print(filter_expression)
 
-            curr_results = await chain.abatch([{**x, "filter": filter} for x in batch])
+        delta = {
+            "1h": timedelta(hours=1),
+            "4h": timedelta(hours=4),
+        }[interval]
 
-            results.extend([x.dict() for x in curr_results if x.binary_score == "yes"])
+        results = repository.read(
+            filters=eval(filter_expression)
+            # & (
+            #     pc.field("timestamp")
+            #     > int((datetime.now() - delta).timestamp() * 1000)
+            # )
+        )
 
-        return results
+        latest_records = results.sort("timestamp").group_by("coin").agg(pl.all().last())
+        # Create a copy of latest_records and change coin value to "dummy"
+        dummy_records = latest_records.clone()
+        dummy_records = dummy_records.with_columns(pl.lit("dummy").alias("coin"))
+
+        concatenated_records = pl.concat([latest_records, dummy_records])
+        return concatenated_records.to_dicts()
 
 
 class CoinBulishSearchUtility(BaseUtility):

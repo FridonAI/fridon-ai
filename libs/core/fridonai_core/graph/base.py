@@ -1,4 +1,4 @@
-import os 
+import os
 from typing import Literal, Union
 from fridonai_core.graph.models import get_model
 from langchain_core.language_models import BaseChatModel
@@ -101,29 +101,29 @@ def create_graph(
 
 
 async def generate_response(
-    message: str, 
+    message: str,
     plugins: list[BasePlugin],
     config: dict,
     memory: Literal['postgres'] = 'postgres',
     return_used_agents: bool = True,
     llm: BaseChatModel = get_model("gpt"),
 ):
-        
+
     if memory not in ['postgres', 'sqlite']:
         raise ValueError('Only postgres and sqlite are supported for now')
 
     if memory == 'sqlite':
         from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver as Saver
         conn_string = ":memory:"
-    else: 
+    else:
         from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver as Saver
         conn_string = os.environ.get("POSTGRES_DB_URL")
 
-    async with Saver.from_conn_string(conn_string) as memory:
+    async with Saver.from_conn_string(conn_string) as memory_saver:
         if memory == 'postgres':
-            await memory.setup()
+            await memory_saver.setup()
 
-        graph = create_graph(llm, plugins, memory)
+        graph = create_graph(llm, plugins, memory_saver)
         graph_config = {"configurable": config}
         async for s in graph.astream(
             {
