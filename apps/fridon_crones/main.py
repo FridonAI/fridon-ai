@@ -6,11 +6,16 @@ import random
 
 import aiocron
 import pandas as pd
+import pandas_ta as ta
 import polars as pl
 import pyarrow as pa
 import pyarrow.compute as pc
 
-from libs.repositories import OhlcvRepository
+from libs.internals.indicators import (
+    calculate_bulish_indicator,
+    calculate_ta_indicators,
+)
+from libs.repositories import IndicatorsRepository, OhlcvRepository
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -47,6 +52,11 @@ def generate_dummy_data():
 @aiocron.crontab("*/1 * * * *", start=True)
 async def data_ingestion_job():
     logger.info("\n\nStarting data ingestion job.")
+    await update_ohlcv_data()
+    await update_indicators_data()
+
+
+async def update_ohlcv_data():
     raw_data, current_time = generate_dummy_data()
     raw_repository = OhlcvRepository(table_name="ohlcv_raw")
     df = pl.from_records(raw_data)
@@ -181,6 +191,39 @@ def create_new_interval_record(
     )
 
     return aggregated_df
+
+
+async def update_indicators_data():
+    tokens = ["BTC"]
+
+    interval_names = ["raw", "1h", "4h"]
+
+    for interval_name in interval_names:
+        try:
+            ohlcv_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
+            indicators_repository = IndicatorsRepository(
+                table_name=f"indicators_{interval_name}"
+            )
+
+            df = ohlcv_repository.read(
+                filters=pc.field("coin").isin(tokens),
+                columns=["coin", "timestamp", "open", "high", "low", "close", "volume"],
+                last_n=50,
+                order_by="timestamp",
+            )
+
+            logger.info(f"Calculating indicators for {interval_name}.")
+            df_indicators = calculate_ta_indicators(df)
+            df_bulish = await calculate_bulish_indicator(df_indicators)
+            df_indicators_merged = df_indicators.join(
+                df_bulish, on=["coin", "timestamp"], how="left"
+            )
+            indicators_repository.update(
+                df_indicators_merged, predicate="s.timestamp == t.timestamp"
+            )
+            logger.info(f"Updated indicators data for {interval_name}.")
+        except Exception as e:
+            logger.error(f"Error updating indicators data for {interval_name}: {e}")
 
 
 def main():

@@ -45,6 +45,8 @@ class DeltaRepository(BaseModel):
         partitions: list[tuple[str, str, Any]] | None = None,
         columns: list[str] | None = None,
         filters: Expression | None = None,
+        last_n: int | None = None,
+        order_by: str | None = None,
     ) -> pl.DataFrame:
         if not self._check_table_exists():
             logger.error(f"Table {self.table_name} does not exist at {self.s3_path}")
@@ -54,17 +56,29 @@ class DeltaRepository(BaseModel):
 
         try:
             dt = DeltaTable(self.s3_path, storage_options=self.storage_options)
+
             arrow_table = dt.to_pyarrow_table(
                 partitions=partitions, columns=columns, filters=filters
             )
             result = pl.from_arrow(arrow_table)
+
+            if last_n is not None:
+                if order_by is None:
+                    logger.warning(
+                        "order_by is not specified. Using descending order by timestamp."
+                    )
+                    order_by = self.table_schema.names[0]
+
+                result = result.sort(order_by).tail(last_n)
             logger.info(f"Table {self.table_name} read successfully.")
         except Exception as e:
             logger.error(f"Error reading table {self.table_name}: {e}")
             raise
         return result if isinstance(result, pl.DataFrame) else result.to_frame()
 
-    def write(self, df: pl.DataFrame, mode: Literal["append", "overwrite"] = "append") -> None:
+    def write(
+        self, df: pl.DataFrame, mode: Literal["append", "overwrite"] = "append"
+    ) -> None:
         if not self._check_table_exists():
             logger.info(f"Table {self.table_name} does not exist at {self.s3_path}")
             logger.info(f"Initializing table {self.table_name} at {self.s3_path}")
@@ -77,50 +91,56 @@ class DeltaRepository(BaseModel):
                 schema=self.table_schema,
                 partition_by=self.partition_columns,
                 storage_options=self.storage_options,
-                mode=mode
+                mode=mode,
             )
-            logger.info(f'Data written to table {self.table_name} successfully.')
+            logger.info(f"Data written to table {self.table_name} successfully.")
         except Exception as e:
-            logger.error(f'Error writing to table {self.table_name}: {e}')
+            logger.error(f"Error writing to table {self.table_name}: {e}")
             raise
 
     def _initialize_table(self) -> None:
-        logger.info(f"Initializing table {self.table_name} at {self.s3_path} with schema {self.table_schema} and partition columns {self.partition_columns}")
+        logger.info(
+            f"Initializing table {self.table_name} at {self.s3_path} with schema {self.table_schema} and partition columns {self.partition_columns}"
+        )
         try:
             DeltaTable.create(
                 table_uri=self.s3_path,
-                mode='ignore',
+                mode="ignore",
                 schema=self.table_schema,
                 partition_by=self.partition_columns,
-                storage_options=self.storage_options
+                storage_options=self.storage_options,
             )
-            logger.info(f'Table {self.table_name} initialized successfully.')
+            logger.info(f"Table {self.table_name} initialized successfully.")
         except Exception as e:
-            logger.error(f'Error initializing table {self.table_name}: {e}')
+            logger.error(f"Error initializing table {self.table_name}: {e}")
             raise
 
-    def update(self, df: pl.DataFrame, *, predicate: str, source_alias: str = "s", target_alias: str = "t") -> None:
+    def update(
+        self,
+        df: pl.DataFrame,
+        *,
+        predicate: str,
+        source_alias: str = "s",
+        target_alias: str = "t",
+    ) -> None:
         if not self._check_table_exists():
-            logger.error(f"Table {self.table_name} does not exist at {self.s3_path}")
-            raise FileNotFoundError(
-                f"Table {self.table_name} does not exist at {self.s3_path}"
-            )
+            self.write(df)
+            return
 
         try:
             dt = DeltaTable(self.s3_path, storage_options=self.storage_options)
             (
                 dt.merge(
-                    source=df,
+                    source=df.to_pandas(),
                     predicate=predicate,
                     source_alias=source_alias,
-                    target_alias=target_alias
+                    target_alias=target_alias,
                 )
                 .when_matched_update_all()
                 .when_not_matched_insert_all()
                 .execute()
             )
-            logger.info(f'Table {self.table_name} updated successfully.')
+            logger.info(f"Table {self.table_name} updated successfully.")
         except Exception as e:
-            logger.error(f'Error updating table {self.table_name}: {e}')
+            logger.error(f"Error updating table {self.table_name}: {e}")
             raise
-
