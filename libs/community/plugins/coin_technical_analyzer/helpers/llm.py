@@ -124,7 +124,12 @@ def get_filter_generator_chain() -> ChatPromptTemplate:
         [
             (
                 "system",
-                "You are an expert in technical analysis and you are generating filters for DeltaLake datasets based on the query.",
+                """Assume the role as a leading Technical Analysis (TA) expert in the stock market, \
+    a modern counterpart to Charles Dow, John Bollinger, and Alan Andrews. \
+    Your mastery encompasses both stock fundamentals and intricate technical indicators. \
+    You possess the ability to decode complex market dynamics, \
+    providing clear insights and recommendations backed by a thorough understanding of interrelated factors. \
+        You are generating filters for DeltaLake datasets based on the query.""",
             ),
             (
                 "human",
@@ -138,6 +143,8 @@ def get_filter_generator_chain() -> ChatPromptTemplate:
                 {query}
 
                 Generate a DeltaLake filter expression that can be used to filter the dataset based on the query.
+
+                Use only pyarrow.compute when referencing specific columns with pc.field(...).
 
                 Return only the filter expression of type pyarrow.compute.Expression.
 

@@ -33,16 +33,32 @@ Given {symbol} TA data as below on the last trading day, what will be the next f
 Summary of Technical Indicators for the Last Day:
 {last_day_summary}"""
 
-    async def _arun(self, coin_name: str, interval: Literal["1h", "4h"], *args, **kwargs) -> dict:
-        indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval}")
+    async def _arun(
+        self, coin_name: str, interval: Literal["1h", "4h", "1d", "1w"], *args, **kwargs
+    ) -> dict:
+        indicators_repository = IndicatorsRepository(
+            table_name=f"indicators_{interval}"
+        )
 
         delta = {
             "1h": timedelta(hours=1),
             "4h": timedelta(hours=4),
+            "1d": timedelta(days=1),
+            "1w": timedelta(days=7),
         }[interval]
 
         # df = indicators_repository.read(filters=(pc.field("coin") == coin_name) & (pc.field("timestamp") > int((datetime.now() - delta).timestamp() * 1000)))
-        df = indicators_repository.read(filters=(pc.field("coin") == coin_name), last_n=1)
+        df = indicators_repository.read(
+            filters=(pc.field("coin") == coin_name)
+            & (
+                pc.field("timestamp")
+                >= int((datetime.utcnow() - delta).timestamp() * 1000)
+            )
+            & (pc.field("timestamp") <= int(datetime.utcnow().timestamp() * 1000))
+        )
+
+        if len(df) == 0:
+            return "No data found"
 
         print(str(df.to_dicts()))
 
@@ -60,21 +76,14 @@ class CoinTechnicalIndicatorsListUtility(BaseUtility):
 
 class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
     async def arun(
-        self, interval: Literal["1h", "4h"], filter: str, *args, **kwargs
+        self, interval: Literal["1h", "4h", "1d", "1w"], filter: str, *args, **kwargs
     ) -> list[dict]:
         filter_generation_chain = get_filter_generator_chain()
 
         repository = IndicatorsRepository(table_name=f"indicators_{interval}")
 
         filter_expression = filter_generation_chain.invoke(
-            {
-                "schema": {
-                    field.name: str(field.type)
-                    for field in repository.table_schema
-                    if field.name not in ["reason"]
-                },
-                "query": filter
-            }
+            {"schema": repository.table_schema, "query": filter}
         ).filters
 
         print(filter_expression)
@@ -82,23 +91,25 @@ class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
         delta = {
             "1h": timedelta(hours=1),
             "4h": timedelta(hours=4),
+            "1d": timedelta(days=1),
+            "1w": timedelta(days=7),
         }[interval]
 
         results = repository.read(
             filters=eval(filter_expression)
-            # & (
-            #     pc.field("timestamp")
-            #     > int((datetime.now() - delta).timestamp() * 1000)
-            # )
+            & (
+                pc.field("timestamp")
+                >= int((datetime.utcnow() - delta).timestamp() * 1000)
+            )
+            & (pc.field("timestamp") <= int(datetime.utcnow().timestamp() * 1000))
         )
 
         latest_records = results.sort("timestamp").group_by("coin").agg(pl.all().last())
-        # Create a copy of latest_records and change coin value to "dummy"
-        dummy_records = latest_records.clone()
-        dummy_records = dummy_records.with_columns(pl.lit("dummy").alias("coin"))
 
-        concatenated_records = pl.concat([latest_records, dummy_records])
-        return concatenated_records.to_dicts()
+        if len(latest_records) == 0:
+            return "No coins found"
+
+        return latest_records.to_dicts()
 
 
 class CoinBulishSearchUtility(BaseUtility):

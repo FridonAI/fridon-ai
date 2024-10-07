@@ -23,7 +23,7 @@ else:
 
 class CoinTechnicalAnalyzerToolInput(BaseToolInput):
     coin_name: str = Field(..., description="The name of the coin to analyze")
-    interval: Literal["1h", "4h"] = Field(default="1h", description="The interval of the technical indicators")
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(default="1h", description="The interval of the technical indicators")
 
 
 CoinTechnicalAnalyzerTool = BaseTool(
@@ -73,7 +73,7 @@ CoinTechnicalIndicatorsListTool = BaseTool(
 
 
 class CoinTechnicalIndicatorsSearchToolInput(BaseToolInput):
-    interval: Literal["1h", "4h"] = Field(default="1h", description="The interval of the technical indicators")
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(default="1h", description="The interval of the technical indicators")
     filter: str = Field(..., description="The filter text queryto use for the technical indicators")
 
 

@@ -9,7 +9,11 @@ class IndicatorsRepository(DeltaRepository):
             ("coin", pa.string()),
             ("timestamp", pa.int64()),
             ("date", pa.string()),
+            ("open", pa.float64()),
+            ("high", pa.float64()),
+            ("low", pa.float64()),
             ("close", pa.float64()),
+            ("volume", pa.float64()),
             ("MACD_12_26_9", pa.float64()),
             ("MACD_histogram_12_26_9", pa.float64()),
             ("RSI_14", pa.float64()),
@@ -26,8 +30,6 @@ class IndicatorsRepository(DeltaRepository):
             ("CMF_20", pa.float64()),
             ("PSARl_0.02_0.2", pa.float64()),
             ("PSARs_0.02_0.2", pa.float64()),
-            ("tag", pa.string()),
-            ("reason", pa.string()),
         ]
     )
     partition_columns: list[str] = ["date", "timestamp"]

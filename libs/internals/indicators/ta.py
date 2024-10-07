@@ -36,7 +36,11 @@ def calculate_ta_indicators(df: pl.DataFrame) -> pl.DataFrame:
 
     last_day_summary = df_pandas.iloc[-1][
         [
+            "open",
+            "high",
+            "low",
             "close",
+            "volume",
             "MACD_12_26_9",
             "MACD_histogram_12_26_9",
             "RSI_14",
