@@ -22,24 +22,41 @@ pip install fridonai-core
 Here's a basic example of how to use FridonAI Core components:
 
 ```python
-from fridonai_core.plugins import BasePlugin, BaseTool, BaseUtility
-from fridonai_core.plugins.utilities import BlockchainUtility, RemoteUtility, LLMUtility
+from fridonai_core.plugins import BasePlugin, BaseToolInput
+from fridonai_core.plugins.utilities import BaseUtility
+from fridonai_core.plugins.tools import BaseTool
 
-# Create a custom plugin
-class MyCustomPlugin(BasePlugin):
-    # Plugin implementation
+from fridonai_core.graph import generate_response
 
-# Create a custom tool
-class MyCustomTool(BaseTool):
-    # Tool implementation
+class TestUtility(BaseUtility):
+    async def arun(self, *args, **kwargs) -> str:
+        return "You are the Superman!"
+    
+class TestToolInput(BaseToolInput):
+    pass
 
-# Create a custom utility
-class MyCustomUtility(BaseUtility):
-    # Utility implementation
 
-# Use blockchain utility
-class MyBlockchainUtility(BlockchainUtility):
-    # Blockchain utility implementation
+TestTool = BaseTool(
+    name="test-tool",
+    description="Use this tool to answer any questions.",
+    args_schema=TestToolInput,
+    utility=TestUtility(),
+    examples=[],
+)
+
+class TestPlugin(BasePlugin):
+    name: str = "Test"
+    description: str = "Use this plugin to answer any questions."
+    tools: list[BaseTool] = [TestTool]
+
+
+rs = await generate_response(
+    "Who am I?", 
+    plugins=[TestPlugin()], 
+    memory='sqlite',
+    config={"thread_id": "test"}, 
+    return_used_agents=False
+)
 ```
 
 ## Plugin Structure
