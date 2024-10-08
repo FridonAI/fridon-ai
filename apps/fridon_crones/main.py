@@ -17,36 +17,16 @@ from libs.internals.indicators import (
 )
 from libs.repositories import IndicatorsRepository, OhlcvRepository
 
+if os.environ.get("DATA_PROVIDER") == "binance":
+    from libs.data_providers import BinanceCoinPriceDataProvider as DataProvider
+else:
+    from libs.data_providers import DummyCoinPriceDataProvider as DataProvider
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-COINS = ["BTC"]
-
-
-def generate_dummy_data():
-    data = []
-    current_time = datetime.datetime.utcnow().replace(microsecond=0)
-    timestamp = int(current_time.timestamp() * 1000)
-    date_str = current_time.strftime("%Y-%m-%d")
-    for coin in COINS:
-        open_price = random.uniform(1000, 50000)
-        close_price = open_price + random.uniform(-500, 500)
-        high_price = max(open_price, close_price) + random.uniform(0, 500)
-        low_price = min(open_price, close_price) - random.uniform(0, 500)
-        volume = random.uniform(100, 10000)
-        data.append(
-            {
-                "coin": coin,
-                "timestamp": timestamp,
-                "date": date_str,
-                "open": open_price,
-                "high": high_price,
-                "low": low_price,
-                "close": close_price,
-                "volume": volume,
-            }
-        )
-    return data, current_time
+COINS = ['BTC','ETH','NEIRO','SOL','SUI','PEPE','OG','WIF','FTT','BNB','XRP','SEI','DOGE','TAO','FET','SANTOS','WLD','SHIB','APT','FTM','EIGEN','PEOPLE','SAGA','RUNE','NEAR','1000SATS','BONK','FLOKI','NOT','DOGS','1MBABYDOGE','CFX','TURBO','AVAX','BOME','WING','LAZIO','CVC','ENA','TRX','ORDI','ARB','HMSTR','LINK','EUR','CATI','BNX','RENDER','TON','TIA','ADA','AAVE','ALPINE','INJ','ZRO','ZK','USTC','MKR','LTC','PORTO','DIA','ARKM','MATIC','PENDLE','ICP','ALT','IO','FIL','GALA','OP','JUP','BCH','STX','ASR','UNI','CELO','BANANA','W','POL','TROY','LUNC','ATM','MANTA','DYDX','CRV','STRK','DOT','FORTH','LUNA','ACH','CHZ','ATOM','YGG','PHB','AR','JTO','LDO','HBAR','SUPER','FIDA','MEME','CKB','OMNI','PYTH','PSG','DEGO','OM','BEAMX','BB','EURI','JASMY','RAY','SUN','PIXEL','BLUR','ROSE','GRT','TRB','VGX','WOO','IMX','SSV','AI','BAR','GAS','KAVA','DYM','JUV','ETC','CITY','XAI','ASTR','CVP','VIDT','ACM','MASK','ENS','RSR','ARK','APE','AUDIO','PORTAL','REI','CAKE','REZ','MINA','VET','ORN','ALGO','VANRY','AST','HIGH','GMT','AEVO','LEVER','FIO','EOS','AXS','SNT','AXL','UNFI','COS','REEF','XLM','TRU','AMP','TNSR','EPX','COTI','THETA','VIC','RAD','CYBER','RARE','EDU','EGLD','UMA','LISTA','LPT','FOR','ACE','NEO','BAKE','SYN','FRONT','SNX','KDA','TWT','DODO','ONG','CTXC','FLOW','RDNT','VIB','SLF','PYR']
 
 
 @aiocron.crontab("*/1 * * * *", start=True)
@@ -57,7 +37,9 @@ async def data_ingestion_job():
 
 
 async def update_ohlcv_data():
-    raw_data, current_time = generate_dummy_data()
+    data_provider = DataProvider()
+    raw_data = await data_provider.get_current_ohlcv(COINS, interval='30m')
+    current_time = datetime.datetime.fromtimestamp(raw_data[0]['timestamp'] // 1000)
     raw_repository = OhlcvRepository(table_name="ohlcv_raw")
     df = pl.from_records(raw_data)
 
@@ -77,16 +59,16 @@ async def update_ohlcv_data():
     ]
     for interval_name, interval_length in intervals:
         interval_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
-        await update_interval_data(
-            interval_repository, interval_name, interval_length, df, current_time
-        )
+        for coin in COINS:
+            await update_interval_data(
+                coin, interval_repository, interval_name, interval_length, df, current_time
+            )
 
 
 async def update_interval_data(
-    repository, interval_name, interval_length, new_data_df, current_time
+    coin, repository, interval_name, interval_length, new_data_df, current_time
 ):
     logger.info(f"Updating interval data for {interval_name}.")
-    coin = COINS[0]
     interval_start_time = current_time - (
         datetime.timedelta(seconds=interval_length.total_seconds() - 1)
     )
