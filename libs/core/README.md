@@ -34,6 +34,19 @@ class TestUtility(BaseUtility):
     
 class TestToolInput(BaseToolInput):
     pass
+from fridonai_core.plugins import BasePlugin, BaseToolInput
+from fridonai_core.plugins.utilities import BaseUtility
+from fridonai_core.plugins.tools import BaseTool
+
+from fridonai_core.graph import generate_response
+
+class TestUtility(BaseUtility):
+    async def arun(self, *args, **kwargs) -> str:
+        print("sadasdas")
+        return "You are the Superman!"
+    
+class TestToolInput(BaseToolInput):
+    pass
 
 
 TestTool = BaseTool(
