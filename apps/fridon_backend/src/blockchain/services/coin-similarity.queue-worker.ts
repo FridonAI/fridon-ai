@@ -12,13 +12,13 @@ export class CoinSimilarityEmbeddingsWorker extends WorkerHost {
   @Inject() private readonly coinSimilarityService: CoinSimilarityService;
 
   async process(job: CoinSimilarityEmbeddingsJob): Promise<any> {
-    const tokenList = job.data.tokenAddresses.map((t) => t.symbol);
+    const tokenList = job.data.tokens.map((t) => t);
     this.logger.debug(
       `Processing Tokens: [${tokenList}]`,
       `Embeddings[${job.id}]`,
     );
     await this.coinSimilarityService.updateEmbeddingsBatch(
-      job.data.tokenAddresses,
+      job.data.tokens,
     );
 
     this.logger.debug(`Processed`, `Embeddings[${job.id}]`);

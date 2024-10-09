@@ -13,6 +13,10 @@ module.exports = {
           from: 'src/blockchain/cron/coins-list.json',
           to: 'blockchain/cron/coins-list.json',
         },
+        {
+          from: 'src/blockchain/cron/coins-list-new.json',
+          to: 'blockchain/cron/coins-list-new.json',
+        },
       ],
     }),
   ],

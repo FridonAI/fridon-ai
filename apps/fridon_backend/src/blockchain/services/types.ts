@@ -1,8 +1,7 @@
 import { Queue, Job } from 'bullmq';
-import { TokenAddress } from './coin-similarity';
 
 export type QueuePayload = {
-  tokenAddresses: TokenAddress[];
+  tokens: string[];
 };
 
 export class CoinSimilarityEmbeddingsQueue extends Queue<QueuePayload> {}

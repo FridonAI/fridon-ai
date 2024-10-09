@@ -35,15 +35,15 @@ export class UpdateEmbeddings implements OnApplicationBootstrap {
   }
 
   async updateEmbeddings() {
-    const tokenAddresses = this.coinSimilarityService.getTokenAddresses();
+    const tokens = this.coinSimilarityService.getTokens();
 
-    const chunks = _.chunk(tokenAddresses, 16);
+    const chunks = _.chunk(tokens, 16);
 
     type T = Parameters<CoinSimilarityEmbeddingsQueue['addBulk']>[0][number];
     const queueBatchData = chunks.map((chunk, i): T => {
       return {
         name: `update-embeddings-${i}`,
-        data: { tokenAddresses: chunk },
+        data: { tokens: chunk },
         opts: {
           attempts: 3,
           backoff: {
