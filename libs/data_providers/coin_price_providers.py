@@ -1,5 +1,5 @@
 import asyncio
-import random 
+import random
 import aiohttp
 import pandas as pd
 from datetime import datetime, timedelta
@@ -42,7 +42,7 @@ class DummyCoinPriceDataProvider(CoinPriceDataProvider):
             })
         return data, current_time
 
-    
+
 class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
     def __init__(self):
         self.base_url = "https://api.binance.com/api/v3/klines"
@@ -59,7 +59,7 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
             url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&startTime={start_time}"
         else:
             url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&limit={limit}"
-        
+
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.json()
@@ -67,7 +67,7 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
         formatted_data = []
         for entry in data:
             timestamp = int(entry[0])
-            date_str = datetime.fromtimestamp(timestamp//1000).strftime("%Y-%m-%d %H:%M:%S")
+            date_str = datetime.fromtimestamp(timestamp//1000).strftime("%Y-%m-%d")
             formatted_data.append({
                 "coin": symbol,
                 "timestamp": timestamp,
@@ -79,7 +79,7 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
                 "volume": float(entry[5]),
             })
         return formatted_data
-    
+
 
     async def _generate_multiple_coins_price_data(self, coins, interval='30m', days=None, batch_size=5, output_format='dict'):
         data = []
@@ -107,7 +107,7 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
             df['low'] = df['low'].astype(float)
             df['close'] = df['close'].astype(float)
             df['volume'] = df['volume'].astype(float)
-        
+
             return df
 
         return data, datetime.utcnow().replace(microsecond=0)
