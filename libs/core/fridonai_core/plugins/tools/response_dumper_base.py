@@ -13,12 +13,12 @@ class ResponseDumperOutput(BaseModel):
     type: Literal["local", "s3"]
     extension: Literal["json", None] = None
     id: str
-    name: str = ""
+    name: str
     path: str | None = None
 
 
 class ResponseDumper(BaseModel):
-    async def dump(self, data: Any, key: str, name: str = "") -> ResponseDumperOutput: ...
+    async def dump(self, data: Any, name: str, key: str) -> ResponseDumperOutput: ...
 
 
 
@@ -27,7 +27,7 @@ class LocalResponseDumperOutput(ResponseDumperOutput):
 
 
 class LocalResponseDumper(ResponseDumper):
-    async def dump(self, data: str | Any, key: str = "tmp", name: str = "") -> LocalResponseDumperOutput:
+    async def dump(self, data: str | Any, name: str, key: str = "tmp") -> LocalResponseDumperOutput:
         temp_file_id = str(uuid.uuid4())[:8]
         try:
             with open(f"{key}/{temp_file_id}.json", 'w') as f:
@@ -55,7 +55,7 @@ class S3ResponseDumper(ResponseDumper):
         self.session = get_session()
         self.kwargs = kwargs
 
-    async def dump(self, data: str | Any, key: str = "tool_responses", name: str = "") -> S3ResponseDumperOutput:
+    async def dump(self, data: str | Any, name: str, key: str = "tool_responses") -> S3ResponseDumperOutput:
         temp_file_id = str(uuid.uuid4())[:8]
         s3_key = f"{key}/{temp_file_id}.json"
         try:
