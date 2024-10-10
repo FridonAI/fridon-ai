@@ -2,10 +2,12 @@ from typing import Literal
 
 from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
+from fridonai_core.plugins.tools.response_dumper_base import S3ResponseDumper
 from pydantic import Field
 
 from libs.community.plugins.coin_technical_analyzer.utilities import (
     CoinBulishSearchUtility,
+    CoinChartPlotterUtility,
     CoinTechnicalIndicatorsListUtility,
     CoinTechnicalIndicatorsSearchUtility,
 )
@@ -46,6 +48,7 @@ CoinTechnicalAnalyzerTool = BaseTool(
             "response": "",
         },
     ],
+    response_dumper=S3ResponseDumper()
 )
 
 
@@ -68,13 +71,12 @@ CoinTechnicalIndicatorsListTool = BaseTool(
             "response": "",
         },
     ],
-    helper=True,
 )
 
 
 class CoinTechnicalIndicatorsSearchToolInput(BaseToolInput):
     interval: Literal["1h", "4h", "1d", "1w"] = Field(default="1h", description="The interval of the technical indicators")
-    filter: str = Field(..., description="The filter text queryto use for the technical indicators")
+    filter: str = Field(..., description="The filter text query to use for the technical indicators")
 
 
 CoinTechnicalIndicatorsSearchTool = BaseTool(
@@ -93,7 +95,6 @@ CoinTechnicalIndicatorsSearchTool = BaseTool(
             "response": "",
         },
     ],
-    helper=True,
 )
 
 
@@ -122,9 +123,31 @@ CoinBullishSearchTool = BaseTool(
 )
 
 
+class CoinChartPlotterToolInput(BaseToolInput):
+    coin_name: str = Field(..., description="The name of the coin to plot")
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(default="1h", description="The interval of the technical indicators")
+    filter: str = Field(..., description="The filter text queryto use for the technical indicators")
+
+
+CoinChartPlotterTool = BaseTool(
+    name="coin-chart-plotter",
+    description="A utility that allows you to plot coin chart",
+    args_schema=CoinChartPlotterToolInput,
+    utility=CoinChartPlotterUtility(),
+    examples=[
+        {
+            "request": "Plot BTC chart",
+            "response": "",
+        },
+    ],
+    response_dumper=S3ResponseDumper()
+)
+
+
 TOOLS = [
     CoinTechnicalAnalyzerTool,
     CoinTechnicalIndicatorsListTool,
     CoinTechnicalIndicatorsSearchTool,
+    CoinChartPlotterTool,
     # CoinBullishSearchTool,
 ]

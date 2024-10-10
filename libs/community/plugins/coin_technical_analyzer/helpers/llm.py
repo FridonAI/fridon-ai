@@ -1,10 +1,8 @@
 from typing import Literal
 
+from fridonai_core.graph.models import get_model
 from langchain.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
-
-from settings import settings
 
 
 class FilterResponse(BaseModel):
@@ -18,12 +16,7 @@ class FilterResponse(BaseModel):
 
 
 def get_filter_chain() -> ChatPromptTemplate:
-    llm = ChatOpenAI(
-        model="gpt-4o",
-        temperature=0,
-        openai_api_key=settings.OPENAI_API_KEY,
-        verbose=True,
-    )
+    llm = get_model()
 
     check_propmt = ChatPromptTemplate.from_messages(
         [
@@ -61,12 +54,7 @@ class BulishIndicator(BaseModel):
 
 
 def get_bulish_indicator_chain() -> ChatPromptTemplate:
-    llm = ChatOpenAI(
-        model="gpt-4o",
-        temperature=0,
-        openai_api_key=settings.OPENAI_API_KEY,
-        verbose=True,
-    )
+    llm = get_model()
 
     check_propmt = ChatPromptTemplate.from_messages(
         [
@@ -113,12 +101,7 @@ class FilterGenerationResponse(BaseModel):
 
 
 def get_filter_generator_chain() -> ChatPromptTemplate:
-    llm = ChatOpenAI(
-        model="gpt-4o",
-        temperature=0,
-        openai_api_key=settings.OPENAI_API_KEY,
-        verbose=True,
-    )
+    llm = get_model()
 
     prompt = ChatPromptTemplate.from_messages(
         [
