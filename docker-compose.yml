@@ -7,8 +7,10 @@ services:
     ports:
       - '3000:3000'
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       - UPDATE_EMBEDDINGS_ON_BOOTSTRAP=1
       - REDIS_HOST=redis
@@ -17,19 +19,19 @@ services:
     env_file:
       - apps/fridon_backend/.env
 
-  fridon_brain:
-    build:
-      context: .
-      dockerfile: apps/fridon_brain/Dockerfile
-    env_file:
-      - apps/fridon_brain/.env
-    environment:
-      - POSTGRES_HOST=db
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - POSTGRES_DB_URL=postgresql://user:pass@db:5432/app
-      - API_URL=http://fridon_backend:3000
-    command: python -u -m apps.fridon_brain.main
+  # fridon_brain:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/fridon_brain/Dockerfile
+  #   env_file:
+  #     - apps/fridon_brain/.env
+  #   environment:
+  #     - POSTGRES_HOST=db
+  #     - REDIS_HOST=redis
+  #     - REDIS_PORT=6379
+  #     - POSTGRES_DB_URL=postgresql://user:pass@db:5432/app
+  #     - API_URL=http://fridon_backend:3000
+  #   command: python -u -m apps.fridon_brain.main
 
 
   redis:
@@ -49,3 +51,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
