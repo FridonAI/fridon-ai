@@ -1,6 +1,7 @@
 import os
 from typing import Any
 
+from fridonai_core.graph.models import get_model
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
@@ -19,12 +20,7 @@ class LLMUtility(BaseUtility):
         placeholders = await self._arun(*args, **kwargs)
 
         prompt = PromptTemplate.from_template(self.llm_job_description)
-        llm = ChatOpenAI(
-            model="gpt-4o",
-            temperature=0,
-            openai_api_key=os.environ.get("OPENAI_API_KEY"),
-            verbose=True,
-        )
+        llm = get_model()
 
         if self.structured_output is not None:
             llm = llm.with_structured_output(self.structured_output)
