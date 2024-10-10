@@ -49,7 +49,7 @@ class S3ResponseDumperOutput(ResponseDumperOutput):
     url: str
 
 class S3ResponseDumper(ResponseDumper):
-    def __init__(self, bucket_name: str, **kwargs):
+    def __init__(self, bucket_name: str = 'fridonai-data', **kwargs):
         from aiobotocore.session import get_session
         self.bucket_name = bucket_name
         self.session = get_session()

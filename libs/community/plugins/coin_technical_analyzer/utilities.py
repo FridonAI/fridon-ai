@@ -1,11 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Literal
 
-import pandas as pd
-import pandas_ta as ta
-import polars as pl
-import pyarrow.compute as pc
-import requests
 from fridonai_core.plugins.utilities.base import BaseUtility
 from fridonai_core.plugins.utilities.llm import LLMUtility
 
@@ -32,7 +27,7 @@ Given {symbol} TA data as below on the last trading day, what will be the next f
 
 Summary of Technical Indicators for the Last Day:
 {last_day_summary}"""
-
+    fields_to_retain = {"to_be_plotted": dict}
     async def _arun(
         self, coin_name: str, interval: Literal["1h", "4h", "1d", "1w"], *args, **kwargs
     ) -> dict:
@@ -40,29 +35,18 @@ Summary of Technical Indicators for the Last Day:
             table_name=f"indicators_{interval}"
         )
 
-        delta = {
-            "1h": timedelta(hours=1),
-            "4h": timedelta(hours=4),
-            "1d": timedelta(days=1),
-            "1w": timedelta(days=7),
-        }[interval]
-
-        # df = indicators_repository.read(filters=(pc.field("coin") == coin_name) & (pc.field("timestamp") > int((datetime.now() - delta).timestamp() * 1000)))
-        df = indicators_repository.read(
-            filters=(pc.field("coin") == coin_name)
-            & (
-                pc.field("timestamp")
-                >= int((datetime.utcnow() - delta).timestamp() * 1000)
-            )
-            & (pc.field("timestamp") <= int(datetime.utcnow().timestamp() * 1000))
-        )
+        df = indicators_repository.get_latest_record(coin_name, interval)
 
         if len(df) == 0:
             return "No data found"
 
         print(str(df.to_dicts()))
 
-        return {"last_day_summary": str(df.to_dicts()), "symbol": coin_name}
+        return {
+            "last_day_summary": str(df.to_dicts()), 
+            "symbol": coin_name, 
+            "to_be_plotted": indicators_repository.get_last_records(coin_name, interval).to_dicts()
+        }
 
 
 class CoinTechnicalIndicatorsListUtility(BaseUtility):
@@ -88,23 +72,10 @@ class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
 
         print(filter_expression)
 
-        delta = {
-            "1h": timedelta(hours=1),
-            "4h": timedelta(hours=4),
-            "1d": timedelta(days=1),
-            "1w": timedelta(days=7),
-        }[interval]
-
-        results = repository.read(
-            filters=eval(filter_expression)
-            & (
-                pc.field("timestamp")
-                >= int((datetime.utcnow() - delta).timestamp() * 1000)
-            )
-            & (pc.field("timestamp") <= int(datetime.utcnow().timestamp() * 1000))
+        latest_records = repository.get_the_latest_records(
+            eval(filter_expression),
+            interval
         )
-
-        latest_records = results.sort("timestamp").group_by("coin").agg(pl.all().last())
 
         if len(latest_records) == 0:
             return "No coins found"
@@ -124,3 +95,30 @@ class CoinBulishSearchUtility(BaseUtility):
         token_tags = ensure_data_store().read_token_tags()
 
         return [x for x in token_tags if x["tag"] == filter]
+
+
+class CoinChartPlotterUtility(BaseUtility):
+    async def arun(
+        self, 
+        coin_name: str, 
+        interval: Literal["1h", "4h", "1d", "1w"],
+        filter: str,
+        *args, 
+        **kwargs
+    ) -> str:
+        filter_generation_chain = get_filter_generator_chain()
+        repository = IndicatorsRepository(table_name=f"indicators_{interval}")
+        filter_expression = filter_generation_chain.invoke(
+            {"schema": repository.table_schema, "query": filter}
+        ).filters
+
+        latest_records = repository.get_coin_last_records(
+            coin_name,
+            interval,
+            filters=eval(filter_expression)
+        )
+
+        if len(latest_records) == 0:
+            return "No coins found"
+
+        return latest_records.to_dicts()
