@@ -2,6 +2,7 @@ import json
 from typing import Any
 import uuid
 
+from fridonai_core.plugins.tools.response_dumper_base import ResponseDumper
 from langchain.callbacks.manager import AsyncCallbackManager, CallbackManagerForToolRun
 from langchain_core.runnables import RunnableConfig, ensure_config
 from langchain_core.tools import BaseTool as LangchainBaseTool
@@ -17,7 +18,7 @@ class BaseTool(LangchainBaseTool):
     utility: BaseUtility
     examples: list[dict] = []
     helper: bool = False
-    dump_json_data: bool = False
+    response_dumper: ResponseDumper | None = None
 
     def _run(
         self,
@@ -31,8 +32,9 @@ class BaseTool(LangchainBaseTool):
             *args,
             **{**kwargs, **config_},
         )
-        if self.dump_json_data and isinstance(result, dict):
-            result = self._dump_to_tmp(result)
+        if self.response_dumper and isinstance(result, dict):
+            import asyncio
+            return asyncio.run(self.response_dumper.dump(result).dict())
         elif isinstance(result, dict):
             result = json.dumps(result)
         return result
@@ -50,27 +52,12 @@ class BaseTool(LangchainBaseTool):
             *args,
             **{**kwargs, **config_},
         )
-        if self.dump_json_data and isinstance(result, dict):
-            result = self._dump_to_tmp(result)
+        if self.response_dumper and isinstance(result, dict):
+            return (await self.response_dumper.dump(result)).model_dump()
+        elif isinstance(result, dict):
+            result = json.dumps(result)
         return result
     
-
-    def _dump_to_tmp(self, result: str | Any):
-        temp_file_id = str(uuid.uuid4())[:8]
-        try:
-            with open(f"tmp/{temp_file_id}.json", 'w') as f:
-                json.dump(result, f, ensure_ascii=False, indent=2)
-        except Exception as e:
-            return result
-
-        return json.dumps({
-            "type": "fileObject",
-            "name": self.name,
-            "tmp_file_id": temp_file_id,
-            "path": f"tmp/{temp_file_id}.json",
-        })
-        
-
     @property
     def parameters_as_str(self):
         return self.args_schema.class_parameters_as_string()

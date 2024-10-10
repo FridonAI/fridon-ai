@@ -21,6 +21,7 @@ psycopg-binary = "^3.1.18"
 aiosqlite = "^0.20.0"
 psycopg_pool = "^3.2.2"
 aiocron = "^1.8"
+aiobotocore = "^2.15.2"
 
 [build-system]
 requires = ["poetry-core"]
