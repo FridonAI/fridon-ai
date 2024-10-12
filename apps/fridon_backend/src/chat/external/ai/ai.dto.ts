@@ -34,6 +34,7 @@ export class AiChatMessageResponseGeneratedDto extends BaseDto<AiChatMessageResp
     id?: string;
     message?: string;
     serialized_transaction?: number[];
+    structured_messages?: string[];
     messageId?: string;
     pluginsUsed?: string[];
   };

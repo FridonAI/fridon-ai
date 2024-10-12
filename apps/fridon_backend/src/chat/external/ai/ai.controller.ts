@@ -18,6 +18,7 @@ export class ChatResponseGeneratedMessageDto extends BaseDto<ChatResponseGenerat
   id: string;
   chatId: string;
   message: string;
+  structuredMessages: string[];
 }
 
 export class ChatResponseGeneratedTransactionDto extends BaseDto<ChatResponseGeneratedTransactionDto> {
@@ -107,6 +108,7 @@ export class AiEventsController {
           type: 'message',
           id: id.value,
           message: event.data.message,
+          structuredMessages: event.data.structured_messages ?? [],
           chatId: event.chat_id,
         }),
       );
