@@ -17,7 +17,7 @@ class ResponseDumperOutput(BaseModel):
     path: str | None = None
 
 
-class ResponseDumper(BaseModel):
+class ResponseDumper:
     async def dump(self, data: Any, name: str, key: str) -> ResponseDumperOutput: ...
 
 

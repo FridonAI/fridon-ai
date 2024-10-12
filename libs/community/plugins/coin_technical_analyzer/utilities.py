@@ -27,7 +27,7 @@ Given {symbol} TA data as below on the last trading day, what will be the next f
 
 Summary of Technical Indicators for the Last Day:
 {last_day_summary}"""
-    fields_to_retain = {"to_be_plotted": dict}
+    fields_to_retain: list[str] = ["plot_data"]
     async def _arun(
         self, coin_name: str, interval: Literal["1h", "4h", "1d", "1w"], *args, **kwargs
     ) -> dict:
@@ -45,7 +45,7 @@ Summary of Technical Indicators for the Last Day:
         return {
             "last_day_summary": str(df.to_dicts()), 
             "symbol": coin_name, 
-            "to_be_plotted": indicators_repository.get_last_records(coin_name, interval).to_dicts()
+            "plot_data": indicators_repository.get_last_records(coin_name, interval).to_dicts()
         }
 
 

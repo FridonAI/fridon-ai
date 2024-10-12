@@ -1,12 +1,11 @@
 from typing import Any
 
 from fridonai_core.graph.models import create_structured_output_model, get_model
+from fridonai_core.plugins.utilities.base import BaseUtility
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
-from fridonai_core.plugins.utilities.base import BaseUtility
 
 
 class LLMUtility(BaseUtility):

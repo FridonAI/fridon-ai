@@ -16,6 +16,7 @@ class DummyCoinPriceDataProvider(CoinPriceDataProvider):
         return self._generate_coin_price_data_mock(coins)
 
     async def get_historical_ohlcv(self, coins, interval='30m', days=45, output_format='dict'):
+        print("Dummy data not implemented for historical ohlcv")
         pass
 
     def _generate_coin_price_data_mock(self, coins, current_time=None):
@@ -63,7 +64,6 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.json()
-
         formatted_data = []
         for entry in data:
             timestamp = int(entry[0])

@@ -1,6 +1,7 @@
+from fridonai_core.graph.tools import FinalResponse
 from langchain_core.messages import ToolMessage
 
-from fridonai_core.graph.models import structured_final_response_model
+from fridonai_core.graph.models import create_structured_output_model
 from fridonai_core.graph.states import State
 
 
@@ -32,6 +33,7 @@ def generate_structured_response(state: State):
     messages = state["messages"]
     for i in range(len(messages) - 1, -1, -1):
         if messages[i].type == "human":
+            structured_final_response_model = create_structured_output_model(FinalResponse)
             response = structured_final_response_model.invoke(messages[i:])
             return {"final_response": response}
 

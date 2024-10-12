@@ -36,23 +36,23 @@ class IndicatorsRepository(DeltaRepository):
     )
     partition_columns: list[str] = ["date", "timestamp"]
 
-    def get_coin_latest_record(self, coin_name: str, interval: str, filters: pl.Expr = pc.literal(True)) -> pl.DataFrame: 
-        return self.get_the_latest_records(pc.field("coin") == coin_name & filters, interval, number_of_points=1)
+    def get_coin_latest_record(self, coin_name: str, interval: str, filters: pl.Expr = pl.lit(True)) -> pl.DataFrame: 
+        return self.get_the_latest_records((pl.col("coin") == coin_name) & filters, interval, number_of_points=1)
 
 
-    def get_coin_last_records(self, coin_name: str, interval: str, number_of_points: int = 100, filters: pl.Expr = pc.literal(True)) -> pl.DataFrame:
+    def get_coin_last_records(self, coin_name: str, interval: str, number_of_points: int = 100, filters: pl.Expr = pl.lit(True)) -> pl.DataFrame:
         return self.get_last_records(pc.field("coin") == coin_name & filters, interval, number_of_points)
     
 
-    def get_coin_records_in_time_range(self, coin: str, start: datetime, end: datetime, filters: pl.Expr = pc.literal(True)) -> pl.DataFrame:
+    def get_coin_records_in_time_range(self, coin: str, start: datetime, end: datetime, filters: pl.Expr = pl.lit(True)) -> pl.DataFrame:
         return self.get_records_in_time_range(pc.field("coin") == coin & filters, start, end)
     
 
-    def get_the_latest_records(self, filters, interval) -> pl.DataFrame:
+    def get_the_latest_records(self, filters: pl.Expr, interval: str) -> pl.DataFrame:
         df = self.get_last_records(filters, interval, number_of_points=1)
         return df.sort("timestamp").group_by("coin").agg(pl.all().last())
 
-    def get_last_records(self, filters, interval: str, number_of_points: int = 100) -> pl.DataFrame:
+    def get_last_records(self, filters: pl.Expr, interval: str, number_of_points: int = 100) -> pl.DataFrame:
         delta = {
             "1h": timedelta(hours=1),
             "4h": timedelta(hours=4),
@@ -62,7 +62,7 @@ class IndicatorsRepository(DeltaRepository):
 
         return self.get_records_in_time_range(filters, datetime.now(UTC) - delta * number_of_points, datetime.now(UTC))
 
-    def get_records_in_time_range(self, filters, start: datetime, end: datetime) -> pl.DataFrame:
+    def get_records_in_time_range(self, filters: pl.Expr, start: datetime, end: datetime) -> pl.DataFrame:
         df = self.read(
             filters=filters
             & (pc.field("timestamp") >= int((start).timestamp() * 1000))
