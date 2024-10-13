@@ -225,7 +225,7 @@ COINS = [
 
 @aiocron.crontab("0,30 * * * *", start=True)
 async def data_ingestion_job():
-    logger.info("\n\nStarting data ingestion job.")
+    logger.info(f"\n\nStarting data ingestion job. {int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)}\n\n")
     await update_ohlcv_data()
     await update_indicators_data()
 
@@ -237,7 +237,7 @@ async def update_ohlcv_data():
     raw_repository = OhlcvRepository(table_name="ohlcv_raw")
     df = pl.from_records(raw_data)
 
-    raw_repository.write(df)
+    raw_repository.update(df, predicate="s.timestamp == t.timestamp")
 
     intervals = [
         ("1h", datetime.timedelta(hours=1)),
@@ -349,53 +349,36 @@ def create_new_interval_record(
 
 
 async def update_indicators_data():
-    interval_names = ["raw", "1h", "4h"]
+    interval_names = ["raw", "1h", "4h", "1d", "1w"]
 
     for interval_name in interval_names:
-        try:
-            ohlcv_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
-            indicators_repository = IndicatorsRepository(
-                table_name=f"indicators_{interval_name}"
+        logger.info(f"Calculating indicators for {interval_name}.")
+        ohlcv_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
+        indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval_name}")
+        for coin in COINS:
+            last_coin_records_df = ohlcv_repository.get_coin_last_records(
+                coin, 
+                number_of_points=50,
+                columns=[
+                    "coin",
+                    "timestamp",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                ]
             )
-
-            delta = {
-                "raw": datetime.timedelta(minutes=30 * 50),
-                "1h": datetime.timedelta(hours=1 * 50),
-                "4h": datetime.timedelta(hours=4 * 50),
-                "1d": datetime.timedelta(days=1 * 50),
-                "1w": datetime.timedelta(days=7 * 50),
-            }[interval_name]
-
-            for coin in COINS:
-                df = ohlcv_repository.read(
-                    filters=(pc.field("coin") == pc.scalar(coin))
-                    & (
-                        pc.field("timestamp")
-                        >= int((datetime.datetime.utcnow() - delta).timestamp() * 1000)
-                    )
-                    & (
-                        pc.field("timestamp")
-                        <= int(datetime.datetime.utcnow().timestamp() * 1000)
-                    ),
-                    columns=[
-                        "coin",
-                        "timestamp",
-                        "open",
-                        "high",
-                        "low",
-                        "close",
-                        "volume",
-                    ],
+            try:
+                last_coin_records_indicators_df = calculate_ta_indicators(last_coin_records_df)
+                indicators_repository.update(
+                    last_coin_records_indicators_df, 
+                    predicate="s.timestamp == t.timestamp"
                 )
-
-            logger.info(f"Calculating indicators for {interval_name}.")
-            df_indicators = calculate_ta_indicators(df)
-            indicators_repository.update(
-                df_indicators, predicate="s.timestamp == t.timestamp"
-            )
-            logger.info(f"Updated indicators data for {interval_name}.")
-        except Exception as e:
-            logger.error(f"Error updating indicators data for {interval_name}: {e}")
+            except Exception as e:
+                logger.error(f"Error updating indicators data for {coin}-{interval_name}: {e}")
+        logger.info(f"Updated indicators data for {interval_name}.")
+        
 
 
 async def seed():
