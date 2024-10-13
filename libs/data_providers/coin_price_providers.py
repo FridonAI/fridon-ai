@@ -54,7 +54,7 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
     async def get_historical_ohlcv(self, coins, interval='30m', days=45, output_format='dict'):
         return await self._generate_historical_coins_price_data_binance(coins, interval, days, output_format=output_format)
 
-    async def _fetch_coin_ohlcv_binance(self, symbol, interval, days=None, limit=1):
+    async def _fetch_coin_ohlcv_binance(self, symbol, interval, days=None, limit=2, start_time=None, end_time=None):
         if days is not None:
             start_time = int((datetime.now(UTC) - timedelta(days=days)).timestamp() * 1000)
             url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&startTime={start_time}"
@@ -64,6 +64,15 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.json()
+
+        if days is None:
+            data = [entry for entry in data if int(entry[0]) <= end_time]
+            if data:
+                data = [max(data, key=lambda x: int(x[0]))]
+            else:
+                raise ValueError(f"No current data found for {symbol}")
+            
+
         formatted_data = []
         for entry in data:
             timestamp = int(entry[0])
@@ -84,9 +93,13 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
     async def _generate_multiple_coins_price_data(self, coins, interval='30m', days=None, batch_size=5, output_format='dict'):
         data = []
         tasks = []
+        end_time = int((datetime.now(UTC) - timedelta(seconds=50)).timestamp() * 1000)
+
+        if days is None:
+            print(f"Fetching latest coin prices before {end_time}")
 
         for i, symbol in enumerate(coins):
-            tasks.append(self._fetch_coin_ohlcv_binance(symbol, interval, days=days))
+            tasks.append(self._fetch_coin_ohlcv_binance(symbol, interval, days=days, end_time=end_time))
             if (i + 1) % batch_size == 0:
                 result = await asyncio.gather(*tasks)
                 for coin_data in result:
