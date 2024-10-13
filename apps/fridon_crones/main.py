@@ -11,10 +11,7 @@ import polars as pl
 import pyarrow as pa
 import pyarrow.compute as pc
 
-from libs.internals.indicators import (
-    calculate_bulish_indicator,
-    calculate_ta_indicators,
-)
+from libs.internals.indicators import calculate_ta_indicators
 from libs.repositories import IndicatorsRepository, OhlcvRepository
 
 if os.environ.get("DATA_PROVIDER") == "binance":
@@ -226,7 +223,7 @@ COINS = [
 ]
 
 
-@aiocron.crontab("*/1 * * * *", start=True)
+@aiocron.crontab("0,30 * * * *", start=True)
 async def data_ingestion_job():
     logger.info("\n\nStarting data ingestion job.")
     await update_ohlcv_data()
@@ -248,12 +245,6 @@ async def update_ohlcv_data():
         ("1d", datetime.timedelta(days=1)),
         ("1w", datetime.timedelta(weeks=1)),
     ]
-    # intervals = [
-    #     ("1h", datetime.timedelta(minutes=2)),
-    #     ("4h", datetime.timedelta(minutes=4)),
-    #     # ('1d', datetime.timedelta(minutes=5)),
-    #     # ('1w', datetime.timedelta(minutes=20)),
-    # ]
     for interval_name, interval_length in intervals:
         interval_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
         await update_interval_data(
@@ -279,7 +270,6 @@ async def update_interval_data(
 
     try:
         existing_df = repository.read(filters=filters)
-        print(existing_df.shape[0])
     except Exception as e:
         logger.error(f"Error reading interval data for {interval_name}: {e}")
         existing_df = pl.DataFrame()
@@ -294,7 +284,6 @@ async def update_interval_data(
         new_interval_df = create_new_interval_record(
             current_time, interval_name, new_data_df
         )
-        print("New interval record", new_interval_df)
         repository.write(new_interval_df)
 
 
@@ -333,26 +322,6 @@ def update_interval_record(existing_df, new_data_df):
 def create_new_interval_record(
     interval_start_time, interval_name, new_data_df: pl.DataFrame
 ):
-    interval_end_time = (
-        interval_start_time
-        + {
-            "1h": datetime.timedelta(hours=1),
-            "4h": datetime.timedelta(hours=4),
-            "1d": datetime.timedelta(days=1),
-            "1w": datetime.timedelta(weeks=1),
-        }[interval_name]
-    )
-
-    # interval_end_time = (
-    #     interval_start_time
-    #     + {
-    #         "1h": datetime.timedelta(minutes=2),
-    #         "4h": datetime.timedelta(minutes=4),
-    #         # '1d': datetime.timedelta(minutes=5),
-    #         # '1w': datetime.timedelta(minutes=20),
-    #     }[interval_name]
-    # )
-
     df = new_data_df
 
     if df.shape[0] == 0:
@@ -421,10 +390,6 @@ async def update_indicators_data():
 
             logger.info(f"Calculating indicators for {interval_name}.")
             df_indicators = calculate_ta_indicators(df)
-            # df_bulish = await calculate_bulish_indicator(df_indicators)
-            # df_indicators_merged = df_indicators.join(
-            #     df_bulish, on=["coin", "timestamp"], how="left"
-            # )
             indicators_repository.update(
                 df_indicators, predicate="s.timestamp == t.timestamp"
             )
@@ -434,16 +399,18 @@ async def update_indicators_data():
 
 
 async def seed():
-
+    logger.info("Start Seeding Prices and Indicators data.")
     interval_to_days = {
         "30m": 4,
         "1h": 7,
         "4h": 14,
-        "1d": 60,
+        "1d": 80,
         "1w": 400,
     }
 
     for interval_name in ["raw", "1h", "4h", "1d", "1w"]:
+        logger.info(f"**************************************************")
+        logger.info(f"Seeding ohlcv data with indicators for {interval_name}.")
         ohlcv_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
         indicators_repository = IndicatorsRepository(
             table_name=f"indicators_{interval_name}"
@@ -481,7 +448,9 @@ async def seed():
         else:
             logger.warning("No indicators data to update.")
 
+        logger.info(f"Seeded indicators data for {interval_name} Finished.")
 
+    logger.info("****************** Seeding Prices and Indicators data Finished. ******************")
 
 def main():
     logger.info("Starting the scheduler.")
