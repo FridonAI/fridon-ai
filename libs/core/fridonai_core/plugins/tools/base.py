@@ -32,7 +32,7 @@ class BaseTool(LangchainBaseTool):
             *args,
             **{**kwargs, **config_},
         )
-        if self.response_dumper and isinstance(result, dict):
+        if self.response_dumper and (isinstance(result, dict) or isinstance(result, list)):
             import asyncio
             return asyncio.run(self.response_dumper.dump(result, self.name).dict())
         elif isinstance(result, dict):
@@ -52,7 +52,7 @@ class BaseTool(LangchainBaseTool):
             *args,
             **{**kwargs, **config_},
         )
-        if self.response_dumper and isinstance(result, dict):
+        if self.response_dumper and (isinstance(result, dict) or isinstance(result, list)):
             return (await self.response_dumper.dump(result, self.name)).model_dump()
         elif isinstance(result, dict):
             result = json.dumps(result)

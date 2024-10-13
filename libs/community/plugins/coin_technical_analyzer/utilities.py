@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Literal
+import pyarrow.compute as pc
 
 from fridonai_core.plugins.utilities.base import BaseUtility
 from fridonai_core.plugins.utilities.llm import LLMUtility
@@ -35,7 +36,7 @@ Summary of Technical Indicators for the Last Day:
             table_name=f"indicators_{interval}"
         )
 
-        coin_latest_record_df = indicators_repository.get_coin_latest_record(coin_name.upper(), interval)
+        coin_latest_record_df = indicators_repository.get_coin_latest_record(coin_name.upper())
 
         if len(coin_latest_record_df) == 0:
             return "No data found"
@@ -68,7 +69,7 @@ class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
             {"schema": indicators_repository.table_schema, "query": filter}
         ).filters
 
-        print(filter_expression)
+        print("Filter expression: ", filter_expression)
 
         latest_records = indicators_repository.get_the_latest_records(
             eval(filter_expression)
@@ -98,20 +99,15 @@ class CoinChartPlotterUtility(BaseUtility):
     async def arun(
         self, 
         coin_name: str, 
-        interval: Literal["1h", "4h", "1d", "1w"],
         filter: str,
+        interval: Literal["1h", "4h", "1d", "1w"] = '4h',
         *args, 
         **kwargs
     ) -> str:
-        filter_generation_chain = get_filter_generator_chain()
         indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval}")
-        filter_expression = filter_generation_chain.invoke(
-            {"schema": indicators_repository.table_schema, "query": filter}
-        ).filters
 
         coin_last_records = indicators_repository.get_coin_last_records(
             coin_name,
-            filters=eval(filter_expression)
         )
 
         if len(coin_last_records) == 0:
