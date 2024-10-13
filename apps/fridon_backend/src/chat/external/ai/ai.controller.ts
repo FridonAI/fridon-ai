@@ -86,6 +86,10 @@ export class AiEventsController {
       return;
     }
 
+    if (event.data.message == null) {
+      event.data.message = 'No message';
+    }
+
     // Handle message
     if (event.data.message) {
       const { id } = await this.chatService.createChatMessageAiResponse(

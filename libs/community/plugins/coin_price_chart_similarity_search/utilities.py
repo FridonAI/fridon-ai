@@ -20,8 +20,8 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
 
         req = {
             "coin": coin_name,
-            "from": int(start_date.timestamp()),
-            "to": int(end_date.timestamp()),
+            "from": int(start_date.timestamp() * 1000),
+            "to": int(end_date.timestamp() * 1000),
             "topK": 3,
         }
 
