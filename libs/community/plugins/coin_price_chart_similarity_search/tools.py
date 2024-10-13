@@ -1,3 +1,4 @@
+from fridonai_core.plugins.tools.response_dumper_base import LocalResponseDumper
 from pydantic import Field
 from typing import Union
 
@@ -25,7 +26,7 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
     description="A tool that allows you to search for similar coins by price chart of the given time range",
     args_schema=CoinPriceChartSimilaritySearchToolInput,
     utility=CoinPriceChartSimilaritySearchUtility(),
-    dump_json_data=True,
+    response_dumper=LocalResponseDumper(),
     examples=[
         {
             "request": "Give me coins similar to bonk price chart from december 2023",

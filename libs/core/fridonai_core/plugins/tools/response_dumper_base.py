@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 class ResponseDumperOutput(BaseModel):
-    type: Literal["local", "s3"]
+    type: str
+    source: Literal["local", "s3"]
     extension: Literal["json", None] = None
     id: str
     name: str
@@ -37,16 +38,17 @@ class LocalResponseDumper(ResponseDumper):
             raise e
 
         return ResponseDumperOutput(
-            type="local",
+            type=name,
+            source="local",
             extension="json",
             id=temp_file_id,
             name=name,
-            path=f"tmp/{temp_file_id}.json",
+            path=f"tmp/{name}-{temp_file_id}.json",
         )
     
 
 class S3ResponseDumperOutput(ResponseDumperOutput):
-    url: str
+    bucket_name: str
 
 class S3ResponseDumper(ResponseDumper):
     def __init__(self, bucket_name: str = 'fridon-ai-data', **kwargs):
@@ -57,35 +59,30 @@ class S3ResponseDumper(ResponseDumper):
 
     async def dump(self, data: str | Any, name: str, key: str = "tool_responses") -> S3ResponseDumperOutput:
         temp_file_id = str(uuid.uuid4())[:8]
-        s3_key = f"{key}/{temp_file_id}.json"
+        s3_key = f"{key}/{name}/{temp_file_id}.json"
         try:
             json_data = json.dumps(data, ensure_ascii=False, indent=2)
-            presigned_url = await self._upload_to_s3_gen_presigned_url(s3_key, json_data)
+            await self._upload_to_s3(s3_key, json_data)
         except Exception as e:
             logger.error(f"Error dumping data to S3: {e} unsupported data type: {type(data)}")
             raise e
 
         return S3ResponseDumperOutput(
-            type="s3",
+            type=name,
+            source="s3",
             extension="json",
             id=temp_file_id,
             path=s3_key,
             name=name,
-            url=presigned_url,
+            bucket_name=self.bucket_name,
         )
     
-    async def _upload_to_s3_gen_presigned_url(self, s3_key: str, data: str, presigned_url_expiration: int = 3600):
+    async def _upload_to_s3(self, s3_key: str, data: str):
         async with self.session.create_client('s3', **self.kwargs) as s3_client:
             try:
                 await s3_client.put_object(Bucket=self.bucket_name, Key=s3_key, Body=data)
                 logger.info(f"Data uploaded to S3: {s3_key}")
-                presigned_url = await s3_client.generate_presigned_url(
-                    'get_object',
-                    Params={'Bucket': self.bucket_name, 'Key': s3_key},
-                    ExpiresIn=presigned_url_expiration
-                )
-                logger.info(f"Presigned URL generated: {presigned_url}")
-                return presigned_url
+                return True
             except Exception as e:
                 logger.error(f"Error uploading to S3 or generating presigned URL: {e}")
                 raise e

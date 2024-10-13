@@ -21,11 +21,8 @@ async def task_runner(
     pub: redis.Publisher,
 ):
     plugins = [
-        # "wallet",
-        # "fridon",
-        # "solana-bonk-educator",
         "coin-price-chart-similarity-search",
-        # "coin-technical-analyzer",
+        "coin-technical-analyzer",
     ]
     response_message, used_agents = await service.process(
         request.user.wallet_id, request.chat_id, plugins, request.data.message
@@ -33,7 +30,7 @@ async def task_runner(
 
 
     def _get_structured_answer(answer) -> dict:
-        if answer.get("type") == 'fileObject':
+        if answer.get("type") == 'local':
             with open(answer.get("path"), 'r') as f:
                 return {
                     "id": answer.get("name"),
