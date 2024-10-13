@@ -1,9 +1,8 @@
 import pyarrow as pa
+from libs.repositories.coins import CoinsRepository
 
-from libs.repositories.delta import DeltaRepository
 
-
-class OhlcvRepository(DeltaRepository):
+class OhlcvRepository(CoinsRepository):
     table_schema: pa.Schema = pa.schema(
         [
             ("coin", pa.string()),

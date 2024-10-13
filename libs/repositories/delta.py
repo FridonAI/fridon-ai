@@ -1,9 +1,11 @@
+from datetime import datetime
 import logging
 import os
 from typing import Any, Literal
 
 import polars as pl
 import pyarrow as pa
+import pyarrow.compute as pc
 from deltalake import DeltaTable, write_deltalake
 from pyarrow.compute import Expression
 from pydantic import BaseModel, Field
@@ -144,3 +146,21 @@ class DeltaRepository(BaseModel):
         except Exception as e:
             logger.error(f"Error updating table {self.table_name}: {e}")
             raise
+
+    def get_records_in_time_range(
+            self, 
+            filters, 
+            start: datetime, 
+            end: datetime, 
+            number_of_points: int = 50, 
+            order_by: str = "timestamp",
+            columns: list[str] = None
+        ) -> pl.DataFrame:
+        df = self.read(
+            filters=filters
+            & (pc.field("timestamp") >= int((start).timestamp() * 1000))
+            & (pc.field("timestamp") <= int((end).timestamp() * 1000)),
+            columns=columns,
+            last_n=number_of_points,
+            order_by=order_by)
+        return df

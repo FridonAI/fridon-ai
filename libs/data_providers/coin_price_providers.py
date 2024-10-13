@@ -2,7 +2,7 @@ import asyncio
 import random
 import aiohttp
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 
 class CoinPriceDataProvider():
@@ -22,7 +22,7 @@ class DummyCoinPriceDataProvider(CoinPriceDataProvider):
     def _generate_coin_price_data_mock(self, coins, current_time=None):
         data = []
         if current_time is None:
-            current_time = datetime.utcnow().replace(microsecond=0)
+            current_time = datetime.now(UTC).replace(microsecond=0)
         timestamp = int(current_time.timestamp() * 1000)
         date_str = current_time.strftime("%Y-%m-%d")
         for coin in coins:
@@ -56,7 +56,7 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
 
     async def _fetch_coin_ohlcv_binance(self, symbol, interval, days=None, limit=1):
         if days is not None:
-            start_time = int((datetime.utcnow() - timedelta(days=days)).timestamp() * 1000)
+            start_time = int((datetime.now(UTC) - timedelta(days=days)).timestamp() * 1000)
             url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&startTime={start_time}"
         else:
             url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&limit={limit}"
@@ -110,7 +110,7 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
 
             return df
 
-        return data, datetime.utcnow().replace(microsecond=0)
+        return data, datetime.now(UTC).replace(microsecond=0)
 
     async def _generate_coins_price_data_binance(self, coins, interval='30m', output_format='dict'):
         return await self._generate_multiple_coins_price_data(coins, interval, output_format=output_format)
