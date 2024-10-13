@@ -27,10 +27,10 @@ class LLMUtility(BaseUtility):
         else:
             chain = prompt | llm
 
-        result = await chain.ainvoke(placeholders)
+        llm_result = await chain.ainvoke(placeholders)
 
         if self.fields_to_retain:
             result = {field: placeholders[field] for field in self.fields_to_retain}
-            result["result"] = result
+            result["result"] = llm_result.content
 
         return result
