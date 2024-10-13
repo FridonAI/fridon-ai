@@ -35,15 +35,15 @@ Summary of Technical Indicators for the Last Day:
             table_name=f"indicators_{interval}"
         )
 
-        df = indicators_repository.get_coin_latest_record(coin_name.upper(), interval)
+        coin_latest_record_df = indicators_repository.get_coin_latest_record(coin_name.upper(), interval)
 
-        if len(df) == 0:
+        if len(coin_latest_record_df) == 0:
             return "No data found"
 
         return {
-            "last_day_summary": str(df.to_dicts()), 
+            "last_day_summary": str(coin_latest_record_df.to_dicts()), 
             "symbol": coin_name, 
-            "plot_data": indicators_repository.get_coin_last_records(coin_name.upper(), interval).to_dicts()
+            "plot_data": indicators_repository.get_coin_last_records(coin_name.upper()).to_dicts()
         }
 
 
@@ -62,17 +62,16 @@ class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
     ) -> list[dict]:
         filter_generation_chain = get_filter_generator_chain()
 
-        repository = IndicatorsRepository(table_name=f"indicators_{interval}")
+        indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval}")
 
         filter_expression = filter_generation_chain.invoke(
-            {"schema": repository.table_schema, "query": filter}
+            {"schema": indicators_repository.table_schema, "query": filter}
         ).filters
 
         print(filter_expression)
 
-        latest_records = repository.get_the_latest_records(
-            eval(filter_expression),
-            interval
+        latest_records = indicators_repository.get_the_latest_records(
+            eval(filter_expression)
         )
 
         if len(latest_records) == 0:
@@ -105,18 +104,17 @@ class CoinChartPlotterUtility(BaseUtility):
         **kwargs
     ) -> str:
         filter_generation_chain = get_filter_generator_chain()
-        repository = IndicatorsRepository(table_name=f"indicators_{interval}")
+        indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval}")
         filter_expression = filter_generation_chain.invoke(
-            {"schema": repository.table_schema, "query": filter}
+            {"schema": indicators_repository.table_schema, "query": filter}
         ).filters
 
-        latest_records = repository.get_coin_last_records(
+        coin_last_records = indicators_repository.get_coin_last_records(
             coin_name,
-            interval,
             filters=eval(filter_expression)
         )
 
-        if len(latest_records) == 0:
+        if len(coin_last_records) == 0:
             return "No coins found"
 
-        return latest_records.to_dicts()
+        return coin_last_records.to_dicts()
