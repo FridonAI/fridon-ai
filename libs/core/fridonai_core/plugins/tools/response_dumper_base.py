@@ -48,10 +48,10 @@ class LocalResponseDumper(ResponseDumper):
     
 
 class S3ResponseDumperOutput(ResponseDumperOutput):
-    bucket_name: str
+    url: str
 
 class S3ResponseDumper(ResponseDumper):
-    def __init__(self, bucket_name: str = 'fridon-ai-data', **kwargs):
+    def __init__(self, bucket_name: str = 'data.fridon.ai', **kwargs):
         from aiobotocore.session import get_session
         self.bucket_name = bucket_name
         self.session = get_session()
@@ -74,13 +74,17 @@ class S3ResponseDumper(ResponseDumper):
             id=temp_file_id,
             path=s3_key,
             name=name,
-            bucket_name=self.bucket_name,
+            url=f"https://data.fridon.ai/{s3_key}",
         )
-    
     async def _upload_to_s3(self, s3_key: str, data: str):
         async with self.session.create_client('s3', **self.kwargs) as s3_client:
             try:
-                await s3_client.put_object(Bucket=self.bucket_name, Key=s3_key, Body=data)
+                await s3_client.put_object(
+                    Bucket=self.bucket_name,
+                    Key=s3_key,
+                    Body=data,
+                    ContentType='application/json'
+                )
                 logger.info(f"Data uploaded to S3: {s3_key}")
                 return True
             except Exception as e:
