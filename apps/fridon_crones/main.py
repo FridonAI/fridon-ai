@@ -434,16 +434,53 @@ async def update_indicators_data():
 
 
 async def seed():
+
+    interval_to_days = {
+        "30m": 4,
+        "1h": 7,
+        "4h": 14,
+        "1d": 60,
+        "1w": 400,
+    }
+
     for interval_name in ["raw", "1h", "4h", "1d", "1w"]:
         ohlcv_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
+        indicators_repository = IndicatorsRepository(
+            table_name=f"indicators_{interval_name}"
+        )
         if interval_name == "raw":
             interval_name = "30m"
         data_provider = DataProvider()
         raw_data, _ = await data_provider.get_historical_ohlcv(
-            COINS, interval=interval_name, days=7
+            COINS, interval=interval_name, days=interval_to_days[interval_name]
         )
         df = pl.from_records(raw_data)
         ohlcv_repository.write(df)
+
+        chunk_size = 50
+        seed_indicators_df = pl.DataFrame()
+
+        for coin in COINS:
+            coin_df = df.filter(pl.col("coin") == coin).select([
+                "coin", "timestamp", "open", "high", "low", "close", "volume"
+            ])
+            for i in range(0, len(coin_df) - chunk_size + 1):
+                chunk = coin_df.slice(i, chunk_size)
+                if len(chunk) >= 50:
+                    df_indicators = calculate_ta_indicators(chunk)
+                    if seed_indicators_df.is_empty():
+                        seed_indicators_df = df_indicators
+                    else:
+                        seed_indicators_df = pl.concat([seed_indicators_df, df_indicators], how="vertical_relaxed")
+
+        if not seed_indicators_df.is_empty():
+            indicators_repository.update(
+                seed_indicators_df, 
+                predicate="s.timestamp == t.timestamp AND s.coin == t.coin"
+            )
+        else:
+            logger.warning("No indicators data to update.")
+
 
 
 def main():
