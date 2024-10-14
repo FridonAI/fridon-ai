@@ -86,18 +86,14 @@ export class AiEventsController {
       return;
     }
 
-    if (event.data.message == null) {
-      event.data.message = 'No message';
-    }
-
     // Handle message
-    if (event.data.message) {
+    if (event.data.message || event.data.structured_messages) {
       const { id } = await this.chatService.createChatMessageAiResponse(
         new ChatId(event.chat_id),
         event.data.messageId
           ? new ChatMessageId(event.data.messageId)
           : undefined,
-        event.data.message,
+        event.data.message ?? '',
         event.data.pluginsUsed ?? [],
       );
 
@@ -111,7 +107,7 @@ export class AiEventsController {
         new ChatResponseGeneratedMessageDto({
           type: 'message',
           id: id.value,
-          message: event.data.message,
+          message: event.data.message ?? '',
           structuredMessages: event.data.structured_messages ?? [],
           chatId: event.chat_id,
         }),
