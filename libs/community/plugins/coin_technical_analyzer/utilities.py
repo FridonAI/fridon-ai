@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Literal
+from typing import List, Literal
 import pyarrow.compute as pc
 
 from fridonai_core.plugins.utilities.base import BaseUtility
@@ -44,7 +44,7 @@ Summary of Technical Indicators for the Last Day:
         return {
             "last_day_summary": str(coin_latest_record_df.to_dicts()), 
             "symbol": coin_name, 
-            "plot_data": indicators_repository.get_coin_last_records(coin_name.upper()).to_dicts()
+            "plot_data": indicators_repository.get_coin_last_records(coin_name.upper(), number_of_points=200).to_dicts()
         }
 
 
@@ -99,18 +99,22 @@ class CoinChartPlotterUtility(BaseUtility):
     async def arun(
         self, 
         coin_name: str, 
-        filter: str,
+        indicators: List[str] = [],
         interval: Literal["1h", "4h", "1d", "1w"] = '4h',
         *args, 
         **kwargs
     ) -> str:
         indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval}")
-
+        print("Want these indicators", indicators)
         coin_last_records = indicators_repository.get_coin_last_records(
             coin_name,
+            number_of_points=200
         )
 
         if len(coin_last_records) == 0:
             return "No coins found"
 
-        return coin_last_records.to_dicts()
+        return {
+            "plot_data": coin_last_records.to_dicts(),
+            "indicators_to_plot": indicators
+        }
