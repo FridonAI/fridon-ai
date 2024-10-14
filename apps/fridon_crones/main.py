@@ -32,10 +32,10 @@ COINS = [
     "PEPE",
     "OG",
     "WIF",
-    "FTT",
-    "BNB",
-    "XRP",
-    "SEI",
+    # "FTT",
+    # "BNB",
+    # "XRP",
+    # "SEI",
     # "DOGE",
     # "TAO",
     # "FET",
@@ -225,7 +225,7 @@ COINS = [
 
 @aiocron.crontab("0,30 * * * *", start=True)
 async def data_ingestion_job():
-    logger.info(f"\n\nStarting data ingestion job. {int(datetime.datetime.now(datetime.UTC).timestamp() * 1000)}\n\n")
+    logger.info(f"\n\nStarting data ingestion job. {datetime.datetime.now(datetime.UTC).isoformat()}\n\n")
     await update_ohlcv_data()
     await update_indicators_data()
 
@@ -384,9 +384,9 @@ async def update_indicators_data():
 async def seed():
     logger.info("Start Seeding Prices and Indicators data.")
     interval_to_days = {
-        "30m": 4,
-        "1h": 7,
-        "4h": 14,
+        "30m": 5,
+        "1h": 8,
+        "4h": 34,
         "1d": 80,
         "1w": 400,
     }
@@ -437,7 +437,7 @@ async def seed():
 
 def main():
     logger.info("Starting the scheduler.")
-    logger.info(f"Start time: {datetime.datetime.now().isoformat()}")
+    logger.info(f"Start time: {datetime.datetime.now(datetime.UTC).isoformat()}")
     loop = asyncio.get_event_loop()
     loop.run_until_complete(seed())
     try:
