@@ -4,7 +4,7 @@ import json
 from dependency_injector.wiring import Provide, inject
 
 from apps.fridon_brain import _preload_modules
-from apps.fridon_brain.containers import Container 
+from apps.fridon_brain.containers import Container
 from apps.fridon_brain.services import (
     CalculateUserMessageScoreService,
     ProcessUserMessageService,
@@ -30,14 +30,14 @@ async def task_runner(
 
 
     def _get_structured_answer(answer) -> dict:
-        if answer.get("type") == 'local':
+        answer = json.loads(answer)
+        if answer.get("source") == 'local':
             with open(answer.get("path"), 'r') as f:
                 return {
                     "id": answer.get("name"),
                     "data": json.load(f)
                 }
         return answer
-
 
     response = ResponseMessage.model_validate(
         {
@@ -53,6 +53,7 @@ async def task_runner(
             "aux": request.aux,
         }
     )
+
     await pub.publish("response_received", str(response))
 
     score = await scorer_service.process(
