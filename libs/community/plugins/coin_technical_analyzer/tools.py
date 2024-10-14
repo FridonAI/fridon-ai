@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import List, Literal
 
 from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
@@ -125,7 +125,7 @@ CoinBullishSearchTool = BaseTool(
 
 class CoinChartPlotterToolInput(BaseToolInput):
     coin_name: str = Field(..., description="The name of the coin to plot")
-    filter: str = Field(..., description="The filter text queryto use for the technical indicators")
+    indicators: List[str] = Field(..., description="List of indicator names to be visualized on the chart.")
     interval: Literal["1h", "4h", "1d", "1w"] = Field(default="4h", description="The interval of the technical indicators")
 
 
