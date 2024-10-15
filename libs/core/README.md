@@ -22,39 +22,58 @@ pip install fridonai-core
 Here's a basic example of how to use FridonAI Core components:
 
 ```python
-from fridonai_core.plugins import BasePlugin, BaseToolInput
-from fridonai_core.plugins.utilities import BaseUtility
-from fridonai_core.plugins.tools import BaseTool
-
-from fridonai_core.graph import generate_response
-
-class TestUtility(BaseUtility):
+class GreeterUtility(BaseUtility):
     async def arun(self, *args, **kwargs) -> str:
-        return "You are the Superman!"
+        return "Hi superman!"
     
-class TestToolInput(BaseToolInput):
+class GoodbyeUtility(BaseUtility):
+    async def arun(self, *args, **kwargs) -> str:
+        return "Bye superman!"
+    
+class GreeterToolInput(BaseToolInput):
+    pass
+
+class GoodbyeToolInput(BaseToolInput):
     pass
 
 
-TestTool = BaseTool(
-    name="test-tool",
-    description="Use this tool to answer any questions.",
-    args_schema=TestToolInput,
-    utility=TestUtility(),
-    examples=[],
+GreeterTool = BaseTool(
+    name="greeter-tool",
+    description="Use this tool for greeting people.",
+    args_schema=GreeterToolInput,
+    utility=GreeterUtility(),
+    examples=[{'request': 'Hi', 'response': 'Hi there, you are the Superman!'}],
 )
+
+GoodbyeTool = BaseTool(
+    name="goodbye-tool",
+    description="Use this tool for saying goodbye to people.",
+    args_schema=GoodbyeToolInput,
+    utility=GoodbyeUtility(),
+    examples=[{'request': 'Bye', 'response': 'Bye superman!'}],
+)
+
+
 
 class TestPlugin(BasePlugin):
     name: str = "Test"
-    description: str = "Use this plugin to answer any questions."
-    tools: list[BaseTool] = [TestTool]
+    description: str = "Use this plugin for several purposes."
+    tools: list[BaseTool] = [GreeterTool, GoodbyeTool]
+
+
+test_plugin = TestPlugin()
 
 
 rs = await generate_response(
-    "Who am I?", 
-    plugins=[TestPlugin()], 
+    "Hello there!", 
+    [test_plugin], 
+    {  
+        "thread_id": "1",
+        "wallet_id": "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
+        "chat_id": "bla"
+    }, 
     memory='sqlite',
-    config={"thread_id": "test"}, 
+
     return_used_agents=False
 )
 ```
