@@ -19,7 +19,7 @@ class BasePlugin(BaseModel):
 
     @property
     def examples(self) -> list[dict]:
-        examples = reduce(lambda a, b: a + b, [tool.examples for tool in filter(lambda x: x.helper is False, self.tools)], [])
+        examples = reduce(lambda a, b: a + b, [tool.examples for tool in filter(lambda x: not x.helper, self.tools)], [])
         return examples
 
     @property
@@ -43,12 +43,13 @@ class BasePlugin(BaseModel):
         return slugify(self.name)
 
     def full_description(self, tool_descriptions=True):
-        description = self.name + " - " + self.description
+        description = ""
         if tool_descriptions:
-            description += "\n Here are following functionalities of this plugin: \n"
-            for tool in filter(lambda x: x.helper is False, self.tools):
+            description += "\nThese are tool descriptions of the plugin: \n"
+            for tool in filter(lambda x: not x.helper, self.tools):
                 description += "\t" + tool.name + ": " + tool.description + "\n"
-        description += "Examples: \n" + self.examples_as_str
+        description += "\n *** Examples *** \n" + self.examples_as_str
+
         return description
 
     @property

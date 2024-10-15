@@ -31,11 +31,12 @@ def create_agent_prompt(
         [
             (
                 "system",
-                f"You are a specialized assistant named '{name}'. For handling user's requests using the provided tools."
-                "Use appropriate tools to satisfy all user's needs. "
-                "\nWhen you think that you gathered all the necessary information, call the *CompleteTool* tool to let the primary assistant take control,"
-                "But before that ensure that you called at least one tool. Don't make up information by yourself fist use some tools and then generate response."
-                f"\nYour description: {description}",
+                f"You are a specialized assistant named '{name}'.\n"
+                "For handling user's requests using the provided tools. Use appropriate tools to satisfy all user's needs. "
+                "\n\nWhen you think that you gathered all the necessary information, call the *CompleteTool* tool to let the primary assistant take control,"
+                "but before that ensure that you called at least one tool."
+                "\n\nDon't make up information by yourself fist use some tools and then generate response."
+                f"\n\n{description}",
             ),
             ("placeholder", "{messages}"),
             ("system", output_format),
