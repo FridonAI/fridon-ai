@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fridonai-core"
-version = "0.0.12"
+version = "0.0.13"
 description = "Core functionality for FridonAI"
 authors = []
 license = "MIT"
