@@ -17,6 +17,7 @@ type ChatMessage = {
   content: string;
   messageType: MessageType;
   personality: string | null;
+  structuredData: string | null;
   plugins: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -56,6 +57,7 @@ export class ChatService {
             id: message.id,
             content: message.content,
             messageType: message.messageType,
+            structuredData: message.structuredData,
             date: message.createdAt,
           }))
         : [],
@@ -83,6 +85,7 @@ export class ChatService {
         id: message.id,
         content: message.content,
         messageType: message.messageType as MessageType,
+        structuredData: message.structuredData,
         personality: message.personality,
         plugins: message.plugins,
         createdAt: message.createdAt,
@@ -100,6 +103,7 @@ export class ChatService {
         content: message.content,
         messageType: message.messageType,
         personality: message.personality,
+        structuredData: message.structuredData,
         plugins: message.plugins,
         createdAt: message.createdAt,
         updatedAt: message.updatedAt,

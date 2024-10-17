@@ -27,6 +27,7 @@ export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
   messages: {
     id: string;
     content: string;
+    structuredData: string | null;
     messageType: 'Query' | 'Response';
   }[];
 }
@@ -43,6 +44,7 @@ export class GetNotificationResponseDto extends BaseDto<GetNotificationResponseD
   messages: {
     id: string;
     content: string;
+    structuredData: string | null;
     messageType: 'Notification';
     date: string;
   }[];
@@ -87,6 +89,7 @@ export class GetChatsHistoryItemResponseDto extends BaseDto<GetChatsHistoryItemR
     content: string;
     messageType: string;
     personality: string | null;
+    structuredData: string | null;
     plugins: string[];
     createdAt: number;
     updatedAt: number;

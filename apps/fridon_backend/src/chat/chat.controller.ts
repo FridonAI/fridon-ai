@@ -65,6 +65,7 @@ export class ChatHttpController {
           content: m.content,
           messageType: m.messageType,
           personality: m.personality,
+          structuredData: m.structuredData,
           plugins: m.plugins,
           createdAt: m.createdAt.getTime(),
           updatedAt: m.updatedAt.getTime(),
@@ -85,6 +86,7 @@ export class ChatHttpController {
             id: m.id,
             content: m.content,
             messageType: m.messageType,
+            structuredData: m.structuredData,
             date: m.date.toISOString(),
           };
         })
