@@ -105,20 +105,6 @@ class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
         return latest_records.to_dicts()
 
 
-class CoinBulishSearchUtility(BaseUtility):
-    async def arun(
-        self,
-        filter: Literal[
-            "strong bulish", "bullish", "neutral", "bearish", "strong bearish"
-        ],
-        *args,
-        **kwargs,
-    ) -> list[dict]:
-        token_tags = ensure_data_store().read_token_tags()
-
-        return [x for x in token_tags if x["tag"] == filter]
-
-
 class CoinChartPlotterUtility(BaseUtility):
     async def arun(
         self,

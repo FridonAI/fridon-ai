@@ -5,21 +5,22 @@ from fridonai_core.plugins.tools import BaseTool
 from fridonai_core.plugins.tools.response_dumper_base import S3ResponseDumper
 from pydantic import Field
 
-from libs.community.plugins.coin_technical_analyzer.utilities import (
-    CoinBulishSearchUtility,
-    CoinChartPlotterUtility,
-    CoinTechnicalIndicatorsListUtility,
-    CoinTechnicalIndicatorsSearchUtility,
-)
 from settings import settings
 
 if settings.ENV == "mock":
     from libs.community.plugins.coin_technical_analyzer.mock.utilities import (
+        CoinTechnicalIndicatorsListMockUtility as CoinTechnicalIndicatorsListUtility,
         CoinTechnicalAnalyzerMockUtility as CoinTechnicalAnalyzerUtility,
+        CoinTechnicalIndicatorsSearchMockUtility as CoinTechnicalIndicatorsSearchUtility,
+        CoinChartPlotterMockUtility as CoinChartPlotterUtility,
     )
+    
 else:
     from libs.community.plugins.coin_technical_analyzer.utilities import (
         CoinTechnicalAnalyzerUtility,
+        CoinTechnicalIndicatorsListUtility,
+        CoinTechnicalIndicatorsSearchUtility,
+        CoinChartPlotterUtility,
     )
 
 
@@ -104,31 +105,6 @@ CoinTechnicalIndicatorsSearchTool = BaseTool(
 )
 
 
-class CoinBullishSearchToolInput(BaseToolInput):
-    filter: Literal["strong bullish", "bullish", "neutral", "bearish", "strong bearish"]
-
-
-CoinBullishSearchTool = BaseTool(
-    name="coin-bullish-search",
-    description="A utility that allows you to search coins by technical indicators",
-    args_schema=CoinBullishSearchToolInput,
-    utility=CoinBulishSearchUtility(),
-    examples=[
-        {
-            "request": "Show me bulish coins",
-            "response": "",
-            "image_url": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/bullish-coins.png",
-        },
-        {
-            "request": "What are bullish coins for this moment?",
-            "response": "",
-        },
-        {"request": "Give me strongly bearish coins", "response": ""},
-    ],
-    helper=True,
-)
-
-
 class CoinChartPlotterToolInput(BaseToolInput):
     coin_name: str = Field(..., description="The name of the coin to plot")
     indicators: List[
@@ -196,5 +172,4 @@ TOOLS = [
     CoinTechnicalIndicatorsListTool,
     CoinTechnicalIndicatorsSearchTool,
     CoinChartPlotterTool,
-    # CoinBullishSearchTool,
 ]
