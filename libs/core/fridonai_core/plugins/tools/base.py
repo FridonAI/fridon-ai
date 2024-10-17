@@ -26,7 +26,7 @@ class BaseTool(LangchainBaseTool):
         config: RunnableConfig | None = None,
         run_manager: CallbackManagerForToolRun | None = None,
         **kwargs,
-    ) -> str | Any:
+    ) -> dict | str | Any:
         config_ = config.get("configurable", {})
         result = self.utility.run(
             *args,
@@ -34,9 +34,7 @@ class BaseTool(LangchainBaseTool):
         )
         if self.response_dumper and (isinstance(result, dict) or isinstance(result, list)):
             import asyncio
-            return asyncio.run(self.response_dumper.dump(result, self.name).dict())
-        elif isinstance(result, dict):
-            result = json.dumps(result)
+            return (asyncio.run(self.response_dumper.dump(result, self.name))).dict()
         return result
 
     async def _arun(
@@ -53,9 +51,7 @@ class BaseTool(LangchainBaseTool):
             **{**kwargs, **config_},
         )
         if self.response_dumper and (isinstance(result, dict) or isinstance(result, list)):
-            return (await self.response_dumper.dump(result, self.name)).model_dump()
-        elif isinstance(result, dict):
-            result = json.dumps(result)
+            return (await self.response_dumper.dump(result, self.name)).dict()
         return result
     
     @property

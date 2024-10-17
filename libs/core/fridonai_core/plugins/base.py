@@ -55,7 +55,7 @@ class BasePlugin(BaseModel):
     @property
     def output_format(self):
         if self.json_format:
-            return "\n After using tools and having everything together, and `plugin_status` going to be True, that means tool done successfully what asked to be done, copy whole tool's answer response as json string in CompleteTool's answer. If it didn't went good generate explanatory text from output. \n"
+            return "\n If tool's answer is json string copy it as it is otherwise use text response and dont mark is_json as true. \n"
         else:
             return "\n After using tools and having everything together, combine all tool's answer responses in CompleteTool's answer as a text. \n"
 
