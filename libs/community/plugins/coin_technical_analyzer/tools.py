@@ -25,7 +25,9 @@ else:
 
 class CoinTechnicalAnalyzerToolInput(BaseToolInput):
     coin_name: str = Field(..., description="The name of the coin to analyze")
-    interval: Literal["1h", "4h", "1d", "1w"] = Field(default="1h", description="The interval of the technical indicators")
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(
+        default="1h", description="The interval of the technical indicators"
+    )
 
 
 CoinTechnicalAnalyzerTool = BaseTool(
@@ -48,7 +50,7 @@ CoinTechnicalAnalyzerTool = BaseTool(
             "response": "",
         },
     ],
-    response_dumper=S3ResponseDumper()
+    response_dumper=S3ResponseDumper(),
 )
 
 
@@ -75,8 +77,12 @@ CoinTechnicalIndicatorsListTool = BaseTool(
 
 
 class CoinTechnicalIndicatorsSearchToolInput(BaseToolInput):
-    interval: Literal["1h", "4h", "1d", "1w"] = Field(default="1h", description="The interval of the technical indicators")
-    filter: str = Field(..., description="The filter text query to use for the technical indicators")
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(
+        default="1h", description="The interval of the technical indicators"
+    )
+    filter: str = Field(
+        ..., description="The filter text query to use for the technical indicators"
+    )
 
 
 CoinTechnicalIndicatorsSearchTool = BaseTool(
@@ -125,8 +131,49 @@ CoinBullishSearchTool = BaseTool(
 
 class CoinChartPlotterToolInput(BaseToolInput):
     coin_name: str = Field(..., description="The name of the coin to plot")
-    indicators: List[str] = Field(..., description="List of indicator names to be visualized on the chart.")
-    interval: Literal["1h", "4h", "1d", "1w"] = Field(default="4h", description="The interval of the technical indicators")
+    indicators: List[
+        Literal[
+            "MACD_12_26_9",
+            "MACD_histogram_12_26_9",
+            "RSI_14",
+            "BBL_5_2.0",
+            "BBM_5_2.0",
+            "BBU_5_2.0",
+            "SMA_20",
+            "EMA_50",
+            "OBV_in_million",
+            "STOCHk_14_3_3",
+            "STOCHd_14_3_3",
+            "ADX_14",
+            "WILLR_14",
+            "CMF_20",
+            "PSARl_0.02_0.2",
+            "PSARs_0.02_0.2",
+        ]
+    ] = Field(
+        default=[
+            "MACD_12_26_9",
+            "MACD_histogram_12_26_9",
+            "RSI_14",
+            "BBL_5_2.0",
+            "BBM_5_2.0",
+            "BBU_5_2.0",
+            "SMA_20",
+            "EMA_50",
+            "OBV_in_million",
+            "STOCHk_14_3_3",
+            "STOCHd_14_3_3",
+            "ADX_14",
+            "WILLR_14",
+            "CMF_20",
+            "PSARl_0.02_0.2",
+            "PSARs_0.02_0.2",
+        ],
+        description="List of indicator names to be visualized on the chart.",
+    )
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(
+        default="4h", description="The interval of the technical indicators"
+    )
 
 
 CoinChartPlotterTool = BaseTool(
@@ -140,7 +187,7 @@ CoinChartPlotterTool = BaseTool(
             "response": "",
         },
     ],
-    response_dumper=S3ResponseDumper()
+    response_dumper=S3ResponseDumper(),
 )
 
 

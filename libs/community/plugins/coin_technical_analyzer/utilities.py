@@ -29,32 +29,54 @@ Given {symbol} TA data as below on the last trading day, what will be the next f
 Summary of Technical Indicators for the Last Day:
 {last_day_summary}"""
     fields_to_retain: list[str] = ["plot_data"]
+
     async def _arun(
-        self, coin_name: str, interval: Literal["1h", "4h", "1d", "1w"] = '4h', *args, **kwargs
+        self,
+        coin_name: str,
+        interval: Literal["1h", "4h", "1d", "1w"] = "4h",
+        *args,
+        **kwargs,
     ) -> dict:
         indicators_repository = IndicatorsRepository(
             table_name=f"indicators_{interval}"
         )
 
-        coin_latest_record_df = indicators_repository.get_coin_latest_record(coin_name.upper())
+        coin_latest_record_df = indicators_repository.get_coin_latest_record(
+            coin_name.upper()
+        )
 
         if len(coin_latest_record_df) == 0:
             return "No data found"
 
         return {
-            "last_day_summary": str(coin_latest_record_df.to_dicts()), 
-            "symbol": coin_name, 
-            "plot_data": indicators_repository.get_coin_last_records(coin_name.upper(), number_of_points=200).to_dicts()
+            "last_day_summary": str(coin_latest_record_df.to_dicts()),
+            "symbol": coin_name,
+            "plot_data": indicators_repository.get_coin_last_records(
+                coin_name.upper(), number_of_points=200
+            ).to_dicts(),
         }
 
 
 class CoinTechnicalIndicatorsListUtility(BaseUtility):
-    async def arun(self, *args, **kwargs) -> list:
-        return [
-            field
-            for field in IndicatorsRepository.table_schema
-            if field not in ["coin", "date", "timestamp", "reason"]
-        ]
+    async def arun(self, *args, **kwargs) -> str:
+        return "Here is the list of available technical indicators " + ', '.join([
+            'MACD_12_26_9',
+            'MACD_histogram_12_26_9',
+            'RSI_14',
+            'BBL_5_2.0',
+            'BBM_5_2.0',
+            'BBU_5_2.0',
+            'SMA_20',
+            'EMA_50',
+            'OBV_in_million',
+            'STOCHk_14_3_3',
+            'STOCHd_14_3_3',
+            'ADX_14',
+            'WILLR_14',
+            'CMF_20',
+            'PSARl_0.02_0.2',
+            'PSARs_0.02_0.2'
+        ])
 
 
 class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
@@ -63,7 +85,9 @@ class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
     ) -> list[dict]:
         filter_generation_chain = get_filter_generator_chain()
 
-        indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval}")
+        indicators_repository = IndicatorsRepository(
+            table_name=f"indicators_{interval}"
+        )
 
         filter_expression = filter_generation_chain.invoke(
             {"schema": indicators_repository.table_schema, "query": filter}
@@ -97,18 +121,19 @@ class CoinBulishSearchUtility(BaseUtility):
 
 class CoinChartPlotterUtility(BaseUtility):
     async def arun(
-        self, 
-        coin_name: str, 
+        self,
+        coin_name: str,
         indicators: List[str] = [],
-        interval: Literal["1h", "4h", "1d", "1w"] = '4h',
-        *args, 
-        **kwargs
+        interval: Literal["1h", "4h", "1d", "1w"] = "4h",
+        *args,
+        **kwargs,
     ) -> str:
-        indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval}")
+        indicators_repository = IndicatorsRepository(
+            table_name=f"indicators_{interval}"
+        )
         print("Want these indicators", indicators)
         coin_last_records = indicators_repository.get_coin_last_records(
-            coin_name,
-            number_of_points=200
+            coin_name, number_of_points=200
         )
 
         if len(coin_last_records) == 0:
@@ -116,5 +141,5 @@ class CoinChartPlotterUtility(BaseUtility):
 
         return {
             "plot_data": coin_last_records.to_dicts(),
-            "indicators_to_plot": indicators
+            "indicators_to_plot": indicators,
         }
