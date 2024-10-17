@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS "vector";
 
 -- CreateEnum
-CREATE TYPE "MessageType" AS ENUM ('Query', 'Response', 'TransactionResponse');
+CREATE TYPE "MessageType" AS ENUM ('Query', 'Response', 'TransactionResponse', 'Notification');
 
 -- CreateTable
 CREATE TABLE "price_vectors" (
@@ -23,6 +23,7 @@ CREATE TABLE "ChatMessage" (
     "id" UUID NOT NULL,
     "content" TEXT NOT NULL,
     "messageType" "MessageType" NOT NULL,
+    "structuredData" TEXT,
     "personality" TEXT,
     "plugins" TEXT[],
     "chatId" TEXT NOT NULL,
@@ -40,6 +41,17 @@ CREATE TABLE "Chat" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Chat_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ChatNotifications" (
+    "id" SERIAL NOT NULL,
+    "walletId" TEXT NOT NULL,
+    "chatId" UUID NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "ChatNotifications_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -105,6 +117,12 @@ CREATE INDEX "ChatMessage_chatId_idx" ON "ChatMessage"("chatId");
 
 -- CreateIndex
 CREATE INDEX "Chat_walletId_idx" ON "Chat"("walletId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ChatNotifications_walletId_key" ON "ChatNotifications"("walletId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ChatNotifications_chatId_key" ON "ChatNotifications"("chatId");
 
 -- CreateIndex
 CREATE INDEX "WalletMedia_mediaId_idx" ON "WalletMedia"("mediaId");
