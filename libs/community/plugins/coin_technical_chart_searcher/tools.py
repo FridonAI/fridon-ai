@@ -8,12 +8,12 @@ from fridonai_core.plugins.tools import BaseTool
 from settings import settings
 
 if settings.ENV == 'mock':
-    from libs.community.plugins.coin_price_chart_similarity_search.mock.utilities import (
+    from libs.community.plugins.coin_technical_chart_searcher.mock.utilities import (
         CoinPriceChartSimilaritySearchMockUtility as CoinPriceChartSimilaritySearchUtility,
         CoinTechnicalIndicatorsSearchMockUtility as CoinTechnicalIndicatorsSearchUtility,
     )
 else:
-    from libs.community.plugins.coin_price_chart_similarity_search.utilities import (
+    from libs.community.plugins.coin_technical_chart_searcher.utilities import (
         CoinPriceChartSimilaritySearchUtility,
         CoinTechnicalIndicatorsSearchUtility,
     )

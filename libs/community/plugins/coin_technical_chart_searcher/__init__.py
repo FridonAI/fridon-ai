@@ -1,4 +1,4 @@
-from libs.community.plugins.coin_price_chart_similarity_search.tools import TOOLS
+from libs.community.plugins.coin_technical_chart_searcher.tools import TOOLS
 from fridonai_core.plugins import BasePlugin
 from fridonai_core.plugins.registry import ensure_plugin_registry
 from fridonai_core.plugins.tools import BaseTool
