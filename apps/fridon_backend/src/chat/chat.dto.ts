@@ -18,16 +18,36 @@ export class GetChatsResponseDto extends BaseDto<GetChatsResponseDto> {
 export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
   @ApiProperty({
     example: [
-      { id: 'id1', content: 'Hello', messageType: 'Query' },
-      { id: 'id2', content: 'Hi', messageType: 'Response' },
-      { id: 'id3', content: 'Hello', messageType: 'Query' },
-      { id: 'id4', content: 'U blind my G?', messageType: 'Response' },
+      {
+        id: 'id1',
+        content: 'Hello',
+        messageType: 'Query',
+        structuredContent: null,
+      },
+      {
+        id: 'id2',
+        content: 'Hi',
+        messageType: 'Response',
+        structuredContent: '[1,2]',
+      },
+      {
+        id: 'id3',
+        content: 'Hello',
+        messageType: 'Query',
+        structuredContent: null,
+      },
+      {
+        id: 'id4',
+        content: 'U blind my G?',
+        messageType: 'Response',
+        structuredContent: null,
+      },
     ],
   })
   messages: {
     id: string;
     content: string;
-    structuredData: string | null;
+    structuredContent: string | null;
     messageType: 'Query' | 'Response';
   }[];
 }
@@ -35,16 +55,36 @@ export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
 export class GetNotificationResponseDto extends BaseDto<GetNotificationResponseDto> {
   @ApiProperty({
     example: [
-      { id: 'id1', content: 'Hello', messageType: 'Query' },
-      { id: 'id2', content: 'Hi', messageType: 'Response' },
-      { id: 'id3', content: 'Hello', messageType: 'Query' },
-      { id: 'id4', content: 'U blind my G?', messageType: 'Response' },
+      {
+        id: 'id1',
+        content: 'Hello',
+        messageType: 'Query',
+        structuredContent: null,
+      },
+      {
+        id: 'id2',
+        content: 'Hi',
+        messageType: 'Response',
+        structuredContent: null,
+      },
+      {
+        id: 'id3',
+        content: 'Hello',
+        messageType: 'Query',
+        structuredContent: null,
+      },
+      {
+        id: 'id4',
+        content: 'U blind my G?',
+        messageType: 'Response',
+        structuredContent: null,
+      },
     ],
   })
   messages: {
     id: string;
     content: string;
-    structuredData: string | null;
+    structuredContent: string | null;
     messageType: 'Notification';
     date: string;
   }[];
@@ -89,7 +129,7 @@ export class GetChatsHistoryItemResponseDto extends BaseDto<GetChatsHistoryItemR
     content: string;
     messageType: string;
     personality: string | null;
-    structuredData: string | null;
+    structuredContent: string | null;
     plugins: string[];
     createdAt: number;
     updatedAt: number;

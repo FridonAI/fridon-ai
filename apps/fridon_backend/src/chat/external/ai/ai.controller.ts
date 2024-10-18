@@ -93,7 +93,7 @@ export class AiEventsController {
         event.data.messageId
           ? new ChatMessageId(event.data.messageId)
           : undefined,
-        event.data.message ?? '',
+        event.data,
         event.data.pluginsUsed ?? [],
       );
 

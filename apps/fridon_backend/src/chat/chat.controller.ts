@@ -65,7 +65,9 @@ export class ChatHttpController {
           content: m.content,
           messageType: m.messageType,
           personality: m.personality,
-          structuredData: m.structuredData,
+          structuredContent: m.structuredData
+            ? JSON.parse(m.structuredData)
+            : null,
           plugins: m.plugins,
           createdAt: m.createdAt.getTime(),
           updatedAt: m.updatedAt.getTime(),
@@ -86,7 +88,9 @@ export class ChatHttpController {
             id: m.id,
             content: m.content,
             messageType: m.messageType,
-            structuredData: m.structuredData,
+            structuredContent: m.structuredData
+              ? JSON.parse(m.structuredData)
+              : null,
             date: m.date.toISOString(),
           };
         })
@@ -119,6 +123,9 @@ export class ChatHttpController {
             id: m.id,
             content: m.content,
             messageType: m.messageType,
+            structuredContent: m.structuredData
+              ? JSON.parse(m.structuredData)
+              : null,
           };
         })
         .filter(Boolean) as GetChatResponseDto['messages'],

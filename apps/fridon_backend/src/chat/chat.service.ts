@@ -125,6 +125,7 @@ export class ChatService {
       messages: chat.messages.map((message) => ({
         id: message.id,
         content: message.content,
+        structuredData: message.structuredData,
         messageType: message.messageType,
       })),
     };
@@ -183,7 +184,7 @@ export class ChatService {
   async createChatMessageAiResponse(
     chatId: ChatId,
     messageId: ChatMessageId | undefined,
-    data: string,
+    data: { message?: string; structured_messages?: any },
     plugins: string[],
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
@@ -193,7 +194,10 @@ export class ChatService {
       id: chatMessageId.value,
       messageType: 'Response',
       chatId: chatId.value,
-      content: data,
+      content: data.message ?? '',
+      structuredData: data.structured_messages
+        ? JSON.stringify(data.structured_messages)
+        : null,
       plugins,
     });
 
