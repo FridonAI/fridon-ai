@@ -1,9 +1,14 @@
 import json
 from datetime import datetime, timedelta
+from typing import Literal
+import pyarrow.compute as pc
+
 
 import requests
 
 from fridonai_core.plugins.utilities import BaseUtility
+from libs.community.plugins.coin_technical_analyzer.helpers.llm import get_filter_generator_chain
+from libs.repositories.indicators import IndicatorsRepository
 from settings import settings
 
 
@@ -44,3 +49,29 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
             "end_date": end_date.strftime("%d %B %Y"),
             **resp,
         }
+    
+
+class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
+    async def arun(
+        self, filter: str, interval: Literal["1h", "4h", "1d", "1w"] = "4h", *args, **kwargs
+    ) -> list[dict]:
+        filter_generation_chain = get_filter_generator_chain()
+
+        indicators_repository = IndicatorsRepository(
+            table_name=f"indicators_{interval}"
+        )
+
+        filter_expression = filter_generation_chain.invoke(
+            {"schema": indicators_repository.table_schema, "query": filter}
+        ).filters
+
+        print("Filter expression: ", filter_expression)
+
+        latest_records = indicators_repository.get_the_latest_records(
+            eval(filter_expression)
+        )
+
+        if len(latest_records) == 0:
+            return "No coins found"
+
+        return latest_records.to_dicts()

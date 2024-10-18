@@ -11,7 +11,6 @@ if settings.ENV == "mock":
     from libs.community.plugins.coin_technical_analyzer.mock.utilities import (
         CoinTechnicalIndicatorsListMockUtility as CoinTechnicalIndicatorsListUtility,
         CoinTechnicalAnalyzerMockUtility as CoinTechnicalAnalyzerUtility,
-        CoinTechnicalIndicatorsSearchMockUtility as CoinTechnicalIndicatorsSearchUtility,
         CoinChartPlotterMockUtility as CoinChartPlotterUtility,
     )
     
@@ -19,7 +18,6 @@ else:
     from libs.community.plugins.coin_technical_analyzer.utilities import (
         CoinTechnicalAnalyzerUtility,
         CoinTechnicalIndicatorsListUtility,
-        CoinTechnicalIndicatorsSearchUtility,
         CoinChartPlotterUtility,
     )
 
@@ -76,42 +74,6 @@ CoinTechnicalIndicatorsListTool = BaseTool(
             "request": "what are the technical indicators?",
             "response": "",
         },
-    ],
-)
-
-
-class CoinTechnicalIndicatorsSearchToolInput(BaseToolInput):
-    interval: Literal["1h", "4h", "1d", "1w"] = Field(
-        default="1h", description="The interval of the technical indicators"
-    )
-    filter: str = Field(
-        ..., description="The filter text query to use for the technical indicators"
-    )
-
-
-CoinTechnicalIndicatorsSearchTool = BaseTool(
-    name="coin-technical-indicators-search",
-    description="A utility that allows you to search coins by technical indicators",
-    args_schema=CoinTechnicalIndicatorsSearchToolInput,
-    utility=CoinTechnicalIndicatorsSearchUtility(),
-    examples=[
-        {
-            "request": "What are coins that have RSI > 30?",
-            "response": "",
-            "image_url": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/search-coins-by-indicators.png",
-        },
-        {
-            "request": "List all coins havind MACD > 0 and RSI < 10",
-            "response": "",
-        },
-        {
-            "request": "Search coins with RSI < 30",
-            "response": "",
-        },
-        {
-            "request": "Give me coins with EMA > 100",
-            "response": "",
-        }
     ],
 )
 
@@ -188,6 +150,5 @@ CoinChartPlotterTool = BaseTool(
 TOOLS = [
     CoinTechnicalAnalyzerTool,
     CoinTechnicalIndicatorsListTool,
-    CoinTechnicalIndicatorsSearchTool,
     CoinChartPlotterTool,
 ]

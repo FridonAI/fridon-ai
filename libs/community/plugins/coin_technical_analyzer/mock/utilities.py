@@ -34,11 +34,6 @@ class CoinTechnicalIndicatorsListMockUtility(BaseMockUtility):
         return "MACD, RSI"
     
 
-class CoinTechnicalIndicatorsSearchMockUtility(BaseMockUtility):
-    async def arun(self, *args, **kwargs) -> list:
-        return "[MACD, RSI]"
-    
-
 class CoinChartPlotterMockUtility(BaseMockUtility):
     coin_plotter = {
         "sol": {

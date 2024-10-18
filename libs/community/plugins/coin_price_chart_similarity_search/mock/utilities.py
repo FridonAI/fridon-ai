@@ -1,4 +1,4 @@
-from fridonai_core.plugins.utilities.mock import RemoteMockUtility
+from fridonai_core.plugins.utilities.mock import BaseMockUtility, RemoteMockUtility
 
 
 class CoinPriceChartSimilaritySearchMockUtility(RemoteMockUtility):
@@ -13,3 +13,9 @@ class CoinPriceChartSimilaritySearchMockUtility(RemoteMockUtility):
         if coin_name not in self.coin_prices:
             return "We don't support this coin yet."
         return {"data": self.coin_prices[coin_name]}
+
+
+
+class CoinTechnicalIndicatorsSearchMockUtility(BaseMockUtility):
+    async def arun(self, *args, **kwargs) -> list:
+        return "[MACD, RSI]"

@@ -1,6 +1,6 @@
 from fridonai_core.plugins.tools.response_dumper_base import S3ResponseDumper
 from pydantic import Field
-from typing import Union
+from typing import Literal, Union
 
 from libs.community.helpers.utilities import DatetimeExtractorUtility
 from fridonai_core.plugins.schemas import BaseToolInput
@@ -10,10 +10,12 @@ from settings import settings
 if settings.ENV == 'mock':
     from libs.community.plugins.coin_price_chart_similarity_search.mock.utilities import (
         CoinPriceChartSimilaritySearchMockUtility as CoinPriceChartSimilaritySearchUtility,
+        CoinTechnicalIndicatorsSearchMockUtility as CoinTechnicalIndicatorsSearchUtility,
     )
 else:
     from libs.community.plugins.coin_price_chart_similarity_search.utilities import (
         CoinPriceChartSimilaritySearchUtility,
+        CoinTechnicalIndicatorsSearchUtility,
     )
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
@@ -44,6 +46,43 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
 )
 
 
+class CoinTechnicalIndicatorsSearchToolInput(BaseToolInput):
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(
+        default="1h", description="The interval of the technical indicators"
+    )
+    filter: str = Field(
+        ..., description="The filter text query to use for the technical indicators"
+    )
+
+
+CoinTechnicalIndicatorsSearchTool = BaseTool(
+    name="coin-technical-indicators-search",
+    description="A utility that allows you to search coins by technical indicators",
+    args_schema=CoinTechnicalIndicatorsSearchToolInput,
+    utility=CoinTechnicalIndicatorsSearchUtility(),
+    examples=[
+        {
+            "request": "What are coins that have RSI > 30?",
+            "response": "",
+            "image_url": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/search-coins-by-indicators.png",
+        },
+        {
+            "request": "List all coins havind MACD > 0 and RSI < 10",
+            "response": "",
+        },
+        {
+            "request": "Search coins with RSI < 30",
+            "response": "",
+        },
+        {
+            "request": "Give me coins with EMA > 100",
+            "response": "",
+        }
+    ],
+)
+
+
+
 class DatetimeExtractorToolInput(BaseToolInput):
     user_input: str
 
@@ -55,4 +94,8 @@ DatetimeExtractorTool = BaseTool(
 )
 
 
-TOOLS = [CoinPriceChartSimilaritySearchTool, DatetimeExtractorTool]
+TOOLS = [
+    CoinPriceChartSimilaritySearchTool, 
+    CoinTechnicalIndicatorsSearchTool,
+    DatetimeExtractorTool
+]
