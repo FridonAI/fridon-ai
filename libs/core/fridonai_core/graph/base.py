@@ -51,7 +51,7 @@ def create_graph(
             llm,
             create_agent_prompt(
                 plugin.name,
-                plugin.full_description(tool_descriptions=True),
+                plugin.full_description(tool_descriptions=False),
                 plugin.output_format,
             ),
             tools=plugin.tools + [CompleteTool],

@@ -25,7 +25,7 @@ else:
 
 
 class CoinTechnicalAnalyzerToolInput(BaseToolInput):
-    coin_name: str = Field(..., description="The name of the coin to analyze")
+    coin_name: str = Field(..., description="The symbol of the coin to analyze, abbreviation. If full name is provided refactor to abbreviation.")
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
         default="1h", description="The interval of the technical indicators"
     )
@@ -49,6 +49,9 @@ CoinTechnicalAnalyzerTool = BaseTool(
         {
             "request": "what do you think about sol price?",
             "response": "",
+        },
+        {
+            "request": "Analyze solana price chart",
         },
     ],
     response_dumper=S3ResponseDumper(),
@@ -101,12 +104,20 @@ CoinTechnicalIndicatorsSearchTool = BaseTool(
             "request": "List all coins havind MACD > 0 and RSI < 10",
             "response": "",
         },
+        {
+            "request": "Search coins with RSI < 30",
+            "response": "",
+        },
+        {
+            "request": "Give me coins with EMA > 100",
+            "response": "",
+        }
     ],
 )
 
 
 class CoinChartPlotterToolInput(BaseToolInput):
-    coin_name: str = Field(..., description="The name of the coin to plot")
+    coin_name: str = Field(..., description="The symbol of the coin to plot, abbreviation. If full name is provided refactor to abbreviation.")
     indicators: List[
         Literal[
             "MACD_12_26_9",
@@ -162,6 +173,13 @@ CoinChartPlotterTool = BaseTool(
             "request": "Plot BTC chart",
             "response": "",
         },
+        {
+            "request": "Give me graph for solana with RSI, MACD and SMA indicators",
+            "response": "",
+        },
+        {
+            "request": "Plot BTC chart.",
+        }
     ],
     response_dumper=S3ResponseDumper(),
 )

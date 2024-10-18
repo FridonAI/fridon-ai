@@ -24,10 +24,10 @@ As a TA authority, your role is to decipher market trends, make informed predict
 
 Generated response should be simple, easy to understand, user shouldn't try hard to understand what's happening, conclusion should be main part of the analysis.
 
-Given {symbol} TA data as below on the last trading day, what will be the next few days possible crypto price movement?
+Given {symbol} coin's TA data as below on the last trading day, what will be the next few days possible crypto price movement?
 
-Summary of Technical Indicators for the Last Day:
-{last_day_summary}"""
+Technical Indicators for {interval} intervals:
+{coin_history_indicators}"""
     fields_to_retain: list[str] = ["plot_data"]
 
     async def _arun(
@@ -49,11 +49,12 @@ Summary of Technical Indicators for the Last Day:
             return "No data found"
 
         return {
-            "last_day_summary": str(coin_latest_record_df.to_dicts()),
+            "coin_history_indicators": str(coin_latest_record_df.to_dicts()),
             "symbol": coin_name,
             "plot_data": indicators_repository.get_coin_last_records(
                 coin_name.upper(), number_of_points=200
             ).to_dicts(),
+            "interval": interval,
         }
 
 
@@ -81,7 +82,7 @@ class CoinTechnicalIndicatorsListUtility(BaseUtility):
 
 class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
     async def arun(
-        self, interval: Literal["1h", "4h", "1d", "1w"], filter: str, *args, **kwargs
+        self, filter: str, interval: Literal["1h", "4h", "1d", "1w"] = "4h", *args, **kwargs
     ) -> list[dict]:
         filter_generation_chain = get_filter_generator_chain()
 

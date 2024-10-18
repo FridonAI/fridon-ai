@@ -17,13 +17,13 @@ else:
     )
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
-    coin_name: str = Field(description="The name of the cryptocurrency coin, don't modify from user input.")
+    coin_name: str = Field(description="The symbol of the coin, abbreviation. If full name is provided refactor to abbreviation.")
     start_date: Union[str, None] = Field(default=None, description="The start date for the price chart comparison.")
 
 
 CoinPriceChartSimilaritySearchTool = BaseTool(
     name="coin-price-chart-similarity-search",
-    description="A tool that allows you to search for similar coins by price chart of the given time range",
+    description="A tool that finds coins with current price charts similar to a given coin’s current or past price chart.",
     args_schema=CoinPriceChartSimilaritySearchToolInput,
     utility=CoinPriceChartSimilaritySearchUtility(),
     response_dumper=S3ResponseDumper(),
@@ -33,9 +33,13 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
             "response": "",
         },
         {
-            "request": "Show me coins similar to solana price chart",
+            "request": "Give me coins similar to solana price chart",
             "response": "",
-        }
+        },
+        {
+            "request": "Which coins look like wif price chart two months ago?",
+            "response": "",
+        },
     ]
 )
 
@@ -45,7 +49,7 @@ class DatetimeExtractorToolInput(BaseToolInput):
 
 DatetimeExtractorTool = BaseTool(
     name="datetime-extractor",
-    description="Use only when user mentions date and extraction is needed",
+    description="Helper tool to extract date from user input. Use only when user mentions date and extraction is needed",
     args_schema=DatetimeExtractorToolInput,
     utility=DatetimeExtractorUtility()
 )
