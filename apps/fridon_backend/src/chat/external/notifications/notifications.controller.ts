@@ -26,12 +26,13 @@ export class NotificationsEventsController {
 
     const timestamp = new Date().toISOString();
 
-    const { slug, message } = event;
+    const { walletId, slug, message } = event;
 
     // 1) Using slug Query all the user who has this plugin.
     const walletPlugins = await this.prisma.walletPlugin.findMany({
       where: {
         pluginId: slug,
+        ...(walletId ? { walletId: walletId } : {}),
       },
       select: {
         walletId: true,

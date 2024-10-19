@@ -23,6 +23,7 @@ async def task_runner(
     plugins = [
         "coin-price-chart-similarity-search",
         "coin-technical-analyzer",
+        "coin-observer",
     ]
     response_message, used_agents = await service.process(
         request.user.wallet_id, request.chat_id, plugins, request.data.message
