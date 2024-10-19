@@ -14,7 +14,7 @@ from libs.utils.redis.pubsub import Publisher
 registry = ensure_cron_registry()
 
 
-@registry.register
+# @registry.register
 class BonkBullishNotifierCron(BaseCron):
     name: str = "Bonk Bullish Notifier"
     schedule: str = "*/1 * * * *"

@@ -1,6 +1,7 @@
 import { BaseDto } from '@lib/common';
 
 export class NotificationsMessageUpdateDto {
+  walletId?: string;
   slug: string;
   message: string;
 }
