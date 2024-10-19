@@ -36,16 +36,16 @@ CoinTechnicalAnalyzerTool = BaseTool(
     utility=CoinTechnicalAnalyzerUtility(),
     examples=[
         {
-            "request": "what about bonk coin?",
+            "request": "What about bonk coin price chart?",
             "response": "",
             "image_url": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/chart-analyzer.png",
         },
         {
-            "request": "analyze bonk price chat for me",
+            "request": "Analyze bonk price chat for me",
             "response": "",
         },
         {
-            "request": "what do you think about sol price?",
+            "request": "What do you think about sol price?",
             "response": "",
         },
         {
@@ -84,11 +84,11 @@ CoinTechnicalIndicatorsListTool = BaseTool(
     utility=CoinTechnicalIndicatorsListUtility(),
     examples=[
         {
-            "request": "list technical indicators",
+            "request": "List technical indicators",
             "response": "",
         },
         {
-            "request": "what are the technical indicators?",
+            "request": "What are the technical indicators?",
             "response": "",
         },
         {

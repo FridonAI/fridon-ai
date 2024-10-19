@@ -17,11 +17,11 @@ JupiterSwapTool = BaseTool(
     utility=JupiterSwapUtility(communicator=BlockchainRedisSendWaitAdapter()),
     examples=[
         {
-            "request": "swap 10 sol to usdc",
+            "request": "Swap 10 sol to usdc",
             "response": "Swap finished successfully!",
         },
         {
-            "request": "swap 10 usdc to bonk",
+            "request": "Swap 10 usdc to bonk",
             "response": "Transaction skipped, please try again.",
         },
     ],
