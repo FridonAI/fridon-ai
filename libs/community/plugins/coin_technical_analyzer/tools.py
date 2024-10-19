@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import List, Literal, Union
 
 from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
@@ -57,12 +57,29 @@ CoinTechnicalAnalyzerTool = BaseTool(
 
 
 class CoinTechnicalIndicatorsListToolInput(BaseToolInput):
-    pass
+    indicator_name: Union[Literal[
+        "MACD_12_26_9",
+        "MACD_histogram_12_26_9",
+        "RSI_14",
+        "BBL_5_2.0",
+        "BBM_5_2.0",
+        "BBU_5_2.0",
+        "SMA_20",
+        "EMA_50",
+        "OBV_in_million",
+        "STOCHk_14_3_3",
+        "STOCHd_14_3_3",
+        "ADX_14",
+        "WILLR_14",
+        "CMF_20",
+        "PSARl_0.02_0.2",
+        "PSARs_0.02_0.2",
+    ], None] = Field(default=None, description="The name of the technical indicator to get description of")
 
 
 CoinTechnicalIndicatorsListTool = BaseTool(
     name="coin-technical-indicators-list",
-    description="A utility that allows you to list all available coin technical indicators",
+    description="A utility that provides information about coin technical indicators, including a comprehensive list, detailed descriptions of specific or all indicators.",
     args_schema=CoinTechnicalIndicatorsListToolInput,
     utility=CoinTechnicalIndicatorsListUtility(),
     examples=[
@@ -72,6 +89,14 @@ CoinTechnicalIndicatorsListTool = BaseTool(
         },
         {
             "request": "what are the technical indicators?",
+            "response": "",
+        },
+        {
+            "request": "What is MACD_12_26_9?",
+            "response": "",
+        },
+        {
+            "request": "When is RSI_14 used?",
             "response": "",
         },
     ],
@@ -123,6 +148,7 @@ class CoinChartPlotterToolInput(BaseToolInput):
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
         default="4h", description="The interval of the technical indicators"
     )
+
 
 
 CoinChartPlotterTool = BaseTool(
