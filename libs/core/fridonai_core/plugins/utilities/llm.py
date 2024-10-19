@@ -18,6 +18,9 @@ class LLMUtility(BaseUtility):
     async def arun(self, *args, **kwargs) -> BaseModel | dict | str | Any:
         placeholders = await self._arun(*args, **kwargs)
 
+        if type(placeholders) == str:
+            return placeholders
+
         prompt = PromptTemplate.from_template(self.llm_job_description)
         llm = get_model()
 
