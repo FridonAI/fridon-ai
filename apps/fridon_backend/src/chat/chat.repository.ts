@@ -22,7 +22,7 @@ export class ChatRepository {
       },
       include: {
         messages: {
-          orderBy: { createdAt: 'asc' },
+          orderBy: { createdAt: 'desc' },
         },
       },
     });
