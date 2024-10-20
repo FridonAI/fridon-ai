@@ -2,7 +2,7 @@ name: Create and publish "fridon_crones" Docker images
 
 on:
   push:
-    `nches:
+    branches:
       - 'main'
     paths:
       - 'apps/fridon_crones/**'
