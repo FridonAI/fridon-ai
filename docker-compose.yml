@@ -18,28 +18,30 @@ services:
       - DATABASE_URL=postgresql://user:pass@db:5432/app?schema=api_schema
     env_file:
       - apps/fridon_backend/.env
-
-  # fridon_brain:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/fridon_brain/Dockerfile
-  #   env_file:
-  #     - apps/fridon_brain/.env
-  #   environment:
-  #     - POSTGRES_HOST=db
-  #     - REDIS_HOST=redis
-  #     - REDIS_PORT=6379
-  #     - POSTGRES_DB_URL=postgresql://user:pass@db:5432/app
-  #     - API_URL=http://fridon_backend:3000
-  #   command: python -u -m apps.fridon_brain.main
-
-
+  fridon_brain:
+    build:
+      context: .
+      dockerfile: apps/fridon_brain/Dockerfile
+    env_file:
+      - apps/fridon_brain/.env
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_DB_URL=postgresql://user:pass@db:5432/app
+      - API_URL=http://fridon_backend:3000
+    command: python -u -m apps.fridon_brain.main
+  fridon_crones:
+    build:
+      context: .
+      dockerfile: apps/fridon_crones/Dockerfile
+    env_file:
+      - apps/fridon_crones/.env
+    command: python -u -m apps.fridon_crones.main
   redis:
     image: redis:latest
     ports:
       - 6379:6379
-
-
   db:
     build:
       context: .

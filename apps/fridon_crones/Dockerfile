@@ -25,6 +25,6 @@ ENV VIRTUAL_ENV=/app/.venv \
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-COPY apps/fridon_brain /app/apps/fridon_brain
+COPY apps/fridon_crones /app/apps/fridon_crones
 COPY ./settings.py /app/settings.py
 COPY libs /app/libs

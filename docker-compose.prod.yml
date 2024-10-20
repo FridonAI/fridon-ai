@@ -11,6 +11,11 @@ services:
     restart: always
     ports:
       - "80:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -32,18 +37,38 @@ services:
         tag: "{{.ID}}"
     env_file:
       - ./core/.env
-    command: python -u -m fridon_brain.main
+    command: python -u -m apps.fridon_brain.main
+
+
+  fridon_crones:
+    image: ghcr.io/fridonai/fridon-ai_fridon_crones:main
+    restart: always
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-region: "eu-central-1"
+        awslogs-group: "/aws/fridonai/fridon_crones"
+        tag: "{{.ID}}"
+    env_file:
+      - ./crones/.env
+    command: python -u -m apps.fridon_crones.main
 
   db:
     build:
+      context: .
       dockerfile: pgvector.dockerfile
+    restart: always
     ports:
       - 5432:5432
-    restart: always
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
