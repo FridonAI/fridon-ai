@@ -20,13 +20,14 @@ async def task_runner(
     scorer_service: CalculateUserMessageScoreService,
     pub: redis.Publisher,
 ):
-    plugins = [
-        "coin-price-chart-similarity-search",
-        "coin-technical-analyzer",
-        "coin-observer",
-    ]
+    # plugins = [
+    #     "coin-price-chart-similarity-search",
+    #     "coin-technical-analyzer",
+    #     "coin-observer",
+    #     "wallet",
+    # ]
     response_message, used_agents = await service.process(
-        request.user.wallet_id, request.chat_id, plugins, request.data.message
+        request.user.wallet_id, request.chat_id, request.plugins, request.data.message
     )
 
 
@@ -109,7 +110,6 @@ if __name__ == "__main__":
     container.config.redis_host.from_env("REDIS_HOST", "localhost")
     container.config.redis_password.from_env("REDIS_PASSWORD", None)
     container.init_resources()
-    container.wire(modules=["libs.community.plugins.bonk_notifier.crons"])
 
     _preload_modules()
 

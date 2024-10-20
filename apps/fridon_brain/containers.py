@@ -13,7 +13,6 @@ class Container(containers.DeclarativeContainer):
             "libs.community.plugins.wallet.utilities",
             "apps.fridon_brain.services.process_user_message_service",
             "apps.fridon_brain.services.calculate_user_message_score_service",
-            "libs.community.plugins.bonk_notifier.crons",
         ],
         packages=[
             "libs.community.plugins",
