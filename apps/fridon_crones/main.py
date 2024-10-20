@@ -2,13 +2,9 @@ import asyncio
 import datetime
 import logging
 import os
-import random
 
 import aiocron
-import pandas as pd
-import pandas_ta as ta
 import polars as pl
-import pyarrow as pa
 import pyarrow.compute as pc
 
 from libs.internals.indicators import calculate_ta_indicators
