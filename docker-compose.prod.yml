@@ -24,7 +24,7 @@ services:
       - ENABLE_UPDATE_EMBEDDINGS_CRON=1
       - NO_COLOR=1
     env_file:
-      - .env
+      - ./apps/fridon_backend/.env
 
   fridon_brain:
     image: ghcr.io/fridonai/fridon-ai_fridon_brain:main
@@ -36,7 +36,7 @@ services:
         awslogs-group: "/aws/fridonai/fridon_brain"
         tag: "{{.ID}}"
     env_file:
-      - ./core/.env
+      - ./apps/fridon_brain/.env
     command: python -u -m apps.fridon_brain.main
 
 
@@ -50,7 +50,7 @@ services:
         awslogs-group: "/aws/fridonai/fridon_crones"
         tag: "{{.ID}}"
     env_file:
-      - ./crones/.env
+      - ./apps/fridon_crones/.env
     command: python -u -m apps.fridon_crones.main
 
   db:
