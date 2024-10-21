@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 
 def _initialize_storage_options() -> dict[str, str]:
     return {
-        "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID", ""),
-        "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY", ""),
+        # "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID", ""),
+        # "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY", ""),
         "AWS_S3_ALLOW_UNSAFE_RENAME": "true",
-        "AWS_REGION": os.getenv("AWS_DEFAULT_REGION", ""),
+        # "AWS_REGION": os.getenv("AWS_DEFAULT_REGION", ""),
     }
 
 
@@ -148,11 +148,11 @@ class DeltaRepository(BaseModel):
             raise
 
     def get_records_in_time_range(
-            self, 
-            filters, 
-            start: datetime, 
-            end: datetime, 
-            number_of_points: int = 50, 
+            self,
+            filters,
+            start: datetime,
+            end: datetime,
+            number_of_points: int = 50,
             order_by: str = "timestamp",
             columns: list[str] = None
         ) -> pl.DataFrame:
