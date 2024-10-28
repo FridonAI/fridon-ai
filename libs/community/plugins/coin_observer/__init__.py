@@ -11,9 +11,9 @@ plugin_registry = ensure_plugin_registry()
 class CoinObserverPlugin(BasePlugin):
     name: str = "Coin Observer"
     description: str = (
-        "AI plugin for observing coin price charts, search coins by indicators."
+        "Plugin for monitoring coin prices and sending notifications based on user conditions."
     )
     owner: str = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     tools: list[BaseTool] = TOOLS
-    image_url: str = "" # TODO add image url
+    image_url: str = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/coin-observer-avatar.png"
     json_format: bool = False

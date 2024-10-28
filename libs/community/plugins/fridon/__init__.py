@@ -12,3 +12,4 @@ class FridonPlugin(BasePlugin):
     description: str = "Plugin for getting information about FridonAI"
     owner: str = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     tools: list[BaseTool] = TOOLS
+    image_url: str = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/fridon.png"
