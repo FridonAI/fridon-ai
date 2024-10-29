@@ -219,7 +219,7 @@ COINS = [
 ]
 
 
-@aiocron.crontab("0,30 * * * *", start=True)
+# @aiocron.crontab("0,30 * * * *", start=True)
 async def data_ingestion_job():
     logger.info(f"\n\nStarting data ingestion job. {datetime.datetime.now(datetime.UTC).isoformat()}\n\n")
     await update_ohlcv_data()
@@ -431,12 +431,19 @@ async def seed():
 
     logger.info("****************** Seeding Prices and Indicators data Finished. ******************")
 
+
+async def process(loop):
+    await seed()
+    await data_ingestion_job()
+    aiocron.crontab("0,30 * * * *", data_ingestion_job, loop=loop)
+
 def main():
     logger.info("Starting the scheduler.")
     logger.info(f"Start time: {datetime.datetime.now(datetime.UTC).isoformat()}")
+
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(seed())
     try:
+        loop.run_until_complete(process(loop))
         loop.run_forever()
     except KeyboardInterrupt:
         logger.info("Shutting down.")
