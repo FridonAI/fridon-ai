@@ -116,106 +116,106 @@ COINS = [
     "PHB",
     "AR",
     "JTO",
-    "LDO",
-    "HBAR",
-    "SUPER",
-    "FIDA",
-    "MEME",
-    "CKB",
-    "OMNI",
-    "PYTH",
-    "PSG",
-    "DEGO",
-    "OM",
-    "BEAMX",
-    "BB",
-    "EURI",
-    "JASMY",
-    "RAY",
-    "SUN",
-    "PIXEL",
-    "BLUR",
-    "ROSE",
-    "GRT",
-    "TRB",
-    "VGX",
-    "WOO",
-    "IMX",
-    "SSV",
-    "AI",
-    "BAR",
-    "GAS",
-    "KAVA",
-    "DYM",
-    "JUV",
-    "ETC",
-    "CITY",
-    "XAI",
-    "ASTR",
-    "CVP",
-    "VIDT",
-    "ACM",
-    "MASK",
-    "ENS",
-    "RSR",
-    "ARK",
-    "APE",
-    "AUDIO",
-    "PORTAL",
-    "REI",
-    "CAKE",
-    "REZ",
-    "MINA",
-    "VET",
-    "ORN",
-    "ALGO",
-    "VANRY",
-    "AST",
-    "HIGH",
-    "GMT",
-    "AEVO",
-    "LEVER",
-    "FIO",
-    "EOS",
-    "AXS",
-    "SNT",
-    "AXL",
-    "UNFI",
-    "COS",
-    "REEF",
-    "XLM",
-    "TRU",
-    "AMP",
-    "TNSR",
-    "EPX",
-    "COTI",
-    "THETA",
-    "VIC",
-    "RAD",
-    "CYBER",
-    "RARE",
-    "EDU",
-    "EGLD",
-    "UMA",
-    "LISTA",
-    "LPT",
-    "FOR",
-    "ACE",
-    "NEO",
-    "BAKE",
-    "SYN",
-    "FRONT",
-    "SNX",
-    "KDA",
-    "TWT",
-    "DODO",
-    "ONG",
-    "CTXC",
-    "FLOW",
-    "RDNT",
-    "VIB",
-    "SLF",
-    "PYR",
+    # "LDO",
+    # "HBAR",
+    # "SUPER",
+    # "FIDA",
+    # "MEME",
+    # "CKB",
+    # "OMNI",
+    # "PYTH",
+    # "PSG",
+    # "DEGO",
+    # "OM",
+    # "BEAMX",
+    # "BB",
+    # "EURI",
+    # "JASMY",
+    # "RAY",
+    # "SUN",
+    # "PIXEL",
+    # "BLUR",
+    # "ROSE",
+    # "GRT",
+    # "TRB",
+    # "VGX",
+    # "WOO",
+    # "IMX",
+    # "SSV",
+    # "AI",
+    # "BAR",
+    # "GAS",
+    # "KAVA",
+    # "DYM",
+    # "JUV",
+    # "ETC",
+    # "CITY",
+    # "XAI",
+    # "ASTR",
+    # "CVP",
+    # "VIDT",
+    # "ACM",
+    # "MASK",
+    # "ENS",
+    # "RSR",
+    # "ARK",
+    # "APE",
+    # "AUDIO",
+    # "PORTAL",
+    # "REI",
+    # "CAKE",
+    # "REZ",
+    # "MINA",
+    # "VET",
+    # "ORN",
+    # "ALGO",
+    # "VANRY",
+    # "AST",
+    # "HIGH",
+    # "GMT",
+    # "AEVO",
+    # "LEVER",
+    # "FIO",
+    # "EOS",
+    # "AXS",
+    # "SNT",
+    # "AXL",
+    # "UNFI",
+    # "COS",
+    # "REEF",
+    # "XLM",
+    # "TRU",
+    # "AMP",
+    # "TNSR",
+    # "EPX",
+    # "COTI",
+    # "THETA",
+    # "VIC",
+    # "RAD",
+    # "CYBER",
+    # "RARE",
+    # "EDU",
+    # "EGLD",
+    # "UMA",
+    # "LISTA",
+    # "LPT",
+    # "FOR",
+    # "ACE",
+    # "NEO",
+    # "BAKE",
+    # "SYN",
+    # "FRONT",
+    # "SNX",
+    # "KDA",
+    # "TWT",
+    # "DODO",
+    # "ONG",
+    # "CTXC",
+    # "FLOW",
+    # "RDNT",
+    # "VIB",
+    # "SLF",
+    # "PYR",
 ]
 
 
@@ -387,7 +387,9 @@ async def seed():
         "1w": 400,
     }
 
+    data_provider = DataProvider()
     for interval_name in ["raw", "1h", "4h", "1d", "1w"]:
+        start_time = datetime.datetime.now()
         logger.info(f"**************************************************")
         logger.info(f"Seeding ohlcv data with indicators for {interval_name}.")
         ohlcv_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
@@ -396,38 +398,45 @@ async def seed():
         )
         if interval_name == "raw":
             interval_name = "30m"
-        data_provider = DataProvider()
-        raw_data, _ = await data_provider.get_historical_ohlcv(
-            COINS, interval=interval_name, days=interval_to_days[interval_name]
-        )
-        df = pl.from_records(raw_data)
-        ohlcv_repository.write(df)
 
-        chunk_size = 50
-        seed_indicators_df = pl.DataFrame()
-
-        for coin in COINS:
-            coin_df = df.filter(pl.col("coin") == coin).select([
-                "coin", "timestamp", "open", "high", "low", "close", "volume"
-            ])
-            for i in range(0, len(coin_df) - chunk_size + 1):
-                chunk = coin_df.slice(i, chunk_size)
-                if len(chunk) >= 50:
-                    df_indicators = calculate_ta_indicators(chunk)
-                    if seed_indicators_df.is_empty():
-                        seed_indicators_df = df_indicators
-                    else:
-                        seed_indicators_df = pl.concat([seed_indicators_df, df_indicators], how="vertical_relaxed")
-
-        if not seed_indicators_df.is_empty():
-            indicators_repository.update(
-                seed_indicators_df,
-                predicate="s.timestamp == t.timestamp AND s.coin == t.coin"
+        
+        
+        
+        for i in range(0, len(COINS), 20):
+            coin_chunk = COINS[i:i+20]
+            raw_data, _ = await data_provider.get_historical_ohlcv(
+                coin_chunk, interval=interval_name, days=interval_to_days[interval_name]
             )
-        else:
-            logger.warning("No indicators data to update.")
+            df = pl.from_records(raw_data)
+            logger.info(f"Records fetched: {df.shape[0]}")
+            ohlcv_repository.write(df)
 
-        logger.info(f"Seeded indicators data for {interval_name} Finished.")
+            seed_indicators_df = pl.DataFrame()
+            
+            for coin in coin_chunk:
+                coin_df = df.filter(pl.col("coin") == coin).select([
+                    "coin", "timestamp", "open", "high", "low", "close", "volume"
+                ])
+                chunk_size = 50
+                for i in range(0, len(coin_df) - chunk_size + 1):
+                    chunk = coin_df.slice(i, chunk_size)
+                    if len(chunk) >= 50:
+                        df_indicators = calculate_ta_indicators(chunk)
+                        if seed_indicators_df.is_empty():
+                            seed_indicators_df = df_indicators
+                        else:
+                            seed_indicators_df = pl.concat([seed_indicators_df, df_indicators], how="vertical_relaxed")
+
+            if not seed_indicators_df.is_empty():
+                indicators_repository.update(
+                    seed_indicators_df,
+                    predicate="s.timestamp == t.timestamp AND s.coin == t.coin"
+                )
+            else:
+                logger.warning("No indicators data to update.")
+
+        elapsed_time = datetime.datetime.now() - start_time
+        logger.info(f"Seeded indicators data for {interval_name} Finished. Time taken: {elapsed_time}")
 
     logger.info("****************** Seeding Prices and Indicators data Finished. ******************")
 
