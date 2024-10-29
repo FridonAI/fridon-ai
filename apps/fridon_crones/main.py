@@ -426,12 +426,14 @@ async def seed():
                             seed_indicators_df = df_indicators
                         else:
                             seed_indicators_df = pl.concat([seed_indicators_df, df_indicators], how="vertical_relaxed")
+                    
+                    if seed_indicators_df.shape[0] > 5000:
+                        logger.info(f"Number of records to update: {seed_indicators_df.shape[0]}")
+                        indicators_repository.write(seed_indicators_df)
+                        seed_indicators_df = pl.DataFrame()
 
             if not seed_indicators_df.is_empty():
-                indicators_repository.update(
-                    seed_indicators_df,
-                    predicate="s.timestamp == t.timestamp AND s.coin == t.coin"
-                )
+                indicators_repository.write(seed_indicators_df)
             else:
                 logger.warning("No indicators data to update.")
 
