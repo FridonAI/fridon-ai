@@ -2,7 +2,7 @@ import pandas as pd
 import polars as pl
 import pandas_ta as ta
 
-def calculate_ta_indicators(df: pl.DataFrame) -> pl.DataFrame:
+def calculate_ta_indicators(df: pl.DataFrame, return_last_one: bool = True) -> pl.DataFrame:
     if len(df) < 50:
         raise ValueError("DataFrame must have at least 50 rows")
 
@@ -12,11 +12,10 @@ def calculate_ta_indicators(df: pl.DataFrame) -> pl.DataFrame:
     coin = df_pandas["coin"].iloc[0]
     df_pandas.drop(columns=["coin"], inplace=True)
     df_pandas["date"] = pd.to_datetime(df_pandas["date"], unit="ms")
-    df_pandas["open"] = df_pandas["open"].astype(float)
-    df_pandas["high"] = df_pandas["high"].astype(float)
-    df_pandas["low"] = df_pandas["low"].astype(float)
-    df_pandas["close"] = df_pandas["close"].astype(float)
-    df_pandas["volume"] = df_pandas["volume"].astype(float)
+    numeric_columns = ["open", "high", "low", "close", "volume"]
+    df_pandas[numeric_columns] = df_pandas[numeric_columns].astype(float)
+
+
     df_pandas.ta.macd(append=True)
     df_pandas.ta.rsi(append=True)
     df_pandas.ta.bbands(append=True)
@@ -34,7 +33,16 @@ def calculate_ta_indicators(df: pl.DataFrame) -> pl.DataFrame:
     df_pandas["OBV_in_million"] = df_pandas["OBV"] / 1e7
     df_pandas["MACD_histogram_12_26_9"] = df_pandas["MACDh_12_26_9"]
 
-    last_day_summary = df_pandas.iloc[-1][
+
+    if not return_last_one:
+        df_pandas = df_pandas.iloc[49:]
+        df_pandas = df_pandas.assign(coin=coin)
+        df_pandas["timestamp"] = df_pandas["date"].apply(lambda x: int(x.timestamp() * 1000))
+        df_pandas["date"] = df_pandas["date"].apply(lambda x: x.strftime("%Y-%m-%d"))
+        return pl.from_pandas(df_pandas)
+
+
+    last_record = df_pandas.iloc[-1][
         [
             "open",
             "high",
@@ -59,7 +67,6 @@ def calculate_ta_indicators(df: pl.DataFrame) -> pl.DataFrame:
             "PSARs_0.02_0.2",
         ]
     ]
-
     # Create a separate Series for non-numeric columns
     non_numeric_columns = pd.Series(
         {
@@ -68,9 +75,7 @@ def calculate_ta_indicators(df: pl.DataFrame) -> pl.DataFrame:
             "date": df_pandas["date"].iloc[-1].strftime("%Y-%m-%d"),
         }
     )
-
     # Combine numeric and non-numeric data
-    combined_summary = pd.concat([last_day_summary, non_numeric_columns])
-
+    combined_summary = pd.concat([last_record, non_numeric_columns])
     # Convert to Polars DataFrame
     return pl.from_pandas(combined_summary.to_frame().T)

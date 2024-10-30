@@ -142,7 +142,7 @@ class DeltaRepository(BaseModel):
                 .when_not_matched_insert_all()
                 .execute()
             )
-            logger.info(f"Table {self.table_name} updated successfully.")
+            logger.info(f"Table {self.table_name} updated successfully with {df.shape[0]} rows.")
         except Exception as e:
             logger.error(f"Error updating table {self.table_name}: {e}")
             raise

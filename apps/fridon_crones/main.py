@@ -116,106 +116,106 @@ COINS = [
     "PHB",
     "AR",
     "JTO",
-    "LDO",
-    "HBAR",
-    "SUPER",
-    "FIDA",
-    "MEME",
-    "CKB",
-    "OMNI",
-    "PYTH",
-    "PSG",
-    "DEGO",
-    "OM",
-    "BEAMX",
-    "BB",
-    "EURI",
-    "JASMY",
-    "RAY",
-    "SUN",
-    "PIXEL",
-    "BLUR",
-    "ROSE",
-    "GRT",
-    "TRB",
-    "VGX",
-    "WOO",
-    "IMX",
-    "SSV",
-    "AI",
-    "BAR",
-    "GAS",
-    "KAVA",
-    "DYM",
-    "JUV",
-    "ETC",
-    "CITY",
-    "XAI",
-    "ASTR",
-    "CVP",
-    "VIDT",
-    "ACM",
-    "MASK",
-    "ENS",
-    "RSR",
-    "ARK",
-    "APE",
-    "AUDIO",
-    "PORTAL",
-    "REI",
-    "CAKE",
-    "REZ",
-    "MINA",
-    "VET",
-    "ORN",
-    "ALGO",
-    "VANRY",
-    "AST",
-    "HIGH",
-    "GMT",
-    "AEVO",
-    "LEVER",
-    "FIO",
-    "EOS",
-    "AXS",
-    "SNT",
-    "AXL",
-    "UNFI",
-    "COS",
-    "REEF",
-    "XLM",
-    "TRU",
-    "AMP",
-    "TNSR",
-    "EPX",
-    "COTI",
-    "THETA",
-    "VIC",
-    "RAD",
-    "CYBER",
-    "RARE",
-    "EDU",
-    "EGLD",
-    "UMA",
-    "LISTA",
-    "LPT",
-    "FOR",
-    "ACE",
-    "NEO",
-    "BAKE",
-    "SYN",
-    "FRONT",
-    "SNX",
-    "KDA",
-    "TWT",
-    "DODO",
-    "ONG",
-    "CTXC",
-    "FLOW",
-    "RDNT",
-    "VIB",
-    "SLF",
-    "PYR",
+    # "LDO",
+    # "HBAR",
+    # "SUPER",
+    # "FIDA",
+    # "MEME",
+    # "CKB",
+    # "OMNI",
+    # "PYTH",
+    # "PSG",
+    # "DEGO",
+    # "OM",
+    # "BEAMX",
+    # "BB",
+    # "EURI",
+    # "JASMY",
+    # "RAY",
+    # "SUN",
+    # "PIXEL",
+    # "BLUR",
+    # "ROSE",
+    # "GRT",
+    # "TRB",
+    # "VGX",
+    # "WOO",
+    # "IMX",
+    # "SSV",
+    # "AI",
+    # "BAR",
+    # "GAS",
+    # "KAVA",
+    # "DYM",
+    # "JUV",
+    # "ETC",
+    # "CITY",
+    # "XAI",
+    # "ASTR",
+    # "CVP",
+    # "VIDT",
+    # "ACM",
+    # "MASK",
+    # "ENS",
+    # "RSR",
+    # "ARK",
+    # "APE",
+    # "AUDIO",
+    # "PORTAL",
+    # "REI",
+    # "CAKE",
+    # "REZ",
+    # "MINA",
+    # "VET",
+    # "ORN",
+    # "ALGO",
+    # "VANRY",
+    # "AST",
+    # "HIGH",
+    # "GMT",
+    # "AEVO",
+    # "LEVER",
+    # "FIO",
+    # "EOS",
+    # "AXS",
+    # "SNT",
+    # "AXL",
+    # "UNFI",
+    # "COS",
+    # "REEF",
+    # "XLM",
+    # "TRU",
+    # "AMP",
+    # "TNSR",
+    # "EPX",
+    # "COTI",
+    # "THETA",
+    # "VIC",
+    # "RAD",
+    # "CYBER",
+    # "RARE",
+    # "EDU",
+    # "EGLD",
+    # "UMA",
+    # "LISTA",
+    # "LPT",
+    # "FOR",
+    # "ACE",
+    # "NEO",
+    # "BAKE",
+    # "SYN",
+    # "FRONT",
+    # "SNX",
+    # "KDA",
+    # "TWT",
+    # "DODO",
+    # "ONG",
+    # "CTXC",
+    # "FLOW",
+    # "RDNT",
+    # "VIB",
+    # "SLF",
+    # "PYR",
 ]
 
 
@@ -351,6 +351,7 @@ async def update_indicators_data():
         logger.info(f"Calculating indicators for {interval_name}.")
         ohlcv_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
         indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval_name}")
+        update_indicators_df = pl.DataFrame()
         for coin in COINS:
             last_coin_records_df = ohlcv_repository.get_coin_last_records(
                 coin,
@@ -365,14 +366,13 @@ async def update_indicators_data():
                     "volume",
                 ]
             )
-            try:
-                last_coin_records_indicators_df = calculate_ta_indicators(last_coin_records_df)
-                indicators_repository.update(
-                    last_coin_records_indicators_df,
-                    predicate="s.timestamp == t.timestamp"
-                )
-            except Exception as e:
-                logger.error(f"Error updating indicators data for {coin}-{interval_name}: {e}")
+            last_coin_records_indicators_df = calculate_ta_indicators(last_coin_records_df, return_last_one=True)
+            update_indicators_df = pl.concat([update_indicators_df, last_coin_records_indicators_df], how="vertical_relaxed")
+
+        try:
+            indicators_repository.write(update_indicators_df)
+        except Exception as e:
+            logger.error(f"Error updating indicators data for {coin}-{interval_name}: {e}")
         logger.info(f"Updated indicators data for {interval_name}.")
 
 
@@ -404,6 +404,7 @@ async def seed():
         
         for i in range(0, len(COINS), 20):
             coin_chunk = COINS[i:i+20]
+            logger.info(f"Handling coins {coin_chunk}")
             raw_data, _ = await data_provider.get_historical_ohlcv(
                 coin_chunk, interval=interval_name, days=interval_to_days[interval_name]
             )
@@ -417,20 +418,16 @@ async def seed():
                 coin_df = df.filter(pl.col("coin") == coin).select([
                     "coin", "timestamp", "open", "high", "low", "close", "volume"
                 ])
-                chunk_size = 50
-                for i in range(0, len(coin_df) - chunk_size + 1):
-                    chunk = coin_df.slice(i, chunk_size)
-                    if len(chunk) >= 50:
-                        df_indicators = calculate_ta_indicators(chunk)
-                        if seed_indicators_df.is_empty():
-                            seed_indicators_df = df_indicators
-                        else:
-                            seed_indicators_df = pl.concat([seed_indicators_df, df_indicators], how="vertical_relaxed")
+                df_indicators = calculate_ta_indicators(coin_df, return_last_one=False)
+                if seed_indicators_df.is_empty():
+                    seed_indicators_df = df_indicators
+                else:
+                    seed_indicators_df = pl.concat([seed_indicators_df, df_indicators], how="vertical_relaxed")
                     
-                    if seed_indicators_df.shape[0] > 2000:
-                        logger.info(f"Number of records to update: {seed_indicators_df.shape[0]}")
-                        indicators_repository.write(seed_indicators_df)
-                        seed_indicators_df = pl.DataFrame()
+                if seed_indicators_df.shape[0] > 4000:
+                    logger.info(f"Number of records to update: {seed_indicators_df.shape[0]}")
+                    indicators_repository.write(seed_indicators_df)
+                    seed_indicators_df = pl.DataFrame()
 
             if not seed_indicators_df.is_empty():
                 indicators_repository.write(seed_indicators_df)
