@@ -116,33 +116,33 @@ COINS = [
     "PHB",
     "AR",
     "JTO",
-    # "LDO",
-    # "HBAR",
-    # "SUPER",
-    # "FIDA",
-    # "MEME",
-    # "CKB",
-    # "OMNI",
-    # "PYTH",
-    # "PSG",
-    # "DEGO",
-    # "OM",
-    # "BEAMX",
-    # "BB",
-    # "EURI",
-    # "JASMY",
-    # "RAY",
-    # "SUN",
-    # "PIXEL",
-    # "BLUR",
-    # "ROSE",
-    # "GRT",
-    # "TRB",
-    # "VGX",
-    # "WOO",
-    # "IMX",
-    # "SSV",
-    # "AI",
+    "LDO",
+    "HBAR",
+    "SUPER",
+    "FIDA",
+    "MEME",
+    "CKB",
+    "OMNI",
+    "PYTH",
+    "PSG",
+    "DEGO",
+    "OM",
+    "BEAMX",
+    "BB",
+    "EURI",
+    "JASMY",
+    "RAY",
+    "SUN",
+    "PIXEL",
+    "BLUR",
+    "ROSE",
+    "GRT",
+    "TRB",
+    "VGX",
+    "WOO",
+    "IMX",
+    "SSV",
+    "AI",
     # "BAR",
     # "GAS",
     # "KAVA",
@@ -233,7 +233,7 @@ async def update_ohlcv_data():
     raw_repository = OhlcvRepository(table_name="ohlcv_raw")
     df = pl.from_records(raw_data)
 
-    raw_repository.update(df, predicate="s.timestamp == t.timestamp")
+    raw_repository.write(df)
 
     intervals = [
         ("1h", datetime.timedelta(hours=1)),
@@ -352,28 +352,36 @@ async def update_indicators_data():
         ohlcv_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
         indicators_repository = IndicatorsRepository(table_name=f"indicators_{interval_name}")
         update_indicators_df = pl.DataFrame()
-        for coin in COINS:
-            last_coin_records_df = ohlcv_repository.get_coin_last_records(
-                coin,
-                number_of_points=50,
-                columns=[
-                    "coin",
-                    "timestamp",
-                    "open",
-                    "high",
-                    "low",
-                    "close",
-                    "volume",
-                ]
-            )
-            last_coin_records_indicators_df = calculate_ta_indicators(last_coin_records_df, return_last_one=True)
-            update_indicators_df = pl.concat([update_indicators_df, last_coin_records_indicators_df], how="vertical_relaxed")
 
-        try:
+        last_coins_records_df = ohlcv_repository.get_last_records(
+            number_of_points=50, 
+            columns=[
+                "coin",
+                "timestamp",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+            ],
+            last_n=True,                 
+        )
+        for coin in COINS:
+            last_coin_records_df = last_coins_records_df.filter(pl.col("coin") == coin)
+            try:
+                last_coin_records_indicators_df = calculate_ta_indicators(last_coin_records_df)
+            except Exception as e:
+                logger.error(f"Error calculating indicators for {coin}-{interval_name}: {e}")
+                continue
+
+            if update_indicators_df.is_empty():
+                update_indicators_df = last_coin_records_indicators_df
+            else:
+                update_indicators_df = pl.concat([update_indicators_df, last_coin_records_indicators_df], how="vertical_relaxed")
+
+        if not update_indicators_df.is_empty():
             indicators_repository.write(update_indicators_df)
-        except Exception as e:
-            logger.error(f"Error updating indicators data for {coin}-{interval_name}: {e}")
-        logger.info(f"Updated indicators data for {interval_name}.")
+            logger.info(f"Write indicators data for {interval_name}.")
 
 
 
@@ -418,7 +426,11 @@ async def seed():
                 coin_df = df.filter(pl.col("coin") == coin).select([
                     "coin", "timestamp", "open", "high", "low", "close", "volume"
                 ])
-                df_indicators = calculate_ta_indicators(coin_df, return_last_one=False)
+                try:
+                    df_indicators = calculate_ta_indicators(coin_df, return_last_one=False)
+                except Exception as e:
+                    logger.error(f"Error calculating indicators for {coin}: {e}")
+                    continue
                 if seed_indicators_df.is_empty():
                     seed_indicators_df = df_indicators
                 else:
