@@ -44,9 +44,16 @@ class CoinsRepository(DeltaRepository):
 
     def get_last_records(self, filters: Expression = None, number_of_points: int = 50, columns: list[str] = None, last_n: bool = False) -> pl.DataFrame:
         delta = self.interval_to_delta[self.interval]
+
+        now = datetime.now(UTC)
+        if now.minute >= 30:
+            end_time = now.replace(minute=30, second=0, microsecond=0)
+        else:
+            end_time = now.replace(minute=0, second=0, microsecond=0)
+
         return self.get_records_in_time_range(
-            datetime.now(UTC) - delta * (number_of_points + 1), 
-            datetime.now(UTC), 
+            end_time - delta * number_of_points, 
+            end_time, 
             filters=filters, 
             number_of_points=number_of_points if not last_n else None, 
             columns=columns

@@ -19,6 +19,8 @@ else:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+interval_names = ["raw", "1h", "4h", "1d", "1w"]
+
 COINS = [
     "BTC",
     "ETH",
@@ -233,39 +235,28 @@ async def update_ohlcv_data():
     raw_repository = OhlcvRepository(table_name="ohlcv_raw")
     df = pl.from_records(raw_data)
 
-    raw_repository.write(df)
+    raw_repository.update(df, predicate="s.timestamp == t.timestamp")
 
-    intervals = [
-        ("1h", datetime.timedelta(hours=1)),
-        ("4h", datetime.timedelta(hours=4)),
-        ("1d", datetime.timedelta(days=1)),
-        ("1w", datetime.timedelta(weeks=1)),
-    ]
-    for interval_name, interval_length in intervals:
+    for interval_name in interval_names[1:]:
         interval_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
         await update_interval_data(
             interval_repository,
             interval_name,
-            interval_length,
             df,
             current_time,
         )
 
 
 async def update_interval_data(
-    repository, interval_name, interval_length, new_data_df, current_time
+    repository: OhlcvRepository, 
+    interval_name: str, 
+    new_data_df: pl.DataFrame, 
+    current_time: datetime.datetime
 ):
     logger.info(f"Updating interval data for {interval_name}.")
-    interval_start_time = current_time - (
-        datetime.timedelta(seconds=interval_length.total_seconds() - 1)
-    )
-
-    filters = (
-        pc.field("timestamp") >= pc.scalar(int(interval_start_time.timestamp() * 1000))
-    ) & (pc.field("coin").isin(COINS))
-
     try:
-        existing_df = repository.read(filters=filters)
+        existing_df = repository.get_last_records(number_of_points=1, last_n=True)
+        logger.info(f"Existing records for {interval_name}: {existing_df.shape[0]}")
     except Exception as e:
         logger.error(f"Error reading interval data for {interval_name}: {e}")
         existing_df = pl.DataFrame()
@@ -274,18 +265,17 @@ async def update_interval_data(
         logger.info(f"Updating existing interval record for {interval_name}.")
         updated_df = update_interval_record(existing_df, new_data_df)
 
-        repository.update(updated_df, predicate="s.timestamp == t.timestamp")
+        repository.update(updated_df, predicate="s.timestamp == t.timestamp AND s.coin == t.coin")
     else:
         logger.info(f"Creating new interval record for {interval_name}.")
         new_interval_df = create_new_interval_record(
             current_time, interval_name, new_data_df
         )
-        repository.write(new_interval_df)
+        repository.update(new_interval_df, predicate="s.timestamp == t.timestamp AND s.coin == t.coin")
 
 
 def update_interval_record(existing_df, new_data_df):
-    new_data_pl = new_data_df
-    updated_df = existing_df.join(new_data_pl, on=["coin"], how="left", suffix="_new")
+    updated_df = existing_df.join(new_data_df, on=["coin"], how="left", suffix="_new")
     updated_df = updated_df.with_columns(
         [
             pl.when(pl.col("high_new") > pl.col("high"))
@@ -316,7 +306,9 @@ def update_interval_record(existing_df, new_data_df):
 
 
 def create_new_interval_record(
-    interval_start_time, interval_name, new_data_df: pl.DataFrame
+    interval_start_time: datetime.datetime, 
+    interval_name: str, 
+    new_data_df: pl.DataFrame
 ):
     df = new_data_df
 
@@ -345,8 +337,6 @@ def create_new_interval_record(
 
 
 async def update_indicators_data():
-    interval_names = ["raw", "1h", "4h", "1d", "1w"]
-
     for interval_name in interval_names:
         logger.info(f"Calculating indicators for {interval_name}.")
         ohlcv_repository = OhlcvRepository(table_name=f"ohlcv_{interval_name}")
@@ -380,7 +370,7 @@ async def update_indicators_data():
                 update_indicators_df = pl.concat([update_indicators_df, last_coin_records_indicators_df], how="vertical_relaxed")
 
         if not update_indicators_df.is_empty():
-            indicators_repository.write(update_indicators_df)
+            indicators_repository.update(update_indicators_df, predicate="s.timestamp == t.timestamp AND s.coin == t.coin")
             logger.info(f"Write indicators data for {interval_name}.")
 
 
@@ -388,15 +378,15 @@ async def update_indicators_data():
 async def seed():
     logger.info("Start Seeding Prices and Indicators data.")
     interval_to_days = {
-        "30m": 5,
-        "1h": 8,
-        "4h": 34,
+        "30m": 3,
+        "1h": 5,
+        "4h": 22,
         "1d": 80,
         "1w": 400,
     }
 
     data_provider = DataProvider()
-    for interval_name in ["raw", "1h", "4h", "1d", "1w"]:
+    for interval_name in interval_names:
         start_time = datetime.datetime.now()
         logger.info(f"**************************************************")
         logger.info(f"Seeding ohlcv data with indicators for {interval_name}.")

@@ -102,7 +102,7 @@ class DeltaRepository(BaseModel):
 
     def _initialize_table(self) -> None:
         logger.info(
-            f"Initializing table {self.table_name} at {self.s3_path} with schema {self.table_schema} and partition columns {self.partition_columns}"
+            f"Initializing table {self.table_name} at {self.s3_path}."
         )
         try:
             DeltaTable.create(
