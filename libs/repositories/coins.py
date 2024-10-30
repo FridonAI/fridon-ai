@@ -38,16 +38,16 @@ class CoinsRepository(DeltaRepository):
         return self.get_records_in_time_range((pc.field("coin") == coin) & filters, start, end, columns)
     
 
-    def get_the_latest_records(self, filters: Expression, columns: list[str] = None) -> pl.DataFrame:
+    def get_the_latest_records(self, filters: Expression = None, columns: list[str] = None) -> pl.DataFrame:
         df = self.get_last_records(filters, number_of_points=1, columns=columns)
         return df.sort("timestamp").group_by("coin").agg(pl.all().last())
 
-    def get_last_records(self, filters: Expression, number_of_points: int = 50, columns: list[str] = None) -> pl.DataFrame:
+    def get_last_records(self, filters: Expression = None, number_of_points: int = 50, columns: list[str] = None, last_n: bool = False) -> pl.DataFrame:
         delta = self.interval_to_delta[self.interval]
         return self.get_records_in_time_range(
-            filters, 
             datetime.now(UTC) - delta * (number_of_points + 1), 
             datetime.now(UTC), 
-            number_of_points=number_of_points, 
+            filters=filters, 
+            number_of_points=number_of_points if not last_n else None, 
             columns=columns
         )
