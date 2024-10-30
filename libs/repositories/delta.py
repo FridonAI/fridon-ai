@@ -149,17 +149,20 @@ class DeltaRepository(BaseModel):
 
     def get_records_in_time_range(
             self,
-            filters,
             start: datetime,
             end: datetime,
+            filters: Expression | None = None,
             number_of_points: int = 50,
             order_by: str = "timestamp",
             columns: list[str] = None
         ) -> pl.DataFrame:
+
+        full_filters = (pc.field("timestamp") >= int((start).timestamp() * 1000)) & (pc.field("timestamp") <= int((end).timestamp() * 1000))
+        if filters is not None:
+            full_filters = filters & full_filters
+
         df = self.read(
-            filters=filters
-            & (pc.field("timestamp") >= int((start).timestamp() * 1000))
-            & (pc.field("timestamp") <= int((end).timestamp() * 1000)),
+            filters=full_filters,
             columns=columns,
             last_n=number_of_points,
             order_by=order_by)

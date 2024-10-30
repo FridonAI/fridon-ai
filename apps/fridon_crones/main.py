@@ -453,7 +453,7 @@ async def seed():
 
 
 async def process(loop):
-    # await seed()
+    await seed()
     # await data_ingestion_job()
     aiocron.crontab("0,30 * * * *", data_ingestion_job, loop=loop)
 
