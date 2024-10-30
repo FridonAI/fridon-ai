@@ -61,9 +61,13 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
         else:
             url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&endTime={end_time}&limit={limit}"
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                data = await resp.json()
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as resp:
+                    data = await resp.json()
+        except Exception as e:
+            print(f"Error fetching {symbol} {interval} data from Binance: {e}")
+            return []
 
         if days is None:
             print(f"Fetched {len(data)} {symbol} {interval} candles from Binance")
@@ -130,4 +134,4 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
         return await self._generate_multiple_coins_price_data(coins, interval, output_format=output_format)
 
     async def _generate_historical_coins_price_data_binance(self, coins, interval='30m', days=45, output_format='dict'):
-        return await self._generate_multiple_coins_price_data(coins, interval, days=days, batch_size=8, output_format=output_format)
+        return await self._generate_multiple_coins_price_data(coins, interval, days=days, batch_size=5, output_format=output_format)
