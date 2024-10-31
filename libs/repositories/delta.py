@@ -62,16 +62,14 @@ class DeltaRepository(BaseModel):
             arrow_table = dt.to_pyarrow_table(
                 partitions=partitions, columns=columns, filters=filters
             )
-            result = pl.from_arrow(arrow_table)
-
+            result = pl.from_arrow(arrow_table).sort(order_by)
             if last_n is not None:
                 if order_by is None:
                     logger.warning(
                         "order_by is not specified. Using descending order by timestamp."
                     )
                     order_by = self.table_schema.names[0]
-
-                result = result.sort(order_by).tail(last_n)
+                result = result.tail(last_n)
             logger.info(f"Table {self.table_name} read successfully.")
         except Exception as e:
             logger.error(f"Error reading table {self.table_name}: {e}")
@@ -152,7 +150,7 @@ class DeltaRepository(BaseModel):
             start: datetime,
             end: datetime,
             filters: Expression | None = None,
-            number_of_points: int = 50,
+            number_of_points: int | None = 50,
             order_by: str = "timestamp",
             columns: list[str] = None
         ) -> pl.DataFrame:
@@ -166,4 +164,5 @@ class DeltaRepository(BaseModel):
             columns=columns,
             last_n=number_of_points,
             order_by=order_by)
+
         return df

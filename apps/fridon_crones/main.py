@@ -19,7 +19,7 @@ else:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-interval_names = ["raw", "1h", "4h", "1d", "1w"]
+interval_names = ["raw", "1h", "4h", "1d"] #, "1w"]
 
 COINS = [
     "BTC",
@@ -84,7 +84,7 @@ COINS = [
     "PORTO",
     "DIA",
     "ARKM",
-    "MATIC",
+    # "MATIC",
     "PENDLE",
     "ICP",
     "ALT",
@@ -140,7 +140,7 @@ COINS = [
     "ROSE",
     "GRT",
     "TRB",
-    "VGX",
+    # "VGX",
     "WOO",
     "IMX",
     "SSV",
@@ -356,6 +356,7 @@ async def update_indicators_data():
             ],
             last_n=True,                 
         )
+        logger.info(f"Fetched Last coins records for {interval_name}: {last_coins_records_df.shape[0]}, total coins: {len(COINS)}")
         for coin in COINS:
             last_coin_records_df = last_coins_records_df.filter(pl.col("coin") == coin)
             try:
