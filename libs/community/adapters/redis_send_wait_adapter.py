@@ -26,7 +26,7 @@ class BlockchainRedisSendWaitAdapter(BaseAdapter):
                     params["wallet_id"],
                     None,
                     params["tx"],
-                    params["queue_name"],
+                    queue_name,
                     {}
                 )
             )
