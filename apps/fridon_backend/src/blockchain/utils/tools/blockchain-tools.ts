@@ -100,7 +100,7 @@ export class BlockchainTools {
       const total = Object.keys(coinPairs).length;
       const coinPrices: CoinMarket[] = [];
 
-      for (let i = 0; i < Math.ceil(total / perPage); i++) {
+      for (let i = 0; i < 2; i++) {
         console.log('fetching page', i + 1, 'of', Math.ceil(total / perPage));
         try {
           const coinPricesResponse = await client.coinMarket({
