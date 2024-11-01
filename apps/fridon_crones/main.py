@@ -21,7 +21,7 @@ else:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-interval_names = ["raw", "1h", "1d"] #, "1w"]
+interval_names = ["raw", "1h", "4h", "1d"] #, "1w"]
 
 COINS = [
     "BTC",
