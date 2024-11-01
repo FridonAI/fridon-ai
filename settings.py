@@ -35,6 +35,8 @@ class Settings(BaseSettings):
 
     ENV: Literal["test", "mock", "prod"] = "mock"
 
+    QUICKNODE_URL: Optional[str]
+
     class Config:
         env_file = "./apps/fridon_brain/.env"
         env_file_encoding = "utf-8"
