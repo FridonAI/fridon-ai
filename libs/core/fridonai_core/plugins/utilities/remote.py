@@ -8,7 +8,7 @@ from fridonai_core.plugins.utilities.base import BaseUtility
 
 
 class RemoteUtility(BaseUtility):
-    request_url: str = Field(default="http://localhost:3000/data/executor", exclude=True)
+    request_url: str = Field(default="http://fridon_backend:3000/data/executor", exclude=True)
 
     async def _get_remote_response(self, request):
         async with aiohttp.ClientSession() as session:

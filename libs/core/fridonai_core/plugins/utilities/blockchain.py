@@ -9,7 +9,7 @@ from fridonai_core.plugins.utilities.base import BaseUtility
 
 class BlockchainUtility(BaseUtility):
     request_url: str = Field(
-        default="http://localhost:3000/data/executor",
+        default="http://fridon_backend:3000/data/executor",
         exclude=True,
     )
 
