@@ -27,6 +27,7 @@
     "prisma:seed": "npx prisma db seed"
   },
   "dependencies": {
+    "coingecko-api-v3": "^0.0.29",
     "@bonfida/spl-name-service": "^2.1.1",
     "@coral-xyz/anchor": "^0.29.0",
     "@faker-js/faker": "^8.4.1",

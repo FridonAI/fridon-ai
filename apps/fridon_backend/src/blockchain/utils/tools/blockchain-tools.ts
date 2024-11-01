@@ -15,6 +15,10 @@ import { Connection } from '@solana/web3.js';
 import { PublicKey } from '@metaplex-foundation/js';
 import { WSOL_MINT_ADDRESS } from '../constants';
 import { TokenAmount } from './token-amount';
+import { CoinGeckoClient, type CoinMarket } from 'coingecko-api-v3';
+
+export const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 const STRICT_TOKEN_LIST_URL = 'https://token.jup.ag/strict';
 type BirdeyeTokensPrice = {
@@ -82,7 +86,85 @@ export class BlockchainTools {
     return result;
   }
 
-  async fetchCoinPrices() {
+  async fetchCoinPricesCoinGecko(): Promise<BirdeyePrice[]> {
+    try {
+      // Define CoinGecko client
+      const client = new CoinGeckoClient({
+        timeout: 100_000,
+        autoRetry: true,
+      });
+      // Get all the coin ids
+      const coinPairs = await this.collectCoinIds(client);
+
+      const perPage = 250;
+      const total = Object.keys(coinPairs).length;
+      const coinPrices: CoinMarket[] = [];
+
+      for (let i = 0; i < Math.ceil(total / perPage); i++) {
+        console.log('fetching page', i + 1, 'of', Math.ceil(total / perPage));
+        try {
+          const coinPricesResponse = await client.coinMarket({
+            vs_currency: 'usd',
+            per_page: perPage,
+            page: i + 1,
+            // @ts-ignore
+            category: 'solana-ecosystem',
+            order: 'volume_desc',
+          });
+
+          coinPrices.push(...coinPricesResponse);
+
+          await sleep(1000);
+        } catch (error) {
+          console.error('error fetching prices', error);
+        }
+      }
+
+      console.log('fetch complete.', coinPrices.length, 'coins fetched');
+
+      coinPrices.map((coin: any) => {
+        if (!coinPairs[coin.id]) {
+          console.log('no address for', coin.id, coin.symbol, coin.name);
+        } else {
+          coin.address = coinPairs[coin.id];
+        }
+      });
+
+      return coinPrices
+        .map((coin: any) => {
+          return {
+            address: coin.address,
+            price: coin.current_price
+              ? parseFloat(coin.current_price.toFixed(10))
+              : undefined,
+          };
+        })
+        .filter((item: any) => item?.address) as BirdeyePrice[];
+    } catch (error) {
+      console.error('Error fetching coin prices', error);
+      // throw new HttpException('Error fetching coin prices', 500);
+      return [];
+    }
+  }
+
+  private async collectCoinIds(client: CoinGeckoClient) {
+    const coins = await client.coinList({ include_platform: true });
+    const solanaCoins = coins.filter((coin: any) => coin.platforms?.['solana']);
+
+    const coinPairs: Record<string, string> = {
+      solana: '11111111111111111111111111111111',
+    };
+
+    solanaCoins.map((coin: any) => {
+      if (coin.platforms['solana']) {
+        coinPairs[coin.id] = coin.platforms['solana'];
+      }
+    });
+
+    return coinPairs;
+  }
+
+  async fetchCoinPrices(): Promise<BirdeyePrice[]> {
     try {
       const coinIds = await this.getMintAddresses();
       const requestUrl =
@@ -136,7 +218,7 @@ export class BlockchainTools {
       return cachedCoinPrices;
     }
 
-    const tokenPrices = await this.fetchCoinPrices();
+    const tokenPrices = await this.fetchCoinPricesCoinGecko();
 
     await this.cacheManager.set('coinPrices', tokenPrices, 300 * 1000);
 

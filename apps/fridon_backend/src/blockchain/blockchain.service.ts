@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { getDestinationAddress, getTokenSupply } from './utils/connection';
 import { TokenProgramTransactionFactory } from './factories/token-program-transaction-factory';
@@ -25,6 +25,7 @@ import { TRANSFER_FEE } from './utils/constants';
 
 @Injectable()
 export class BlockchainService {
+  private readonly logger = new Logger(BlockchainService.name);
   constructor(
     private readonly connection: Connection,
     private readonly tools: BlockchainTools,
@@ -42,6 +43,7 @@ export class BlockchainService {
     toToken: string,
     amount: number,
   ) {
+    this.logger.log(this.connection.rpcEndpoint);
     if (amount <= 0) {
       throw new HttpException('Amount must be greater than 0', 403);
     }

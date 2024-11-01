@@ -17,9 +17,7 @@ export class CoinSimilarityEmbeddingsWorker extends WorkerHost {
       `Processing Tokens: [${tokenList}]`,
       `Embeddings[${job.id}]`,
     );
-    await this.coinSimilarityService.updateEmbeddingsBatch(
-      job.data.tokens,
-    );
+    await this.coinSimilarityService.updateEmbeddingsBatch(job.data.tokens);
 
     this.logger.debug(`Processed`, `Embeddings[${job.id}]`);
   }

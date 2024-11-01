@@ -13,7 +13,8 @@ import { Connection, ParsedInstruction } from '@solana/web3.js';
 import { getAssociatedTokenAddress } from 'spl';
 import { PublicKey } from '@metaplex-foundation/js';
 
-export const BONK_MINT_ADDRESS = 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263';
+export const PY_USD_MINT_ADDRESS =
+  '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo';
 @EventsHandler(TransactionConfirmedEvent)
 export class PurchaseTransactionConfirmedHandler {
   constructor(
@@ -87,12 +88,12 @@ export class PurchaseTransactionConfirmedHandler {
   ) {
     // Associated Token Account addresses of bonk
     const destinationTokenAccount = await getAssociatedTokenAddress(
-      new PublicKey(BONK_MINT_ADDRESS),
+      new PublicKey(PY_USD_MINT_ADDRESS),
       new PublicKey(destinationAddress),
     );
 
     const creatorTokenAccount = await getAssociatedTokenAddress(
-      new PublicKey(BONK_MINT_ADDRESS),
+      new PublicKey(PY_USD_MINT_ADDRESS),
       new PublicKey(creatorAddress),
     );
 

@@ -37,7 +37,7 @@ export class CoinSimilarityService {
       vector,
       symbol: tokens[index],
       address: tokens[index],
-      chain: "binance",
+      chain: 'binance',
       values: arr[index]!,
     }));
 
@@ -61,9 +61,7 @@ export class CoinSimilarityService {
   }
 
   async getCoinSimilarity(symbol: string, from: number, to: number, k: number) {
-    const tokenInfo = this.getTokens().find(
-      (token) => token === symbol,
-    );
+    const tokenInfo = this.getTokens().find((token) => token === symbol);
 
     if (!tokenInfo) {
       throw new BadRequestException(`Token[${symbol}] not found`);
@@ -71,7 +69,7 @@ export class CoinSimilarityService {
 
     const data = await this.binanceAdapter.getHistoryPrice(
       tokenInfo,
-      "4h",
+      '4h',
       from,
       to,
       undefined,
@@ -98,7 +96,7 @@ export class CoinSimilarityService {
       {
         symbol: symbol,
         address: tokenInfo,
-        chain: "binance",
+        chain: 'binance',
         score: 1,
       },
       ...res,
@@ -137,15 +135,13 @@ export class CoinSimilarityService {
     }
   }
 
-  private async getPriceData(
-    token: string,
-  ): Promise<number[]> {
+  private async getPriceData(token: string): Promise<number[]> {
     const data = await this.binanceAdapter.getHistoryPrice(
       token,
-      "4h",
+      '4h',
       undefined,
       undefined,
-      512
+      512,
     );
 
     while (data.length < 512) {

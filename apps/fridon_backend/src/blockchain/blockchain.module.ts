@@ -26,6 +26,9 @@ import { CoinSimilarityEmbeddingsWorker } from './services/coin-similarity.queue
 import { GetBlockHash } from 'src/data-providers/actions/get-blockhash';
 import { ReplicateAdapter } from './external/replicate.adapter';
 import { BinanceAdapter } from './external/binance.adapter';
+import { UpdateTokenList } from './cron/update-token-list.cron';
+import { UpdateKaminoReserve } from './cron/update-kamino-reserve.cron';
+import { UpdateCoinPrices } from './cron/update-coin-prices.cron';
 
 @Module({
   imports: [
@@ -59,6 +62,9 @@ import { BinanceAdapter } from './external/binance.adapter';
     GetBlockHash,
     BirdEyeAdapter,
     CoinSimilarityEmbeddingsWorker,
+    UpdateTokenList,
+    UpdateKaminoReserve,
+    UpdateCoinPrices,
   ],
   exports: [
     TransactionFactory,

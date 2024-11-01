@@ -7,9 +7,10 @@ import {
 import base58 from 'bs58';
 import { getAssociatedTokenAddress } from 'spl';
 
+console.log("process.env['RPC_URL']", process.env['RPC_URL']);
 export const connection = new Connection(
   process.env['RPC_URL'] ??
-    'https://defiland-defiland-634e.mainnet.rpcpool.com/d396f84d-a693-47f8-b3c0-3d7f72bc83e3',
+    '',
 );
 
 export async function findAssociatedTokenAddress(
