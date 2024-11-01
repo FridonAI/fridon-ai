@@ -12,6 +12,8 @@ from libs.repositories import IndicatorsRepository, OhlcvRepository
 
 if os.environ.get("DATA_PROVIDER") == "binance":
     from libs.data_providers import BinanceCoinPriceDataProvider as DataProvider
+elif os.environ.get("DATA_PROVIDER") == "coinpaprika":
+    from libs.data_providers import CoinPaprikaCoinPriceDataProvider as DataProvider
 else:
     from libs.data_providers import DummyCoinPriceDataProvider as DataProvider
 
@@ -19,7 +21,7 @@ else:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-interval_names = ["raw", "1h", "4h", "1d"] #, "1w"]
+interval_names = ["raw", "1h", "1d"] #, "1w"]
 
 COINS = [
     "BTC",
