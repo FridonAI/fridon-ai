@@ -17,3 +17,5 @@ class CoinObserverPlugin(BasePlugin):
     tools: list[BaseTool] = TOOLS
     image_url: str = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/coin-observer-avatar.png"
     json_format: bool = False
+    price: float = 0.1
+    

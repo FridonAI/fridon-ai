@@ -13,3 +13,4 @@ class CoinTechnicalChartSearcherPlugin(BasePlugin):
     tools: list[BaseTool] = TOOLS
     image_url: str = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/chart-similarity-avatar.png"
     json_format: bool = True
+    price: float = 0.5
