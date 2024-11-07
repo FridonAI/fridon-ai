@@ -1,10 +1,11 @@
 from libs.community.plugins.fridon.utilities import FridonRagUtility
 from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
+from pydantic import Field
 
 
 class FridonResponderInput(BaseToolInput):
-    question: str
+    question: str = Field(..., description="The question about FridonAI")
 
 
 FridonResponderTool = BaseTool(
