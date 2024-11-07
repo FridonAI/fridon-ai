@@ -13,8 +13,8 @@ class CoinObserverUtility(BaseUtility):
     async def arun(
         self,
         coin_name: str,
-        interval: Literal["1h", "4h", "1d", "1w"],
         filter: str,
+        interval: Literal["1h", "4h", "1d", "1w"] = "1h",
         recurring: bool = False,
         *args,
         wallet_id: str,
