@@ -3,14 +3,14 @@ from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
 
 
-class FridonRagInput(BaseToolInput):
+class FridonResponderInput(BaseToolInput):
     question: str
 
 
-FridonRagTool = BaseTool(
-    name="ask-anything-about-fridon",
-    description="Always use this tool to answer questions about you, don't answer yourself, always call this tool.",
-    args_schema=FridonRagInput,
+FridonResponderTool = BaseTool(
+    name="fridon-responder",
+    description="Always use this tool to answer questions before CompleteTool.",
+    args_schema=FridonResponderInput,
     utility=FridonRagUtility(),
     examples=[
         {
@@ -33,4 +33,4 @@ FridonRagTool = BaseTool(
 )
 
 
-TOOLS = [FridonRagTool]
+TOOLS = [FridonResponderTool]
