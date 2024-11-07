@@ -8,8 +8,8 @@ class FridonRagInput(BaseToolInput):
 
 
 FridonRagTool = BaseTool(
-    name="fridon-rag",
-    description="Use this tool to answer questions about FridonAI",
+    name="Ask anything about FridonAI",
+    description="Always use this tool to answer questions about you, don't answer yourself, always call this tool.",
     args_schema=FridonRagInput,
     utility=FridonRagUtility(),
     examples=[
@@ -23,6 +23,10 @@ FridonRagTool = BaseTool(
         },
         {
             "request": "What do you do?",
+            "response": "",
+        },
+        {
+            "request": "What is FridonAI's features?",
             "response": "",
         },
     ],
