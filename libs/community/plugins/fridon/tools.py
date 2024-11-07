@@ -8,7 +8,7 @@ class FridonRagInput(BaseToolInput):
 
 
 FridonRagTool = BaseTool(
-    name="Ask anything about FridonAI",
+    name="ask-anything-about-fridon",
     description="Always use this tool to answer questions about you, don't answer yourself, always call this tool.",
     args_schema=FridonRagInput,
     utility=FridonRagUtility(),
