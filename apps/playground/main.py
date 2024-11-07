@@ -4,7 +4,7 @@ from apps.fridon_brain import _preload_modules
 
 async def main():
     _preload_modules()
-    plugin_names = ["wallet", "fridon", "coin-price-chart-similarity-search", "coin-technical-analyzer"]
+    plugin_names = ["wallet", "fridon", "coin-technical-chart-searcher", "coin-technical-analyzer"]
     registry = ensure_plugin_registry()
 
     plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]

@@ -21,7 +21,7 @@ async def task_runner(
     pub: redis.Publisher,
 ):
     # plugins = [
-    #     "coin-price-chart-similarity-search",
+    #     "coin-technical-chart-searcher",
     #     "coin-technical-analyzer",
     #     "coin-observer",
     #     "wallet",
