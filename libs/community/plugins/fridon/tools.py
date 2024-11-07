@@ -21,6 +21,10 @@ FridonRagTool = BaseTool(
             "request": "What plugins do you have?",
             "response": "",
         },
+        {
+            "request": "What do you do?",
+            "response": "",
+        },
     ],
 )
 

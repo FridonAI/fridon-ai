@@ -1,62 +1,208 @@
 # FridonAI
 
-## Description
+FridonAI is an open-source project dedicated to enhancing the cryptocurrency experience through AI-powered tools and services. By combining intelligent analytics, powerful search capabilities, and real-time notifications within a cohesive chat interface, FridonAI simplifies complex blockchain interactions and provides insightful analytics using natural language commands.
 
-FridonAI is an artificial intelligence-driven chatbot platform specifically designed for the crypto world, particularly on Solana. Similar to how OpenAI's ChatGPT can converse on a variety of topics, FridonAI focuses on crypto, featuring targeted plugins for specific tasks such as swapping bitcoin to solana, analyzing solana charts, and providing coin recommendations. FridonAI serves as a comprehensive crypto assistant with domain-specific plugins.
+## Table of Contents
 
-## User Stories
+- [Introduction](#introduction)
+- [Products](#products)
+  - [FridonAnalytics](#fridonanalytics)
+  - [FridonSearch](#fridonsearch)
+  - [FridonNotifier](#fridonnotifier)
+  - [FridonBlockchain](#fridonblockchain)
+  - [FridonChat](#fridonchat)
+- [Open Source Structure](#open-source-structure)
+  - [Apps](#apps)
+  - [Libs](#libs)
+- [Developer Opportunities](#developer-opportunities)
+- [Platform Access](#platform-access)
+- [User Experience](#user-experience)
+- [Problems FridonAI Solves](#problems-fridonai-solves)
+- [One-Liner Description](#one-liner-description)
+- [Two-Liner Description](#two-liner-description)
+- [Three-Liner Description](#three-liner-description)
+- [Paragraph Description](#paragraph-description)
+- [Conclusion](#conclusion)
 
-- **Navigating the Plugins Marketplace**: Users can browse existing plugins, read descriptions and examples, see popularity and usage statistics, and select the desired plugins. For instance, users looking for coin price chart analysis can choose a relevant plugin, or if they want to swap coins easily via chat, they can select the Jupiter plugin. After subscribing to the chosen plugins, Fridon's capabilities are enhanced accordingly.
-- **Enhanced Capabilities**: After acquiring plugins like "PriceChartAnalyzer" and "JupiterExecutor", users can command Fridon to analyze Bonk's last 30 days' price chart or swap 100 USDC to Bonk.
-- **Creating Custom Plugins**: Users can create their own plugins by submitting a pull request to the open-source project, implementing only the business logic. FridonAI handles everything else, and the AI workflow will automatically determine if a query should be directed to the new plugin. Users set their own plugin prices, descriptions, and logos. FridonAI charges a 1% fee from each subscription.
-- **Scoring System**: Every interaction with Fridon is scored. Repetitive questions receive lower scores, while sophisticated questions and effective use of plugins earn higher scores. These scores contribute to a leaderboard, with monthly opportunities for prizes from generated fees. Plugin creators also earn static points.
+## Introduction
 
-## Plugins
+FridonAI leverages artificial intelligence to enhance the crypto experience, offering a suite of tools and services for cryptocurrency analysis, blockchain operations, and more. The platform's mission is to simplify complex blockchain interactions and provide insightful analytics through an intuitive chat interface.
 
-### Types of Plugins
+## Products
 
-- **Subscription-Based Plugins**: Accessible to users who pay for a subscription. Users can choose various subscription periods and renew them as needed.
-- **NFT-Based Plugins**: Limited availability plugins accessed through NFTs. Users can mint new Plugin NFTs or use existing NFT collections to access functionalities.
+### FridonAnalytics
 
-### Existing Plugins
+Offers a suite of tools to help users analyze cryptocurrencies:
 
-- **General Solana-Bonk Educational Plugin**: Learn about the Solana ecosystem with examples from BONK projects. Ask about staking, swapping, and more with specific project examples.
-- **Blockchain Operations**: Perform operations like transferring tokens, getting token balances, supplying, borrowing, withdrawing, repaying, and getting balances.
-- **Coin Price Technical Analysis**: Calculate indicators and generate detailed analyses for coin price charts.
-- **Coin Searcher Plugins**: Find coins similar to others based on price charts or technical indicators. E.g., "Give me coins similar to SOL in December 2023."
-- **Technical Analysis Notifier**: Receive notifications about promising coins based on technical analysis.
+- **Coin Price Analytics**: Analyze the performance of a coin's price chart using various indicators and visualize it.
 
-### Upcoming Plugins
+  - *Example Command*: "Analyze SOL 1h price chart for me"
 
-- **Coin Sniper**: Identify promising freshly launched tokens using machine learning. Users receive detailed explanations of why certain coins are considered promising.
-- **Personalized Signal Notifier**: Set custom alerts for specific coin conditions and receive notifications as per user-defined criteria.
-- **Blockchain Protocols Recommender**: Get personalized recommendations based on wallet contents, such as staking or moving assets for higher APY.
-- **Trader**: Analyze coins as famous traders do, with automated trading strategies from multiple perspectives like Emperor Trader and Fridon Trader.
+- **TextToDiagram**: Generate visualizations for specific coins based on text input.
 
-## Integration and Community
+  - *Example Command*: "Give me BTC 1h price chart with MACD and support resistances."
 
-### Fridon Assistant Integration / Chat Providing
+- **TraderCloner**: Emulate the analysis methods of top traders by integrating their open-source strategies.
 
-Integrate Fridon on your platform using an API_KEY to leverage subscribed plugins. This allows seamless usage of Fridon's capabilities across various platforms.
+  - *Example Command*: "Give me SOLANA analytics as Emperor would do"
 
-### Community
+- **Coin Loyalty**: Use an AI graph (GNN) system to predict whether a new coin is promising or at risk of being rug-pulled.
 
-- **Assistant Users**: Individuals who subscribe to and use desired plugins.
-- **Plugin Contributors**: Developers who create and contribute plugins, enhancing Fridon's capabilities with blockchain operations, AI analytics, social network integrations, and more.
+- **Coin Recommendation System**: Recommend coins purchased by wallets that exhibit similar behavior to yours.
 
-## Advantages
+### FridonSearch
 
-- **Open-Source**: Anyone can enhance Fridon's capabilities by implementing plugin business logic without understanding the entire infrastructure.
-- **Income Opportunities**: Create innovative plugins to earn money, with generated fees distributed to loyal users based on earned scores.
-- **NFT Utilization**: Plugins based on NFTs provide new utilities, increasing their value and tradability.
-- **Collaboration with NFT Creators**: Partner with NFT creators to develop plugins accessible to their NFT holders.
-- **AI Capabilities**: Fridon uses AI to generate responses and decide which plugins to use, creating complex AI plugins for various tasks like coin price analysis, market recommendations, and automated trading.
-- **Convenient Environment**: A unified platform to handle all crypto-related activities on Solana with a simple UI/UX.
+Enables advanced AI-driven coin searches:
 
-## Future Enhancements
+- **Technical Coin Searcher**: Find coins using textual descriptions, technical indicators, patterns, and setups.
 
-- **NFT-Based Plugins**: Link plugins to existing NFTs or create new NFT collections for plugins.
-- **Advanced AI Plugins**: Develop plugins like Coin Sniper, Personalized Signal Notifier, and Blockchain Protocols Recommender.
-- **Improved Query Handling**: Enhance the AI's ability to handle complex and multiple queries simultaneously.
-- **UI/UX Improvements**: Continuously refine the user interface and experience.
+  - *Example Command*: "Give me coins with bullish divergence with market cap > $2B and currently crossed 1h resistance."
 
+- **Coin Chart Similarity Search**: Discover coins with price charts similar to a given example using a pre-trained time series model.
+
+  - *Example Command*: "Give me coins with the same chart as Solana had 3 months ago."
+
+- **Past Chart Similar Coins Search**: Find coins in the past that look the same as the current coin.
+
+  - *Example Command*: "Give me coins which were like SOL in the past"
+
+- **TraderSearcher**: Identify coins that would be considered promising by specific traders.
+
+  - *Example Command*: "Find coins that look promising to Emperor."
+
+### FridonNotifier
+
+Allows users to create custom notifications:
+
+- **Custom Coin Indicator Notifier**: Set up notifications based on specific indicators and textual descriptions.
+
+  - *Example Command*: "Notify me when Solana breaks $145 resistance and MACD reaches 140."
+
+- **Trader Notifier**: Get notified when a specific trader would consider a coin bullish and recommend buying.
+
+### FridonBlockchain
+
+Enables blockchain operations through simple text commands:
+
+- **Educational Queries**:
+
+  - *Example Command*: "What's swap and what platforms can I use for it?"
+
+  - *Example Command*: "Can you suggest staking platforms where I can stake my Solana?"
+
+- **Account Queries**:
+
+  - *Example Command*: "What's my BONK balance?"
+
+- **Transaction Execution**:
+
+  - *Example Command*: "Swap 10 USDC to SOL."
+
+### FridonChat
+
+Unifies all products via a chat interface. Users interact with the Fridon assistant, which automatically decides which products and functionalities to use, treating each as a plugin.
+
+- **Open-Source Chat Pipeline**: Built and open-sourced the entire chat pipeline, welcoming community contributions. Contributors can create new blockchain plugins, support different DeFi protocols, add staking or borrowing functionalities, and more, following our guidelines.
+
+- **FridonAI-Core Package**: The chat's core package, `fridonai-core`, is available for everyone to install (`pip install fridonai-core`). It allows developers to write their own plugins and integrate them into their chat applications, simplifying the implementation of blockchain-based analytics and notification plugins.
+
+- **FridonAI-Community Package**: Implemented plugins, tools, and utilities are also available for developers by installing (`pip install fridonai-community`).
+
+## Open Source Structure
+
+FridonAI is entirely open-source, and the full codebase is available on GitHub. The project is organized into two main parts: Apps and Libs.
+
+### Apps
+
+The `apps` directory contains application services that allow users to deploy the entire application with its backend, data flow, and more.
+
+- **fridon_backend**: A Nest.js backend application that handles wallet connections, blockchain transaction generation, sending and signing transactions, subscription to specific plugins, score calculations, leaderboard updates, chat message storage, and more.
+
+- **fridon_brain**: A Python application responsible for processing user messages and generating responses using the Libs package. The `fridon_backend` uses this application to generate replies to user messages.
+
+- **fridon_crone**: Used for cron jobs, mainly for data fetching, aggregation, calculations, and so on (e.g., fetching coin prices and additional data hourly).
+
+### Libs
+
+The `libs` directory is the core of the project, consisting of:
+
+- **Core**: A foundational package for building AI-driven chatbots. It provides a generic workflow that diversifies the chatbot's capabilities, automatically deciding which functionalities to invoke based on user messages, determining response formats, and updating messaging states. Contributors can easily create their own plugins by extending the base functionalities offered by the Core package.
+
+  - The Core package is independently published and can be installed via pip (`pip install fridonai-core`). For more information, visit the GitHub repository.
+
+- **Community**: A space where actual plugins are implemented by both our team and open-source contributors. This will also be published as an independent package (`pip install fridonai-community`).
+
+- **Additional Packages**: Other packages in `libs` handle data management, storing and querying coin prices, indicators, fetching data from providers like Birdeye and Binance, and a scoring system that calculates personalized scores based on user interactions.
+
+## Developer Opportunities
+
+FridonAI offers developers the chance to:
+
+- **Contribute to Our Open-Source Project**: Create plugins that other users can utilize on our platform (fridon.ai). Developers can choose to offer their plugins for free or charge subscribers a monthly fee.
+
+- **Integrate Our Functionality into Your Projects**: Install our packages (`fridonai-core` and `fridonai-community`) in your own projects and implement custom plugins or use existing ones without worrying about the complexities of AI and large language model (LLM) integration.
+
+## Platform Access
+
+Our platform is accessible at [https://www.fridon.ai/](https://www.fridon.ai/), where users can explore and use the plugins they need.
+
+## User Experience
+
+Here's how users interact with the FridonAI platform:
+
+1. **Plugins Marketplace**: Users can browse the marketplace to view existing plugins, read descriptions, see examples, check popularity, and view usage statistics.
+
+2. **Selecting Plugins**: Based on their needs, users can choose the required plugins. For example, to perform coin price chart analysis, users can select a relevant plugin; to swap coins easily via chat, they can select a Jupiter plugin. After choosing the plugins, users can subscribe for several months and pay accordingly.
+
+3. **Enhanced Capabilities**: Once users acquire plugins, their assistant Fridon's capabilities are expanded. For instance, after obtaining the "PriceChartAnalyzer" and "JupiterExecutor" plugins, Fridon can handle requests like:
+
+   - "Analyze BONK's last 30 days' price chart, please."
+   - "Fridon, swap 100 USDC to BONK."
+
+4. **Creating Custom Plugins**: Users can create their own plugins by submitting a pull request to our open-source project. By implementing the business logic, everything else is automatically managed, and our AI workflow will determine if user queries pertain to the new plugin. Users can set the price, name, description, type, and logo for their plugins.
+
+5. **Scoring System**: Each time a user interacts with Fridon, our AI system assigns a score based on the quality of the interaction. Repetitive questions yield lower scores, while sophisticated and diverse interactions earn higher scores. These scores contribute to both the user and the plugin creator. Scores are reflected on a leaderboard, and each month, top performers have the opportunity to receive prizes from generated fees. Leaderboard metrics include total scores, number of plugins created, number of plugin calls made, and how many times a user's plugins were utilized.
+
+## Problems FridonAI Solves
+
+- **Simplifies Cryptocurrency Analysis**: Analyzing cryptocurrency price charts often requires specialized knowledge and tools. FridonAI simplifies this process with intuitive features like Coin Price Analytics and TextToDiagram, allowing users to analyze and visualize coin performance using natural language commands.
+
+- **Advanced Coin Search**: Finding coins based on specific technical indicators or chart patterns has been cumbersome. With FridonSearch's Technical Coin Searcher, users can find coins through detailed textual descriptions. The Coin Chart Similarity Search discovers coins with similar historical or current chart patterns using pre-trained time series models.
+
+- **Real-Time Notifications**: Missing trading opportunities due to lack of real-time notifications is a common issue. FridonNotifier enables users to set up custom notifications for specific indicators and scenarios, ensuring they stay informed of important market changes.
+
+- **Simplified Blockchain Operations**: Executing blockchain operations often requires technical expertise, posing a barrier to many users. FridonBlockchain simplifies blockchain interactions through natural language commands, enabling users to perform operations like swapping tokens or checking balances effortlessly.
+
+- **Community Contribution**: Addresses the limited community contribution in crypto tools. By open-sourcing the chat pipeline and providing the FridonAI-Core and FridonAI-Community packages, FridonAI encourages community contributions and makes it easier for developers to create and integrate new plugins and functionalities.
+
+- **Educational Assistance in DeFi**: Helps users overcome barriers to learning and utilizing DeFi protocols. Through educational and practical assistance in FridonBlockchain and FridonChat, users are guided through DeFi operations like staking and swapping via simple text commands.
+
+### Ongoing Functionalities
+
+- **Coin Trust Score**: FridonAI plans to tackle the risk of investing in untrustworthy or scam coins. With Coin Trust Score, the platform will utilize AI and Graph Neural Networks to predict the trustworthiness of new coins, helping users make informed investment decisions.
+
+- **Automated Trading Strategies**: Introducing Trader Notifier and TraderSearcher, which will notify users when coins meet criteria that specific traders would find promising, allowing for automation of personalized trading strategies.
+
+## One-Liner Description
+
+FridonAI leverages AI to enhance the crypto experience, combining intelligent analytics, powerful search, and real-time notifications within a cohesive chat interface.
+
+## Two-Liner Description
+
+FridonAI leverages AI to enhance the crypto experience, combining intelligent analytics, powerful search, and real-time notifications within a cohesive chat interface. Gain insightful analytics and simplify complex blockchain interactions through intuitive, natural language commands.
+
+## Three-Liner Description
+
+FridonAI leverages AI to enhance the crypto experience, combining intelligent analytics, powerful search, and real-time notifications within a cohesive chat interface. Our platform offers insightful analytics and powerful search tools, simplifying complex blockchain interactions using natural language commands. Empowering users to analyze cryptocurrencies, execute blockchain operations, and stay informed effortlessly.
+
+## Paragraph Description
+
+FridonAI leverages AI to enhance the crypto experience, combining intelligent analytics, powerful search, and real-time notifications within a cohesive chat interface. Our open-source platform offers insightful cryptocurrency analytics and simplifies complex blockchain interactions through intuitive, natural language commands. With features like coin price analytics, advanced coin search, custom notifications, and simplified blockchain operations, FridonAI empowers users to make informed decisions effortlessly. By unifying these functionalities in a chat interface and promoting community contributions through open-source packages, we aim to revolutionize how users interact with the crypto world.
+
+## Conclusion
+
+FridonAI simplifies blockchain and crypto analysis through AI-powered tools, making it easy for users to interact via a chat interface. Embracing open-source principles, we encourage developers to contribute by creating and sharing plugins that enhance the platform. For those building their own projects, we offer two key libraries: `fridonai-core`, a foundational package for developing AI-driven chatbots, and `fridonai-community`, which provides plugin implementation examples and contributions from the open-source community. Together, these libraries enable seamless integration of blockchain, analytics, and notification functionalities into custom projects.
+
+---
+
+For more information, visit our [GitHub repository](https://github.com/FridonAI) or explore our platform at [https://www.fridon.ai/](https://www.fridon.ai/).
