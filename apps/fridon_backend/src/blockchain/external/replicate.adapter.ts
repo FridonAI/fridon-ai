@@ -9,7 +9,7 @@ export class ReplicateAdapter {
 
   async getEmbeddings(arr: number[][]): Promise<ModelResponseSuccess> {
     let prediction = await this.replicate.deployments.predictions.create(
-      'aazizyan',
+      'fridonai',
       'chronos-t5-large',
       {
         input: {
