@@ -5,6 +5,9 @@ from typing import Literal, Union
 from libs.community.helpers.utilities import DatetimeExtractorUtility
 from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
+from libs.community.plugins.coin_technical_chart_searcher.utilities import (
+    CoinPriceChartFalshbackSearchUtility,
+)
 from settings import settings
 
 if settings.ENV == 'mock':
@@ -45,6 +48,34 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
     ]
 )
 
+class CoinPriceChartFlashbackSearchToolInput(BaseToolInput):
+    coin_name: str = Field(
+        description="The symbol of the coin, abbreviation. If full name is provided refactor to abbreviation."
+    )
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(
+        default="1d", description="The interval of the price chart"
+    )
+    chart_length: int = Field(default=30, description="The length of the price chart")
+
+
+CoinPriceChartFlashbackSearchTool = BaseTool(
+    name="coin-price-chart-flashback-search",
+    description="A tool that identifies historical moments when other cryptocurrencies displayed price patterns similar to a given coin's current chart structure, helping spot potential market behavior patterns.",
+    args_schema=CoinPriceChartFlashbackSearchToolInput,
+    utility=CoinPriceChartFalshbackSearchUtility(),
+    response_dumper=S3ResponseDumper(),
+    examples=[
+        {
+            "request": "Show me historical crypto patterns similar to SOL's current daily chart",
+            "response": "",
+        },
+        {
+            "request": "Which coins in the past had similar 4-hour chart patterns to what BTC is showing in the last 30 days?",
+            "response": "",
+        },
+    ],
+)
+
 
 class CoinTechnicalIndicatorsSearchToolInput(BaseToolInput):
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
@@ -82,7 +113,6 @@ CoinTechnicalIndicatorsSearchTool = BaseTool(
 )
 
 
-
 class DatetimeExtractorToolInput(BaseToolInput):
     user_input: str
 
@@ -95,7 +125,8 @@ DatetimeExtractorTool = BaseTool(
 
 
 TOOLS = [
-    CoinPriceChartSimilaritySearchTool, 
+    CoinPriceChartSimilaritySearchTool,
     CoinTechnicalIndicatorsSearchTool,
-    DatetimeExtractorTool
+    CoinPriceChartFlashbackSearchTool,
+    DatetimeExtractorTool,
 ]
