@@ -39,6 +39,7 @@ psycopg_pool = "^3.2.2"
 aiocron = "^1.8"
 polars = "^1.9.0"
 deltalake = "^0.20.1"
+stumpy = "^1.13.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.1.1"
