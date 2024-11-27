@@ -18,7 +18,8 @@ def create_plugin_wrapper_tool(plugin: BasePlugin, class_name: str) -> type[Base
                 }
             },
         ),
-        __doc__="Transfer control to the assistant: " + plugin.full_description(),
+        __doc__="Transfer control to the assistant: "
+        + plugin.full_description(tool_descriptions=False),
         request=(str, Field(description="Full requests from the user.")),
     )
 
