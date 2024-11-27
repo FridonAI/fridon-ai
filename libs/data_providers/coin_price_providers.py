@@ -55,38 +55,83 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
         return await self._generate_historical_coins_price_data_binance(coins, interval, days, output_format=output_format)
 
     async def _fetch_coin_ohlcv_binance(self, symbol, interval, days=None, limit=1, start_time=None, end_time=None):
+        formatted_data = []
+
         if days is not None:
-            start_time = int((datetime.now(UTC) - timedelta(days=days)).timestamp() * 1000)
-            url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&startTime={start_time}&endTime={end_time}"
+            if start_time is None:
+                start_time = int(
+                    (datetime.now(UTC) - timedelta(days=days)).timestamp() * 1000
+                )
+
+            while True:
+                url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&startTime={start_time}&limit=500"
+                if end_time:
+                    url += f"&endTime={end_time}"
+
+                try:
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(url) as resp:
+                            data = await resp.json()
+                except Exception as e:
+                    print(f"Error fetching {symbol} {interval} data from Binance: {e}")
+                    return []
+
+                if not data:
+                    break
+
+                for entry in data:
+                    timestamp = int(entry[0])
+                    date_str = datetime.fromtimestamp(timestamp // 1000).strftime(
+                        "%Y-%m-%d"
+                    )
+                    formatted_data.append(
+                        {
+                            "coin": symbol,
+                            "timestamp": timestamp,
+                            "date": date_str,
+                            "open": float(entry[1]),
+                            "high": float(entry[2]),
+                            "low": float(entry[3]),
+                            "close": float(entry[4]),
+                            "volume": float(entry[5]),
+                        }
+                    )
+
+                if len(data) < 500:
+                    break
+
+                start_time = data[-1][0] + 1
+                await asyncio.sleep(0.1)
+
         else:
             url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&endTime={end_time}&limit={limit}"
 
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url) as resp:
-                    data = await resp.json()
-        except Exception as e:
-            print(f"Error fetching {symbol} {interval} data from Binance: {e}")
-            return []
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url) as resp:
+                        data = await resp.json()
+            except Exception as e:
+                print(f"Error fetching {symbol} {interval} data from Binance: {e}")
+                return []
 
-        if days is None:
-            print(f"Fetched {len(data)} {symbol} {interval} candles from Binance")
-            
+            for entry in data:
+                timestamp = int(entry[0])
+                date_str = datetime.fromtimestamp(timestamp // 1000).strftime(
+                    "%Y-%m-%d"
+                )
+                formatted_data.append(
+                    {
+                        "coin": symbol,
+                        "timestamp": timestamp,
+                        "date": date_str,
+                        "open": float(entry[1]),
+                        "high": float(entry[2]),
+                        "low": float(entry[3]),
+                        "close": float(entry[4]),
+                        "volume": float(entry[5]),
+                    }
+                )
 
-        formatted_data = []
-        for entry in data:
-            timestamp = int(entry[0])
-            date_str = datetime.fromtimestamp(timestamp//1000).strftime("%Y-%m-%d")
-            formatted_data.append({
-                "coin": symbol,
-                "timestamp": timestamp,
-                "date": date_str,
-                "open": float(entry[1]),
-                "high": float(entry[2]),
-                "low": float(entry[3]),
-                "close": float(entry[4]),
-                "volume": float(entry[5]),
-            })
         return formatted_data
 
 
