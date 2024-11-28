@@ -54,10 +54,21 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
     async def get_historical_ohlcv(self, coins, interval='30m', days=45, output_format='dict'):
         return await self._generate_historical_coins_price_data_binance(coins, interval, days, output_format=output_format)
 
+    async def get_historical_ohlcv_by_start_end(
+        self, coins, interval, start_time, end_time, output_format="dataframe"
+    ):
+        return await self._generate_multiple_coins_price_data(
+            coins,
+            interval=interval,
+            start_time=start_time,
+            end_time=end_time,
+            output_format=output_format,
+        )
+
     async def _fetch_coin_ohlcv_binance(self, symbol, interval, days=None, limit=1, start_time=None, end_time=None):
         formatted_data = []
 
-        if days is not None:
+        if days is not None or (start_time is not None and end_time is not None):
             if start_time is None:
                 start_time = int(
                     (datetime.now(UTC) - timedelta(days=days)).timestamp() * 1000
@@ -134,28 +145,49 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
 
         return formatted_data
 
-
-    async def _generate_multiple_coins_price_data(self, coins, interval='30m', days=None, batch_size=5, output_format='dict'):
+    async def _generate_multiple_coins_price_data(
+        self,
+        coins,
+        interval="30m",
+        days=None,
+        batch_size=10,
+        output_format="dict",
+        start_time=None,
+        end_time=None,
+    ):
         data = []
         tasks = []
         now = datetime.now(UTC)
-        if now.minute >= 30:
-            end_time = now.replace(minute=30, second=0, microsecond=0)
+
+        if start_time is not None and end_time is not None:
+            start_time = int(start_time.timestamp() * 1000)
+            end_time = int(end_time.timestamp() * 1000)
         else:
-            end_time = now.replace(minute=0, second=0, microsecond=0)
-        end_time = int(end_time.timestamp() * 1000) - 1
-
-        readable_end_time = datetime.fromtimestamp(end_time / 1000).strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Fetching latest coin prices before {readable_end_time}")
-
+            if now.minute >= 30:
+                end_time = now.replace(minute=30, second=0, microsecond=0)
+            else:
+                end_time = now.replace(minute=0, second=0, microsecond=0)
+            end_time = int(end_time.timestamp() * 1000) - 1
+            readable_end_time = datetime.fromtimestamp(end_time / 1000, UTC).strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+            print(f"Fetching latest coin prices before {readable_end_time}")
         for i, symbol in enumerate(coins):
-            tasks.append(self._fetch_coin_ohlcv_binance(symbol, interval, days=days, end_time=end_time))
+            tasks.append(
+                self._fetch_coin_ohlcv_binance(
+                    symbol,
+                    interval,
+                    days=days,
+                    start_time=start_time,
+                    end_time=end_time,
+                )
+            )
             if (i + 1) % batch_size == 0:
                 result = await asyncio.gather(*tasks)
                 for coin_data in result:
                     data.extend(coin_data)
                 tasks = []
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.1)
 
         if tasks:
             result = await asyncio.gather(*tasks)
