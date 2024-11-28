@@ -1,4 +1,3 @@
-import requests
 from datetime import UTC, datetime, timedelta
 from typing import List, Literal, Tuple, Union
 
@@ -11,47 +10,179 @@ from fridonai_core.plugins.utilities import BaseUtility
 from libs.community.plugins.coin_technical_analyzer.helpers.llm import get_filter_generator_chain
 from libs.data_providers.coin_price_providers import BinanceCoinPriceDataProvider
 from libs.repositories.indicators import IndicatorsRepository
-from settings import settings
+
+from libs.community.plugins.coin_technical_chart_searcher.helper import (
+    similarity_search_coins,
+)
+
+
+def _find_similar_pattern(
+    source_prices: Union[list, np.ndarray],
+    target_prices: Union[list, np.ndarray],
+    max_matches: int = 10,
+) -> List[Tuple[int, float]]:
+    source = np.array(source_prices)
+    target = np.array(target_prices)
+
+    pattern_length = len(source) - 1
+    if pattern_length >= len(target):
+        raise ValueError("Pattern length must be shorter than both price series")
+
+    query = source[-pattern_length:]
+
+    try:
+        stumpy.config.STUMPY_EXCL_ZONE_DENOM = np.inf
+
+        matches_top = stumpy.match(
+            query,
+            target,
+            max_distance=np.inf,
+            max_matches=max_matches,
+        )
+
+        stumpy.config.STUMPY_EXCL_ZONE_DENOM = 4
+
+        return matches_top
+
+    except Exception as e:
+        print(f"Error during pattern matching: {str(e)}")
+        return None, None
 
 
 class CoinPriceChartSimilaritySearchUtility(BaseUtility):
+    interval_to_params: dict[Literal["1h", "4h", "1d", "1w"], dict] = {
+        "1h": {
+            "chart_length": 2,
+        },
+        "4h": {
+            "chart_length": 10,
+        },
+        "1d": {
+            "chart_length": 30,
+        },
+        "1w": {
+            "chart_length": 114,
+        },
+    }
+
     async def arun(
-        self, coin_name: str, start_date: str | None = None, *args, **kwargs
+        self,
+        coin_name: str,
+        *args,
+        start_time: str | None = None,
+        end_time: str | None = None,
+        interval: Literal["1h", "4h", "1d", "1w"] = "1d",
+        **kwargs,
     ) -> str | dict:
-        if start_date is not None:
-            start_date = datetime.fromisoformat(start_date)
-            end_date = min(start_date + timedelta(days=30), datetime.now())
+        current_time = datetime.now(UTC)
+        hours_length = self.interval_to_params[interval]["chart_length"] * 24
+
+        if start_time is not None and end_time is not None:
+            start_time = datetime.fromisoformat(start_time).replace(tzinfo=UTC)
+            end_time = datetime.fromisoformat(end_time).replace(tzinfo=UTC)
+            if start_time > end_time:
+                start_time, end_time = end_time, start_time
+
+        elif start_time is not None:
+            start_time = datetime.fromisoformat(start_time).replace(tzinfo=UTC)
+            end_time = min(start_time + timedelta(hours=hours_length), current_time)
+
         else:
-            start_date = datetime.now() - timedelta(days=30)
-            end_date = datetime.now()
+            end_time = (
+                datetime.fromisoformat(end_time)
+                if end_time is not None
+                else current_time
+            )
+            if end_time > current_time:
+                end_time = current_time
+            start_time = end_time - timedelta(hours=hours_length)
 
-        req = {
-            "coin": coin_name.upper(),
-            "from": int(start_date.timestamp() * 1000),
-            "to": int(end_date.timestamp() * 1000),
-            "topK": 3,
-        }
+        time_diff_hours = (end_time - start_time).total_seconds() / 3600
+        current_minus_diff_time = current_time - timedelta(hours=time_diff_hours)
 
-        resp = requests.post(
-            settings.API_URL + "/blockchain/coin-similarity", json=req
-        ).json()
+        binance_provider = BinanceCoinPriceDataProvider()
+        target_coins = [coin for coin in similarity_search_coins if coin != coin_name][
+            :100
+        ]
 
-        if "statusCode" in resp:
-            if 500 > resp["statusCode"] >= 400:
-                return resp.get("message", "Something went wrong!")
-            if resp["statusCode"] >= 500:
-                return "Something went wrong! Please try again later."
+        source_coin_historical_ohlcvs = (
+            await binance_provider.get_historical_ohlcv_by_start_end(
+                [coin_name],
+                interval=interval,
+                start_time=start_time,
+                end_time=end_time,
+                output_format="dataframe",
+            )
+        )
 
-        return  {
+        print(
+            "Coin: ",
+            coin_name,
+            "Interval: ",
+            interval,
+            "Start time: ",
+            start_time,
+            "End time: ",
+            end_time,
+        )
+
+        target_coins_historical_ohlcvs = (
+            await binance_provider.get_historical_ohlcv_by_start_end(
+                target_coins,
+                interval=interval,
+                start_time=current_minus_diff_time,
+                end_time=current_time,
+                output_format="dataframe",
+            )
+        )
+        all_matches = []
+
+        source_shape = source_coin_historical_ohlcvs.shape
+
+        for coin in target_coins:
+            target_ohlcvs = target_coins_historical_ohlcvs[
+                target_coins_historical_ohlcvs["coin"] == coin
+            ]
+            if target_ohlcvs.shape[0] < source_shape[0] - 2:
+                print("Skipping coin: ", coin)
+                continue
+            if target_ohlcvs.shape[0] > source_shape[0]:
+                target_ohlcvs = target_ohlcvs.tail(source_shape[0]).reset_index(
+                    drop=True
+                )
+            elif target_ohlcvs.shape[0] < source_shape[0]:
+                source_coin_historical_ohlcvs = source_coin_historical_ohlcvs.tail(
+                    target_ohlcvs.shape[0]
+                ).reset_index(drop=True)
+            matches = _find_similar_pattern(
+                source_coin_historical_ohlcvs["close"].values,
+                target_ohlcvs["close"].values,
+            )
+
+            if matches is None or len(matches) == 0:
+                continue
+
+            all_matches.append({"dist": matches[0][0], "coin": coin})
+
+        sorted_results = sorted(all_matches, key=lambda x: x["dist"])[:3]
+
+        return {
             "type": "similar_coins",
             "coin": coin_name,
-            "start_date_timestamp": int(start_date.timestamp()),
-            "end_date_timestamp": int(end_date.timestamp()),
-            "start_date": start_date.strftime("%d %B %Y"),
-            "end_date": end_date.strftime("%d %B %Y"),
-            **resp,
+            "interval": interval,
+            "start_date_timestamp": int(start_time.timestamp()),
+            "end_date_timestamp": int(end_time.timestamp()),
+            "start_date": start_time.strftime("%d %B %Y"),
+            "end_date": end_time.strftime("%d %B %Y"),
+            "similar_coins": [
+                {
+                    "symbol": match["coin"],
+                    "score": match["dist"],
+                }
+                for match in sorted_results
+            ],
         }
-    
+
 
 class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
     async def arun(
@@ -116,62 +247,11 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
 
     og_coins_for_flashback: list[str] = ["BTC", "ETH", "SOL", "DOGE"]
 
-    def _get_plot_data(
-        self, ohlcv: pd.DataFrame, start_idx: int, end_idx: int
-    ) -> pd.DataFrame:
-        plot_data = ohlcv.iloc[start_idx:end_idx][
-            ["datetime", "open", "high", "low", "close", "volume"]
-        ]
-        plot_data.columns = [
-            "Date",
-            "Open",
-            "High",
-            "Low",
-            "Close",
-            "Volume",
-        ]
-        plot_data.set_index(pd.to_datetime(plot_data["Date"]), inplace=True)
-        plot_data.drop(columns=["Date"], inplace=True)
-        return plot_data
-
-    def _find_similar_pattern(
-        self,
-        source_prices: Union[list, np.ndarray],
-        target_prices: Union[list, np.ndarray],
-        max_matches: int = 10,
-    ) -> List[Tuple[int, float]]:
-        source = np.array(source_prices)
-        target = np.array(target_prices)
-
-        pattern_length = len(source) - 1
-        if pattern_length >= len(target):
-            raise ValueError("Pattern length must be shorter than both price series")
-
-        query = source[-pattern_length:]
-
-        try:
-            stumpy.config.STUMPY_EXCL_ZONE_DENOM = np.inf
-
-            matches_top = stumpy.match(
-                query,
-                target,
-                max_distance=np.inf,
-                max_matches=max_matches,
-            )
-
-            stumpy.config.STUMPY_EXCL_ZONE_DENOM = 4
-
-            return matches_top
-
-        except Exception as e:
-            print(f"Error during pattern matching: {str(e)}")
-            return None, None
-
     async def arun(
         self,
         coin_name: str,
-        interval: Literal["1h", "4h", "1d", "1w"] = "1d",
         *args,
+        interval: Literal["1h", "4h", "1d", "1w"] = "1d",
         chart_length: int | None = None,
         **kwargs,
     ) -> list[dict]:
@@ -236,7 +316,7 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             coin_ohlcv = combined_ohlcv[combined_ohlcv["coin"] == coin]
             coin_dates = pd.to_datetime(coin_ohlcv["datetime"]).values
 
-            matches = self._find_similar_pattern(
+            matches = _find_similar_pattern(
                 source_ohlcv["close"].values,
                 coin_ohlcv["close"].values,
             )
@@ -257,36 +337,36 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
                 if not is_too_close:
                     coin_matche_dates.append(coin_dates[match_idx])
 
-                    match_coin_plot_data = self._get_plot_data(
-                        coin_ohlcv, match_idx, match_idx + number_of_points + 20
-                    )
+                    match_coin_data = coin_ohlcv.iloc[
+                        match_idx : match_idx + number_of_points + 20
+                    ][["datetime", "open", "high", "low", "close", "volume"]]
 
                     all_matches.append(
                         {
                             "coin": coin,
                             "index": match_idx,
                             "distance": match_dist,
-                            "date": str(match_date),
-                            "label": f"{coin}_{pd.Timestamp(match_date).strftime('%Y-%m-%d')}_{match_coin_plot_data.index[-1].strftime('%Y-%m-%d')}",
+                            "start_time": int(match_coin_data.index[0].timestamp()),
+                            "end_time": int(match_coin_data.index[-1].timestamp()),
+                            "label": f"{coin}_{pd.Timestamp(match_date).strftime('%Y-%m-%d %H:%M:%S')}_{match_coin_data.index[-1].strftime('%Y-%m-%d %H:%M:%S')}",
                         }
                     )
 
         sorted_results = sorted(all_matches, key=lambda x: x["distance"])[:10]
 
-        resp = [
-            {
-                "label": match["label"],
-                "distance": match["distance"],
-                "start_date": match["date"],
-            }
-            for match in sorted_results
-        ]
-
         return {
             "type": "flashback_coins",
             "coin_name": coin_name,
             "interval": interval,
-            "chart_length": chart_length,
+            "start_time": int(current_coin_historical_ohlcv.index[0].timestamp()),
+            "end_time": int(current_coin_historical_ohlcv.index[-1].timestamp()),
             "following_points_number": number_of_points,
-            "flashback_coins": resp,
+            "flashback_coins": [
+                {
+                    "label": match["label"],
+                    "distance": match["distance"],
+                    "start_time": int(match["date"].timestamp()),
+                }
+                for match in sorted_results
+            ],
         }

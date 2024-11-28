@@ -23,7 +23,15 @@ else:
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
     coin_name: str = Field(description="The symbol of the coin, abbreviation. If full name is provided refactor to abbreviation.")
-    start_date: Union[str, None] = Field(default=None, description="The start date for the price chart comparison.")
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(
+        default="1d", description="The interval of the price chart"
+    )
+    start_time: Union[str, None] = Field(
+        default=None, description="The start date for the price chart comparison."
+    )
+    end_time: Union[str, None] = Field(
+        default=None, description="The end date for the price chart comparison."
+    )
 
 
 CoinPriceChartSimilaritySearchTool = BaseTool(
@@ -38,14 +46,14 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
             "response": "",
         },
         {
-            "request": "Give me coins similar to solana price chart",
+            "request": "Give me coins similar to solana 4h price chart from 2024-11-12 12:04:00",
             "response": "",
         },
         {
-            "request": "Which coins look like wif price chart two months ago?",
+            "request": "Which coins look like wif price chart ending on 2024 december 12?",
             "response": "",
         },
-    ]
+    ],
 )
 
 class CoinPriceChartFlashbackSearchToolInput(BaseToolInput):
@@ -118,9 +126,9 @@ class DatetimeExtractorToolInput(BaseToolInput):
 
 DatetimeExtractorTool = BaseTool(
     name="datetime-extractor",
-    description="Helper tool to extract date from user input. Use only when user mentions date and extraction is needed",
+    description="Helper tool to extract starting and ending times of a period from user input. Use only when user mentions date and extraction is needed.",
     args_schema=DatetimeExtractorToolInput,
-    utility=DatetimeExtractorUtility()
+    utility=DatetimeExtractorUtility(),
 )
 
 
