@@ -115,6 +115,9 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
             )
         )
 
+        if source_coin_historical_ohlcvs.shape[0] == 0:
+            return "No data found"
+
         print(
             "Coin: ",
             coin_name,
@@ -162,7 +165,11 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
             if matches is None or len(matches) == 0:
                 continue
 
-            all_matches.append({"dist": matches[0][0], "coin": coin})
+            try:
+                all_matches.append({"dist": matches[0][0], "coin": coin})
+            except Exception as e:
+                print("Error with coin: ", coin, "Error: ", e)
+                continue
 
         sorted_results = sorted(all_matches, key=lambda x: x["dist"])[:3]
 
@@ -344,11 +351,10 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
                     all_matches.append(
                         {
                             "coin": coin,
-                            "index": match_idx,
-                            "distance": match_dist,
-                            "start_time": int(match_coin_data.index[0].timestamp()),
-                            "end_time": int(match_coin_data.index[-1].timestamp()),
-                            "label": f"{coin}_{pd.Timestamp(match_date).strftime('%Y-%m-%d %H:%M:%S')}_{match_coin_data.index[-1].strftime('%Y-%m-%d %H:%M:%S')}",
+                            "distance": float(match_dist),
+                            "start_time": match_coin_data.iloc[0]["datetime"],
+                            "end_time": match_coin_data.iloc[-1]["datetime"],
+                            "label": f"{coin}_{pd.Timestamp(match_date).strftime('%Y-%m-%d %H:%M:%S')}_{match_coin_data.iloc[0]['datetime']}",
                         }
                     )
 
@@ -358,15 +364,8 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             "type": "flashback_coins",
             "coin_name": coin_name,
             "interval": interval,
-            "start_time": int(current_coin_historical_ohlcv.index[0].timestamp()),
-            "end_time": int(current_coin_historical_ohlcv.index[-1].timestamp()),
+            "start_time": current_coin_historical_ohlcv.iloc[0]["datetime"],
+            "end_time": current_coin_historical_ohlcv.iloc[-1]["datetime"],
             "following_points_number": number_of_points,
-            "flashback_coins": [
-                {
-                    "label": match["label"],
-                    "distance": match["distance"],
-                    "start_time": int(match["date"].timestamp()),
-                }
-                for match in sorted_results
-            ],
+            "flashback_coins": [match for match in sorted_results],
         }

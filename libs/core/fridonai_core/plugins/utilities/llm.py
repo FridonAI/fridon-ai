@@ -26,14 +26,19 @@ class LLMUtility(BaseUtility):
 
         if self.structured_output is not None:
             llm = create_structured_output_model(self.structured_output, llm)
-            chain = prompt | llm | StrOutputParser()
-        else:
             chain = prompt | llm
+        else:
+            chain = prompt | llm | StrOutputParser()
 
         llm_result = await chain.ainvoke(placeholders)
 
+        result = {
+            "result": llm_result
+        }
         if self.fields_to_retain:
-            result = {field: placeholders[field] for field in self.fields_to_retain}
-            result["result"] = llm_result.content
-
+            result = {
+                **{field: placeholders[field] for field in self.fields_to_retain},
+                **result,
+            }
         return result
+
