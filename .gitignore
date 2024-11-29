@@ -7,6 +7,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.langgraph_api/*
 .idea/*
 
 # C extensions
