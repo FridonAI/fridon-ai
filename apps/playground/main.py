@@ -1,6 +1,7 @@
 from fridonai_core.graph.base import generate_response
 from fridonai_core.plugins.registry import ensure_plugin_registry
 from apps.fridon_brain import _preload_modules
+from settings import settings
 
 async def main():
     _preload_modules()
@@ -16,10 +17,11 @@ async def main():
         }
     
     final_response, used_agents = await generate_response(
-        "What's my balance?",
+        # "Give me coins like WIF in 2023 december by chart similarity",
+        "Which coins in the past end when had the same 4h chart as WIF now?",
         plugins,
         config,
-        memory="sqlite"
+        memory="sqlite",
     )
     
     print(final_response)

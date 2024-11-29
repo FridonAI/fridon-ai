@@ -4,6 +4,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from fridonai_core.graph import create_graph
 from fridonai_core.plugins.registry import ensure_plugin_registry
 from apps.fridon_brain import _preload_modules
+from settings import settings
 
 
 def test_chat():
