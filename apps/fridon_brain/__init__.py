@@ -7,7 +7,7 @@ def _preload_modules():
 
     resolve_module_plugins(libs.community.plugins)
 
-    if settings.ENVIRONMENT != "local":
+    if settings.ENV != "local":
         import asyncio
 
         from fridonai_core.crons.registry import ensure_cron_registry

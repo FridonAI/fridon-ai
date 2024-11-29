@@ -366,6 +366,6 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             "interval": interval,
             "start_time": source_ohlcv.iloc[0]["datetime"],
             "end_time": source_ohlcv.iloc[-1]["datetime"],
-            "following_points_number": number_of_points,
+            "following_points_number": 20,
             "flashback_coins": [match for match in sorted_results],
         }
