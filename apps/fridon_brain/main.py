@@ -20,14 +20,14 @@ async def task_runner(
     scorer_service: CalculateUserMessageScoreService,
     pub: redis.Publisher,
 ):
-    # plugins = [
-    #     "coin-technical-chart-searcher",
-    #     "coin-technical-analyzer",
-    #     "coin-observer",
-    #     "wallet",
-    # ]
+    plugins = [
+        "coin-technical-chart-searcher",
+        "coin-technical-analyzer",
+        "coin-observer",
+        "wallet",
+    ]
     response_message, used_agents = await service.process(
-        request.user.wallet_id, request.chat_id, request.plugins, request.data.message
+        request.user.wallet_id, request.chat_id, plugins, request.data.message
     )
 
 

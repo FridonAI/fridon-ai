@@ -354,7 +354,7 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
                             "distance": float(match_dist),
                             "start_time": match_coin_data.iloc[0]["datetime"],
                             "end_time": match_coin_data.iloc[-1]["datetime"],
-                            "label": f"{coin}_{pd.Timestamp(match_date).strftime('%Y-%m-%d %H:%M:%S')}_{match_coin_data.iloc[0]['datetime']}",
+                            "label": f"{coin}_{pd.Timestamp(match_date).strftime('%Y-%m-%d %H:%M:%S')}_{match_coin_data.iloc[-1]['datetime']}",
                         }
                     )
 
@@ -364,8 +364,8 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             "type": "flashback_coins",
             "coin_name": coin_name,
             "interval": interval,
-            "start_time": current_coin_historical_ohlcv.iloc[0]["datetime"],
-            "end_time": current_coin_historical_ohlcv.iloc[-1]["datetime"],
+            "start_time": source_ohlcv.iloc[0]["datetime"],
+            "end_time": source_ohlcv.iloc[-1]["datetime"],
             "following_points_number": number_of_points,
             "flashback_coins": [match for match in sorted_results],
         }
