@@ -119,17 +119,6 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
         if source_coin_historical_ohlcvs.shape[0] == 0:
             return "No data found"
 
-        print(
-            "Coin: ",
-            coin_name,
-            "Interval: ",
-            interval,
-            "Start time: ",
-            start_time,
-            "End time: ",
-            end_time,
-        )
-
         target_coins_historical_ohlcvs = (
             await binance_provider.get_historical_ohlcv_by_start_end(
                 target_coins,
@@ -138,6 +127,12 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
                 end_time=current_time,
                 output_format="dataframe",
             )
+        )
+        target_start_time = int(
+            target_coins_historical_ohlcvs.iloc[0]["timestamp"] / 1000
+        )
+        target_end_time = int(
+            target_coins_historical_ohlcvs.iloc[-1]["timestamp"] / 1000
         )
         all_matches = []
 
@@ -167,7 +162,12 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
                 continue
 
             try:
-                all_matches.append({"dist": matches[0][0], "coin": coin})
+                all_matches.append(
+                    {
+                        "dist": matches[0][0],
+                        "coin": coin,
+                    }
+                )
             except Exception as e:
                 print("Error with coin: ", coin, "Error: ", e)
                 continue
@@ -186,6 +186,8 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
                 {
                     "symbol": match["coin"],
                     "score": match["dist"],
+                    "start_time": target_start_time,
+                    "end_time": target_end_time,
                 }
                 for match in sorted_results
             ],
@@ -217,8 +219,6 @@ class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
             return "No coins found"
 
         records = latest_records.to_dicts()
-
-        print("Records length: ", len(records))
 
         result_text = f"Here are {len(records)} coins with the given filters (filter): "
 
