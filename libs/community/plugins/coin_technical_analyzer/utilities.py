@@ -130,7 +130,7 @@ class CoinInfoUtility(BaseUtility):
     async def arun(
         self, coin_name: str, *args, fields: List[str] = [], **kwargs
     ) -> str:
-        response = ""
+        response = "Here are coin info you requested: \n"
 
         if "description" in fields:
             response += "Description:\n"
@@ -147,8 +147,8 @@ class CoinInfoUtility(BaseUtility):
 
             for field in fields:
                 if field == "price":
-                    response += f"{field}: {coin_latest_record[0]['close']}\n"
+                    response += f"- {field}: {coin_latest_record[0]['close']}\n"
                 elif field in coin_latest_record[0]:
-                    response += f"{field}: {coin_latest_record[0][field]}\n"
+                    response += f"- {field}: {coin_latest_record[0][field]}\n"
 
         return response
