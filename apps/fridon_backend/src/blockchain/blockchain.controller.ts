@@ -12,8 +12,6 @@ import {
   TransactionResponseDto,
   SwapTokensRequestBodyDto,
   SwapTokensResponseDto,
-  CoinSimilarityRequestDto,
-  CoinSimilarityResponseDto,
   SymmetryBasketResponseDto,
   // BalanceOperationResponseBodyDto,
 } from './blockchain.dto';
@@ -21,7 +19,6 @@ import { BlockchainService } from './blockchain.service';
 import { TransactionFactory } from './factories/transaction-factory';
 import { Connection } from '@solana/web3.js';
 import { Logger } from '@nestjs/common';
-import { CoinSimilarityService } from './services/coin-similarity';
 
 @Controller('blockchain')
 @ApiTags('blockchain')
@@ -32,29 +29,7 @@ export class BlockchainController {
     readonly connection: Connection,
     readonly blockchainService: BlockchainService,
     readonly transactionFactory: TransactionFactory,
-    readonly coinSimilarityService: CoinSimilarityService,
   ) {}
-
-  @Post('coin-similarity')
-  async coinSimilarity(
-    @Body() body: CoinSimilarityRequestDto,
-  ): Promise<CoinSimilarityResponseDto> {
-    const result = await this.coinSimilarityService.getCoinSimilarity(
-      body.coin,
-      body.from,
-      body.to,
-      body.topK,
-    );
-
-    return new CoinSimilarityResponseDto({
-      data: result.map((item) => ({
-        symbol: item.symbol,
-        address: item.address,
-        score: item.score,
-        chain: item.chain,
-      })),
-    });
-  }
 
   @Post('transfer-tokens')
   async transferTokens(

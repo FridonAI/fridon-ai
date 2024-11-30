@@ -17,15 +17,7 @@ import { WalletFactory } from './providers/wallet-factory';
 import { SymmetryApiFactory } from './providers/symmetry-api-factory';
 import { PointsFactory } from './providers/points-factory';
 import { JupiterFactory } from './providers/jupiter-factory';
-import { UpdateEmbeddings } from './cron/update-embedings.cron';
-import { CoinSimilarityService } from './services/coin-similarity';
-import { HuggingFaceAdapter } from './external/hugging-face.adapter';
-import { BirdEyeAdapter } from './external/bird-eye.adapter';
-import { COIN_SIMILARITY_EMBEDDINGS_QUEUE } from './services/types';
-import { CoinSimilarityEmbeddingsWorker } from './services/coin-similarity.queue-worker';
 import { GetBlockHash } from 'src/data-providers/actions/get-blockhash';
-import { ReplicateAdapter } from './external/replicate.adapter';
-import { BinanceAdapter } from './external/binance.adapter';
 import { UpdateTokenList } from './cron/update-token-list.cron';
 import { UpdateKaminoReserve } from './cron/update-kamino-reserve.cron';
 import { UpdateCoinPrices } from './cron/update-coin-prices.cron';
@@ -33,13 +25,11 @@ import { UpdateCoinPrices } from './cron/update-coin-prices.cron';
 @Module({
   imports: [
     BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE }),
-    BullModule.registerQueue({ name: COIN_SIMILARITY_EMBEDDINGS_QUEUE }),
   ],
   controllers: [BlockchainController],
   providers: [
     BlockchainService,
     BlockchainTools,
-    UpdateEmbeddings,
     NumberFormatter,
     {
       provide: Connection,
@@ -55,13 +45,7 @@ import { UpdateCoinPrices } from './cron/update-coin-prices.cron';
     TransactionFactory,
     TransactionListenerProcessor,
     TransactionListenerService,
-    CoinSimilarityService,
-    HuggingFaceAdapter,
-    ReplicateAdapter,
-    BinanceAdapter,
     GetBlockHash,
-    BirdEyeAdapter,
-    CoinSimilarityEmbeddingsWorker,
     UpdateTokenList,
     UpdateKaminoReserve,
     UpdateCoinPrices,

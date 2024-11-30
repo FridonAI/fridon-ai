@@ -11,47 +11,6 @@ import {
 } from './utils/types';
 import { Transform } from 'class-transformer';
 
-export class CoinSimilarityResponseDto extends BaseDto<CoinSimilarityResponseDto> {
-  @ApiProperty({
-    example: {
-      data: [
-        {
-          symbol: 'Sol',
-          address: 'So11111111111111111111111111111111111111112',
-          chain: 'solana',
-        },
-      ],
-    },
-  })
-  data: {
-    symbol: string;
-    address: string;
-    chain: string;
-  }[];
-}
-export class CoinSimilarityRequestDto {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ example: 'sol' })
-  coin: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: parseInt(`${new Date().getTime() / 1000 - 60 * 60 * 24}`),
-  })
-  from: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @ApiProperty({ example: parseInt(`${new Date().getTime() / 1000}`) })
-  to: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @ApiProperty({ example: 1 })
-  topK: number;
-}
 
 // Default Transfer Response Dto
 export class TransactionDataResponseDto {
