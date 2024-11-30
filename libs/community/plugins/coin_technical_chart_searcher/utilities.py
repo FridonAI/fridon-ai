@@ -1,3 +1,4 @@
+import pyarrow.compute as pc
 from datetime import UTC, datetime, timedelta
 from typing import List, Literal, Tuple, Union
 
@@ -208,13 +209,28 @@ class CoinTechnicalIndicatorsSearchUtility(BaseUtility):
         print("Filter expression: ", filter_expression)
 
         latest_records = indicators_repository.get_the_latest_records(
-            eval(filter_expression)
+            eval(filter_expression),
+            last_n=True,
         )
 
         if len(latest_records) == 0:
             return "No coins found"
 
-        return latest_records.to_dicts()
+        records = latest_records.to_dicts()
+
+        print("Records length: ", len(records))
+
+        result_text = f"Here are {len(records)} coins with the given filters (filter): "
+
+        for i, record in enumerate(records):
+            result_text += "******\n"
+
+            for key, value in record.items():
+                if i > 2 and key != "coin":
+                    continue
+                result_text += f"{key}: {value}\n"
+
+        return result_text
 
 
 class CoinPriceChartFalshbackSearchUtility(BaseUtility):
