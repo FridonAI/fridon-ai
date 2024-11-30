@@ -5,6 +5,7 @@ from fridonai_core.plugins.tools import BaseTool
 from fridonai_core.plugins.tools.response_dumper_base import S3ResponseDumper
 from pydantic import Field
 
+from libs.community.plugins.coin_technical_analyzer.utilities import CoinInfoUtility
 from settings import settings
 
 if settings.ENV == "mock":
@@ -172,9 +173,57 @@ CoinChartPlotterTool = BaseTool(
     response_dumper=S3ResponseDumper(),
 )
 
+class CoinInfoToolInput(BaseToolInput):
+    coin_name: str = Field(
+        ...,
+        description="The symbol of the coin to get info about, abbreviation. If full name is provided refactor to abbreviation.",
+    )
+    fields: List[
+        Literal[
+            "price",
+            "description",
+            "volume",
+            "MACD_12_26_9",
+            "MACD_histogram_12_26_9",
+            "RSI_14",
+            "BBL_5_2.0",
+            "BBM_5_2.0",
+            "BBU_5_2.0",
+            "SMA_20",
+            "EMA_50",
+            "OBV_in_million",
+            "STOCHk_14_3_3",
+            "STOCHd_14_3_3",
+            "ADX_14",
+            "WILLR_14",
+            "CMF_20",
+            "PSARl_0.02_0.2",
+            "PSARs_0.02_0.2",
+        ]
+    ] = Field(default=[], description="List of fields to get info about")
+
+
+CoinInfoTool = BaseTool(
+    name="coin-info",
+    description="A utility that allows you to get info about coin, its description,current price, indicator values.",
+    args_schema=CoinInfoToolInput,
+    utility=CoinInfoUtility(),
+    examples=[
+        {
+            "request": "What is the price of BTC?",
+            "response": "",
+        },
+        {
+            "request": "What is the price, volume and rsi value of BTC?",
+            "response": "",
+        },
+    ],
+)
+
 
 TOOLS = [
     CoinTechnicalAnalyzerTool,
     CoinTechnicalIndicatorsListTool,
     CoinChartPlotterTool,
+    CoinInfoTool,
 ]

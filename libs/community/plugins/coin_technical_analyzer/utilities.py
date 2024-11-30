@@ -1,14 +1,8 @@
-from datetime import datetime, timedelta
 from typing import List, Literal
 import pyarrow.compute as pc
 
 from fridonai_core.plugins.utilities.base import BaseUtility
 from fridonai_core.plugins.utilities.llm import LLMUtility
-
-from libs.community.plugins.coin_technical_analyzer.data import ensure_data_store
-from libs.community.plugins.coin_technical_analyzer.helpers.llm import (
-    get_filter_generator_chain,
-)
 from libs.repositories import IndicatorsRepository
 
 
@@ -130,3 +124,31 @@ class CoinChartPlotterUtility(BaseUtility):
             "plot_data": coin_last_records.to_dicts(),
             "indicators_to_plot": indicators,
         }
+
+
+class CoinInfoUtility(BaseUtility):
+    async def arun(
+        self, coin_name: str, *args, fields: List[str] = [], **kwargs
+    ) -> str:
+        response = ""
+
+        if "description" in fields:
+            response += "Description:\n"
+            fields.remove("description")
+
+        if len(fields) > 0:
+            indicators_repository = IndicatorsRepository(table_name="indicators_raw")
+            coin_latest_record = indicators_repository.get_coin_latest_record(
+                coin_name
+            ).to_dicts()
+            print("Coin latest record: ", coin_latest_record)
+            if len(coin_latest_record) == 0:
+                return "No data found"
+
+            for field in fields:
+                if field == "price":
+                    response += f"{field}: {coin_latest_record[0]['close']}\n"
+                elif field in coin_latest_record[0]:
+                    response += f"{field}: {coin_latest_record[0][field]}\n"
+
+        return response

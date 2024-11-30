@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     NUMBER_OF_COINS_ANALYZING: int = 15
 
-    ENV: Literal["test", "mock", "prod"] = "mock"
+    ENV: Literal["test", "mock", "prod", "local"] = "mock"
 
     QUICKNODE_URL: Optional[str]
 
