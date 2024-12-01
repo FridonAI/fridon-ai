@@ -25,6 +25,9 @@ async def task_runner(
         "coin-technical-analyzer",
         "coin-observer",
         "wallet",
+        "jupiter", 
+        "fridon",
+        "solana-bonk-educator",
     ]
     response_message, used_agents = await service.process(
         request.user.wallet_id, request.chat_id, plugins, request.data.message
