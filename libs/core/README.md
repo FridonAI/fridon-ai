@@ -22,6 +22,13 @@ pip install fridonai-core
 Here's a basic example of how to use FridonAI Core components:
 
 ```python
+
+from fridonai_core.graph import generate_response
+from fridonai_core.plugins.tools import BaseTool
+from fridonai_core.plugins.schemas import BaseToolInput
+from fridonai_core.plugins.utilities import BaseUtility
+from fridonai_core.plugins import BasePlugin
+
 class GreeterUtility(BaseUtility):
     async def arun(self, *args, **kwargs) -> str:
         return "Hi superman!"
