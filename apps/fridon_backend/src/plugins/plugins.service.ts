@@ -26,6 +26,9 @@ export class PluginsService {
     const defaultPluginSlugs = [
       'solana-bonk-educator',
       'coin-technical-analyzer',
+      'coin-technical-chart-searcher',
+      'coin-observer',
+      'emperor-trading',
       'fridon',
       'wallet',
       'jupiter',
