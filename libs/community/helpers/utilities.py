@@ -7,8 +7,8 @@ class DatetimeExtractorUtility(LLMUtility):
     class StartEndDatetimeOutput(BaseModel):
         """Datetime string with iso format, it's allowed to be both or one None"""
 
-        starting_time: str | None = None
-        ending_time: str | None = None
+        start_time: str | None = None
+        end_time: str | None = None
 
     llm_job_description: str = """You are a starting and ending datetime extractor from user's input to the chat assistant. \
 Return datetime in iso format like: 2022-01-01 12:00:00. 

@@ -26,10 +26,12 @@ class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
         default="1d", description="The interval of the price chart"
     )
+    start_time: Union[str, None] = Field(
+        default=None, description="The start date for the price chart comparison."
+    )
     end_time: Union[str, None] = Field(
         default=None, description="The end date for the price chart comparison."
     )
-
 
 CoinPriceChartSimilaritySearchTool = BaseTool(
     name="coin-price-chart-similarity-search",
