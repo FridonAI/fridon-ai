@@ -7,10 +7,12 @@ import {
   CreateChatMessageResponseDto,
   CreateChatResponseDto,
   GetChatResponseDto,
+  GetChatsHistoryRequestDto,
   GetChatsHistoryResponseDto,
   GetChatsRequestDto,
   GetChatsResponseDto,
   GetNotificationResponseDto,
+  RectangleDto,
   TransactionCanceledRequestDto,
 } from './chat.dto';
 import { ChatId } from './domain/chat-id.value-object';
@@ -34,8 +36,9 @@ export class ChatHttpController {
   @Get()
   async getChats(
     @Wallet() wallet: WalletSession,
+    @Query() query: GetChatsRequestDto,
   ): Promise<GetChatsResponseDto> {
-    const res = await this.chatService.getChats(wallet.walletAddress);
+    const res = await this.chatService.getChats(wallet.walletAddress, query.chatType ?? 'Regular');
 
     return new GetChatsResponseDto({
       chats: res.map((chat) => ({
@@ -48,11 +51,12 @@ export class ChatHttpController {
   @Get('/history')
   async getChatHistory(
     @Wallet() wallet: WalletSession,
-    @Query() query: GetChatsRequestDto,
+    @Query() query: GetChatsHistoryRequestDto,
   ) {
     const res = await this.chatService.getChatHistory(
       wallet.walletAddress,
       query.limit ?? 100,
+      query.chatType ?? 'Regular',
     );
 
     return new GetChatsHistoryResponseDto({
@@ -101,8 +105,22 @@ export class ChatHttpController {
   @Post()
   async createChat(
     @Wallet() wallet: WalletSession,
+    @Body() rectangle?: RectangleDto,
   ): Promise<CreateChatResponseDto> {
-    const res = await this.chatService.createChat(wallet.walletAddress);
+    console.log(rectangle);
+    const res = await this.chatService.createChat(
+      wallet.walletAddress,
+      rectangle && Object.keys(rectangle).length > 0
+        ? {
+            id: rectangle.id,
+            symbol: rectangle.symbol,
+            startDate: new Date(rectangle.startDate * 1000),
+            endDate: new Date(rectangle.endDate * 1000),
+            startPrice: rectangle.startPrice,
+            endPrice: rectangle.endPrice,
+          }
+        : undefined
+    );
 
     return new CreateChatResponseDto({
       chatId: res.id.value,

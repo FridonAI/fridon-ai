@@ -5,29 +5,12 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  extensions = [vector]
-}
-
-model PriceVectors {
-  id        Int                         @id @default(autoincrement())
-  symbol    String
-  address   String
-  chain     String
-  values    Unsupported("vector(512)")
-  embedding Unsupported("vector(1024)")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([symbol, chain])
-  @@map("price_vectors")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model ChatMessage {
@@ -55,12 +38,30 @@ enum MessageType {
   Notification
 }
 
+model Rectangle {
+  id         String   @id @default(uuid())
+  symbol     String
+  startDate  DateTime
+  endDate    DateTime
+  startPrice Float
+  endPrice   Float
+  chat       Chat?
+}
+
+enum ChatType {
+  Regular
+  SuperChart
+}
+
 model Chat {
-  id        String        @id
-  walletId  String
-  messages  ChatMessage[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id          String        @id
+  walletId    String
+  chatType    ChatType
+  messages    ChatMessage[]
+  rectangle   Rectangle?    @relation(fields: [rectangleId], references: [id])
+  rectangleId String?       @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   @@index(walletId)
 }

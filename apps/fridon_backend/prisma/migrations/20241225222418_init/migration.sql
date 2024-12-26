@@ -1,22 +1,8 @@
--- CreateExtension
-CREATE EXTENSION IF NOT EXISTS "vector";
-
 -- CreateEnum
 CREATE TYPE "MessageType" AS ENUM ('Query', 'Response', 'TransactionResponse', 'Notification');
 
--- CreateTable
-CREATE TABLE "price_vectors" (
-    "id" SERIAL NOT NULL,
-    "symbol" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "chain" TEXT NOT NULL,
-    "values" vector(512) NOT NULL,
-    "embedding" vector(1024) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "price_vectors_pkey" PRIMARY KEY ("id")
-);
+-- CreateEnum
+CREATE TYPE "ChatType" AS ENUM ('Regular', 'SuperChart');
 
 -- CreateTable
 CREATE TABLE "ChatMessage" (
@@ -34,9 +20,23 @@ CREATE TABLE "ChatMessage" (
 );
 
 -- CreateTable
+CREATE TABLE "Rectangle" (
+    "id" TEXT NOT NULL,
+    "symbol" TEXT NOT NULL,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "startPrice" DOUBLE PRECISION NOT NULL,
+    "endPrice" DOUBLE PRECISION NOT NULL,
+
+    CONSTRAINT "Rectangle_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Chat" (
     "id" TEXT NOT NULL,
     "walletId" TEXT NOT NULL,
+    "chatType" "ChatType" NOT NULL,
+    "rectangleId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -110,10 +110,10 @@ CREATE TABLE "WalletPlugin" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "price_vectors_symbol_chain_key" ON "price_vectors"("symbol", "chain");
+CREATE INDEX "ChatMessage_chatId_idx" ON "ChatMessage"("chatId");
 
 -- CreateIndex
-CREATE INDEX "ChatMessage_chatId_idx" ON "ChatMessage"("chatId");
+CREATE UNIQUE INDEX "Chat_rectangleId_key" ON "Chat"("rectangleId");
 
 -- CreateIndex
 CREATE INDEX "Chat_walletId_idx" ON "Chat"("walletId");
@@ -138,6 +138,9 @@ CREATE INDEX "Leaderboard_score_idx" ON "Leaderboard"("score");
 
 -- AddForeignKey
 ALTER TABLE "ChatMessage" ADD CONSTRAINT "ChatMessage_chatId_fkey" FOREIGN KEY ("chatId") REFERENCES "Chat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Chat" ADD CONSTRAINT "Chat_rectangleId_fkey" FOREIGN KEY ("rectangleId") REFERENCES "Rectangle"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "WalletMedia" ADD CONSTRAINT "WalletMedia_mediaId_fkey" FOREIGN KEY ("mediaId") REFERENCES "Media"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

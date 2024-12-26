@@ -1,7 +1,7 @@
 import { BaseDto } from '@lib/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, Max, Min } from 'class-validator';
+import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 
 // Shared
 export class ChatIdDto extends BaseDto<ChatIdDto> {
@@ -13,6 +13,26 @@ export class ChatIdDto extends BaseDto<ChatIdDto> {
 export class GetChatsResponseDto extends BaseDto<GetChatsResponseDto> {
   @ApiProperty({ example: [{ id: '11111111-1111-1111-1111-111111111111' }] })
   chats: { id: string; title: string }[];
+}
+
+export class RectangleDto extends BaseDto<RectangleDto> {
+  @ApiProperty({ example: '11111111-1111-1111-1111-111111111111' })
+  id: string;
+
+  @ApiProperty({ example: 'AAPL' })
+  symbol: string;
+
+  @ApiProperty({ example: 1714857600000 })
+  startDate: number;
+
+  @ApiProperty({ example: 1714857600000 })
+  endDate: number;
+
+  @ApiProperty({ example: 100 })
+  startPrice: number;
+
+  @ApiProperty({ example: 200 })
+  endPrice: number;
 }
 
 export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
@@ -50,6 +70,9 @@ export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
     structuredContent: string | null;
     messageType: 'Query' | 'Response';
   }[];
+
+  @ApiPropertyOptional({ type: RectangleDto })
+  rectangle?: RectangleDto;
 }
 
 export class GetNotificationResponseDto extends BaseDto<GetNotificationResponseDto> {
@@ -91,6 +114,18 @@ export class GetNotificationResponseDto extends BaseDto<GetNotificationResponseD
 }
 
 export class GetChatsRequestDto extends BaseDto<GetChatsRequestDto> {
+  @ApiPropertyOptional({
+    description: 'Type of chat to filter by',
+    enum: ['Regular', 'SuperChart'],
+    default: 'Regular'
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['Regular', 'SuperChart'])
+  chatType?: 'Regular' | 'SuperChart' = 'Regular';
+}
+
+export class GetChatsHistoryRequestDto extends BaseDto<GetChatsHistoryRequestDto> {
   @ApiPropertyOptional({ description: 'Number of results to return per page.' })
   @Min(1)
   @Max(101)
@@ -98,6 +133,16 @@ export class GetChatsRequestDto extends BaseDto<GetChatsRequestDto> {
   @IsNumber()
   @Transform((a) => Number(a.value))
   limit?: number;
+
+  @ApiPropertyOptional({
+    description: 'Type of chat to filter by',
+    enum: ['Regular', 'SuperChart'],
+    default: 'Regular'
+  })
+  @IsOptional()
+  @IsString()
+  @IsIn(['Regular', 'SuperChart'])
+  chatType?: 'Regular' | 'SuperChart' = 'Regular';
 }
 
 export class GetChatsHistoryItemResponseDto extends BaseDto<GetChatsHistoryItemResponseDto> {
@@ -134,11 +179,19 @@ export class GetChatsHistoryItemResponseDto extends BaseDto<GetChatsHistoryItemR
     createdAt: number;
     updatedAt: number;
   }[];
+
+  @ApiPropertyOptional({ type: RectangleDto })
+  rectangle?: RectangleDto;
 }
 
 export class GetChatsHistoryResponseDto extends BaseDto<GetChatsHistoryResponseDto> {
   @ApiProperty({ type: GetChatsHistoryItemResponseDto, isArray: true })
   data: GetChatsHistoryItemResponseDto[];
+}
+
+export class CreateChatRequestDto extends BaseDto<CreateChatRequestDto> {
+  @ApiPropertyOptional({ type: RectangleDto })
+  rectangle?: RectangleDto;
 }
 
 // Create Chat

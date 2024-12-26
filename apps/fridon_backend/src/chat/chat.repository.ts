@@ -30,10 +30,13 @@ export class ChatRepository {
     return notificationChat;
   }
 
-  async getChats(walletId: string) {
+  async getChats(walletId: string, chatType: 'Regular' | 'SuperChart') {
     const chats = await this.prisma.chat.findMany({
-      where: { walletId },
-      include: { messages: { orderBy: { createdAt: 'asc' }, take: 1 } },
+      where: { walletId, chatType },
+      include: {
+        messages: { orderBy: { createdAt: 'asc' }, take: 1 },
+        rectangle: true,
+      },
     });
 
     return chats;
@@ -52,23 +55,41 @@ export class ChatRepository {
       },
       take: limit,
       include: {
-        Chat: true,
+        Chat: {
+          include: {
+            rectangle: true,
+          },
+        },
       },
     });
 
     return messages;
   }
 
-  async createChat(chatId: ChatId, walletId: string): Promise<void> {
+  async createChat(chatId: ChatId, walletId: string, rectanglePrisma?: Prisma.RectangleCreateArgs['data']): Promise<void> {
+    let rectangleId: string | undefined;
+
+    if (rectanglePrisma) {
+      const rectangle = await this.prisma.rectangle.create({
+        data: rectanglePrisma
+      });
+      rectangleId = rectangle.id;
+    }
+
     await this.prisma.chat.create({
-      data: { id: chatId.value, walletId },
+      data: {
+        id: chatId.value,
+        walletId,
+        rectangleId,
+        chatType: rectangleId ? 'SuperChart' : 'Regular',
+      },
     });
   }
 
   async getChat(chatId: ChatId) {
     const chat = await this.prisma.chat.findUniqueOrThrow({
       where: { id: chatId.value },
-      include: { messages: { orderBy: { createdAt: 'desc' } } },
+      include: { messages: { orderBy: { createdAt: 'desc' } }, rectangle: true },
     });
 
     return chat;

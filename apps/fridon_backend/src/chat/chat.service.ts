@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 import { AiAdapter } from './external/ai/ai.adapter';
 import { ChatRepository } from './chat.repository';
 import { UserService } from 'src/user/user.service';
+import { RectangleId } from './domain/rectangle-id.value-object';
 
 enum MessageType {
   Query = 'Query',
@@ -23,10 +24,21 @@ type ChatMessage = {
   updatedAt: Date;
 };
 
+type Rectangle = {
+  id: string;
+  symbol: string;
+  startDate: Date;
+  endDate: Date;
+  startPrice: number;
+  endPrice: number;
+};
+
 type Chat = {
   id: string;
   walletId: string;
+  chatType: 'Regular' | 'SuperChart';
   messages: ChatMessage[];
+  rectangle: Rectangle | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -39,12 +51,22 @@ export class ChatService {
     private readonly userService: UserService,
   ) {}
 
-  async getChats(walletId: string): Promise<{ id: ChatId; title?: string }[]> {
-    const chats = await this.chatRepository.getChats(walletId);
-    return chats.map((chat) => ({
-      id: new ChatId(chat.id),
-      title: chat.messages[0]?.content,
-    }));
+  async getChats(walletId: string, chatType: 'Regular' | 'SuperChart'): Promise<{ id: ChatId; title?: string }[]> {
+    const chats = await this.chatRepository.getChats(walletId, chatType);
+    return chats.map((chat) => {
+      if (chatType === 'SuperChart') {
+        return {
+          id: new ChatId(chat.id),
+          title: chat.rectangle
+            ? `${chat.rectangle.symbol} ${chat.rectangle.startDate.toLocaleDateString()} - ${chat.rectangle.endDate.toLocaleDateString()}: ${chat.messages[0]?.content}`
+            : undefined,
+        };
+      }
+      return {
+        id: new ChatId(chat.id),
+        title: chat.messages[0]?.content,
+      };
+    });
   }
 
   async getChatNotifications(walletId: string) {
@@ -64,17 +86,22 @@ export class ChatService {
     };
   }
 
-  async getChatHistory(walletId: string, limit: number) {
+  async getChatHistory(walletId: string, limit: number, chatType: 'Regular' | 'SuperChart') {
     const messages = await this.chatRepository.getChatHistory(walletId, limit);
 
     const chatMap = new Map<string, Chat>();
 
     messages.forEach((message) => {
+      if (message.Chat.chatType !== chatType) {
+        return;
+      }
       const chatId = message.chatId;
       if (!chatMap.has(chatId)) {
         chatMap.set(chatId, {
           id: message.Chat.id,
           walletId: message.Chat.walletId,
+          chatType: message.Chat.chatType,
+          rectangle: message.Chat.rectangle,
           messages: [],
           createdAt: message.Chat.createdAt,
           updatedAt: message.Chat.updatedAt,
@@ -98,6 +125,15 @@ export class ChatService {
     return chats.map((chat) => ({
       id: new ChatId(chat.id),
       walletId: chat.walletId,
+      chatType: chat.chatType,
+      rectangle: chat.rectangle ? {
+        id: chat.rectangle.id,
+        symbol: chat.rectangle.symbol,
+        startDate: chat.rectangle.startDate,
+        endDate: chat.rectangle.endDate,
+        startPrice: chat.rectangle.startPrice,
+        endPrice: chat.rectangle.endPrice,
+      } : undefined,
       messages: chat.messages.map((message) => ({
         id: message.id,
         content: message.content,
@@ -113,9 +149,15 @@ export class ChatService {
     }));
   }
 
-  async createChat(walletId: string): Promise<{ id: ChatId }> {
+  async createChat(walletId: string, rectangle?: Rectangle): Promise<{ id: ChatId }> {
     const chatId = new ChatId(randomUUID());
-    await this.chatRepository.createChat(chatId, walletId);
+
+    if (rectangle) {
+      const rectangleId = new RectangleId(randomUUID());
+      rectangle.id = rectangleId.value;
+    }
+
+    await this.chatRepository.createChat(chatId, walletId, rectangle);
     return { id: chatId };
   }
 
@@ -138,13 +180,18 @@ export class ChatService {
     personality: string,
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
-    await this.getChat(chatId);
+    const chat = await this.chatRepository.getChat(chatId)
+
+    let finalMessage = message;
+    if (chat.rectangle) {
+      finalMessage = `${message} for ${chat.rectangle.symbol} from ${chat.rectangle.startDate.toLocaleDateString()} to ${chat.rectangle.endDate.toLocaleDateString()}`;
+    }
 
     await this.chatRepository.createChatMessage({
       id: chatMessageId.value,
       messageType: 'Query',
       chatId: chatId.value,
-      content: message,
+      content: finalMessage,
       personality,
     });
     const userPlugins = await this.userService.getUserPlugins(walletId);
@@ -153,7 +200,7 @@ export class ChatService {
       chatId,
       chatMessageId.value,
       walletId,
-      message,
+      finalMessage,
       personality,
       userPlugins.map((plugin) => plugin.id),
     );
