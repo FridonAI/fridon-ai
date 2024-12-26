@@ -1,5 +1,6 @@
-FROM node:20-alpine3.17 AS builder
+FROM node:20-alpine AS builder
 
+RUN ln -s /usr/lib/libssl.so.3 /lib/libssl.so.3
 RUN apk update && apk upgrade && apk add --no-cache git 
 
 # Create app directory
@@ -19,6 +20,7 @@ RUN yarn build
 
 FROM node:20-alpine
 
+RUN ln -s /usr/lib/libssl.so.3 /lib/libssl.so.3
 WORKDIR /app
 
 COPY --from=builder /app/node_modules ./node_modules
