@@ -186,14 +186,14 @@ export class ChatService {
 
     let finalMessage = message;
     if (chat.rectangle) {
-      finalMessage = `${message}`;
+      finalMessage = `${message} for ${chat.rectangle.symbol} from ${chat.rectangle.startDate.toISOString()} to ${chat.rectangle.endDate.toISOString()} with ${chat.rectangle.interval} timeframe`;
     }
 
     await this.chatRepository.createChatMessage({
       id: chatMessageId.value,
       messageType: 'Query',
       chatId: chatId.value,
-      content: finalMessage,
+      content: message,
       personality,
     });
     const userPlugins = await this.userService.getUserPlugins(walletId);
