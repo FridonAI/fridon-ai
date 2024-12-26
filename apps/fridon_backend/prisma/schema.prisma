@@ -46,6 +46,7 @@ model Rectangle {
   startPrice Float
   endPrice   Float
   chat       Chat?
+  interval   String
 }
 
 enum ChatType {

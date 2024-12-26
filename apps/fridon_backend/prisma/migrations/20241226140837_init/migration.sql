@@ -27,6 +27,7 @@ CREATE TABLE "Rectangle" (
     "endDate" TIMESTAMP(3) NOT NULL,
     "startPrice" DOUBLE PRECISION NOT NULL,
     "endPrice" DOUBLE PRECISION NOT NULL,
+    "interval" TEXT NOT NULL,
 
     CONSTRAINT "Rectangle_pkey" PRIMARY KEY ("id")
 );
