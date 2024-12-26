@@ -5,7 +5,7 @@ from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
 from fridonai_core.plugins.tools.response_dumper_base import S3ResponseDumper
 
-from libs.community.helpers.utilities import DatetimeExtractorUtility
+from libs.community.helpers.tools import DatetimeExtractorTool
 
 from libs.community.plugins.emperor_trading.utilities import (
     EmperorTradingCoinAnalysisUtility,
@@ -71,14 +71,6 @@ class EmperorTradingManualToolInput(BaseToolInput):
 
 class DatetimeExtractorToolInput(BaseToolInput):
     user_input: str
-
-
-DatetimeExtractorTool = BaseTool(
-    name="datetime-extractor",
-    description="Helper tool to extract starting and ending times of a period from user input. Use only when user mentions date and extraction is needed.",
-    args_schema=DatetimeExtractorToolInput,
-    utility=DatetimeExtractorUtility(),
-)
 
 
 TOOLS = [

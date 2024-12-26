@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import Literal
 
 from fridonai_core.plugins.tools import BaseTool
 from fridonai_core.plugins.tools.base import BaseToolInput

@@ -2,7 +2,7 @@ from fridonai_core.plugins.tools.response_dumper_base import S3ResponseDumper
 from pydantic import Field
 from typing import Literal, Union
 
-from libs.community.helpers.utilities import DatetimeExtractorUtility
+from libs.community.helpers.tools import DatetimeExtractorTool
 from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
 from libs.community.plugins.coin_technical_chart_searcher.utilities import (
@@ -117,17 +117,6 @@ CoinTechnicalIndicatorsSearchTool = BaseTool(
             "response": "",
         }
     ],
-)
-
-
-class DatetimeExtractorToolInput(BaseToolInput):
-    user_input: str
-
-DatetimeExtractorTool = BaseTool(
-    name="datetime-extractor",
-    description="Helper tool to extract starting and ending times of a period from user input. Use only when user mentions date and extraction is needed.",
-    args_schema=DatetimeExtractorToolInput,
-    utility=DatetimeExtractorUtility(),
 )
 
 

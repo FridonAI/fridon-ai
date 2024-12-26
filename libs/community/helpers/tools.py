@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
-
+from pydantic import BaseModel
 from fridonai_core.plugins.utilities.llm import LLMUtility
+from fridonai_core.plugins.schemas import BaseToolInput
+from fridonai_core.plugins.tools import BaseTool
 
 
 class DatetimeExtractorUtility(LLMUtility):
@@ -22,3 +23,15 @@ User input: {user_input}
         return {
             "user_input": user_input,
         }
+
+
+class DatetimeExtractorToolInput(BaseToolInput):
+    user_input: str
+
+
+DatetimeExtractorTool = BaseTool(
+    name="datetime-extractor",
+    description="Helper tool to extract starting and ending times of a period from user input. Use only when user mentions date and extraction is needed.",
+    args_schema=DatetimeExtractorToolInput,
+    utility=DatetimeExtractorUtility(),
+)
