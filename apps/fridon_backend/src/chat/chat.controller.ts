@@ -44,6 +44,17 @@ export class ChatHttpController {
       chats: res.map((chat) => ({
         id: chat.id.value,
         title: chat.title ?? 'New Chat',
+        rectangle: chat.rectangle
+          ? {
+              id: chat.rectangle.id,
+              coin: chat.rectangle.symbol,
+              startDate: chat.rectangle.startDate,
+              endDate: chat.rectangle.endDate,
+              startPrice: chat.rectangle.startPrice,
+              endPrice: chat.rectangle.endPrice,
+              interval: chat.rectangle.interval,
+            }
+          : undefined,
       })),
     });
   }

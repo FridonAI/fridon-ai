@@ -52,7 +52,7 @@ export class ChatService {
     private readonly userService: UserService,
   ) {}
 
-  async getChats(walletId: string, chatType: 'Regular' | 'SuperChart'): Promise<{ id: ChatId; title?: string }[]> {
+  async getChats(walletId: string, chatType: 'Regular' | 'SuperChart'): Promise<{ id: ChatId; title?: string, rectangle?: Rectangle }[]> {
     const chats = await this.chatRepository.getChats(walletId, chatType);
     return chats.map((chat) => {
       if (chatType === 'SuperChart') {
@@ -61,11 +61,23 @@ export class ChatService {
           title: chat.rectangle
             ? `${chat.rectangle.symbol} ${chat.rectangle.startDate.toISOString()} - ${chat.rectangle.endDate.toISOString()}: ${chat.messages[0]?.content}`
             : undefined,
+          rectangle: chat.rectangle
+            ? {
+              id: chat.rectangle.id,
+              coin: chat.rectangle.symbol,
+              startDate: chat.rectangle.startDate,
+              endDate: chat.rectangle.endDate,
+              startPrice: chat.rectangle.startPrice,
+              endPrice: chat.rectangle.endPrice,
+              interval: chat.rectangle.interval,
+            }
+            : undefined,
         };
       }
       return {
         id: new ChatId(chat.id),
         title: chat.messages[0]?.content,
+        rectangle: undefined,
       };
     });
   }
