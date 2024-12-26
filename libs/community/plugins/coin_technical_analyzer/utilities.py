@@ -1,4 +1,5 @@
-from typing import List, Literal
+from typing import List, Literal, Union
+from datetime import datetime, UTC
 import pyarrow.compute as pc
 
 from fridonai_core.plugins.utilities.base import BaseUtility
@@ -28,26 +29,39 @@ Technical Indicators for {interval} intervals:
         self,
         coin_name: str,
         interval: Literal["1h", "4h", "1d", "1w"] = "4h",
+        start_time: Union[str, None] = None,
+        end_time: Union[str, None] = None,
         *args,
         **kwargs,
     ) -> dict:
         indicators_repository = IndicatorsRepository(
             table_name=f"indicators_{interval}"
         )
+        if start_time and end_time:
+            coin_interval_record_df = (
+                indicators_repository.get_coin_records_in_time_range(
+                    coin_name.upper(),
+                    datetime.fromisoformat(start_time).replace(tzinfo=UTC),
+                    datetime.fromisoformat(end_time).replace(tzinfo=UTC),
+                )
+            )
+            plot_data = coin_interval_record_df.to_dicts()
 
-        coin_latest_record_df = indicators_repository.get_coin_latest_record(
-            coin_name.upper()
-        )
+        else:
+            coin_interval_record_df = indicators_repository.get_coin_latest_record(
+                coin_name.upper()
+            )
+            plot_data = indicators_repository.get_coin_last_records(
+                coin_name.upper(), number_of_points=200
+            ).to_dicts()
 
-        if len(coin_latest_record_df) == 0:
+        if len(coin_interval_record_df) == 0:
             return "No data found"
 
         return {
-            "coin_history_indicators": str(coin_latest_record_df.to_dicts()),
+            "coin_history_indicators": str(coin_interval_record_df.to_dicts()),
             "symbol": coin_name,
-            "plot_data": indicators_repository.get_coin_last_records(
-                coin_name.upper(), number_of_points=200
-            ).to_dicts(),
+            "plot_data": plot_data,
             "interval": interval,
         }
 

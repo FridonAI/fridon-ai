@@ -6,6 +6,7 @@ from fridonai_core.plugins.tools.response_dumper_base import S3ResponseDumper
 from pydantic import Field
 
 from libs.community.plugins.coin_technical_analyzer.utilities import CoinInfoUtility
+from libs.community.helpers.tools import DatetimeExtractorTool
 from settings import settings
 
 if settings.ENV == "mock":
@@ -26,7 +27,13 @@ else:
 class CoinTechnicalAnalyzerToolInput(BaseToolInput):
     coin_name: str = Field(..., description="The symbol of the coin to analyze, abbreviation. If full name is provided refactor to abbreviation.")
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
-        default="1h", description="The interval of the technical indicators"
+        default="1h", description="The timeframe of the chart candles"
+    )
+    start_time: Union[str, None] = Field(
+        default=None, description="The start time of the price chart"
+    )
+    end_time: Union[str, None] = Field(
+        default=None, description="The end time of the price chart"
     )
 
 
@@ -42,7 +49,7 @@ CoinTechnicalAnalyzerTool = BaseTool(
             "image_url": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/chart-analyzer.png",
         },
         {
-            "request": "Analyze bonk price chat for me",
+            "request": "Analyze bonk price chat for me from 2024-01-01 to 2024-01-02",
             "response": "",
         },
         {
@@ -50,7 +57,8 @@ CoinTechnicalAnalyzerTool = BaseTool(
             "response": "",
         },
         {
-            "request": "Analyze solana price chart",
+            "request": "Analyze solana price chart from 12 December 2024 to 13 December 2024 by 4h timeframe",
+            "response": "",
         },
     ],
     response_dumper=S3ResponseDumper(),
@@ -226,4 +234,5 @@ TOOLS = [
     CoinTechnicalIndicatorsListTool,
     CoinChartPlotterTool,
     CoinInfoTool,
+    DatetimeExtractorTool,
 ]

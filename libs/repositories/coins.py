@@ -34,9 +34,12 @@ class CoinsRepository(DeltaRepository):
 
     def get_coin_records_in_time_range(self, coin: str, start: datetime, end: datetime, filters = None, columns: list[str] = None) -> pl.DataFrame:
         if filters is None:
-            return self.get_records_in_time_range((pc.field("coin") == coin), start, end, columns)
-        return self.get_records_in_time_range((pc.field("coin") == coin) & filters, start, end, columns)
-    
+            return self.get_records_in_time_range(
+                start, end, filters=(pc.field("coin") == coin), columns=columns
+            )
+        return self.get_records_in_time_range(
+            start, end, filters=(pc.field("coin") == coin) & filters, columns=columns
+        )
 
     def get_the_latest_records(self, filters: Expression = None, columns: list[str] = None, last_n: bool = False) -> pl.DataFrame:
         df = self.get_last_records(filters, number_of_points=1, columns=columns, last_n=last_n)
