@@ -43,9 +43,7 @@ services:
     ports:
       - 6379:6379
   db:
-    build:
-      context: .
-      dockerfile: pgvector.dockerfile
+    image: postgres:16
     restart: always
     ports:
       - 5432:5432
