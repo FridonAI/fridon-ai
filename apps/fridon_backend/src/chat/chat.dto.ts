@@ -20,7 +20,7 @@ export class RectangleDto extends BaseDto<RectangleDto> {
   id: string;
 
   @ApiProperty({ example: 'AAPL' })
-  symbol: string;
+  coin: string;
 
   @ApiProperty({ example: 1714857600000 })
   startDate: number;
@@ -33,6 +33,9 @@ export class RectangleDto extends BaseDto<RectangleDto> {
 
   @ApiProperty({ example: 200 })
   endPrice: number;
+
+  @ApiProperty({ example: '1h' })
+  interval: string;
 }
 
 export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {

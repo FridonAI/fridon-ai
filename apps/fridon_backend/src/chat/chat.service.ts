@@ -31,6 +31,7 @@ type Rectangle = {
   endDate: Date;
   startPrice: number;
   endPrice: number;
+  interval: string;
 };
 
 type Chat = {
@@ -58,7 +59,7 @@ export class ChatService {
         return {
           id: new ChatId(chat.id),
           title: chat.rectangle
-            ? `${chat.rectangle.symbol} ${chat.rectangle.startDate.toLocaleDateString()} - ${chat.rectangle.endDate.toLocaleDateString()}: ${chat.messages[0]?.content}`
+            ? `${chat.rectangle.symbol} ${chat.rectangle.startDate.toISOString()} - ${chat.rectangle.endDate.toISOString()}: ${chat.messages[0]?.content}`
             : undefined,
         };
       }
@@ -128,11 +129,12 @@ export class ChatService {
       chatType: chat.chatType,
       rectangle: chat.rectangle ? {
         id: chat.rectangle.id,
-        symbol: chat.rectangle.symbol,
+        coin: chat.rectangle.symbol,
         startDate: chat.rectangle.startDate,
         endDate: chat.rectangle.endDate,
         startPrice: chat.rectangle.startPrice,
         endPrice: chat.rectangle.endPrice,
+        interval: chat.rectangle.interval,
       } : undefined,
       messages: chat.messages.map((message) => ({
         id: message.id,
@@ -184,7 +186,7 @@ export class ChatService {
 
     let finalMessage = message;
     if (chat.rectangle) {
-      finalMessage = `${message} for ${chat.rectangle.symbol} from ${chat.rectangle.startDate.toLocaleDateString()} to ${chat.rectangle.endDate.toLocaleDateString()}`;
+      finalMessage = `${message}`;
     }
 
     await this.chatRepository.createChatMessage({

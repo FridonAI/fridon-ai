@@ -71,7 +71,7 @@ export class ChatRepository {
 
     if (rectanglePrisma) {
       const rectangle = await this.prisma.rectangle.create({
-        data: rectanglePrisma
+        data: rectanglePrisma,
       });
       rectangleId = rectangle.id;
     }

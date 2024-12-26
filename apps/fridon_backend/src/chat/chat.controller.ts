@@ -107,17 +107,17 @@ export class ChatHttpController {
     @Wallet() wallet: WalletSession,
     @Body() rectangle?: RectangleDto,
   ): Promise<CreateChatResponseDto> {
-    console.log(rectangle);
     const res = await this.chatService.createChat(
       wallet.walletAddress,
       rectangle && Object.keys(rectangle).length > 0
         ? {
             id: rectangle.id,
-            symbol: rectangle.symbol,
+            symbol: rectangle.coin,
             startDate: new Date(rectangle.startDate * 1000),
             endDate: new Date(rectangle.endDate * 1000),
             startPrice: rectangle.startPrice,
             endPrice: rectangle.endPrice,
+            interval: rectangle.interval,
           }
         : undefined
     );
