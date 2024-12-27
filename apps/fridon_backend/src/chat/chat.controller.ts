@@ -47,7 +47,7 @@ export class ChatHttpController {
         rectangle: chat.rectangle
           ? {
               id: chat.rectangle.id,
-              coin: chat.rectangle.symbol,
+              coin: chat.rectangle.coin,
               startDate: chat.rectangle.startDate,
               endDate: chat.rectangle.endDate,
               startPrice: chat.rectangle.startPrice,

@@ -26,7 +26,7 @@ type ChatMessage = {
 
 type Rectangle = {
   id: string;
-  symbol: string;
+  coin: string;
   startDate: Date;
   endDate: Date;
   startPrice: number;
