@@ -54,9 +54,7 @@ services:
     command: python -u -m apps.fridon_crones.main
 
   db:
-    build:
-      context: .
-      dockerfile: pgvector.dockerfile
+    image: postgres:16
     restart: always
     ports:
       - 5432:5432
