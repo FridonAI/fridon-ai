@@ -16,7 +16,7 @@ registry = ensure_cron_registry()
 @registry.register
 class CoinObserverCron(BaseCron):
     name: str = "Coin Observer"
-    schedule: str = "*/1 * * * *"
+    schedule: str = "*/20 * * * *"
 
     async def _process(self, pub: Publisher = Provide["publisher"]) -> None:
         coin_observer_repository = RedisRepository(
@@ -27,41 +27,42 @@ class CoinObserverCron(BaseCron):
             {"wallet_id": key, "filters": [CoinObserverRecord(**r) for r in value]}
             for key, value in all_coin_observer_records_raw
         ]
-        for record in grouped_filters:
-            wallet_id = record["wallet_id"]
-            filters = record["filters"]
+        grouped_filters
+        # for record in grouped_filters:
+        #     wallet_id = record["wallet_id"]
+        #     filters = record["filters"]
 
-            for filter in filters:
-                interval = filter.interval
-                filter_expression = filter.filters
-                indicators_repository = IndicatorsRepository(
-                    table_name=f"indicators_{interval}"
-                )
-                latest_records = indicators_repository.get_the_latest_records(
-                    eval(filter_expression)
-                )
-                if len(latest_records) != 0:
-                    chain = get_response_generator_chain()
-                    response = await chain.ainvoke(
-                        {
-                            "coin": latest_records[0]["coin"],
-                            "filter": filter.filters,
-                            "indicators": latest_records.to_dicts(),
-                        }
-                    )
+        #     for filter in filters:
+        #         interval = filter.interval
+        #         filter_expression = filter.filters
+        #         indicators_repository = IndicatorsRepository(
+        #             table_name=f"indicators_{interval}"
+        #         )
+        #         latest_records = indicators_repository.get_the_latest_records(
+        #             eval(filter_expression)
+        #         )
+        #         if len(latest_records) != 0:
+        #             chain = get_response_generator_chain()
+        #             response = await chain.ainvoke(
+        #                 {
+        #                     "coin": latest_records[0]["coin"],
+        #                     "filter": filter.filters,
+        #                     "indicators": latest_records.to_dicts(),
+        #                 }
+        #             )
 
-                    await pub.publish(
-                        "notifications_received",
-                        json.dumps(
-                            {
-                                "walletId": wallet_id,
-                                "slug": "coin-observer",
-                                "message": response,
-                            }
-                        ),
-                    )
+        #             await pub.publish(
+        #                 "notifications_received",
+        #                 json.dumps(
+        #                     {
+        #                         "walletId": wallet_id,
+        #                         "slug": "coin-observer",
+        #                         "message": response,
+        #                     }
+        #                 ),
+        #             )
 
-                    if not filter.recurring:
-                        existing_filters = await coin_observer_repository.read(wallet_id)
-                        existing_filters = [x for x in existing_filters if x["id"] != filter.id]
-                        await coin_observer_repository.write(wallet_id, existing_filters)
+        #             if not filter.recurring:
+        #                 existing_filters = await coin_observer_repository.read(wallet_id)
+        #                 existing_filters = [x for x in existing_filters if x["id"] != filter.id]
+        #                 await coin_observer_repository.write(wallet_id, existing_filters)
