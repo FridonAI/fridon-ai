@@ -28,6 +28,7 @@ async def task_runner(
         "jupiter", 
         "fridon",
         "solana-bonk-educator",
+        "emperor-trading"
     ]
     response_message, used_agents = await service.process(
         request.user.wallet_id, request.chat_id, plugins, request.data.message
