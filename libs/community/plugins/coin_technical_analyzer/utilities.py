@@ -53,11 +53,6 @@ Technical Indicators for {interval} intervals:
                 output_format="dataframe",
             )
 
-            plot_data = calculate_ta_indicators(ohlcv_data)
-
-            coin_interval_record_df = plot_data.tail(1)
-            plot_data = coin_interval_record_df.to_dicts()
-
         else:
             interval_to_days = {
                 "30m": 3,
@@ -73,16 +68,15 @@ Technical Indicators for {interval} intervals:
                 output_format="dataframe",
             )
 
-            plot_data = calculate_ta_indicators(ohlcv_data)
-            coin_interval_record_df = plot_data.tail(1)
-            plot_data = coin_interval_record_df.to_dicts()
+        plot_data = calculate_ta_indicators(ohlcv_data, return_last_one=False)
+        coin_interval_record_df = plot_data.tail(1)
 
         if len(coin_interval_record_df) == 0:
             return "No data found"
         return {
             "coin_history_indicators": str(coin_interval_record_df.to_dicts()),
             "symbol": coin_name,
-            "plot_data": plot_data,
+            "plot_data": plot_data.to_dicts(),
             "interval": interval,
         }
 
@@ -160,7 +154,7 @@ class CoinChartPlotterUtility(BaseUtility):
             output_format="dataframe",
         )
 
-        plot_data = calculate_ta_indicators(ohlcv_data)
+        plot_data = calculate_ta_indicators(ohlcv_data, return_last_one=False)
 
         if len(plot_data) == 0:
             return "No coins found"
