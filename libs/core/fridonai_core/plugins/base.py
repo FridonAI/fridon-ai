@@ -32,6 +32,19 @@ class BasePlugin(BaseModel):
         return "\n".join(self.request_examples)
 
     @property
+    def tools_with_examples_in_description(self) -> list[BaseTool]:
+        tools_with_examples = []
+        for tool in self.tools:
+            if tool.examples:
+                tool_with_examples = tool
+                tool_with_examples.description = (
+                    f"{tool.description}\nExamples:\n"
+                    + "\n".join(f"- {example['request']}" for example in tool.examples)
+                )
+                tools_with_examples.append(tool_with_examples)
+        return tools_with_examples
+
+    @property
     def slug(self) -> str:
         def slugify(text):
             import re
@@ -44,7 +57,7 @@ class BasePlugin(BaseModel):
         return slugify(self.name)
 
     def full_description(self, tool_descriptions=True):
-        description = ""
+        description = self.description
         if tool_descriptions:
             description += "\nThese are tool descriptions of the plugin: \n"
             for tool in filter(lambda x: not x.helper, self.tools):
