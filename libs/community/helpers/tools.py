@@ -18,6 +18,7 @@ REMEMBER if there is no starting or ending time mentioned use None for that.
 User input: {user_input}
 """
     structured_output: type = StartEndDatetimeOutput
+    model_name: str = "gpt-4o-mini"
 
     async def _arun(self, user_input: str, *args, **kwargs) -> dict:
         return {

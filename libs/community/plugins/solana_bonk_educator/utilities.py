@@ -12,6 +12,7 @@ You are given helpful resources from bonk about that request, use them to offer 
 <bonk-resources> \n {bonk_resources} \n </bonk-resources>
 
 Here is a user input: {request}. """
+    model_name: str = "gpt-4o-mini"
 
     async def _arun(self, request: str, *args, **kwargs) -> dict:
         bonk_prompt_template: str = """Respond to the request based solely on the context below:
