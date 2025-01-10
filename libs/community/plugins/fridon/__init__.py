@@ -9,7 +9,7 @@ plugin_registry = ensure_plugin_registry()
 @plugin_registry.register("fridon")
 class FridonPlugin(BasePlugin):
     name: str = "Fridon"
-    description: str = "Plugin for getting information about FridonAI."
+    description: str = "Agent for getting information about FridonAI, project, getting help with platform and plugins."
     owner: str = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     tools: list[BaseTool] = TOOLS
     image_url: str = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/fridon.png"

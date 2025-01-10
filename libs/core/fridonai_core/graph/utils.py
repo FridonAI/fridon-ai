@@ -35,15 +35,19 @@ def handle_tool_error(state) -> dict:
 def generate_structured_response(state: State):
     messages = state["messages"]
     result_messages = []
+    after_human_messages = []
     for i in range(len(messages) - 1, -1, -1):
         if messages[i].name == "Result":
             result_messages.append(messages[i])
             result_messages.append(messages[i - 1])
         if messages[i].type == "human":
             break
+        after_human_messages.append(messages[i])
 
     structured_final_response_model = create_structured_output_model(FinalResponse)
-    response = structured_final_response_model.invoke(result_messages[::-1])
+    response = structured_final_response_model.invoke(
+        result_messages[::-1] if len(result_messages) > 0 else after_human_messages
+    )
     return {"final_response": response}
 
 

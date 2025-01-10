@@ -15,7 +15,7 @@ FridonResponderTool = BaseTool(
     utility=FridonRagUtility(),
     examples=[
         {
-            "request": "Who are you?",
+            "request": "What are you?",
             "response": "",
         },
         {
@@ -23,11 +23,15 @@ FridonResponderTool = BaseTool(
             "response": "",
         },
         {
-            "request": "What do you do?",
+            "request": "Tell me about yourself",
             "response": "",
         },
         {
             "request": "What is FridonAI's features?",
+            "response": "",
+        },
+        {
+            "request": "How can I use coin searcher plugin?",
             "response": "",
         },
     ],
