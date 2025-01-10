@@ -186,7 +186,6 @@ class CoinInfoUtility(BaseUtility):
             coin_latest_record = indicators_repository.get_coin_latest_record(
                 coin_name
             ).to_dicts()
-            print("Coin latest record: ", coin_latest_record)
             if len(coin_latest_record) == 0:
                 return "No data found"
 
