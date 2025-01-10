@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field, create_model, ConfigDict
 
 from fridonai_core.plugins import BasePlugin
 
-
 def create_plugin_wrapper_tool(plugin: BasePlugin, class_name: str) -> type[BaseModel]:
     return create_model(
         f"To{class_name}",
@@ -18,8 +17,7 @@ def create_plugin_wrapper_tool(plugin: BasePlugin, class_name: str) -> type[Base
                 }
             },
         ),
-        __doc__="Transfer control to the assistant: "
-        + plugin.full_description(tool_descriptions=False),
+        __doc__=plugin.full_description(tool_descriptions=False),
         request=(str, Field(description="Full requests from the user.")),
     )
 
@@ -57,7 +55,8 @@ class CompleteTool(BaseModel):
 
 class FinalResponse(BaseModel):
     """FinalResponse generator tool, in no other tools is going to be called this tool is called to generate the final answers.
-    A tool to generate final response to the user's request. It must be the last tool call in the conversation with the final answer."""
+    A tool to generate final response to the user's request. It must be the last tool call in the conversation with the final answer.
+    Don't make up anything, you are just response generator only considering structured and text answers from RESULT tools. Consider RESULT tools for generating answers."""
 
     structured_answers: Union[List[Union[str, dict]], None] = Field(
         description="All json string answers from `CompletedTool`s should be copied here if they are json."
