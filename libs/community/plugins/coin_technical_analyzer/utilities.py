@@ -5,6 +5,14 @@ import pyarrow.compute as pc
 from fridonai_core.plugins.utilities.base import BaseUtility
 from fridonai_core.plugins.utilities.llm import LLMUtility
 from libs.repositories import IndicatorsRepository
+import os
+
+if os.environ.get("DATA_PROVIDER") == "binance":
+    from libs.data_providers import (
+        BinanceCoinPriceDataProvider as BinanceCoinPriceDataProvider,
+    )
+
+from libs.internals.indicators import calculate_ta_indicators
 
 
 class CoinTechnicalAnalyzerUtility(LLMUtility):
@@ -24,6 +32,7 @@ Given {symbol} coin's TA data as below on the last trading day, what will be the
 Technical Indicators for {interval} intervals:
 {coin_history_indicators}"""
     fields_to_retain: list[str] = ["plot_data"]
+    model_name: str = "gpt-4o-mini"
 
     async def _arun(
         self,
@@ -34,30 +43,42 @@ Technical Indicators for {interval} intervals:
         *args,
         **kwargs,
     ) -> dict:
-        indicators_repository = IndicatorsRepository(
-            table_name=f"indicators_{interval}"
-        )
+        data_provider = BinanceCoinPriceDataProvider()
         if start_time and end_time:
-            coin_interval_record_df = (
-                indicators_repository.get_coin_records_in_time_range(
-                    coin_name.upper(),
-                    datetime.fromisoformat(start_time).replace(tzinfo=UTC),
-                    datetime.fromisoformat(end_time).replace(tzinfo=UTC),
-                )
+            ohlcv_data = await data_provider.get_historical_ohlcv_by_start_end(
+                [coin_name.upper()],
+                interval,
+                datetime.fromisoformat(start_time).replace(tzinfo=UTC),
+                datetime.fromisoformat(end_time).replace(tzinfo=UTC),
+                output_format="dataframe",
             )
+
+            plot_data = calculate_ta_indicators(ohlcv_data)
+
+            coin_interval_record_df = plot_data.tail(1)
             plot_data = coin_interval_record_df.to_dicts()
 
         else:
-            coin_interval_record_df = indicators_repository.get_coin_latest_record(
-                coin_name.upper()
+            interval_to_days = {
+                "30m": 3,
+                "1h": 5,
+                "4h": 22,
+                "1d": 80,
+                "1w": 400,
+            }
+            ohlcv_data = await data_provider.get_historical_ohlcv(
+                [coin_name.upper()],
+                interval,
+                days=interval_to_days[interval],
+                output_format="dataframe",
             )
-            plot_data = indicators_repository.get_coin_last_records(
-                coin_name.upper(), number_of_points=200
-            ).to_dicts()
+
+            plot_data = calculate_ta_indicators(ohlcv_data)
+            coin_interval_record_df = plot_data.tail(1)
+            plot_data = coin_interval_record_df.to_dicts()
 
         if len(coin_interval_record_df) == 0:
             return "No data found"
-
         return {
             "coin_history_indicators": str(coin_interval_record_df.to_dicts()),
             "symbol": coin_name,
@@ -123,19 +144,29 @@ class CoinChartPlotterUtility(BaseUtility):
         *args,
         **kwargs,
     ) -> str:
-        indicators_repository = IndicatorsRepository(
-            table_name=f"indicators_{interval}"
-        )
+        data_provider = BinanceCoinPriceDataProvider()
         print("Want these indicators", indicators)
-        coin_last_records = indicators_repository.get_coin_last_records(
-            coin_name, number_of_points=200
+        interval_to_days = {
+            "30m": 3,
+            "1h": 5,
+            "4h": 22,
+            "1d": 80,
+            "1w": 400,
+        }
+        ohlcv_data = await data_provider.get_historical_ohlcv(
+            [coin_name.upper()],
+            interval,
+            days=interval_to_days[interval],
+            output_format="dataframe",
         )
 
-        if len(coin_last_records) == 0:
+        plot_data = calculate_ta_indicators(ohlcv_data)
+
+        if len(plot_data) == 0:
             return "No coins found"
 
         return {
-            "plot_data": coin_last_records.to_dicts(),
+            "plot_data": plot_data.to_dicts(),
             "indicators_to_plot": indicators,
         }
 

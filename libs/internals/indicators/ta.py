@@ -2,11 +2,18 @@ import pandas as pd
 import polars as pl
 import pandas_ta as ta
 
-def calculate_ta_indicators(df: pl.DataFrame, return_last_one: bool = True) -> pl.DataFrame:
+def calculate_ta_indicators(
+    df: pl.DataFrame | pd.DataFrame, return_last_one: bool = True
+) -> pl.DataFrame:
     if len(df) < 50:
         raise ValueError("DataFrame must have at least 50 rows")
+    if isinstance(df, pl.DataFrame):
+        df_pandas = df.to_pandas()
+    else:
+        df_pandas = df
 
-    df_pandas = df.to_pandas()
+    if "date" in df_pandas.columns:
+        df_pandas = df_pandas.drop(columns=["date"])
 
     df_pandas.rename(columns={"timestamp": "date"}, inplace=True)
     coin = df_pandas["coin"].iloc[0]
