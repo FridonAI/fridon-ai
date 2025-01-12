@@ -15,6 +15,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DataProviderModule } from './data-providers/data-provider.module';
 import { UserModule } from './user/user.module';
 import { PluginsModule } from './plugins/plugins.module';
+import { ProxyModule } from './proxy/proxy.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { PluginsModule } from './plugins/plugins.module';
     BlockchainModule.forRoot(),
     UserModule,
     PluginsModule,
+    ProxyModule.forRoot(),
   ],
   providers: [providePrismaClientExceptionFilter()],
 })

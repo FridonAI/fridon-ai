@@ -10,6 +10,8 @@ import os
 if os.environ.get("DATA_PROVIDER") == "binance":
     from libs.data_providers import (
         BinanceCoinPriceDataProvider as BinanceCoinPriceDataProvider,
+        BirdeyeCoinPriceDataProvider as BirdeyeCoinPriceDataProvider,
+        CompositeCoinPriceDataProvider as CompositeCoinPriceDataProvider,
     )
 
 from libs.internals.indicators import calculate_ta_indicators
@@ -43,7 +45,7 @@ Technical Indicators for {interval} intervals:
         *args,
         **kwargs,
     ) -> dict:
-        data_provider = BinanceCoinPriceDataProvider()
+        data_provider = CompositeCoinPriceDataProvider([BirdeyeCoinPriceDataProvider(), BinanceCoinPriceDataProvider()])
         if start_time and end_time:
             ohlcv_data = await data_provider.get_historical_ohlcv_by_start_end(
                 [coin_name.upper()],

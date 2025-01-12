@@ -1,21 +1,27 @@
 import asyncio
+import os
 import random
-import aiohttp
-import pandas as pd
 from datetime import UTC, datetime, timedelta
 
+import aiohttp
+import pandas as pd
 
-class CoinPriceDataProvider():
+from libs.data_providers.token_providers import JupiterTokenListDataProvider
+
+
+class CoinPriceDataProvider:
     async def get_current_ohlcv(self, coins, interval, output_format): ...
 
     async def get_historical_ohlcv(self, coins, interval, days, output_format): ...
 
 
 class DummyCoinPriceDataProvider(CoinPriceDataProvider):
-    async def get_current_ohlcv(self, coins, interval='30m', output_format='dict'):
+    async def get_current_ohlcv(self, coins, interval="30m", output_format="dict"):
         return self._generate_coin_price_data_mock(coins)
 
-    async def get_historical_ohlcv(self, coins, interval='30m', days=45, output_format='dict'):
+    async def get_historical_ohlcv(
+        self, coins, interval="30m", days=45, output_format="dict"
+    ):
         print("Dummy data not implemented for historical ohlcv")
         pass
 
@@ -31,16 +37,18 @@ class DummyCoinPriceDataProvider(CoinPriceDataProvider):
             high_price = max(open_price, close_price) + random.uniform(0, 500)
             low_price = min(open_price, close_price) - random.uniform(0, 500)
             volume = random.uniform(100, 10000)
-            data.append({
-                "coin": coin,
-                "timestamp": timestamp,
-                "date": date_str,
-                "open": open_price,
-                "high": high_price,
-                "low": low_price,
-                "close": close_price,
-                "volume": volume,
-            })
+            data.append(
+                {
+                    "coin": coin,
+                    "timestamp": timestamp,
+                    "date": date_str,
+                    "open": open_price,
+                    "high": high_price,
+                    "low": low_price,
+                    "close": close_price,
+                    "volume": volume,
+                }
+            )
         return data, current_time
 
 
@@ -48,11 +56,17 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
     def __init__(self):
         self.base_url = "https://api.binance.com/api/v3/klines"
 
-    async def get_current_ohlcv(self, coins, interval='30m', output_format='dict'):
-        return await self._generate_coins_price_data_binance(coins, interval, output_format=output_format)
+    async def get_current_ohlcv(self, coins, interval="30m", output_format="dict"):
+        return await self._generate_coins_price_data_binance(
+            coins, interval, output_format=output_format
+        )
 
-    async def get_historical_ohlcv(self, coins, interval='30m', days=45, output_format='dict'):
-        return await self._generate_historical_coins_price_data_binance(coins, interval, days, output_format=output_format)
+    async def get_historical_ohlcv(
+        self, coins, interval="30m", days=45, output_format="dict"
+    ):
+        return await self._generate_historical_coins_price_data_binance(
+            coins, interval, days, output_format=output_format
+        )
 
     async def get_historical_ohlcv_by_start_end(
         self, coins, interval, start_time, end_time, output_format="dataframe"
@@ -65,7 +79,9 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
             output_format=output_format,
         )
 
-    async def _fetch_coin_ohlcv_binance(self, symbol, interval, days=None, limit=1, start_time=None, end_time=None):
+    async def _fetch_coin_ohlcv_binance(
+        self, symbol, interval, days=None, limit=1, start_time=None, end_time=None
+    ):
         formatted_data = []
 
         if days is not None or (start_time is not None and end_time is not None):
@@ -194,52 +210,80 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
             for coin_data in result:
                 data.extend(coin_data)
 
-        if output_format == 'dataframe':
-            columns = ['coin', 'timestamp', 'date', 'open', 'high', 'low', 'close', 'volume']
+        if output_format == "dataframe":
+            columns = [
+                "coin",
+                "timestamp",
+                "date",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+            ]
             df = pd.DataFrame.from_records(data, columns=columns)
-            df['open'] = df['open'].astype(float)
-            df['high'] = df['high'].astype(float)
-            df['low'] = df['low'].astype(float)
-            df['close'] = df['close'].astype(float)
-            df['volume'] = df['volume'].astype(float)
+            df["open"] = df["open"].astype(float)
+            df["high"] = df["high"].astype(float)
+            df["low"] = df["low"].astype(float)
+            df["close"] = df["close"].astype(float)
+            df["volume"] = df["volume"].astype(float)
 
             return df
 
         return data, datetime.now(UTC).replace(microsecond=0)
 
-    async def _generate_coins_price_data_binance(self, coins, interval='30m', output_format='dict'):
-        return await self._generate_multiple_coins_price_data(coins, interval, output_format=output_format)
+    async def _generate_coins_price_data_binance(
+        self, coins, interval="30m", output_format="dict"
+    ):
+        return await self._generate_multiple_coins_price_data(
+            coins, interval, output_format=output_format
+        )
 
-    async def _generate_historical_coins_price_data_binance(self, coins, interval='30m', days=45, output_format='dict'):
-        return await self._generate_multiple_coins_price_data(coins, interval, days=days, batch_size=5, output_format=output_format)
-    
+    async def _generate_historical_coins_price_data_binance(
+        self, coins, interval="30m", days=45, output_format="dict"
+    ):
+        return await self._generate_multiple_coins_price_data(
+            coins, interval, days=days, batch_size=5, output_format=output_format
+        )
 
 
 class CoinPaprikaCoinPriceDataProvider(CoinPriceDataProvider):
     def __init__(self, quicknode_url: str):
         import requests
+
         self.base_url = f"{quicknode_url}/addon/748/v1/coins"
         response = requests.get(f"{quicknode_url}/addon/748/v1/coins")
-        self.coins_symbols_to_ids = {coin["symbol"]: coin["id"] for coin in response.json()[:300]}
+        self.coins_symbols_to_ids = {
+            coin["symbol"]: coin["id"] for coin in response.json()[:300]
+        }
 
-    async def get_current_ohlcv(self, coins, interval='30m', output_format='dict'):
-        return await self._generate_coins_price_data_coinpaprika(coins, interval, output_format=output_format)
+    async def get_current_ohlcv(self, coins, interval="30m", output_format="dict"):
+        return await self._generate_coins_price_data_coinpaprika(
+            coins, interval, output_format=output_format
+        )
 
-    async def get_historical_ohlcv(self, coins, interval='30m', days=45, output_format='dict'):
-        return await self._generate_historical_coins_price_data_coinpaprika(coins, interval, days, output_format=output_format)
+    async def get_historical_ohlcv(
+        self, coins, interval="30m", days=45, output_format="dict"
+    ):
+        return await self._generate_historical_coins_price_data_coinpaprika(
+            coins, interval, days, output_format=output_format
+        )
 
-    async def _fetch_coin_ohlcv_coinpaprika(self, symbol, interval, days=None, limit=1, start_time=None, end_time=None):
+    async def _fetch_coin_ohlcv_coinpaprika(
+        self, symbol, interval, days=None, limit=1, start_time=None, end_time=None
+    ):
         if interval == "1d":
             interval = "24h"
         if interval == "4h":
             interval = "6h"
         if days is not None:
-            start_time = (datetime.now(UTC) - timedelta(days=days)).strftime('%Y-%m-%dT%H:%M:%SZ')
+            start_time = (datetime.now(UTC) - timedelta(days=days)).strftime(
+                "%Y-%m-%dT%H:%M:%SZ"
+            )
             url = f"{self.base_url}/{self.coins_symbols_to_ids[symbol]}/ohlcv/historical?&interval={interval}&start={start_time}"
             if end_time:
                 url += f"&end={end_time.strftime('%Y-%m-%dT%H:%M:%SZ')}"
-        else:   
-
+        else:
             url = f"{self.base_url}/{self.coins_symbols_to_ids[symbol]}/ohlcv/historical?&interval={interval}&end={end_time.strftime('%Y-%m-%dT%H:%M:%SZ')}&limit={limit}"
 
         try:
@@ -255,22 +299,27 @@ class CoinPaprikaCoinPriceDataProvider(CoinPriceDataProvider):
 
         formatted_data = []
         for entry in data:
-            timestamp = int(datetime.fromisoformat(entry["time_open"]).timestamp() * 1000)
-            date_str = datetime.fromtimestamp(timestamp//1000).strftime("%Y-%m-%d")
-            formatted_data.append({
-                "coin": symbol,
-                "timestamp": timestamp,
-                "date": date_str,
-                "open": float(entry["open"]),
-                "high": float(entry["high"]),
-                "low": float(entry["low"]),
-                "close": float(entry["close"]),
-                "volume": float(entry["volume"]),
-            })
+            timestamp = int(
+                datetime.fromisoformat(entry["time_open"]).timestamp() * 1000
+            )
+            date_str = datetime.fromtimestamp(timestamp // 1000).strftime("%Y-%m-%d")
+            formatted_data.append(
+                {
+                    "coin": symbol,
+                    "timestamp": timestamp,
+                    "date": date_str,
+                    "open": float(entry["open"]),
+                    "high": float(entry["high"]),
+                    "low": float(entry["low"]),
+                    "close": float(entry["close"]),
+                    "volume": float(entry["volume"]),
+                }
+            )
         return formatted_data
 
-
-    async def _generate_multiple_coins_price_data(self, coins, interval='30m', days=None, batch_size=5, output_format='dict'):
+    async def _generate_multiple_coins_price_data(
+        self, coins, interval="30m", days=None, batch_size=5, output_format="dict"
+    ):
         data = []
         tasks = []
         now = datetime.now(UTC)
@@ -284,28 +333,268 @@ class CoinPaprikaCoinPriceDataProvider(CoinPriceDataProvider):
         for symbol in coins:
             if symbol not in self.coins_symbols_to_ids:
                 print(f"Coin {symbol} not found in CoinPaprika")
-            tasks.append(self._fetch_coin_ohlcv_coinpaprika(symbol, interval, days=days, end_time=end_time))
+            tasks.append(
+                self._fetch_coin_ohlcv_coinpaprika(
+                    symbol, interval, days=days, end_time=end_time
+                )
+            )
 
         if tasks:
             result = await asyncio.gather(*tasks)
             for coin_data in result:
                 data.extend(coin_data)
 
-        if output_format == 'dataframe':
-            columns = ['coin', 'timestamp', 'date', 'open', 'high', 'low', 'close', 'volume']
+        if output_format == "dataframe":
+            columns = [
+                "coin",
+                "timestamp",
+                "date",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+            ]
             df = pd.DataFrame.from_records(data, columns=columns)
-            df['open'] = df['open'].astype(float)
-            df['high'] = df['high'].astype(float)
-            df['low'] = df['low'].astype(float)
-            df['close'] = df['close'].astype(float)
-            df['volume'] = df['volume'].astype(float)
+            df["open"] = df["open"].astype(float)
+            df["high"] = df["high"].astype(float)
+            df["low"] = df["low"].astype(float)
+            df["close"] = df["close"].astype(float)
+            df["volume"] = df["volume"].astype(float)
 
             return df
 
         return data, datetime.now(UTC).replace(microsecond=0)
 
-    async def _generate_coins_price_data_coinpaprika(self, coins, interval='30m', output_format='dict'):
-        return await self._generate_multiple_coins_price_data(coins, interval, output_format=output_format)
+    async def _generate_coins_price_data_coinpaprika(
+        self, coins, interval="30m", output_format="dict"
+    ):
+        return await self._generate_multiple_coins_price_data(
+            coins, interval, output_format=output_format
+        )
 
-    async def _generate_historical_coins_price_data_coinpaprika(self, coins, interval='30m', days=45, output_format='dict'):
-        return await self._generate_multiple_coins_price_data(coins, interval, days=days, batch_size=5, output_format=output_format)
+    async def _generate_historical_coins_price_data_coinpaprika(
+        self, coins, interval="30m", days=45, output_format="dict"
+    ):
+        return await self._generate_multiple_coins_price_data(
+            coins, interval, days=days, batch_size=5, output_format=output_format
+        )
+
+
+class BirdeyeCoinPriceDataProvider(CoinPriceDataProvider):
+    def __init__(self):
+        self._base_url = "https://public-api.birdeye.so/"
+        self._birdeye_api_key = os.getenv("BIRDEYE_API_KEY")
+        token_list_provider = JupiterTokenListDataProvider()
+        token_list = token_list_provider.get_token_list()
+        self._token_map = {token["symbol"].upper(): token for token in token_list}
+        self._interval_map = {
+            "30m": "30m",
+            "1h": "1H",
+            "4h": "4H",
+            "1d": "1D",
+            "1w": "1W",
+        }
+
+    async def get_current_ohlcv(self, coins, interval: str = "30m", output_format: str = "dict"):
+        interval = self._interval_map[interval]
+        data = []
+        tasks = []
+        for symbol in coins:
+            params = {
+                "symbol": symbol,
+                "address": self._token_map[symbol]["address"],
+                "type": interval,
+                "time_from": int((datetime.now(UTC) - timedelta(days=1)).timestamp()),
+                "time_to": int(datetime.now(UTC).timestamp()),
+            }
+            tasks.append(self._fetch_coin_ohlcv_birdeye(params))
+
+            if len(tasks) >= 15:
+                batch_results = await asyncio.gather(*tasks)
+                for coin_result in batch_results:
+                    data.extend(coin_result[-1:0])
+                tasks = []
+                await asyncio.sleep(1)
+
+        # Process any remaining tasks
+        if tasks:
+            batch_results = await asyncio.gather(*tasks)
+
+            for coin_result in batch_results:
+                data.extend(coin_result[-1:])
+
+        return data, datetime.now(UTC).replace(microsecond=0)
+
+
+    async def get_historical_ohlcv(self, coins, interval: str = "30m", days: int = 45, output_format: str = "dict"):
+        interval = self._interval_map[interval]
+        data = []
+        tasks = []
+        for symbol in coins:
+            params = {
+                "symbol": symbol,
+                "address": self._token_map[symbol]["address"],
+                "type": interval,
+                "time_from": int((datetime.now(UTC) - timedelta(days=days)).timestamp()),
+                "time_to": int(datetime.now(UTC).timestamp()),
+            }
+            tasks.append(self._fetch_coin_ohlcv_birdeye(params))
+
+            # Process in batches of 15 requests per second
+            if len(tasks) >= 15:
+                batch_results = await asyncio.gather(*tasks)
+                for coin_result in batch_results:
+                    data.extend(coin_result)
+                tasks = []
+                await asyncio.sleep(1)
+
+        # Process any remaining tasks
+        if tasks:
+            batch_results = await asyncio.gather(*tasks)
+
+            for coin_result in batch_results:
+                data.extend(coin_result)
+
+        if output_format == "dataframe":
+            columns = [
+                "coin",
+                "timestamp",
+                "date",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+            ]
+            df = pd.DataFrame.from_records(data, columns=columns)
+            df["open"] = df["open"].astype(float)
+            df["high"] = df["high"].astype(float)
+            df["low"] = df["low"].astype(float)
+            df["close"] = df["close"].astype(float)
+            df["volume"] = df["volume"].astype(float)
+
+            return df
+
+        return data, datetime.now(UTC).replace(microsecond=0)
+
+    async def get_historical_ohlcv_by_start_end(self, coins, interval: str = "30m",  start_time: int = None, end_time: int = None, output_format: str = "dict"):
+        interval = self._interval_map[interval]
+        data = []
+        tasks = []
+        for symbol in coins:
+            params = {
+                "symbol": symbol,
+                "address": self._token_map[symbol]["address"],
+                "type": interval,
+                "time_from": start_time,
+                "time_to": end_time,
+            }
+            tasks.append(self._fetch_coin_ohlcv_birdeye(params))
+
+            # Process in batches of 15 requests per second
+            if len(tasks) >= 15:
+                batch_results = await asyncio.gather(*tasks)
+                for coin_result in batch_results:
+                    data.extend(coin_result)
+                tasks = []
+                await asyncio.sleep(1)
+
+        # Process any remaining tasks
+        if tasks:
+            batch_results = await asyncio.gather(*tasks)
+
+            for coin_result in batch_results:
+                data.extend(coin_result)
+
+        if output_format == "dataframe":
+            columns = [
+                "coin",
+                "timestamp",
+                "date",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+            ]
+            df = pd.DataFrame.from_records(data, columns=columns)
+            df["open"] = df["open"].astype(float)
+            df["high"] = df["high"].astype(float)
+            df["low"] = df["low"].astype(float)
+            df["close"] = df["close"].astype(float)
+            df["volume"] = df["volume"].astype(float)
+
+            return df
+
+        return data, datetime.now(UTC).replace(microsecond=0)
+
+    async def _fetch_coin_ohlcv_birdeye(
+        self, params: dict
+    ) -> list[dict]:
+        symbol = params["symbol"]
+        del params["symbol"]
+        formatted_data = []
+
+        headers = {
+            "accept": "application/json",
+            "x-chain": "solana",
+            "X-API-KEY": self._birdeye_api_key,
+        }
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self._base_url, params=params, headers=headers) as resp:
+                    data = await resp.json()
+        except Exception as e:
+            print(f"Error fetching {symbol} {params['type']} data from Birdeye: {e}")
+            return []
+
+        if data["success"] is False or data["data"] is None:
+            return []
+
+        for entry in data["data"]["items"]:
+            timestamp = entry["unixTime"]
+            date_str = datetime.fromtimestamp(timestamp).strftime(
+                "%Y-%m-%d"
+            )
+            formatted_data.append(
+                {
+                    "coin": symbol,
+                    "timestamp": timestamp,
+                    "date": date_str,
+                    "open": entry["o"],
+                    "high": entry["h"],
+                    "low": entry["l"],
+                    "close": entry["c"],
+                    "volume": entry["v"],
+                }
+            )
+
+        return formatted_data
+
+
+class CompositeCoinPriceDataProvider(CoinPriceDataProvider):
+    def __init__(self, providers: list[CoinPriceDataProvider]):
+        self.providers = providers
+
+    async def get_current_ohlcv(self, coins, interval, output_format):
+        for provider in self.providers:
+            data, _ = await provider.get_current_ohlcv(coins, interval, output_format)
+            if data:
+                return data, _
+        return [], datetime.now(UTC).replace(microsecond=0)
+
+
+    async def get_historical_ohlcv(self, coins, interval, days, output_format):
+        for provider in self.providers:
+            data, _ = await provider.get_historical_ohlcv(coins, interval, days, output_format)
+            if data:
+                return data, _
+        return [], datetime.now(UTC).replace(microsecond=0)
+
+    async def get_historical_ohlcv_by_start_end(self, coins, interval, start_time, end_time, output_format):
+        for provider in self.providers:
+            data, _ = await provider.get_historical_ohlcv_by_start_end(coins, interval, start_time, end_time, output_format)
+            if data:
+                return data, _
+        return [], datetime.now(UTC).replace(microsecond=0)
