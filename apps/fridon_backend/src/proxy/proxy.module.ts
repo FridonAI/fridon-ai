@@ -4,7 +4,8 @@ import { ProxyController } from "./proxy.controller";
 import { ProxyService } from "./proxy.service";
 import { BinanceAdapter } from "./adapters/ohlcv/binance.adapter";
 import { BirdEyeAdapter } from "./adapters/ohlcv/bird-eye.adapter";
-import { JupiterTokenListAdapter } from "./adapters/token-list/token-list.adapter";
+import { BinanceTokenListAdapter, JupiterTokenListAdapter } from "./adapters/token-list/token-list.adapter";
+import { UpdateTokenList } from "./crons/update-token-list.cron";
 
 @Module({
     imports: [
@@ -14,8 +15,8 @@ import { JupiterTokenListAdapter } from "./adapters/token-list/token-list.adapte
         }]),
     ],
     controllers: [ProxyController],
-    providers: [ProxyService, BinanceAdapter, BirdEyeAdapter, JupiterTokenListAdapter],
-    exports: [ProxyService, BinanceAdapter, BirdEyeAdapter, JupiterTokenListAdapter],
+    providers: [ProxyService, BinanceAdapter, BirdEyeAdapter, JupiterTokenListAdapter, BinanceTokenListAdapter, UpdateTokenList],
+    exports: [ProxyService, BinanceAdapter, BirdEyeAdapter, JupiterTokenListAdapter, BinanceTokenListAdapter],
 })
 export class ProxyModule {
     static forRoot() {

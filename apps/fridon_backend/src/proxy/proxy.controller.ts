@@ -2,7 +2,7 @@ import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { ProxyService } from './proxy.service';
-import { GetOHLCVQueryDto, GetOHLCVResponseDto, OHLCVDto } from './proxy.dto';
+import { GetOHLCVQueryDto, GetOHLCVResponseDto, GetTokensQueryDto, GetTokensResponseDto, OHLCVDto } from './proxy.dto';
 
 @Controller('proxy')
 @ApiTags('proxy')
@@ -23,5 +23,13 @@ export class ProxyController {
                 v: ohlcv.volume,
             }) as OHLCVDto),
         } as GetOHLCVResponseDto;
+    }
+
+    @Get('tokens')
+    async getTokens(@Query() query: GetTokensQueryDto): Promise<GetTokensResponseDto> {
+        const tokens = await this.proxyService.getTokens(query.keyword);
+        return {
+            data: tokens,
+        } as GetTokensResponseDto;
     }
 }

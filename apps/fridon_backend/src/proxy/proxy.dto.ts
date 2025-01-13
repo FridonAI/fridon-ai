@@ -52,3 +52,15 @@ export class GetOHLCVResponseDto {
     @ApiProperty({ type: OHLCVDto })
     data: OHLCVDto[];
 }
+
+export class GetTokensQueryDto {
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({ example: 'btc' })
+    keyword: string;
+}
+
+export class GetTokensResponseDto {
+    @ApiProperty({ type: String, isArray: true })
+    data: string[];
+}
