@@ -9,7 +9,11 @@ import pandas as pd
 
 from fridonai_core.plugins.utilities import BaseUtility
 from libs.community.plugins.coin_technical_analyzer.helpers.llm import get_filter_generator_chain
-from libs.data_providers.coin_price_providers import BinanceCoinPriceDataProvider
+from libs.data_providers.coin_price_providers import (
+    BinanceCoinPriceDataProvider,
+    BirdeyeCoinPriceDataProvider,
+    CompositeCoinPriceDataProvider,
+)
 from libs.repositories.indicators import IndicatorsRepository
 
 from libs.community.plugins.coin_technical_chart_searcher.helper import (
@@ -101,13 +105,18 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
         time_diff_hours = (end_time - start_time).total_seconds() / 3600
         current_minus_diff_time = current_time - timedelta(hours=time_diff_hours)
 
-        binance_provider = BinanceCoinPriceDataProvider()
+        data_provider = CompositeCoinPriceDataProvider(
+            [
+                BinanceCoinPriceDataProvider(),
+                await BirdeyeCoinPriceDataProvider.create(),
+            ]
+        )
         target_coins = [coin for coin in similarity_search_coins if coin != coin_name][
-            :100
+            :150
         ]
 
         source_coin_historical_ohlcvs = (
-            await binance_provider.get_historical_ohlcv_by_start_end(
+            await data_provider.get_historical_ohlcv_by_start_end(
                 [coin_name],
                 interval=interval,
                 start_time=start_time,
@@ -120,7 +129,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
             return "No data found"
 
         target_coins_historical_ohlcvs = (
-            await binance_provider.get_historical_ohlcv_by_start_end(
+            await data_provider.get_historical_ohlcv_by_start_end(
                 target_coins,
                 interval=interval,
                 start_time=current_minus_diff_time,
@@ -285,7 +294,12 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
         coins_to_fetch = [
             coin for coin in self.og_coins_for_flashback if coin != coin_name
         ]
-        binance_provider = BinanceCoinPriceDataProvider()
+        data_provider = CompositeCoinPriceDataProvider(
+            [
+                BinanceCoinPriceDataProvider(),
+                await BirdeyeCoinPriceDataProvider.create(),
+            ]
+        )
 
         def convert_timestamp_to_datetime(df: pd.DataFrame) -> pd.DataFrame:
             df["datetime"] = pd.to_datetime(
@@ -293,7 +307,7 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             ).dt.strftime("%Y-%m-%d %H:%M:%S")
             return df
 
-        og_coins_historical_ohlcvs = await binance_provider.get_historical_ohlcv(
+        og_coins_historical_ohlcvs = await data_provider.get_historical_ohlcv(
             coins_to_fetch,
             interval=interval,
             days=self.interval_to_params[interval]["fetch_days"],
@@ -303,7 +317,7 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             og_coins_historical_ohlcvs
         )
 
-        current_coin_historical_ohlcv = await binance_provider.get_historical_ohlcv(
+        current_coin_historical_ohlcv = await data_provider.get_historical_ohlcv(
             [coin_name],
             interval=interval,
             days=self.interval_to_params[interval]["fetch_days"],
