@@ -43,7 +43,7 @@ export class BinanceAdapter implements OHLCVAdapter {
     }
     this.l.debug(`Binance Response[${url}]: ${JSON.stringify(result)}`);
     return result.map((item) => ({
-      timestamp: item[0],
+      timestamp: Math.floor(item[0] / 1000),
       open: Number(item[1]),
       high: Number(item[2]),
       low: Number(item[3]),
