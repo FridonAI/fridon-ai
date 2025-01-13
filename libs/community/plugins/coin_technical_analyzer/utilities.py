@@ -7,14 +7,21 @@ from fridonai_core.plugins.utilities.llm import LLMUtility
 from libs.repositories import IndicatorsRepository
 import os
 
-if os.environ.get("DATA_PROVIDER") == "binance":
-    from libs.data_providers import (
-        BinanceCoinPriceDataProvider as BinanceCoinPriceDataProvider,
-        BirdeyeCoinPriceDataProvider as BirdeyeCoinPriceDataProvider,
-        CompositeCoinPriceDataProvider as CompositeCoinPriceDataProvider,
-    )
+from libs.data_providers import (
+    BinanceCoinPriceDataProvider as BinanceCoinPriceDataProvider,
+    BirdeyeCoinPriceDataProvider as BirdeyeCoinPriceDataProvider,
+    CompositeCoinPriceDataProvider as CompositeCoinPriceDataProvider,
+)
 
 from libs.internals.indicators import calculate_ta_indicators
+
+interval_to_days = {
+    "30m": 3,
+    "1h": 5,
+    "4h": 22,
+    "1d": 80,
+    "1w": 400,
+}
 
 
 class CoinTechnicalAnalyzerUtility(LLMUtility):
@@ -45,7 +52,12 @@ Technical Indicators for {interval} intervals:
         *args,
         **kwargs,
     ) -> dict:
-        data_provider = CompositeCoinPriceDataProvider([BirdeyeCoinPriceDataProvider(), BinanceCoinPriceDataProvider()])
+        data_provider = CompositeCoinPriceDataProvider(
+            [
+                BinanceCoinPriceDataProvider(),
+                await BirdeyeCoinPriceDataProvider.create(),
+            ]
+        )
         if start_time and end_time:
             ohlcv_data = await data_provider.get_historical_ohlcv_by_start_end(
                 [coin_name.upper()],
@@ -56,19 +68,14 @@ Technical Indicators for {interval} intervals:
             )
 
         else:
-            interval_to_days = {
-                "30m": 3,
-                "1h": 5,
-                "4h": 22,
-                "1d": 80,
-                "1w": 400,
-            }
             ohlcv_data = await data_provider.get_historical_ohlcv(
                 [coin_name.upper()],
                 interval,
                 days=interval_to_days[interval],
                 output_format="dataframe",
             )
+        if len(ohlcv_data) == 0:
+            return "No data found"
 
         plot_data = calculate_ta_indicators(ohlcv_data, return_last_one=False)
         coin_interval_record_df = plot_data.tail(1)
@@ -140,15 +147,13 @@ class CoinChartPlotterUtility(BaseUtility):
         *args,
         **kwargs,
     ) -> str:
-        data_provider = BinanceCoinPriceDataProvider()
-        print("Want these indicators", indicators)
-        interval_to_days = {
-            "30m": 3,
-            "1h": 5,
-            "4h": 22,
-            "1d": 80,
-            "1w": 400,
-        }
+        data_provider = CompositeCoinPriceDataProvider(
+            [
+                BinanceCoinPriceDataProvider(),
+                await BirdeyeCoinPriceDataProvider.create(),
+            ]
+        )
+
         ohlcv_data = await data_provider.get_historical_ohlcv(
             [coin_name.upper()],
             interval,
@@ -178,12 +183,27 @@ class CoinInfoUtility(BaseUtility):
             fields.remove("description")
 
         if len(fields) > 0:
-            indicators_repository = IndicatorsRepository(table_name="indicators_raw")
-            coin_latest_record = indicators_repository.get_coin_latest_record(
-                coin_name
-            ).to_dicts()
-            if len(coin_latest_record) == 0:
+            data_provider = CompositeCoinPriceDataProvider(
+                [
+                    BinanceCoinPriceDataProvider(),
+                    await BirdeyeCoinPriceDataProvider.create(),
+                ]
+            )
+            interval = "4h"
+            ohlcv_data = await data_provider.get_historical_ohlcv(
+                [coin_name.upper()],
+                interval,
+                days=interval_to_days[interval],
+                output_format="dataframe",
+            )
+            if len(ohlcv_data) == 0:
                 return "No data found"
+
+            coin_latest_record = (
+                calculate_ta_indicators(ohlcv_data, return_last_one=False)
+                .tail(1)
+                .to_dicts()
+            )
 
             for field in fields:
                 if field == "price":

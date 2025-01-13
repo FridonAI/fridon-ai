@@ -73,7 +73,6 @@ class JupiterTokenListDataProvider:
             {
                 "symbol": token["symbol"],
                 "address": token["address"],
-                "chain": token["chain"],
             }
             for token in final_token_list
         ]

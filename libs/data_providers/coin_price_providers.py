@@ -96,11 +96,12 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
                 url = f"{self.base_url}?symbol={symbol}USDT&interval={interval}&startTime={start_time}&limit=500"
                 if end_time:
                     url += f"&endTime={end_time}"
-
                 try:
                     async with aiohttp.ClientSession() as session:
                         async with session.get(url) as resp:
                             data = await resp.json()
+                            if "code" in data and data["code"] == -1121:
+                                return []
                 except Exception as e:
                     print(f"Error fetching {symbol} {interval} data from Binance: {e}")
                     return []
@@ -396,11 +397,10 @@ class BirdeyeCoinPriceDataProvider(CoinPriceDataProvider):
                 "symbol": symbol,
                 "address": self._token_map[symbol]["address"],
                 "type": interval,
-                "time_from": start_time,
-                "time_to": end_time,
+                "time_from": int(start_time.timestamp()),
+                "time_to": int(end_time.timestamp()),
             }
             tasks.append(self._fetch_coin_ohlcv_birdeye(params))
-
             # Process in batches of 15 requests per second
             if len(tasks) >= 15:
                 batch_results = await asyncio.gather(*tasks)
@@ -491,7 +491,8 @@ class CompositeCoinPriceDataProvider(CoinPriceDataProvider):
     async def get_current_ohlcv(self, coins, interval, output_format):
         for provider in self.providers:
             resp = await provider.get_current_ohlcv(coins, interval, output_format)
-            return resp
+            if isinstance(resp, tuple) or len(resp) > 0:
+                return resp
         return [], datetime.now(UTC).replace(microsecond=0)
 
 
@@ -500,7 +501,8 @@ class CompositeCoinPriceDataProvider(CoinPriceDataProvider):
             resp = await provider.get_historical_ohlcv(
                 coins, interval, days, output_format
             )
-            return resp
+            if isinstance(resp, tuple) or len(resp) > 0:
+                return resp
         return [], datetime.now(UTC).replace(microsecond=0)
 
     async def get_historical_ohlcv_by_start_end(self, coins, interval, start_time, end_time, output_format):
@@ -508,5 +510,6 @@ class CompositeCoinPriceDataProvider(CoinPriceDataProvider):
             resp = await provider.get_historical_ohlcv_by_start_end(
                 coins, interval, start_time, end_time, output_format
             )
-            return resp
+            if isinstance(resp, tuple) or len(resp) > 0:
+                return resp
         return [], datetime.now(UTC).replace(microsecond=0)
