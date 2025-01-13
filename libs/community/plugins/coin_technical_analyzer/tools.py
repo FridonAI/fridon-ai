@@ -25,7 +25,10 @@ else:
 
 
 class CoinTechnicalAnalyzerToolInput(BaseToolInput):
-    coin_name: str = Field(..., description="The symbol of the coin to analyze, abbreviation. If full name is provided refactor to abbreviation.")
+    coin_name: str = Field(
+        ...,
+        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is.",
+    )
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
         default="1h", description="The timeframe of the chart candles"
     )

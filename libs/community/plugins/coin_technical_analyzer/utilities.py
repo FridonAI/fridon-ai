@@ -4,7 +4,6 @@ import pyarrow.compute as pc
 
 from fridonai_core.plugins.utilities.base import BaseUtility
 from fridonai_core.plugins.utilities.llm import LLMUtility
-from libs.repositories import IndicatorsRepository
 import os
 
 from libs.data_providers import (
