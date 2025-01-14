@@ -25,10 +25,11 @@ async def task_runner(
         "coin-technical-analyzer",
         "coin-observer",
         "wallet",
-        "jupiter", 
+        "jupiter",
         "fridon",
         "solana-bonk-educator",
-        "emperor-trading"
+        "emperor-trading",
+        "off-topic",
     ]
     response_message, used_agents = await service.process(
         request.user.wallet_id, request.chat_id, plugins, request.data.message
@@ -62,9 +63,12 @@ async def task_runner(
 
     await pub.publish("response_received", str(response))
 
-    score = await scorer_service.process(
-        request.user.wallet_id, request.data.message, response_message, used_agents
-    )
+    if used_agents[-1] == "off-topic":
+        score = 0
+    else:
+        score = await scorer_service.process(
+            request.user.wallet_id, request.data.message, response_message, used_agents
+        )
     print("Score:", score)
     await pub.publish(
         "scores_updated",
@@ -97,6 +101,8 @@ async def user_message_handler(
 async def send_plugins(pub: redis.Publisher = Provide["publisher"]):
     registry = ensure_plugin_registry()
     plugins = [plugin_cls().to_json() for plugin_cls in registry.plugins.values()]
+
+    plugins = [p for p in plugins if p["name"] != "off-topic"]
 
     for i, plugin in enumerate(plugins):
         if plugin["slug"] == "solana-bonk-educator":
