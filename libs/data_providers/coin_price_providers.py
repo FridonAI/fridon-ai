@@ -100,7 +100,7 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
                     async with aiohttp.ClientSession() as session:
                         async with session.get(url) as resp:
                             data = await resp.json()
-                            if "code" in data and data["code"] == -1121:
+                            if "code" in data and data["code"] in [-1121, -1100]:
                                 return []
                 except Exception as e:
                     print(f"Error fetching {symbol} {interval} data from Binance: {e}")
@@ -140,6 +140,8 @@ class BinanceCoinPriceDataProvider(CoinPriceDataProvider):
                 async with aiohttp.ClientSession() as session:
                     async with session.get(url) as resp:
                         data = await resp.json()
+                        if "code" in data and data["code"] in [-1121, -1100]:
+                            return []
             except Exception as e:
                 print(f"Error fetching {symbol} {interval} data from Binance: {e}")
                 return []

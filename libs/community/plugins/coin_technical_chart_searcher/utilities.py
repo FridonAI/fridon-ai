@@ -112,12 +112,12 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
             ]
         )
         target_coins = [coin for coin in similarity_search_coins if coin != coin_name][
-            :150
+            :100
         ]
 
         source_coin_historical_ohlcvs = (
             await data_provider.get_historical_ohlcv_by_start_end(
-                [coin_name],
+                [coin_name.upper()],
                 interval=interval,
                 start_time=start_time,
                 end_time=end_time,
@@ -294,9 +294,12 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
         coins_to_fetch = [
             coin for coin in self.og_coins_for_flashback if coin != coin_name
         ]
+
+        binance_data_provider = BinanceCoinPriceDataProvider()
+
         data_provider = CompositeCoinPriceDataProvider(
             [
-                BinanceCoinPriceDataProvider(),
+                binance_data_provider,
                 await BirdeyeCoinPriceDataProvider.create(),
             ]
         )
@@ -307,22 +310,24 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             ).dt.strftime("%Y-%m-%d %H:%M:%S")
             return df
 
-        og_coins_historical_ohlcvs = await data_provider.get_historical_ohlcv(
+        og_coins_historical_ohlcvs = await binance_data_provider.get_historical_ohlcv(
             coins_to_fetch,
             interval=interval,
             days=self.interval_to_params[interval]["fetch_days"],
             output_format="dataframe",
         )
+
         og_coins_historical_ohlcvs = convert_timestamp_to_datetime(
             og_coins_historical_ohlcvs
         )
 
         current_coin_historical_ohlcv = await data_provider.get_historical_ohlcv(
-            [coin_name],
+            [coin_name.upper()],
             interval=interval,
             days=self.interval_to_params[interval]["fetch_days"],
             output_format="dataframe",
         )
+
         current_coin_historical_ohlcv = convert_timestamp_to_datetime(
             current_coin_historical_ohlcv
         )
