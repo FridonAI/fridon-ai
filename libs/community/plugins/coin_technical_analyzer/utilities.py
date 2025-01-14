@@ -4,7 +4,23 @@ import pyarrow.compute as pc
 
 from fridonai_core.plugins.utilities.base import BaseUtility
 from fridonai_core.plugins.utilities.llm import LLMUtility
-from libs.repositories import IndicatorsRepository
+import os
+
+from libs.data_providers import (
+    BinanceCoinPriceDataProvider as BinanceCoinPriceDataProvider,
+    BirdeyeCoinPriceDataProvider as BirdeyeCoinPriceDataProvider,
+    CompositeCoinPriceDataProvider as CompositeCoinPriceDataProvider,
+)
+
+from libs.internals.indicators import calculate_ta_indicators
+
+interval_to_days = {
+    "30m": 3,
+    "1h": 5,
+    "4h": 22,
+    "1d": 80,
+    "1w": 400,
+}
 
 
 class CoinTechnicalAnalyzerUtility(LLMUtility):
@@ -24,6 +40,7 @@ Given {symbol} coin's TA data as below on the last trading day, what will be the
 Technical Indicators for {interval} intervals:
 {coin_history_indicators}"""
     fields_to_retain: list[str] = ["plot_data"]
+    model_name: str = "gpt-4o-mini"
 
     async def _arun(
         self,
@@ -34,34 +51,40 @@ Technical Indicators for {interval} intervals:
         *args,
         **kwargs,
     ) -> dict:
-        indicators_repository = IndicatorsRepository(
-            table_name=f"indicators_{interval}"
+        data_provider = CompositeCoinPriceDataProvider(
+            [
+                BinanceCoinPriceDataProvider(),
+                await BirdeyeCoinPriceDataProvider.create(),
+            ]
         )
         if start_time and end_time:
-            coin_interval_record_df = (
-                indicators_repository.get_coin_records_in_time_range(
-                    coin_name.upper(),
-                    datetime.fromisoformat(start_time).replace(tzinfo=UTC),
-                    datetime.fromisoformat(end_time).replace(tzinfo=UTC),
-                )
+            ohlcv_data = await data_provider.get_historical_ohlcv_by_start_end(
+                [coin_name.upper()],
+                interval,
+                datetime.fromisoformat(start_time).replace(tzinfo=UTC),
+                datetime.fromisoformat(end_time).replace(tzinfo=UTC),
+                output_format="dataframe",
             )
-            plot_data = coin_interval_record_df.to_dicts()
 
         else:
-            coin_interval_record_df = indicators_repository.get_coin_latest_record(
-                coin_name.upper()
+            ohlcv_data = await data_provider.get_historical_ohlcv(
+                [coin_name.upper()],
+                interval,
+                days=interval_to_days[interval],
+                output_format="dataframe",
             )
-            plot_data = indicators_repository.get_coin_last_records(
-                coin_name.upper(), number_of_points=200
-            ).to_dicts()
+        if len(ohlcv_data) == 0:
+            return "No data found"
+
+        plot_data = calculate_ta_indicators(ohlcv_data, return_last_one=False)
+        coin_interval_record_df = plot_data.tail(1)
 
         if len(coin_interval_record_df) == 0:
             return "No data found"
-
         return {
             "coin_history_indicators": str(coin_interval_record_df.to_dicts()),
             "symbol": coin_name,
-            "plot_data": plot_data,
+            "plot_data": plot_data.to_dicts(),
             "interval": interval,
         }
 
@@ -123,19 +146,27 @@ class CoinChartPlotterUtility(BaseUtility):
         *args,
         **kwargs,
     ) -> str:
-        indicators_repository = IndicatorsRepository(
-            table_name=f"indicators_{interval}"
-        )
-        print("Want these indicators", indicators)
-        coin_last_records = indicators_repository.get_coin_last_records(
-            coin_name, number_of_points=200
+        data_provider = CompositeCoinPriceDataProvider(
+            [
+                BinanceCoinPriceDataProvider(),
+                await BirdeyeCoinPriceDataProvider.create(),
+            ]
         )
 
-        if len(coin_last_records) == 0:
+        ohlcv_data = await data_provider.get_historical_ohlcv(
+            [coin_name.upper()],
+            interval,
+            days=interval_to_days[interval],
+            output_format="dataframe",
+        )
+
+        plot_data = calculate_ta_indicators(ohlcv_data, return_last_one=False)
+
+        if len(plot_data) == 0:
             return "No coins found"
 
         return {
-            "plot_data": coin_last_records.to_dicts(),
+            "plot_data": plot_data.to_dicts(),
             "indicators_to_plot": indicators,
         }
 
@@ -144,25 +175,40 @@ class CoinInfoUtility(BaseUtility):
     async def arun(
         self, coin_name: str, *args, fields: List[str] = [], **kwargs
     ) -> str:
-        response = "Here are coin info you requested: \n"
+        response = "Here is coin info you requested: \n"
 
         if "description" in fields:
             response += "Description:\n"
             fields.remove("description")
 
         if len(fields) > 0:
-            indicators_repository = IndicatorsRepository(table_name="indicators_raw")
-            coin_latest_record = indicators_repository.get_coin_latest_record(
-                coin_name
-            ).to_dicts()
-            print("Coin latest record: ", coin_latest_record)
-            if len(coin_latest_record) == 0:
+            data_provider = CompositeCoinPriceDataProvider(
+                [
+                    BinanceCoinPriceDataProvider(),
+                    await BirdeyeCoinPriceDataProvider.create(),
+                ]
+            )
+            interval = "4h"
+            ohlcv_data = await data_provider.get_historical_ohlcv(
+                [coin_name.upper()],
+                interval,
+                days=interval_to_days[interval],
+                output_format="dataframe",
+            )
+            if len(ohlcv_data) == 0:
                 return "No data found"
+
+            coin_latest_record = (
+                calculate_ta_indicators(ohlcv_data, return_last_one=False)
+                .tail(1)
+                .to_dicts()
+            )
 
             for field in fields:
                 if field == "price":
-                    response += f"- {field}: {coin_latest_record[0]['close']}\n"
+                    response += f"- {field} - {coin_latest_record[0]['close']}\n"
                 elif field in coin_latest_record[0]:
-                    response += f"- {field}: {coin_latest_record[0][field]}\n"
+                    response += f"- {field} - {coin_latest_record[0][field]}\n"
+            response += "In textual format."
 
         return response

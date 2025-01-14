@@ -14,15 +14,16 @@ class LLMUtility(BaseUtility):
     )
     structured_output: type[BaseModel] | None = None
     fields_to_retain: list[str] = []
+    model_name: str = "gpt-4o"
 
     async def arun(self, *args, **kwargs) -> BaseModel | dict | str | Any:
         placeholders = await self._arun(*args, **kwargs)
 
-        if type(placeholders) == str:
+        if isinstance(placeholders, str):
             return placeholders
 
         prompt = PromptTemplate.from_template(self.llm_job_description)
-        llm = get_model()
+        llm = get_model(self.model_name)
 
         if self.structured_output is not None:
             llm = create_structured_output_model(self.structured_output, llm)

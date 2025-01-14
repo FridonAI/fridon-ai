@@ -1,4 +1,18 @@
-from langchain_core.runnables import Runnable, RunnableConfig
+from pydantic import BaseModel
+
+from langchain_core.runnables import Runnable, RunnableConfig, RunnableLambda
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.language_models import BaseChatModel
+
+from langgraph.graph import StateGraph, END
+from langgraph.prebuilt import ToolNode
+
+from fridonai_core.plugins.tools.base import BaseTool
+from fridonai_core.graph.states import SubState
+from fridonai_core.graph.models import get_model
+from fridonai_core.graph.routers import route_plugin_agent
+from fridonai_core.graph.tools import CompleteTool
+from fridonai_core.graph.utils import handle_tool_error
 
 
 class Agent:
@@ -47,7 +61,57 @@ class SupervisorAgent(Agent):
         return {"messages": result, "used_agents": []}
 
 
-def create_agent(runnable: Runnable, name: str = "Agent") -> Agent:
+def create_agent_chain(
+    llm: BaseChatModel,
+    prompt: ChatPromptTemplate,
+    tools: list[BaseTool | type[BaseModel]],
+    always_tool_call=False,
+) -> Runnable:
+    if always_tool_call:
+        return prompt | llm.bind_tools(
+            tools, tool_choice="any", parallel_tool_calls=False
+        )
+    return prompt | llm.bind_tools(tools, parallel_tool_calls=False)
+
+
+def create_agent(
+    prompt: ChatPromptTemplate,
+    tools: list[BaseTool | type[BaseModel]],
+    always_tool_call=False,
+    name: str = "Agent",
+    llm=get_model("gpt-4o"),
+) -> Agent:
+    runnable = create_agent_chain(llm, prompt, tools, always_tool_call=always_tool_call)
+
     if name == "Agent":
         return SupervisorAgent(runnable, "Agent")
-    return Agent(runnable, name)
+
+    agent = Agent(runnable, name)
+    graph = StateGraph(SubState)
+
+    tool_node = ToolNode(tools + [CompleteTool]).with_fallbacks(
+        [RunnableLambda(handle_tool_error)], exception_key="error"
+    )
+
+    agent_node_name = name.lower() + "Agent"
+    agent_tools_node_name = agent_node_name + "Tools"
+
+    graph.add_node(agent_node_name, agent)
+    graph.add_node(agent_tools_node_name, tool_node)
+
+    graph.add_edge(agent_tools_node_name, agent_node_name)
+
+    graph.add_conditional_edges(
+        agent_node_name,
+        route_plugin_agent,
+        {
+            "tool_node": agent_tools_node_name,
+            END: END,
+        },
+    )
+
+    graph.set_entry_point(agent_node_name)
+
+    graph = graph.compile()
+
+    return graph

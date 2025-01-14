@@ -1,23 +1,18 @@
 import os
-from typing import Literal, Union
+from typing import Literal
 from fridonai_core.graph.models import get_model
 from langchain_core.language_models import BaseChatModel
-from langchain_core.runnables import RunnableLambda
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
-from langgraph.prebuilt import ToolNode
 from langchain_core.messages import HumanMessage
 
 from fridonai_core.graph.agents import create_agent
-from fridonai_core.graph.chains import create_agent_chain
 from fridonai_core.graph.prompts import create_agent_prompt, create_supervised_prompt
-from fridonai_core.graph.routers import route_plugin_agent, route_supervisor_agent
-from fridonai_core.graph.states import State
+from fridonai_core.graph.routers import route_supervisor_agent
+from fridonai_core.graph.states import State, attach_tool_response_to_tool
 from fridonai_core.graph.tools import CompleteTool, create_plugin_wrapper_tool
 from fridonai_core.graph.utils import (
     generate_structured_response,
-    handle_tool_error,
-    leave_tool,
     prepare_plugin_agent,
 )
 from fridonai_core.plugins import BasePlugin
@@ -36,48 +31,34 @@ def create_graph(
     workflow = StateGraph(State)
 
     supervisor_agent = create_agent(
-        create_agent_chain(
-            llm,
-            prompt=create_supervised_prompt(),
-            tools=[*list(plugins_to_wrapped_plugins.values())],
-            always_tool_call=False,
-        )
+        create_supervised_prompt(),
+        [*list(plugins_to_wrapped_plugins.values())],
+        llm=llm,
+        always_tool_call=False,
     )
 
     workflow.add_node("supervisor", supervisor_agent)
 
     for plugin in plugins:
-        agent_chain = create_agent_chain(
-            llm,
-            create_agent_prompt(
-                plugin.name,
-                plugin.full_description(tool_descriptions=True),
-                plugin.output_format,
-            ),
-            tools=plugin.tools + [CompleteTool],
-            always_tool_call=True,
-        )
-
-        tool_node = ToolNode(plugin.tools + [CompleteTool]).with_fallbacks(
-            [RunnableLambda(handle_tool_error)], exception_key="error"
-        )
-
-        agent = create_agent(agent_chain, plugin.slug)
-
-        workflow.add_node("Enter" + plugin.name, prepare_plugin_agent)
-        workflow.add_node(plugin.name, agent)
-        workflow.add_edge("Enter" + plugin.name, plugin.name)
-        workflow.add_node(plugin.name + "_tools", tool_node)
-        workflow.add_edge(plugin.name + "_tools", plugin.name)
-        workflow.add_conditional_edges(
+        plugin_prompt = create_agent_prompt(
             plugin.name,
-            route_plugin_agent,
-            {
-                "tool_node": plugin.name + "_tools",
-                "leave_tool": "leave_tool",
-                "supervisor": "supervisor",
-            },
+            plugin.description,
+            plugin.output_format,
         )
+
+        agent_graph = create_agent(
+            plugin_prompt,
+            plugin.tools_with_examples_in_description + [CompleteTool],
+            always_tool_call=True,
+            name=plugin.slug,
+            llm=llm,
+        )
+
+        workflow.add_node(
+            plugin.name,
+            prepare_plugin_agent | agent_graph | attach_tool_response_to_tool,
+        )
+        workflow.add_edge(plugin.name, "supervisor")
 
     def _route_supervisor_agent_wrapper(state):
         return route_supervisor_agent(state, wrapped_plugins_to_plugins)
@@ -86,13 +67,11 @@ def create_graph(
         "supervisor",
         _route_supervisor_agent_wrapper,
         {
-            **{"Enter" + plugin.name: "Enter" + plugin.name for plugin in plugins},
+            **{plugin.name: plugin.name for plugin in plugins},
             "respond": "respond",
         },
     )
     workflow.add_node("respond", generate_structured_response)
-    workflow.add_node("leave_tool", leave_tool)
-    workflow.add_edge("leave_tool", "supervisor")
     workflow.add_edge("respond", END)
 
     workflow.set_entry_point("supervisor")
@@ -104,9 +83,9 @@ async def generate_response(
     message: str,
     plugins: list[BasePlugin],
     config: dict,
-    memory: Literal['postgres'] = 'postgres',
+    memory: Literal["postgres"] = "postgres",
     return_used_agents: bool = True,
-    llm: BaseChatModel = get_model("gpt"),
+    llm: BaseChatModel = get_model("gpt-4o"),
 ):
 
     if memory not in ['postgres', 'sqlite']:

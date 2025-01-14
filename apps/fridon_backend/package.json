@@ -27,7 +27,6 @@
     "prisma:seed": "npx prisma db seed"
   },
   "dependencies": {
-    "coingecko-api-v3": "^0.0.29",
     "@bonfida/spl-name-service": "^2.1.1",
     "@coral-xyz/anchor": "^0.29.0",
     "@faker-js/faker": "^8.4.1",
@@ -46,6 +45,7 @@
     "@nestjs/platform-socket.io": "^10.3.3",
     "@nestjs/schedule": "^4.0.0",
     "@nestjs/swagger": "^7.3.0",
+    "@nestjs/throttler": "^6.3.0",
     "@nestjs/websockets": "^10.3.3",
     "@prisma/client": "latest",
     "@solana/web3.js": "^1.91.1",
@@ -57,6 +57,7 @@
     "cache-manager": "^5.4.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "coingecko-api-v3": "^0.0.29",
     "cookie-parser": "^1.4.6",
     "ioredis": "^5.3.2",
     "lodash": "^4.17.21",
