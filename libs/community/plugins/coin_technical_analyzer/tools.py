@@ -116,7 +116,10 @@ CoinTechnicalIndicatorsListTool = BaseTool(
 
 
 class CoinChartPlotterToolInput(BaseToolInput):
-    coin_name: str = Field(..., description="The symbol of the coin to plot, abbreviation. If full name is provided refactor to abbreviation.")
+    coin_name: str = Field(
+        ...,
+        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is.",
+    )
     indicators: List[
         Literal[
             "MACD_12_26_9",
@@ -187,7 +190,7 @@ CoinChartPlotterTool = BaseTool(
 class CoinInfoToolInput(BaseToolInput):
     coin_name: str = Field(
         ...,
-        description="The symbol of the coin to get info about, abbreviation. If full name is provided refactor to abbreviation.",
+        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is.",
     )
     fields: List[
         Literal[

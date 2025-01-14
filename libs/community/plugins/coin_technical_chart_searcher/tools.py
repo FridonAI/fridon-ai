@@ -22,7 +22,9 @@ else:
     )
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
-    coin_name: str = Field(description="The symbol of the coin, abbreviation. If full name is provided refactor to abbreviation.")
+    coin_name: str = Field(
+        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is."
+    )
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
         default="1d", description="The interval of the price chart"
     )
@@ -57,7 +59,7 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
 
 class CoinPriceChartFlashbackSearchToolInput(BaseToolInput):
     coin_name: str = Field(
-        description="The symbol of the coin, abbreviation. If full name is provided refactor to abbreviation."
+        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is."
     )
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
         default="1d", description="The interval of the price chart"
