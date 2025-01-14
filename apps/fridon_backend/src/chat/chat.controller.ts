@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
   ChatIdDto,
@@ -22,6 +22,7 @@ import { TransactionListenerService } from 'src/blockchain/transaction-listener/
 import { EventBus } from '@nestjs/cqrs';
 import { TransactionCanceledEvent } from 'src/blockchain/events/transaction.event';
 import { TransactionType } from 'src/blockchain/transaction-listener/types';
+import { WalletThrottlerGuard } from '@lib/throttling';
 
 @Controller('chats')
 @ApiTags('chat')
@@ -160,7 +161,7 @@ export class ChatHttpController {
         .filter(Boolean) as GetChatResponseDto['messages'],
     });
   }
-
+  @UseGuards(WalletThrottlerGuard)
   @Post(':chatId')
   async createChatMessage(
     @Param() params: ChatIdDto,

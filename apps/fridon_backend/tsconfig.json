@@ -39,6 +39,12 @@
       ],
       "@lib/auth/*": [
         "libs/auth/src/*"
+      ],
+      "@lib/throttling": [
+        "libs/throttling/src"
+      ],
+      "@lib/throttling/*": [
+        "libs/throttling/src/*"
       ]
     }
   }
