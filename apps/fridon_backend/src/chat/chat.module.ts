@@ -15,6 +15,7 @@ import { Redis } from 'ioredis';
 import { LeaderBoardService } from './leaderboard.service';
 import { LeaderboardHttpController } from './leaderboard.controller';
 import { NotificationsEventsController } from './external/notifications/notifications.controller';
+import { ThrottlerModule } from '../throttling/throttler.module';
 
 @Global()
 @Module({
@@ -29,6 +30,7 @@ import { NotificationsEventsController } from './external/notifications/notifica
         },
       },
     ]),
+    ThrottlerModule
   ],
   controllers: [
     ChatHttpController,

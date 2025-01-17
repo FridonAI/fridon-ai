@@ -41,7 +41,7 @@ import { ProxyModule } from './proxy/proxy.module';
     BlockchainModule.forRoot(),
     UserModule,
     PluginsModule,
-    ProxyModule.forRoot(),
+    ProxyModule,
   ],
   providers: [providePrismaClientExceptionFilter()],
 })
