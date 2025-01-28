@@ -111,9 +111,9 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
                 await BirdeyeCoinPriceDataProvider.create(),
             ]
         )
-        target_coins = [coin for coin in similarity_search_coins if coin != coin_name][
-            :100
-        ]
+        target_coins = [
+            coin for coin in similarity_search_coins if coin != coin_name.upper()
+        ][:100]
 
         source_coin_historical_ohlcvs = (
             await data_provider.get_historical_ohlcv_by_start_end(
@@ -292,7 +292,7 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
 
         number_of_points = chart_length * self.days_to_points_for_interval[interval]
         coins_to_fetch = [
-            coin for coin in self.og_coins_for_flashback if coin != coin_name
+            coin for coin in self.og_coins_for_flashback if coin != coin_name.upper()
         ]
 
         binance_data_provider = BinanceCoinPriceDataProvider()
