@@ -1,6 +1,6 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import Runnable
-from langchain_openai import ChatOpenAI
+from fridonai_core.graph.models import get_model
 from pydantic import BaseModel, Field
 
 from settings import settings
@@ -17,6 +17,7 @@ There are several things to take into account:
 3. If assistant message says that user's request couldn't be done, you should assign score to 0.
 4. If user asks same question but different parameters don't count it as abuse. (e.g. "What is the price of BTC?" and "What is the price of ETH?")
 5. Max 1 point if for for diverse, interesting dialogue with Fridon and using different agents.
+6. If the question is legit and not spam and isn't perfect as well, generate score from 0.5 to 1 considering how complex the latest q/a is.
 
 
 <user_current_message>
@@ -41,9 +42,9 @@ For checking if user is abusing the chat or assessing diversity of user's reques
 
 class ScoreOutput(BaseModel):
     "What score should be assigned to user's message"
-    score: float | int = Field(description="Score from 0 to 2")
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0, openai_api_key=settings.OPENAI_API_KEY, verbose=True)
+    score: float | int = Field(description="Score from 0 to 1")
+
 
 class ScorerChain(BaseModel):
     structured_output: type[BaseModel] = ScoreOutput
@@ -51,7 +52,9 @@ class ScorerChain(BaseModel):
 
     @property
     def _chain(self) -> Runnable:
-        return prompt | llm.with_structured_output(self.structured_output)
+        return prompt | get_model("gpt-4o-mini").with_structured_output(
+            self.structured_output
+        )
 
     async def arun(self, user_message, response, prev_user_messages, used_agents):
         return (
