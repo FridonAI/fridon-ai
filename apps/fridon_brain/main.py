@@ -27,7 +27,13 @@ def _send_literal_message(
 
 
 async def _handle_score(
-    request, scorer_service, pub, used_agents, response_message, prev_messages
+    request,
+    scorer_service,
+    pub,
+    used_agents,
+    response_message,
+    prev_messages,
+    new_used_agents_count,
 ):
     if len(used_agents) == 0 or used_agents[-1] == "off-topic":
         score = 0
@@ -39,7 +45,7 @@ async def _handle_score(
             used_agents,
             prev_user_messages=prev_messages,
         )
-    print("Score:", score)
+    print("Score:", score, "New used agents:", used_agents[-new_used_agents_count:])
     await pub.publish(
         "scores_updated",
         json.dumps(
@@ -47,7 +53,11 @@ async def _handle_score(
                 "chatId": request.chat_id,
                 "walletId": request.user.wallet_id,
                 "score": round(score, 2),
-                "pluginsUsed": used_agents,
+                "pluginsUsed": [
+                    agent
+                    for agent in used_agents[-new_used_agents_count:]
+                    if agent != "off-topic"
+                ],
             }
         ),
     )
@@ -71,7 +81,12 @@ async def task_runner(
         "emperor-trading",
         "off-topic",
     ]
-    response_message, used_agents, prev_messages = await service.process(
+    (
+        response_message,
+        used_agents,
+        prev_messages,
+        new_used_agents_count,
+    ) = await service.process(
         request.user.wallet_id, request.chat_id, plugins, request.data.message
     )
 
@@ -119,7 +134,13 @@ async def task_runner(
         response_message.text_answer or response_message.structured_answers,
     )
     await _handle_score(
-        request, scorer_service, pub, used_agents, response_message, prev_messages
+        request,
+        scorer_service,
+        pub,
+        used_agents,
+        response_message,
+        prev_messages,
+        new_used_agents_count,
     )
 
 

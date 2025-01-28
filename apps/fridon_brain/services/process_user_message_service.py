@@ -21,8 +21,11 @@ class ProcessUserMessageService:
             "chat_id": chat_id,
         }
 
-        final_response, used_agents, prev_messages = await generate_response(
-            message, plugins, config, memory="postgres"
-        )
+        (
+            final_response,
+            used_agents,
+            prev_messages,
+            new_used_agents_count,
+        ) = await generate_response(message, plugins, config, memory="postgres")
 
-        return final_response, used_agents, prev_messages
+        return final_response, used_agents, prev_messages, new_used_agents_count

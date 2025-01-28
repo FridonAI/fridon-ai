@@ -104,6 +104,11 @@ async def generate_response(
 
         graph = create_graph(llm, plugins, memory_saver)
         graph_config = {"configurable": config}
+
+        prev_agents_len = len(
+            (await graph.aget_state(graph_config)).values.get("used_agents", [])
+        )
+
         async for s in graph.astream(
             {
                 "messages": [HumanMessage(content=message)],
@@ -133,5 +138,6 @@ async def generate_response(
                 final_response,
                 used_agents,
                 humman_messages[:-1][-10:],
+                len(used_agents[prev_agents_len:]),
             )
         return final_response
