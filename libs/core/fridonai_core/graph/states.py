@@ -15,6 +15,7 @@ class State(TypedDict):
 
 class SubState(TypedDict):
     messages: Annotated[List[AnyMessage], add_messages]
+    used_agents: list[str]
 
 
 def attach_tool_response_to_tool(state: State) -> dict:
@@ -24,5 +25,6 @@ def attach_tool_response_to_tool(state: State) -> dict:
         return {
             "messages": [
                 ToolMessage(tool_call_id=tool_id, content=tc["args"], name="Result"),
-            ]
+            ],
+            "used_agents": state["used_agents"],
         }

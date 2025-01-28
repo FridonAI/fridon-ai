@@ -84,9 +84,9 @@ def create_agent(
     runnable = create_agent_chain(llm, prompt, tools, always_tool_call=always_tool_call)
 
     if name == "Agent":
-        return SupervisorAgent(runnable, "Agent")
+        return SupervisorAgent(runnable, name="Agent")
 
-    agent = Agent(runnable, name)
+    agent = Agent(runnable, name=name)
     graph = StateGraph(SubState)
 
     tool_node = ToolNode(tools + [CompleteTool]).with_fallbacks(
