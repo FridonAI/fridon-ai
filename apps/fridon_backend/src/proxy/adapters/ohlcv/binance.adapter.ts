@@ -36,12 +36,10 @@ export class BinanceAdapter implements OHLCVAdapter {
     const result = (await response.json()) as BinanceResponse;
 
     if ('msg' in result) {
-      this.l.debug(`Binance Response[${url}]: ${JSON.stringify(result.msg)}`);
       throw new BadRequestException(
         `Failed to fetch Binance data for ${symbol}: "${result.msg}"`,
       );
     }
-    this.l.debug(`Binance Response[${url}]: ${JSON.stringify(result)}`);
     return result.map((item) => ({
       timestamp: Math.floor(item[0] / 1000),
       open: Number(item[1]),
