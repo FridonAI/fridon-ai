@@ -14,11 +14,51 @@ from libs.utils import redis
 from libs.utils.redis.schemas import ResponseMessage
 
 
+def _send_literal_message(
+    literal_client, thread_id, thread_name, message_type, message_name, message
+):
+    try:
+        with literal_client.thread(thread_id=thread_id, name=thread_name) as _:
+            literal_client.message(
+                content=message, type=message_type, name=message_name
+            )
+    except Exception as e:
+        print(f"Error sending message to literal: {e}")
+
+
+async def _handle_score(
+    request, scorer_service, pub, used_agents, response_message, prev_messages
+):
+    if len(used_agents) == 0 or used_agents[-1] == "off-topic":
+        score = 0
+    else:
+        score = await scorer_service.process(
+            request.user.wallet_id,
+            request.data.message,
+            response_message,
+            used_agents,
+            prev_user_messages=prev_messages,
+        )
+    print("Score:", score)
+    await pub.publish(
+        "scores_updated",
+        json.dumps(
+            {
+                "chatId": request.chat_id,
+                "walletId": request.user.wallet_id,
+                "score": round(score, 2),
+                "pluginsUsed": used_agents,
+            }
+        ),
+    )
+
+
 async def task_runner(
     request,
     service: ProcessUserMessageService,
     scorer_service: CalculateUserMessageScoreService,
     pub: redis.Publisher,
+    literal_client,
 ):
     plugins = [
         "coin-technical-chart-searcher",
@@ -31,7 +71,7 @@ async def task_runner(
         "emperor-trading",
         "off-topic",
     ]
-    response_message, used_agents = await service.process(
+    response_message, used_agents, prev_messages = await service.process(
         request.user.wallet_id, request.chat_id, plugins, request.data.message
     )
 
@@ -62,24 +102,24 @@ async def task_runner(
     )
 
     await pub.publish("response_received", str(response))
-
-    if used_agents[-1] == "off-topic":
-        score = 0
-    else:
-        score = await scorer_service.process(
-            request.user.wallet_id, request.data.message, response_message, used_agents
-        )
-    print("Score:", score)
-    await pub.publish(
-        "scores_updated",
-        json.dumps(
-            {
-                "chatId": request.chat_id,
-                "walletId": request.user.wallet_id,
-                "score": round(score, 2),
-                "pluginsUsed": used_agents,
-            }
-        ),
+    _send_literal_message(
+        literal_client,
+        request.chat_id,
+        request.user.wallet_id,
+        "user_message",
+        f"User",
+        request.data.message,
+    )
+    _send_literal_message(
+        literal_client,
+        request.chat_id,
+        request.user.wallet_id,
+        "assistant_message",
+        f"Fridon",
+        response_message.text_answer or response_message.structured_answers,
+    )
+    await _handle_score(
+        request, scorer_service, pub, used_agents, response_message, prev_messages
     )
 
 
@@ -91,10 +131,13 @@ async def user_message_handler(
     scorer_service: CalculateUserMessageScoreService = Provide[
         "calculate_user_message_score_service"
     ],
+    literal_client=Provide["literal_client"],
 ):
     async for request in sub.channel("chat_message_created"):
         print(f"(Handler) Message Received: {request}")
-        task = asyncio.create_task(task_runner(request, service, scorer_service, pub))
+        task = asyncio.create_task(
+            task_runner(request, service, scorer_service, pub, literal_client)
+        )
 
 
 @inject
