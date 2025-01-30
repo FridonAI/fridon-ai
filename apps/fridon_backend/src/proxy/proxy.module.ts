@@ -5,14 +5,15 @@ import { BinanceAdapter } from "./adapters/ohlcv/binance.adapter";
 import { BirdEyeAdapter } from "./adapters/ohlcv/bird-eye.adapter";
 import { BinanceTokenListAdapter, JupiterTokenListAdapter } from "./adapters/token-list/token-list.adapter";
 import { UpdateTokenList } from "./crons/update-token-list.cron";
-import { ThrottlerModule } from "@nestjs/throttler";
+// import { ThrottlerModule } from "@nestjs/throttler";
 
 @Module({
     imports: [
-      ThrottlerModule.forRoot([{
-        ttl: 1000,
-        limit: 15,
-      }]),
+        // ThrottlerModule.forRoot([{
+        //     name: 'proxy',
+        //     ttl: 1000,
+        //     limit: 15,
+        // }]),
     ],
     controllers: [ProxyController],
     providers: [ProxyService, BinanceAdapter, BirdEyeAdapter, JupiterTokenListAdapter, BinanceTokenListAdapter, UpdateTokenList],

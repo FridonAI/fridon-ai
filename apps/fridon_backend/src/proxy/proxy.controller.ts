@@ -1,12 +1,12 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ThrottlerGuard } from '@nestjs/throttler';
+// import { ThrottlerGuard } from '@nestjs/throttler';
 import { ProxyService } from './proxy.service';
 import { GetOHLCVQueryDto, GetOHLCVResponseDto, GetTokensQueryDto, GetTokensResponseDto, OHLCVDto } from './proxy.dto';
 
 @Controller('proxy')
 @ApiTags('proxy')
-@UseGuards(ThrottlerGuard)
+    // @UseGuards(ThrottlerGuard)
 export class ProxyController {
     constructor(private readonly proxyService: ProxyService) {}
 

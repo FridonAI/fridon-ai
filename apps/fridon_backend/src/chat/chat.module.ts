@@ -30,7 +30,7 @@ import { ThrottlerModule } from '../throttling/throttler.module';
         },
       },
     ]),
-    ThrottlerModule
+    ThrottlerModule,
   ],
   controllers: [
     ChatHttpController,

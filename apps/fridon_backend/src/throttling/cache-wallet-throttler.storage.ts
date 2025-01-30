@@ -11,7 +11,6 @@ export class CacheWalletThrottlerStorage implements ThrottlerStorage {
     ) {}
 
     async increment(key: string, ttl: number, limit: number, blockDuration: number, throttlerName: string): Promise<ThrottlerStorageRecord> {
-        console.log('avoeeee');
         const record = await this.cacheManager.get<number[]>(this.getKey(key, throttlerName)) || [];
         const now = Date.now();
         const newRecord = [...record, now].filter((timestamp) => timestamp > now - ttl);
