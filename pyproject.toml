@@ -19,7 +19,7 @@ dependency-injector = "^4.41.0"
 async-timeout = "^4.0.3"
 redis = "^5.0.3"
 langchain = "0.3.0"
-langchain-openai = "0.2.0"
+langchain-openai = "0.3.0"
 langchain-community = "0.3.0"
 
 fastapi-camelcase = "^2.0.0"
