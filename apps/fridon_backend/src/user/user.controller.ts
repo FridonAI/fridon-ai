@@ -27,6 +27,21 @@ export class UserController {
     private readonly pluginsService: PluginsService,
   ) {}
 
+  // @Get('/test')
+  // async test() {
+  //   const keypair = Keypair.generate();
+
+  //   console.log(Buffer.from(keypair.secretKey).toString("hex")  );
+  //   // Extract public and secret keys
+  //   const publicKey = keypair.publicKey.toBase58();
+  //   const secretKey = Buffer.from(keypair.secretKey).toString("base64");
+    
+  //   console.log("Public Key (PK):", publicKey);
+  //   console.log("Secret Key (SK) - Base64 Encoded:", secretKey);
+  //   JSON.stringify(Array.from(keypair.secretKey));
+
+  // }
+
   @Post('/purchase')
   async processPaymentTransaction(
     @Wallet() wallet: WalletSession,

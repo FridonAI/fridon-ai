@@ -13,6 +13,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Wallet {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+  walletAddress String @unique @map("wallet_address")
+  nonce         String @map("nonce")
+
+  userType       String?   @map("user_type")
+  expirationTime Int?      @map("expiration_time")
+  verifiedAt     DateTime? @map("verified_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("wallets")
+}
+
 model ChatMessage {
   id String @id @db.Uuid
 

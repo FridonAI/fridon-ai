@@ -27,6 +27,7 @@
     "prisma:seed": "npx prisma db seed"
   },
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.738.0",
     "@bonfida/spl-name-service": "^2.1.1",
     "@coral-xyz/anchor": "^0.29.0",
     "@faker-js/faker": "^8.4.1",
