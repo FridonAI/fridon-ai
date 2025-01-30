@@ -35,7 +35,11 @@ async def _handle_score(
     prev_messages,
     new_used_agents_count,
 ):
-    if len(used_agents) == 0 or used_agents[-1] == "off-topic":
+    if (
+        len(used_agents) == 0
+        or used_agents[-1] == "off-topic"
+        or new_used_agents_count == 0
+    ):
         score = 0
     else:
         score = await scorer_service.process(
@@ -45,7 +49,12 @@ async def _handle_score(
             used_agents,
             prev_user_messages=prev_messages,
         )
-    print("Score:", score, "New used agents:", used_agents[-new_used_agents_count:])
+    print(
+        "Score:",
+        score,
+        "New used agents:",
+        used_agents[len(used_agents) - new_used_agents_count :],
+    )
     await pub.publish(
         "scores_updated",
         json.dumps(
@@ -55,7 +64,7 @@ async def _handle_score(
                 "score": round(score, 2),
                 "pluginsUsed": [
                     agent
-                    for agent in used_agents[-new_used_agents_count:]
+                    for agent in used_agents[len(used_agents) - new_used_agents_count :]
                     if agent != "off-topic"
                 ],
             }

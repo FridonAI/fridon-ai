@@ -123,16 +123,12 @@ async def generate_response(
         graph_state = await graph.aget_state(graph_config)
         final_response = graph_state.values.get("final_response")
         if return_used_agents:
-            used_agents = list(set(graph_state.values.get("used_agents", [])))
-            humman_messages = (
-                list(
-                    map(
-                        lambda x: x.content,
-                        filter(
-                            lambda x: x.type == "human", graph_state.values["messages"]
-                        ),
-                    )
-                ),
+            used_agents = graph_state.values.get("used_agents", [])
+            humman_messages = list(
+                map(
+                    lambda x: x.content,
+                    filter(lambda x: x.type == "human", graph_state.values["messages"]),
+                )
             )
             return (
                 final_response,
