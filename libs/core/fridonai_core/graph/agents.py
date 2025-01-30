@@ -69,9 +69,9 @@ def create_agent_chain(
 ) -> Runnable:
     if always_tool_call:
         return prompt | llm.bind_tools(
-            tools, tool_choice="any", parallel_tool_calls=False
+            tools, tool_choice="any", parallel_tool_calls=True
         )
-    return prompt | llm.bind_tools(tools, parallel_tool_calls=False)
+    return prompt | llm.bind_tools(tools, parallel_tool_calls=True)
 
 
 def create_agent(
