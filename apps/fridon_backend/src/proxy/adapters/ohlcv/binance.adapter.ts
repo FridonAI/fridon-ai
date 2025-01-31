@@ -21,10 +21,14 @@ type BinanceResponse =
   | { msg: string };
 
 export class BinanceAdapter implements OHLCVAdapter {
-
   private readonly l: Logger = new Logger(BinanceAdapter.name);
 
-  async getOHLCV(symbol: string, interval: '30m' | '1h' | '4h' | '1d', startTime: number, endTime: number): Promise<OHLCV[]> {
+  async getOHLCV(
+    symbol: string,
+    interval: '30m' | '1h' | '4h' | '1d',
+    startTime: number,
+    endTime: number,
+  ): Promise<OHLCV[]> {
     const params = new URLSearchParams({
       symbol: `${symbol.toUpperCase()}USDT`,
       interval,

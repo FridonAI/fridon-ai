@@ -1,7 +1,15 @@
 import { BaseDto } from '@lib/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 // Shared
 export class ChatIdDto extends BaseDto<ChatIdDto> {
@@ -12,7 +20,7 @@ export class ChatIdDto extends BaseDto<ChatIdDto> {
 // Get Chat
 export class GetChatsResponseDto extends BaseDto<GetChatsResponseDto> {
   @ApiProperty({ example: [{ id: '11111111-1111-1111-1111-111111111111' }] })
-  chats: { id: string; title: string, rectangle?: RectangleDto }[];
+  chats: { id: string; title: string; rectangle?: RectangleDto }[];
 }
 
 export class RectangleDto extends BaseDto<RectangleDto> {
@@ -120,7 +128,7 @@ export class GetChatsRequestDto extends BaseDto<GetChatsRequestDto> {
   @ApiPropertyOptional({
     description: 'Type of chat to filter by',
     enum: ['Regular', 'SuperChart'],
-    default: 'Regular'
+    default: 'Regular',
   })
   @IsOptional()
   @IsString()
@@ -140,7 +148,7 @@ export class GetChatsHistoryRequestDto extends BaseDto<GetChatsHistoryRequestDto
   @ApiPropertyOptional({
     description: 'Type of chat to filter by',
     enum: ['Regular', 'SuperChart'],
-    default: 'Regular'
+    default: 'Regular',
   })
   @IsOptional()
   @IsString()

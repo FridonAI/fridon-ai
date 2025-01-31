@@ -12,5 +12,3 @@ export class GetNonceRequestDto {
   @IsPublicKey()
   walletAddress!: string;
 }
-
-'@lib/common';

@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import {
   TransferTokenResponseDto,
   TransferTokenRequestBodyDto,
@@ -19,6 +19,7 @@ import { BlockchainService } from './blockchain.service';
 import { TransactionFactory } from './factories/transaction-factory';
 import { Connection } from '@solana/web3.js';
 import { Logger } from '@nestjs/common';
+import { Auth, Role } from 'src/auth/decorators/auth.decorator';
 
 @Controller('blockchain')
 @ApiTags('blockchain')
@@ -32,6 +33,8 @@ export class BlockchainController {
   ) {}
 
   @Post('transfer-tokens')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async transferTokens(
     @Body() body: TransferTokenRequestBodyDto,
   ): Promise<TransferTokenResponseDto> {
@@ -52,6 +55,8 @@ export class BlockchainController {
 
   // Provider Transaction Operations
   @Post('defi-operation')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async defiOperations(
     @Body() body: DefiOperationRequestBodyDto,
   ): Promise<TransactionResponseDto> {
@@ -72,6 +77,8 @@ export class BlockchainController {
   }
 
   @Post('balance-operation')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async balanceOperations(
     @Body() body: BalanceOperationRequestBodyDto,
   ): Promise<BalanceOperationResponseDto> {
@@ -95,6 +102,8 @@ export class BlockchainController {
   }
 
   @Post('symmetry/operation')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async symmetryOperations(@Body() body: SymmetryDefiOperationsRequestBodyDto) {
     const result = await this.blockchainService.getSymmetryOperations(
       body.walletAddress,
@@ -125,6 +134,8 @@ export class BlockchainController {
   }
 
   @Post('symmetry/baskets')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async getSymmetryInformation() {
     const result = await this.blockchainService.getSymmetryBaskets();
 
@@ -141,6 +152,8 @@ export class BlockchainController {
   }
 
   @Post('points')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async getProtocolPoints(@Body() body: PointsRequestBodyDto) {
     const result = await this.blockchainService.getProtocolPoints(
       body.walletAddress,
@@ -153,6 +166,8 @@ export class BlockchainController {
   }
 
   @Post('swap')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async swapTokens(
     @Body() body: SwapTokensRequestBodyDto,
   ): Promise<SwapTokensResponseDto> {

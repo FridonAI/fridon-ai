@@ -7,7 +7,7 @@ import { GetNonceResponseDto } from './get-nonce.response-dto';
 
 @Controller(authRoutes.root)
 export class GetNonceController {
-  constructor(private authRepository: AuthRepository) { }
+  constructor(private authRepository: AuthRepository) {}
 
   @Get(authRoutes.getNonce)
   @ApiOperation({ summary: 'Get Nonce', tags: ['Auth'] })

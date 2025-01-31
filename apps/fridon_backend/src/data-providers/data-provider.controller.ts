@@ -1,10 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import {
   DataProviderRequestBodyDto,
   DataProviderResponseBodyDto,
 } from './data-provider.dto';
 import { DataProviderService } from './data-provider.service';
+import { Auth, Role } from 'src/auth/decorators/auth.decorator';
 
 @Controller('data')
 @ApiTags('data')
@@ -12,6 +13,8 @@ export class DataProviderController {
   constructor(private readonly service: DataProviderService) {}
 
   @Post('/executor')
+  @ApiSecurity('auth')
+  @Auth(Role.Public)
   async get(
     @Body() body: DataProviderRequestBodyDto,
   ): Promise<DataProviderResponseBodyDto> {

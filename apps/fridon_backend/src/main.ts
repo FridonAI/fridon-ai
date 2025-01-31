@@ -12,11 +12,17 @@ async function bootstrap() {
     .setTitle('Chat Block AI [API]')
     .setDescription('The Chat Block AI API description')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addSecurity('auth', {
+      type: 'apiKey',
+      in: 'header',
+      name: 'Authorization',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: { persistAuthorization: true },
+  });
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,

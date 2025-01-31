@@ -66,7 +66,11 @@ export class ChatRepository {
     return messages;
   }
 
-  async createChat(chatId: ChatId, walletId: string, rectanglePrisma?: Prisma.RectangleCreateArgs['data']): Promise<void> {
+  async createChat(
+    chatId: ChatId,
+    walletId: string,
+    rectanglePrisma?: Prisma.RectangleCreateArgs['data'],
+  ): Promise<void> {
     let rectangleId: string | undefined;
 
     if (rectanglePrisma) {
@@ -89,7 +93,10 @@ export class ChatRepository {
   async getChat(chatId: ChatId) {
     const chat = await this.prisma.chat.findUniqueOrThrow({
       where: { id: chatId.value },
-      include: { messages: { orderBy: { createdAt: 'desc' } }, rectangle: true },
+      include: {
+        messages: { orderBy: { createdAt: 'desc' } },
+        rectangle: true,
+      },
     });
 
     return chat;

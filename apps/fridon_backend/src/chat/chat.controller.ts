@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
   ChatIdDto,
@@ -16,17 +24,17 @@ import {
   TransactionCanceledRequestDto,
 } from './chat.dto';
 import { ChatId } from './domain/chat-id.value-object';
-import { ApiTags } from '@nestjs/swagger';
-import { Auth, Wallet, WalletSession } from '@lib/auth';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { TransactionListenerService } from 'src/blockchain/transaction-listener/transaction-listener.service';
 import { EventBus } from '@nestjs/cqrs';
 import { TransactionCanceledEvent } from 'src/blockchain/events/transaction.event';
 import { TransactionType } from 'src/blockchain/transaction-listener/types';
 import { WalletThrottlerGuard } from '@lib/throttling';
+import { Auth, Role } from 'src/auth/decorators/auth.decorator';
+import { Claims } from 'src/auth/decorators/claims.decorator';
 
 @Controller('chats')
 @ApiTags('chat')
-@Auth()
 export class ChatHttpController {
   constructor(
     private readonly chatService: ChatService,
@@ -35,11 +43,16 @@ export class ChatHttpController {
   ) {}
 
   @Get()
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async getChats(
-    @Wallet() wallet: WalletSession,
+    @Claims('sub') walletAddress: string,
     @Query() query: GetChatsRequestDto,
   ): Promise<GetChatsResponseDto> {
-    const res = await this.chatService.getChats(wallet.walletAddress, query.chatType ?? 'Regular');
+    const res = await this.chatService.getChats(
+      walletAddress,
+      query.chatType ?? 'Regular',
+    );
 
     return new GetChatsResponseDto({
       chats: res.map((chat) => ({
@@ -61,12 +74,14 @@ export class ChatHttpController {
   }
 
   @Get('/history')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async getChatHistory(
-    @Wallet() wallet: WalletSession,
+    @Claims('sub') walletAddress: string,
     @Query() query: GetChatsHistoryRequestDto,
   ) {
     const res = await this.chatService.getChatHistory(
-      wallet.walletAddress,
+      walletAddress,
       query.limit ?? 100,
       query.chatType ?? 'Regular',
     );
@@ -91,11 +106,12 @@ export class ChatHttpController {
       })),
     });
   }
+
   @Get('/notifications')
-  async getChatNotifications(@Wallet() wallet: WalletSession) {
-    const res = await this.chatService.getChatNotifications(
-      wallet.walletAddress,
-    );
+  @ApiSecurity('auth')
+  @Auth(Role.User)
+  async getChatNotifications(@Claims('sub') walletAddress: string) {
+    const res = await this.chatService.getChatNotifications(walletAddress);
 
     return new GetNotificationResponseDto({
       messages: res.messages
@@ -115,12 +131,14 @@ export class ChatHttpController {
   }
 
   @Post()
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async createChat(
-    @Wallet() wallet: WalletSession,
+    @Claims('sub') walletAddress: string,
     @Body() rectangle?: RectangleDto,
   ): Promise<CreateChatResponseDto> {
     const res = await this.chatService.createChat(
-      wallet.walletAddress,
+      walletAddress,
       rectangle && Object.keys(rectangle).length > 0
         ? {
             id: rectangle.id,
@@ -131,7 +149,7 @@ export class ChatHttpController {
             endPrice: rectangle.endPrice,
             interval: rectangle.interval,
           }
-        : undefined
+        : undefined,
     );
 
     return new CreateChatResponseDto({
@@ -140,6 +158,8 @@ export class ChatHttpController {
   }
 
   @Get(':chatId')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async getChat(@Param() params: ChatIdDto): Promise<GetChatResponseDto> {
     const res = await this.chatService.getChat(new ChatId(params.chatId));
 
@@ -161,12 +181,15 @@ export class ChatHttpController {
         .filter(Boolean) as GetChatResponseDto['messages'],
     });
   }
+
   @UseGuards(WalletThrottlerGuard)
   @Post(':chatId')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async createChatMessage(
     @Param() params: ChatIdDto,
     @Body() body: CreateChatMessageRequestDto,
-    @Wallet() { walletAddress }: WalletSession,
+    @Claims('sub') walletAddress: string,
   ): Promise<CreateChatMessageResponseDto> {
     const res = await this.chatService.createChatMessageQuery(
       new ChatId(params.chatId),
@@ -179,6 +202,8 @@ export class ChatHttpController {
   }
 
   @Post(':chatId/transaction')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async registerChatTransactionId(
     @Param() { chatId }: ChatIdDto,
     @Body() body: CreateChatMessageInfoRequestDto,
@@ -191,6 +216,8 @@ export class ChatHttpController {
   }
 
   @Post(':chatId/transaction-cancel')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async transactionCancel(
     @Param() { chatId }: ChatIdDto,
     @Body() body: TransactionCanceledRequestDto,

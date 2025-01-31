@@ -10,14 +10,14 @@ import {
 import { TransactionListenerService } from 'src/blockchain/transaction-listener/transaction-listener.service';
 import { TransactionType } from 'src/blockchain/transaction-listener/types';
 import { PaymentBodyDto, UserPluginsResponseDto } from './user.dto';
-import { ApiTags } from '@nestjs/swagger';
-import { Auth, Wallet, WalletSession } from '@lib/auth';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { PluginsService } from 'src/plugins/plugins.service';
+import { Auth, Role } from 'src/auth/decorators/auth.decorator';
+import { Claims } from 'src/auth/decorators/claims.decorator';
 
 @ApiTags('user')
 @Controller('user')
-@Auth()
 export class UserController {
   private readonly logger = new Logger(UserController.name);
 
@@ -27,6 +27,7 @@ export class UserController {
     private readonly pluginsService: PluginsService,
   ) {}
 
+  // todo: remove it later. after generating beta key-pair.
   // @Get('/test')
   // async test() {
   //   const keypair = Keypair.generate();
@@ -35,7 +36,7 @@ export class UserController {
   //   // Extract public and secret keys
   //   const publicKey = keypair.publicKey.toBase58();
   //   const secretKey = Buffer.from(keypair.secretKey).toString("base64");
-    
+
   //   console.log("Public Key (PK):", publicKey);
   //   console.log("Secret Key (SK) - Base64 Encoded:", secretKey);
   //   JSON.stringify(Array.from(keypair.secretKey));
@@ -43,8 +44,10 @@ export class UserController {
   // }
 
   @Post('/purchase')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async processPaymentTransaction(
-    @Wallet() wallet: WalletSession,
+    @Claims('sub') walletAddress: string,
     @Body() body: PaymentBodyDto,
   ) {
     const plugin = this.pluginsService.get(body.pluginId);
@@ -60,7 +63,7 @@ export class UserController {
       expirationDate.setMonth(expirationDate.getMonth() + 1);
 
       await this.userService.assignPlugin({
-        walletId: wallet.walletAddress,
+        walletId: walletAddress,
         pluginId: plugin.slug,
         expiresAt: expirationDate,
       });
@@ -75,7 +78,7 @@ export class UserController {
       body.transactionId,
       TransactionType.PAYMENT,
       {
-        walletId: wallet.walletAddress,
+        walletId: walletAddress,
         chatId: 'NaN',
         personality: 'NaN',
         plugin: body.pluginId,
@@ -84,16 +87,16 @@ export class UserController {
   }
 
   @Get('/me/plugins')
+  @ApiSecurity('auth')
+  @Auth(Role.User)
   async getPlugins(
-    @Wallet() wallet: WalletSession,
+    @Claims('sub') walletAddress: string,
   ): Promise<UserPluginsResponseDto> {
-    const pluginList = await this.userService.getUserPlugins(
-      wallet.walletAddress,
-    );
+    const pluginList = await this.userService.getUserPlugins(walletAddress);
 
     const purchaseInProgressPlugins =
       await this.transactionListenerService.getPurchaseInProgressPlugins(
-        wallet.walletAddress,
+        walletAddress,
       );
 
     return {

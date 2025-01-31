@@ -1,8 +1,9 @@
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { PluginsService } from './plugins.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { FindAllPluginsDtoResponseDto } from './plugins.dto';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { Auth, Role } from 'src/auth/decorators/auth.decorator';
 
 @Controller('plugins')
 @ApiTags('plugins')
@@ -12,6 +13,8 @@ export class PluginsController {
 
   @CacheTTL(5) // ToDo: Change to 30 seconds
   @Get()
+  @ApiSecurity('auth')
+  @Auth(Role.Public)
   async findAll(): Promise<FindAllPluginsDtoResponseDto[]> {
     const plugins = this.pluginService.getPlugins();
 

@@ -1,4 +1,4 @@
-import { NonFunctionProperties } from "@lib/common";
+import { NonFunctionProperties } from '@lib/common';
 
 export type WalletConstructor = Pick<
   NonFunctionProperties<Omit<Wallet, 'props'>>,

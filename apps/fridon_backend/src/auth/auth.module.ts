@@ -10,7 +10,7 @@ import { RolesGuard } from './guards/auth.guard';
 import { GetNonceController } from './queries/get-nonce/get-nonce.controller';
 import { SignInController } from './commands/sign-in/sign-in.controller';
 
-@Global() 
+@Global()
 @Module({
   imports: [ConfigModule.forRoot()],
   controllers: [SignInController, SignUpController, GetNonceController],
