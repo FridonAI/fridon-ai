@@ -66,7 +66,12 @@ export class ChatRepository {
     return messages;
   }
 
-  async createChat(chatId: ChatId, walletId: string, rectanglePrisma?: Prisma.RectangleCreateArgs['data']): Promise<void> {
+  async createChat(
+    chatId: ChatId,
+    walletId: string,
+    rectanglePrisma?: Prisma.RectangleCreateArgs['data'],
+    model: string = 'gpt-4o'
+  ): Promise<void> {
     let rectangleId: string | undefined;
 
     if (rectanglePrisma) {
@@ -81,6 +86,7 @@ export class ChatRepository {
         id: chatId.value,
         walletId,
         rectangleId,
+        model,
         chatType: rectangleId ? 'SuperChart' : 'Regular',
       },
     });

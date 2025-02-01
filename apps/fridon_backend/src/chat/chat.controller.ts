@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
   ChatIdDto,
@@ -12,7 +20,7 @@ import {
   GetChatsRequestDto,
   GetChatsResponseDto,
   GetNotificationResponseDto,
-  RectangleDto,
+  CreateChatDto,
   TransactionCanceledRequestDto,
 } from './chat.dto';
 import { ChatId } from './domain/chat-id.value-object';
@@ -56,6 +64,7 @@ export class ChatHttpController {
               interval: chat.rectangle.interval,
             }
           : undefined,
+        model: chat.model,
       })),
     });
   }
@@ -117,12 +126,14 @@ export class ChatHttpController {
   @Post()
   async createChat(
     @Wallet() wallet: WalletSession,
-    @Body() rectangle?: RectangleDto,
+    @Body() createChat?: CreateChatDto,
   ): Promise<CreateChatResponseDto> {
+    const rectangle = createChat?.rectangle;
     const res = await this.chatService.createChat(
       wallet.walletAddress,
-      rectangle && Object.keys(rectangle).length > 0
-        ? {
+      {
+        rectangle: rectangle && Object.keys(rectangle).length > 0
+          ? {
             id: rectangle.id,
             symbol: rectangle.coin,
             startDate: new Date(rectangle.startDate * 1000),
@@ -131,7 +142,9 @@ export class ChatHttpController {
             endPrice: rectangle.endPrice,
             interval: rectangle.interval,
           }
-        : undefined
+          : undefined,
+        model: createChat?.model,
+      }
     );
 
     return new CreateChatResponseDto({

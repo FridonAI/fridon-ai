@@ -61,6 +61,7 @@ model Chat {
   messages    ChatMessage[]
   rectangle   Rectangle?    @relation(fields: [rectangleId], references: [id])
   rectangleId String?       @unique
+  model       String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 

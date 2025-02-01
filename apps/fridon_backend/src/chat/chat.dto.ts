@@ -38,6 +38,14 @@ export class RectangleDto extends BaseDto<RectangleDto> {
   interval: string;
 }
 
+export class CreateChatDto extends BaseDto<CreateChatDto> {
+  @ApiPropertyOptional({ type: RectangleDto })
+  rectangle?: RectangleDto;
+
+  @ApiPropertyOptional({ example: 'gpt-4o' })
+  model?: string = 'gpt-4o';
+}
+
 export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
   @ApiProperty({
     example: [
@@ -76,6 +84,8 @@ export class GetChatResponseDto extends BaseDto<GetChatResponseDto> {
 
   @ApiPropertyOptional({ type: RectangleDto })
   rectangle?: RectangleDto;
+  @ApiPropertyOptional({ example: 'gpt-4o' })
+  model?: string;
 }
 
 export class GetNotificationResponseDto extends BaseDto<GetNotificationResponseDto> {
