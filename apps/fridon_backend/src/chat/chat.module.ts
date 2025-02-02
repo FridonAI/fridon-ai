@@ -16,6 +16,7 @@ import { LeaderBoardService } from './leaderboard.service';
 import { LeaderboardHttpController } from './leaderboard.controller';
 import { NotificationsEventsController } from './external/notifications/notifications.controller';
 import { ThrottlerModule } from '../throttling/throttler.module';
+import { BonkNotificationsController } from './external/bonk_notifications/bonk-notifications.controller';
 
 @Global()
 @Module({
@@ -36,6 +37,7 @@ import { ThrottlerModule } from '../throttling/throttler.module';
     ChatHttpController,
     AiEventsController,
     NotificationsEventsController,
+    BonkNotificationsController,
     LeaderboardHttpController,
   ],
   providers: [
