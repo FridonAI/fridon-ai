@@ -6,6 +6,7 @@ export class AiChatMessageCreatedDto extends BaseDto<AiChatMessageCreatedDto> {
     walletId: string;
   };
   plugins: string[];
+  model: string | null;
   data: {
     message: string;
     personality: string;

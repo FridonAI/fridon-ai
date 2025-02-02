@@ -22,6 +22,7 @@ export class AiAdapter {
     message: string,
     personality: string,
     plugins: string[],
+    model: string | null,
   ) {
     const eventName = 'chat_message_created';
     const event = new AiChatMessageCreatedDto({
@@ -29,6 +30,7 @@ export class AiAdapter {
       user: { walletId: walletId },
       data: { message, personality, messageId },
       plugins: plugins,
+      model: model,
       aux: { traceId: randomUUID() },
     });
 

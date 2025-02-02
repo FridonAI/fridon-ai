@@ -159,7 +159,7 @@ export class ChatService {
     }));
   }
 
-  async createChat(walletId: string, options?: {
+  async createChat(walletId: string, options?: { 
     rectangle?: Rectangle;
     model?: string;
   }): Promise<{ id: ChatId }> {
@@ -172,7 +172,7 @@ export class ChatService {
 
     await this.chatRepository.createChat(
       chatId,
-      walletId,
+      walletId, 
       options?.rectangle,
       options?.model ?? 'gpt-4o'
     );
@@ -199,7 +199,7 @@ export class ChatService {
     personality: string,
   ): Promise<{ id: ChatMessageId }> {
     const chatMessageId = new ChatMessageId(randomUUID());
-    const chat = await this.chatRepository.getChat(chatId)
+    const chat = await this.chatRepository.getChat(chatId);
 
     let finalMessage = message;
     if (chat.rectangle) {
@@ -222,6 +222,7 @@ export class ChatService {
       finalMessage,
       personality,
       userPlugins.map((plugin) => plugin.id),
+      chat.model,
     );
 
     return { id: chatMessageId };
