@@ -96,7 +96,11 @@ async def task_runner(
         prev_messages,
         new_used_agents_count,
     ) = await service.process(
-        request.user.wallet_id, request.chat_id, plugins, request.data.message
+        request.user.wallet_id,
+        request.chat_id,
+        plugins,
+        request.data.message,
+        request.model,
     )
 
 
@@ -116,11 +120,17 @@ async def task_runner(
             "user": {"wallet_id": request.user.wallet_id},
             "data": {
                 "message": response_message.text_answer,
-                "structured_messages": [json.dumps(_get_structured_answer(ans)) for ans in response_message.structured_answers] if response_message.structured_answers else [],
+                "structured_messages": [
+                    json.dumps(_get_structured_answer(ans))
+                    for ans in response_message.structured_answers
+                ]
+                if response_message.structured_answers
+                else [],
                 "message_id": request.data.message_id,
                 "plugins_used": used_agents,
                 "serialized_transaction": None,
             },
+            "model": request.model,
             "aux": request.aux,
         }
     )

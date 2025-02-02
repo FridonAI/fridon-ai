@@ -23,17 +23,31 @@ def create_plugin_wrapper_tool(plugin: BasePlugin, class_name: str) -> type[Base
 
 
 class CompleteTool(BaseModel):
-    """A tool to mark the current agent's work as completed with appropriate answer and return control to the main assistant,
-    who can re-route the dialog based on the user's needs. Tool doesn't make up any information and is 100% precise with generating answer.
-    If the agent's response was json object answer must be a dict otherwise it must be a string."""
+    """Finalizes the agent's execution by providing a precise, complete answer.
+
+    IMPORTANT: Before using this tool, carefully analyze the previous tool's output:
+    1. Check if the previous response exists and what format it's in (JSON or plain text)
+    2. Determine if the execution was successful
+    3. Do not modify or infer any values - use exactly what was provided
+
+    This tool is used to indicate that the current work is complete and returns the final answer with no alterations or additional content.
+    The answer must meet the following criteria:
+
+    - If the previous tool's output is a JSON or a JSON string, then the answer must be provided as an unmodified JSON string.
+    - Otherwise, the answer must be presented as plain text.
+
+    Do not use this tool if there is no previous tool output to process.
+    """
 
     plugin_status: bool = Field(
-        description="Plugin made it's job successfully, or not and something wrong happened"
+        description="Indicates whether the plugin completed its task successfully (True) or encountered an error (False). Must be based on the actual previous tool execution status."
     )
     answer: str = Field(
-        description="Plugin's response, if json string is the response copy it as it is don't cut or add something."
+        description="The plugin's final response. Must be copied exactly from the previous tool's output - provide the exact JSON string if the answer is in JSON format, or the plain text string otherwise. Do not modify or infer values."
     )
-    is_json: bool = Field(description="If the answer is json string or not.")
+    is_json: bool = Field(
+        description="A flag that must be True if and only if the answer is a valid JSON string, and False if it is plain text. This should be determined by examining the actual previous tool output."
+    )
 
     class Config:
         json_schema_extra = {
@@ -54,15 +68,22 @@ class CompleteTool(BaseModel):
 
 
 class FinalResponse(BaseModel):
-    """FinalResponse generator tool, in no other tools is going to be called this tool is called to generate the final answers.
-    A tool to generate final response to the user's request. It must be the last tool call in the conversation with the final answer.
-    Don't make up anything, you are just response generator only considering structured and text answers from RESULT tools. Consider RESULT tools for generating answers."""
+    """Defines the final response format for fulfilling a user's request.
+
+    This model consolidates outputs from all tool responses with name 'RESULT'.
+    JSON formatted responses (when the `is_json` flag is true) should be appended in
+    `structured_answers`, while text responses (when `is_json` is false) should be contained in `text_answer` and it can be rephrased or diversified for better response, but without hallucinations.
+
+    Fields:
+      - structured_answers: A list of structured (JSON) responses, represented as strings or dictionaries.
+      - text_answer: A single text response aggregating outputs that are not JSON formatted.
+    """
 
     structured_answers: Union[List[Union[str, dict]], None] = Field(
-        description="All json string answers from `CompletedTool`s should be copied here if they are json."
+        description="A list of JSON responses from CompletedTool outputs. If an answer is structured (JSON), it should not be repeated in 'text_answer'."
     )
     text_answer: Union[str, None] = Field(
-        description="Union of tool text answers from `CompleteTool`s tools which wasn't they aren't json."
+        description="The consolidated text response from RESULT tools, used only when the answer is not in JSON format."
     )
 
     class Config:

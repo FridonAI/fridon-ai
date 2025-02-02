@@ -69,9 +69,9 @@ class BasePlugin(BaseModel):
     @property
     def output_format(self):
         if self.json_format:
-            return "\n If tool's answer is json string copy it as it is otherwise use text response and dont mark is_json as true. \n"
+            return "REMEMBER: If tool's answer is json string or json copy it as it is otherwise use text response and dont mark is_json as true!"
         else:
-            return "\n After using tools and having everything together, combine all tool's answer responses in CompleteTool's answer as a text. \n"
+            return "After using tools and having everything together, combine all tool's answer responses in CompleteTool's answer as a text."
 
     def to_json(self) -> dict:
         return {

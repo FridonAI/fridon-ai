@@ -51,7 +51,7 @@ def create_graph(
             plugin.tools_with_examples_in_description + [CompleteTool],
             always_tool_call=True,
             name=plugin.slug,
-            llm=llm,
+            llm=get_model(),
         )
 
         workflow.add_node(

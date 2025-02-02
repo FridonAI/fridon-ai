@@ -24,6 +24,7 @@ class RequestMessage(CamelModel):
     user: UserInput
     data: DataInput
     plugins: list[str] = ["wallet", "fridon", "solana-bonk-educator"]
+    model: str | None = None
     aux: dict
 
 

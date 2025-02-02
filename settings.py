@@ -7,6 +7,9 @@ load_dotenv("./apps/fridon_brain/.env")
 
 class Settings(BaseSettings):
     OPENAI_API_KEY: str
+    ANTHROPIC_API_KEY: str
+    TOGETHER_API_KEY: str
+    DEEPSEEK_API_KEY: str
     GPT_MODEL: str
 
     POSTGRES_DB: str
