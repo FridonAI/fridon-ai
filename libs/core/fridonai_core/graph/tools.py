@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Union
 
 from pydantic import BaseModel, Field, create_model, ConfigDict
 
@@ -67,39 +67,21 @@ class CompleteTool(BaseModel):
         }
 
 
-class FinalResponse(BaseModel):
-    """Defines the final response format for fulfilling a user's request.
-
-    This model consolidates outputs from all tool responses with name 'RESULT'.
-    JSON formatted responses (when the `is_json` flag is true) should be appended in
-    `structured_answers`, while text responses (when `is_json` is false) should be contained in `text_answer` and it can be rephrased or diversified for better response, but without hallucinations.
-
+class FinalTextResponse(BaseModel):
+    """Defines the final text response for fulfilling a user's request.
+    This model consolidates outputs from all tool text responses with name 'RESULT'.
     Fields:
-      - structured_answers: A list of structured (JSON) responses, represented as strings or dictionaries.
-      - text_answer: A single text response aggregating outputs that are not JSON formatted.
+      - text_answer: A single text response aggregating outputs.
     """
 
-    structured_answers: Union[List[Union[str, dict]], None] = Field(
-        description="A list of JSON responses from CompletedTool outputs. If an answer is structured (JSON), it should not be repeated in 'text_answer'."
-    )
     text_answer: Union[str, None] = Field(
-        description="The consolidated text response from RESULT tools, used only when the answer is not in JSON format."
+        description="The consolidated response from all tool text responses with name 'RESULT'."
     )
 
     class Config:
         json_schema_extra = {
-            "example": {
-                "structured_answers": [
-                    '"data": {"sol": 12, "usdc": 10}}',
-                    '"data": {"sol": 12, "usdc": 10}',
-                ],
+            "example 1": {
                 "text_answer": "Your transaction successfully completed and you also successfully staked 10 sol on kamino.",
             },
-            "example 2": {"text_answer": "Solana looks very decent to be bought."},
-            "example 3": {
-                "structured_answer": [
-                    '"data": {"btc": {"score": 1',
-                    '"eth": {"score": 0}}',
-                ]
-            },
+            "example 2": {"text_answer": ""},
         }

@@ -11,7 +11,7 @@ from apps.fridon_brain.services import (
 )
 from fridonai_core.plugins.registry import ensure_plugin_registry
 from libs.utils import redis
-from libs.utils.redis.schemas import ResponseMessage
+from libs.utils.redis.schemas import ResponseMessage, RequestMessage
 
 
 def _send_literal_message(
@@ -73,7 +73,7 @@ async def _handle_score(
 
 
 async def task_runner(
-    request,
+    request: RequestMessage,
     service: ProcessUserMessageService,
     scorer_service: CalculateUserMessageScoreService,
     pub: redis.Publisher,
@@ -119,12 +119,12 @@ async def task_runner(
             "chat_id": request.chat_id,
             "user": {"wallet_id": request.user.wallet_id},
             "data": {
-                "message": response_message.text_answer,
+                "message": response_message["text_answer"],
                 "structured_messages": [
                     json.dumps(_get_structured_answer(ans))
-                    for ans in response_message.structured_answers
+                    for ans in response_message["structured_answers"]
                 ]
-                if response_message.structured_answers
+                if response_message["structured_answers"]
                 else [],
                 "message_id": request.data.message_id,
                 "plugins_used": used_agents,
@@ -150,7 +150,7 @@ async def task_runner(
         request.user.wallet_id,
         "assistant_message",
         f"Fridon",
-        response_message.text_answer or response_message.structured_answers,
+        response_message["text_answer"] or response_message["structured_answers"],
     )
     await _handle_score(
         request,

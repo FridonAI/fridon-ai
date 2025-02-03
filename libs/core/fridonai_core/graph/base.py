@@ -12,7 +12,7 @@ from fridonai_core.graph.routers import route_supervisor_agent
 from fridonai_core.graph.states import State, attach_tool_response_to_tool
 from fridonai_core.graph.tools import CompleteTool, create_plugin_wrapper_tool
 from fridonai_core.graph.utils import (
-    generate_structured_response,
+    generate_final_response,
     prepare_plugin_agent,
 )
 from fridonai_core.plugins import BasePlugin
@@ -71,7 +71,7 @@ def create_graph(
             "respond": "respond",
         },
     )
-    workflow.add_node("respond", generate_structured_response)
+    workflow.add_node("respond", generate_final_response)
     workflow.add_edge("respond", END)
 
     workflow.set_entry_point("supervisor")
