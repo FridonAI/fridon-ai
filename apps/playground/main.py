@@ -5,25 +5,33 @@ from settings import settings
 
 async def main():
     _preload_modules()
-    plugin_names = ["wallet", "fridon", "coin-technical-chart-searcher", "coin-technical-analyzer"]
+    plugin_names = [
+        "coin-technical-chart-searcher",
+        "coin-technical-analyzer",
+        "coin-observer",
+        "wallet",
+        "jupiter",
+        "fridon",
+        "solana-bonk-educator",
+        "emperor-trading",
+    ]
     registry = ensure_plugin_registry()
 
     plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]
 
-    config = {  
-            "thread_id": "1",
-            "wallet_id": "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
-            "chat_id": "bla"
-        }
-    
-    final_response, used_agents = await generate_response(
-        # "Give me coins like WIF in 2023 december by chart similarity",
-        "Which coins in the past end when had the same 4h chart as WIF now?",
+    config = {
+        "thread_id": "1",
+        "wallet_id": "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD",
+        "chat_id": "bla",
+    }
+
+    final_response, used_agents, _, _ = await generate_response(
+        "Analyze sol price chart",
         plugins,
         config,
         memory="sqlite",
     )
-    
+
     print(final_response)
     print(used_agents)
 

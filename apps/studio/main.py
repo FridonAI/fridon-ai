@@ -10,10 +10,15 @@ from settings import settings
 def test_chat():
     _preload_modules()
     plugin_names = [
-        "wallet",
-        "fridon",
-        "coin-technical-analyzer",
         "coin-technical-chart-searcher",
+        "coin-technical-analyzer",
+        "coin-observer",
+        "wallet",
+        "jupiter",
+        "fridon",
+        "solana-bonk-educator",
+        "emperor-trading",
+        "off-topic",
     ]
     registry = ensure_plugin_registry()
     plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]
