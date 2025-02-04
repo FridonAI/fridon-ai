@@ -30,6 +30,27 @@ export class ChatRepository {
     return notificationChat;
   }
 
+  async getBonkNotifications(walletId: string) {
+    const chatId = await this.prisma.bonkNotifications.findUnique({
+      where: { walletId },
+    });
+
+    if (!chatId) {
+      return undefined;
+    }
+
+    const notificationChat = await this.prisma.chat.findUnique({
+      where: { id: chatId.chatId },
+      include: {
+        messages: {
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
+
+    return notificationChat;
+  }
+
   async getChats(walletId: string, chatType: 'Regular' | 'SuperChart') {
     const chats = await this.prisma.chat.findMany({
       where: { walletId, chatType },

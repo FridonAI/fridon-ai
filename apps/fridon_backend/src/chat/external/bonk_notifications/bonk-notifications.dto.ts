@@ -9,3 +9,11 @@ export class BonkNotificationsMessageDto extends BaseDto<BonkNotificationsMessag
   path: string;
   url: string;
 }
+
+export class BonkNotificationResponseGeneratedMessageDto extends BaseDto<BonkNotificationResponseGeneratedMessageDto> {
+  type: 'bonk-notification';
+  id: string;
+  chatId: 'bonk-notifications';
+  date: string;
+  structuredMessages: string[];
+}

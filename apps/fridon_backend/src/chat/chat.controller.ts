@@ -123,6 +123,27 @@ export class ChatHttpController {
     });
   }
 
+  @Get('/bonk-notifications')
+  async getBonkNotifications(@Wallet() wallet: WalletSession) {
+    const res = await this.chatService.getBonkNotifications(
+      wallet.walletAddress,
+    );
+
+    return new GetNotificationResponseDto({
+      messages: res.messages
+        .map((m) => ({
+          id: m.id,
+          content: m.content,
+          messageType: m.messageType,
+          structuredContent: m.structuredData
+            ? JSON.parse(m.structuredData)
+            : null,
+          date: m.date.toISOString(),
+        }))
+        .filter(Boolean) as GetNotificationResponseDto['messages'],
+    });
+  }
+
   @Post()
   async createChat(
     @Wallet() wallet: WalletSession,

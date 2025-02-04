@@ -51,7 +51,7 @@ export class ChatService {
     private readonly aiAdapter: AiAdapter,
     private readonly chatRepository: ChatRepository,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   async getChats(walletId: string, chatType: 'Regular' | 'SuperChart'): Promise<{
     id: ChatId;
@@ -83,12 +83,29 @@ export class ChatService {
     return {
       messages: notificationChat
         ? notificationChat?.messages.map((message) => ({
-            id: message.id,
-            content: message.content,
-            messageType: message.messageType,
-            structuredData: message.structuredData,
-            date: message.createdAt,
-          }))
+          id: message.id,
+          content: message.content,
+          messageType: message.messageType,
+          structuredData: message.structuredData,
+          date: message.createdAt,
+        }))
+        : [],
+    };
+  }
+
+  async getBonkNotifications(walletId: string) {
+    const notificationChat =
+      await this.chatRepository.getBonkNotifications(walletId);
+
+    return {
+      messages: notificationChat
+        ? notificationChat?.messages.map((message) => ({
+          id: message.id,
+          content: message.content,
+          messageType: message.messageType,
+          structuredData: message.structuredData,
+          date: message.createdAt,
+        }))
         : [],
     };
   }

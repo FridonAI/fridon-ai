@@ -36,6 +36,7 @@ enum MessageType {
   Response
   TransactionResponse
   Notification
+  BonkNotification
 }
 
 model Rectangle {
@@ -69,6 +70,16 @@ model Chat {
 }
 
 model ChatNotifications {
+  id Int @id @default(autoincrement())
+
+  walletId String @unique
+  chatId   String @unique @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BonkNotifications {
   id Int @id @default(autoincrement())
 
   walletId String @unique

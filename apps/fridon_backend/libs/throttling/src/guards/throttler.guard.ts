@@ -1,21 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
-import { ThrottlerGuard, ThrottlerStorage } from "@nestjs/throttler";
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { ExecutionContext } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Injectable()
 export class WalletThrottlerGuard extends ThrottlerGuard {
     private readonly logger = new Logger(WalletThrottlerGuard.name);
-
-    constructor(
-        options: { throttlers: any[] },
-        storageService: ThrottlerStorage,
-        reflector: Reflector,
-    ) {
-        super(options, storageService, reflector);
-    }
 
     override async handleRequest(
         requestProps: { context: ExecutionContext, limit: number, ttl: number }
