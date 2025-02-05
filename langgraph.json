@@ -3,7 +3,7 @@
   "graphs": {
     "agent": "apps/studio/main.py:test_chat"
   },
-  "env": "apps/fridon_brain/.env",
+  "env": "apps/studio/.env",
   "python_version": "3.11",
   "dependencies": [
     "."

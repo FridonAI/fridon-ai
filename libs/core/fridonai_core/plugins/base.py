@@ -66,13 +66,6 @@ class BasePlugin(BaseModel):
 
         return description
 
-    @property
-    def output_format(self):
-        if self.json_format:
-            return "REMEMBER: If tool's answer is json string or json copy it as it is otherwise use text response and dont mark is_json as true!"
-        else:
-            return "After using tools and having everything together, combine all tool's answer responses in CompleteTool's answer as a text."
-
     def to_json(self) -> dict:
         return {
             "name": self.name,

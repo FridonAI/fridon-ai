@@ -1,4 +1,4 @@
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 
 
 def create_supervised_prompt() -> ChatPromptTemplate:
@@ -27,19 +27,31 @@ def create_supervised_prompt() -> ChatPromptTemplate:
     )
 
 
-def create_agent_prompt(
-    name: str, description: str, output_format: str
-) -> ChatPromptTemplate:
+def create_agent_prompt(name: str, description: str) -> ChatPromptTemplate:
     return ChatPromptTemplate.from_messages(
         [
             (
                 "system",
-                f"You are a specialized assistant named '{name}', {description}.\n"
-                "For handling user's requests using the provided tools. Use appropriate tools to satisfy all user's needs.\n"
-                "\nWhen you think that you gathered all the necessary information, call the *CompleteTool* tool to let the primary assistant take control, but before that ensure that you called at least one tool.\n"
-                "\nDon't make up information by yourself fist use some tools and then generate response.",
+                f"You are a specialized assistant named '{name}', {description}.\n "
+                "You have several tools to handle request. Your main responsibility is to assign tasks to the appropriate tools based on the user's query.\n"
+                "Responsibilities:\n"
+                "1. Serve as the supervisor for various assistants/tools. Calling appropriate tools based on the request and finally finish work with generating 'Complete' text.\n"
+                "2. Assign tasks to appropriate tools based on the request, never calling the same tool twice for the same query or its variations.\n"
+                "3. Only use the information and results provided by tools; never invent data or hallucinate responses.\n"
+                "4. Finally finish work with generating just 'Complete' text after using all needed tools. Don't generate any other text.",
             ),
             ("placeholder", "{messages}"),
-            ("ai", output_format),
         ]
+    )
+
+
+def create_tools_response_finalizer_prompt(answers: list[str]) -> PromptTemplate:
+    return PromptTemplate.from_template(
+        """
+        You are a helpful assistant that generates a response from given question and answer pairs. 
+        I want one concise response, which will be readable and user easily differentiate each question answers. 
+        It should be good structurized md format, don't add any extra information, what format is the response or smth like that.
+        Just generate one concise, exhaustive response.
+        {answers}
+        """
     )

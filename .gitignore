@@ -127,7 +127,8 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+
+**/.env
 .venv
 env/
 venv/
@@ -220,3 +221,5 @@ override.tf.json
 terraform.rc
 
 .database
+
+*.ipynb
