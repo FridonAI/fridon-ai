@@ -175,7 +175,7 @@ class CoinInfoUtility(BaseUtility):
     async def arun(
         self, coin_name: str, *args, fields: List[str] = [], **kwargs
     ) -> str:
-        response = "Here is coin info you requested: \n"
+        response = f"Here is requested {coin_name} coin information: \n"
 
         if "description" in fields:
             response += "Description:\n"

@@ -103,9 +103,7 @@ async def task_runner(
         request.model,
     )
 
-
     def _get_structured_answer(answer) -> dict:
-        answer = json.loads(answer)
         if answer.get("source") == 'local':
             with open(answer.get("path"), 'r') as f:
                 return {

@@ -11,8 +11,7 @@ from fridonai_core.plugins.tools.base import BaseTool
 from fridonai_core.graph.states import SubState
 from fridonai_core.graph.models import get_model
 from fridonai_core.graph.routers import route_plugin_agent
-from fridonai_core.graph.tools import CompleteTool
-from fridonai_core.graph.utils import handle_tool_error
+from fridonai_core.graph.utils import handle_tool_error, finalize_tools_response
 
 
 class Agent:
@@ -89,15 +88,17 @@ def create_agent(
     agent = Agent(runnable, name=name)
     graph = StateGraph(SubState)
 
-    tool_node = ToolNode(tools + [CompleteTool]).with_fallbacks(
+    tool_node = ToolNode(tools).with_fallbacks(
         [RunnableLambda(handle_tool_error)], exception_key="error"
     )
 
     agent_node_name = name.lower() + "Agent"
     agent_tools_node_name = agent_node_name + "Tools"
+    agent_tools_finalizer_node_name = agent_tools_node_name + "Finalizer"
 
     graph.add_node(agent_node_name, agent)
     graph.add_node(agent_tools_node_name, tool_node)
+    graph.add_node(agent_tools_finalizer_node_name, finalize_tools_response)
 
     graph.add_edge(agent_tools_node_name, agent_node_name)
 
@@ -106,7 +107,7 @@ def create_agent(
         route_plugin_agent,
         {
             "tool_node": agent_tools_node_name,
-            END: END,
+            END: agent_tools_finalizer_node_name,
         },
     )
 
