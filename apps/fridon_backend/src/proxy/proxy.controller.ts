@@ -6,7 +6,7 @@ import { GetOHLCVQueryDto, GetOHLCVResponseDto, GetTokensQueryDto, GetTokensResp
 
 @Controller('proxy')
 @ApiTags('proxy')
-    // @UseGuards(ThrottlerGuard)
+// @UseGuards(ThrottlerGuard)
 export class ProxyController {
     constructor(private readonly proxyService: ProxyService) {}
 
