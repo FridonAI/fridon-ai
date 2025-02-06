@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { ChatId } from './domain/chat-id.value-object';
 import { ChatMessageId } from './domain/chat-message-id.value-object';
 import { randomUUID } from 'crypto';
@@ -196,6 +196,15 @@ export class ChatService {
       model?: string;
     },
   ): Promise<{ id: ChatId }> {
+    const userData = await this.userService.getWalletVerification(walletId);
+    console.log(userData);
+    if (!userData || !userData?.verified) {
+      throw new HttpException(
+        'User not verified! Please verify your wallet address By Transferring.',
+        400,
+      );
+    }
+
     const chatId = new ChatId(randomUUID());
 
     if (options?.rectangle) {
