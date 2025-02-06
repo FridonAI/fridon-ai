@@ -9,6 +9,7 @@ class State(TypedDict):
     messages: Annotated[List[AnyMessage], add_messages]
     used_agents: Annotated[list[str], add]
     final_response: Union[dict, None]
+    plugin_names_to_call: Annotated[list[str], add]
 
 
 class SubState(TypedDict):

@@ -9,16 +9,18 @@ from langchain_core.output_parsers import StrOutputParser
 
 
 def prepare_plugin_agent(state):
-    tool_call = state["messages"][-1].tool_calls[0]
-    return {
-        "messages": [
-            AIMessage("", tool_calls=[tool_call]),
-            ToolMessage(
-                tool_call_id=tool_call["id"],
-                content="Resuming dialog with agent, do your job and generate response for given messages.",
-            ),
-        ]
-    }
+    plugin_name = state["plugin_names_to_call"].pop()
+    tool_calls = state["messages"][-1].tool_calls
+    for tc in filter(lambda tc: tc["name"] == plugin_name, tool_calls):
+        return {
+            "messages": [
+                AIMessage("", tool_calls=[tc]),
+                ToolMessage(
+                    tool_call_id=tc["id"],
+                    content="Resuming dialog with agent, do your job and generate response for given messages.",
+                ),
+            ]
+        }
 
 
 def handle_tool_error(state) -> dict:
