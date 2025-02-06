@@ -147,10 +147,11 @@ model WalletPlugin {
 model WalletVerification {
   id Int @id @default(autoincrement())
 
-  walletId String @unique
-  txId     String
+  walletId String  @unique
   verified Boolean @default(false)
-  amount   Float
+
+  txId   String? // todo: do we need Unique here?
+  amount Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

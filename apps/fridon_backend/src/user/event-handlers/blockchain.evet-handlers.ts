@@ -15,6 +15,8 @@ import { PublicKey } from '@metaplex-foundation/js';
 
 export const PY_USD_MINT_ADDRESS =
   '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo';
+export const USDC_MINT_ADDRESS = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+
 @EventsHandler(TransactionConfirmedEvent)
 export class PurchaseTransactionConfirmedHandler {
   constructor(
@@ -28,10 +30,56 @@ export class PurchaseTransactionConfirmedHandler {
   );
 
   async handle(event: TransactionConfirmedEvent) {
-    if (event.transactionType !== TransactionType.PAYMENT) return;
-
     this.logger.debug(`Processing PaymentTransaction[${event.transactionId}]`);
 
+    switch (event.transactionType) {
+      case TransactionType.VERIFY:
+        await this.handleTransactionVerified(event);
+        break;
+      case TransactionType.PAYMENT:
+        await this.handleTransactionPayment(event);
+        break;
+      default:
+        this.logger.debug(
+          `TransactionType[${event.transactionType}] not supported`,
+        );
+        break;
+    }
+  }
+
+  async handleTransactionVerified(event: TransactionConfirmedEvent) {
+    // Todo: Verify required amount
+    const requiredAmount = 0.01 * 10 ** 6;
+    const destinationAddress = 'FhwPNk3vikQxfSfjtt3q2Mjrdj3rAsaF85yM7qiYA1wn';
+    const txId = event.transactionId;
+
+    console.log('Start Verify Transaction');
+    await this.validateTransaction(
+      event.transactionId,
+      event.aux.walletId,
+      requiredAmount,
+      destinationAddress,
+      '',
+      0,
+      USDC_MINT_ADDRESS,
+      TransactionType.VERIFY,
+    );
+
+    console.log('Transaction Verified');
+
+    // Make User Verified
+    await this.userService.verifyUser(
+      event.aux.walletId,
+      txId,
+      requiredAmount, // amount
+    );
+
+    console.log('User Verified');
+
+    return true;
+  }
+
+  async handleTransactionPayment(event: TransactionConfirmedEvent) {
     if (isNil(event.aux.plugin)) {
       this.logger.debug(
         `Plugin not found for PaymentTransaction[${event.transactionId}]`,
@@ -63,6 +111,8 @@ export class PurchaseTransactionConfirmedHandler {
       destinationAddress,
       creatorAddress,
       creatorFee,
+      PY_USD_MINT_ADDRESS,
+      TransactionType.PAYMENT,
     );
 
     // date is now plus 3 month
@@ -85,17 +135,22 @@ export class PurchaseTransactionConfirmedHandler {
     destinationAddress: string,
     creatorAddress: string,
     creatorFee: number,
+    tokenAddress: string,
+    transactionType: TransactionType,
   ) {
     // Associated Token Account addresses of bonk
     const destinationTokenAccount = await getAssociatedTokenAddress(
-      new PublicKey(PY_USD_MINT_ADDRESS),
+      new PublicKey(tokenAddress),
       new PublicKey(destinationAddress),
     );
 
-    const creatorTokenAccount = await getAssociatedTokenAddress(
-      new PublicKey(PY_USD_MINT_ADDRESS),
-      new PublicKey(creatorAddress),
-    );
+    const creatorTokenAccount =
+      transactionType === TransactionType.PAYMENT
+        ? await getAssociatedTokenAddress(
+            new PublicKey(tokenAddress),
+            new PublicKey(creatorAddress),
+          )
+        : null;
 
     const transaction = await this.connection.getParsedTransaction(txId, {
       commitment: 'confirmed',
@@ -142,12 +197,17 @@ export class PurchaseTransactionConfirmedHandler {
           source: string;
         };
 
-        if (destination === creatorTokenAccount.toBase58()) {
-          const expectedAmount = requiredAmount * creatorFee;
-          if (!this.isEqual(amount, expectedAmount)) {
-            throw new BadRequestException(
-              `Creator fee does not match: expected ${requiredAmount * creatorFee}, got ${amount}`,
-            );
+        if (
+          transactionType === TransactionType.PAYMENT &&
+          creatorTokenAccount
+        ) {
+          if (destination === creatorTokenAccount.toBase58()) {
+            const expectedAmount = requiredAmount * creatorFee;
+            if (!this.isEqual(amount, expectedAmount)) {
+              throw new BadRequestException(
+                `Creator fee does not match: expected ${requiredAmount * creatorFee}, got ${amount}`,
+              );
+            }
           }
         }
 
@@ -161,11 +221,11 @@ export class PurchaseTransactionConfirmedHandler {
         }
 
         if (
-          destination !== creatorTokenAccount.toBase58() &&
+          // destination !== creatorTokenAccount.toBase58() &&
           destination !== destinationTokenAccount.toBase58()
         ) {
           throw new BadRequestException(
-            `Destination does not match: expected ${destinationAddress}, got ${destination}`,
+            `Destination does not match: expected ${destinationTokenAccount.toBase58()}, got ${destination}`,
           );
         }
       }

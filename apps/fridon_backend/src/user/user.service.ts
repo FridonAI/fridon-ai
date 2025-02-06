@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { EventsService } from 'src/events/events.service';
 import { PluginsService } from 'src/plugins/plugins.service';
@@ -45,6 +46,55 @@ export class UserService {
     ];
 
     return result;
+  }
+
+  async getWalletVerification(walletAddress: string) {
+    return await this.prisma.walletVerification.findUnique({
+      where: {
+        walletId: walletAddress,
+      },
+    });
+  }
+
+  async verifyUser(walletAddress: string, txId: string, amount: number) {
+    try {
+      await this.prisma.walletVerification.upsert({
+        where: {
+          walletId: walletAddress,
+          verified: false,
+        },
+        update: {
+          txId: txId,
+          verified: true,
+          amount: amount,
+          updatedAt: new Date(),
+        },
+        create: {
+          walletId: walletAddress,
+          txId: txId,
+          verified: true,
+          amount: amount,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+    } catch (e) {
+      console.log(e);
+
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === 'P2002') {
+          throw new HttpException(
+            'User already verified',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+      }
+
+      throw new HttpException(
+        'Failed to verify user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async assignPlugin(body: AssignPluginDto) {

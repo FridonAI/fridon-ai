@@ -9,7 +9,11 @@ import {
 } from '@nestjs/common';
 import { TransactionListenerService } from 'src/blockchain/transaction-listener/transaction-listener.service';
 import { TransactionType } from 'src/blockchain/transaction-listener/types';
-import { PaymentBodyDto, UserPluginsResponseDto } from './user.dto';
+import {
+  PaymentBodyDto,
+  UserPluginsResponseDto,
+  VerifyBodyDto,
+} from './user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth, Wallet, WalletSession } from '@lib/auth';
 import { UserService } from './user.service';
@@ -25,11 +29,47 @@ export class UserController {
     private readonly transactionListenerService: TransactionListenerService,
     private readonly userService: UserService,
     private readonly pluginsService: PluginsService,
-  ) { }
+  ) {}
+
+  @Get('/verify')
+  async getWalletVerification(@Wallet() wallet: WalletSession) {
+    const userData = await this.userService.getWalletVerification(
+      wallet.walletAddress,
+    );
+
+    return {
+      walletId: wallet.walletAddress,
+      verified: userData?.verified ?? false,
+    };
+  }
 
   @Post('/verify')
-  async verifyTransaction() {
+  /**
+   * Verify a transaction and make user **Verified**.
+   * Steps to produce:
+   * 1. Register transaction inside the queue.
+   * 2. Validate transaction receiver and amount.
+   * 3. Update user(Sender) status to **Verified**.
+   */
+  async verifyTransaction(
+    @Wallet() wallet: WalletSession,
+    @Body() body: VerifyBodyDto,
+  ) {
+    const { verified } = await this.getWalletVerification(wallet);
 
+    if (verified) {
+      throw new BadRequestException('User already verified');
+    }
+
+    await this.transactionListenerService.registerTransactionListener(
+      body.transactionId,
+      TransactionType.VERIFY,
+      {
+        walletId: wallet.walletAddress,
+        chatId: 'NaN',
+        personality: 'NaN',
+      },
+    );
   }
 
   @Post('/purchase')
