@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { PrismaService } from 'nestjs-prisma';
 
 /**
  * `AuthGuard` validates and attaches an active wallet session to the request.
@@ -13,11 +14,25 @@ import { Request } from 'express';
  */
 @Injectable()
 export class AuthGuard implements CanActivate {
+  constructor(private readonly prisma: PrismaService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException();
+    }
+
+    const walletVerificationData =
+      await this.prisma.walletVerification.findUnique({
+        where: {
+          walletId: token,
+        },
+      });
+
+    if (!walletVerificationData || !walletVerificationData.verified) {
+      throw new UnauthorizedException(
+        'User not verified! Please verify your wallet address By Transferring.',
+      );
     }
 
     request.walletSession = {

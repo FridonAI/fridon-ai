@@ -23,9 +23,7 @@ import { UpdateKaminoReserve } from './cron/update-kamino-reserve.cron';
 import { UpdateCoinPrices } from './cron/update-coin-prices.cron';
 
 @Module({
-  imports: [
-    BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE }),
-  ],
+  imports: [BullModule.registerQueue({ name: TRANSACTION_LISTENER_QUEUE })],
   controllers: [BlockchainController],
   providers: [
     BlockchainService,

@@ -11,7 +11,6 @@ import {
 } from './utils/types';
 import { Transform } from 'class-transformer';
 
-
 // Default Transfer Response Dto
 export class TransactionDataResponseDto {
   @ApiProperty({ example: {} })

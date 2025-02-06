@@ -8,10 +8,7 @@ import base58 from 'bs58';
 import { getAssociatedTokenAddress } from 'spl';
 
 console.log("process.env['RPC_URL']", process.env['RPC_URL']);
-export const connection = new Connection(
-  process.env['RPC_URL'] ??
-    '',
-);
+export const connection = new Connection(process.env['RPC_URL'] ?? '');
 
 export async function findAssociatedTokenAddress(
   walletAddress: PublicKeyInitData,

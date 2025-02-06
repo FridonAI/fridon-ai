@@ -1,4 +1,4 @@
-import { BaseDto } from "@lib/common";
+import { BaseDto } from '@lib/common';
 
 export class BonkNotificationsMessageDto extends BaseDto<BonkNotificationsMessageDto> {
   type: string;

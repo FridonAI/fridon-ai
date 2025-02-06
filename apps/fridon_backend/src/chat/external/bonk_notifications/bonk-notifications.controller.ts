@@ -1,6 +1,9 @@
-import { Controller, Logger } from '@nestjs/common'
-import { EventPattern } from '@nestjs/microservices'
-import { BonkNotificationResponseGeneratedMessageDto, BonkNotificationsMessageDto } from './bonk-notifications.dto'
+import { Controller, Logger } from '@nestjs/common';
+import { EventPattern } from '@nestjs/microservices';
+import {
+  BonkNotificationResponseGeneratedMessageDto,
+  BonkNotificationsMessageDto,
+} from './bonk-notifications.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { EventsService } from 'src/events/events.service';
 import { randomUUID } from 'crypto';
@@ -94,7 +97,9 @@ export class BonkNotificationsController {
             create: {
               id: messageId,
               content: '',
-              structuredData: JSON.stringify(events.map((event) => JSON.stringify(event))),
+              structuredData: JSON.stringify(
+                events.map((event) => JSON.stringify(event)),
+              ),
               messageType: MessageType.BonkNotification,
               createdAt: timestamp,
             },
@@ -107,7 +112,9 @@ export class BonkNotificationsController {
             create: {
               id: messageId,
               content: '',
-              structuredData: JSON.stringify(events.map((event) => JSON.stringify(event))),
+              structuredData: JSON.stringify(
+                events.map((event) => JSON.stringify(event)),
+              ),
               messageType: MessageType.BonkNotification,
               createdAt: timestamp,
             },
@@ -131,6 +138,5 @@ export class BonkNotificationsController {
         }),
       );
     }
-
   }
 }

@@ -51,27 +51,34 @@ export class ChatService {
     private readonly aiAdapter: AiAdapter,
     private readonly chatRepository: ChatRepository,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
-  async getChats(walletId: string, chatType: 'Regular' | 'SuperChart'): Promise<{
-    id: ChatId;
-    title?: string;
-    rectangle?: Rectangle;
-    model: string;
-  }[]> {
+  async getChats(
+    walletId: string,
+    chatType: 'Regular' | 'SuperChart',
+  ): Promise<
+    {
+      id: ChatId;
+      title?: string;
+      rectangle?: Rectangle;
+      model: string;
+    }[]
+  > {
     const chats = await this.chatRepository.getChats(walletId, chatType);
     return chats.map((chat) => ({
       id: new ChatId(chat.id),
       title: chat.messages[0]?.content,
-      rectangle: chat.rectangle ? {
-        id: chat.rectangle.id,
-        coin: chat.rectangle.symbol,
-        startDate: chat.rectangle.startDate,
-        endDate: chat.rectangle.endDate,
-        startPrice: chat.rectangle.startPrice,
-        endPrice: chat.rectangle.endPrice,
-        interval: chat.rectangle.interval,
-      } : undefined,
+      rectangle: chat.rectangle
+        ? {
+            id: chat.rectangle.id,
+            coin: chat.rectangle.symbol,
+            startDate: chat.rectangle.startDate,
+            endDate: chat.rectangle.endDate,
+            startPrice: chat.rectangle.startPrice,
+            endPrice: chat.rectangle.endPrice,
+            interval: chat.rectangle.interval,
+          }
+        : undefined,
       model: chat.model,
     }));
   }
@@ -83,12 +90,12 @@ export class ChatService {
     return {
       messages: notificationChat
         ? notificationChat?.messages.map((message) => ({
-          id: message.id,
-          content: message.content,
-          messageType: message.messageType,
-          structuredData: message.structuredData,
-          date: message.createdAt,
-        }))
+            id: message.id,
+            content: message.content,
+            messageType: message.messageType,
+            structuredData: message.structuredData,
+            date: message.createdAt,
+          }))
         : [],
     };
   }
@@ -100,17 +107,21 @@ export class ChatService {
     return {
       messages: notificationChat
         ? notificationChat?.messages.map((message) => ({
-          id: message.id,
-          content: message.content,
-          messageType: message.messageType,
-          structuredData: message.structuredData,
-          date: message.createdAt,
-        }))
+            id: message.id,
+            content: message.content,
+            messageType: message.messageType,
+            structuredData: message.structuredData,
+            date: message.createdAt,
+          }))
         : [],
     };
   }
 
-  async getChatHistory(walletId: string, limit: number, chatType: 'Regular' | 'SuperChart') {
+  async getChatHistory(
+    walletId: string,
+    limit: number,
+    chatType: 'Regular' | 'SuperChart',
+  ) {
     const messages = await this.chatRepository.getChatHistory(walletId, limit);
 
     const chatMap = new Map<string, Chat>();
@@ -151,15 +162,17 @@ export class ChatService {
       id: new ChatId(chat.id),
       walletId: chat.walletId,
       chatType: chat.chatType,
-      rectangle: chat.rectangle ? {
-        id: chat.rectangle.id,
-        coin: chat.rectangle.symbol,
-        startDate: chat.rectangle.startDate,
-        endDate: chat.rectangle.endDate,
-        startPrice: chat.rectangle.startPrice,
-        endPrice: chat.rectangle.endPrice,
-        interval: chat.rectangle.interval,
-      } : undefined,
+      rectangle: chat.rectangle
+        ? {
+            id: chat.rectangle.id,
+            coin: chat.rectangle.symbol,
+            startDate: chat.rectangle.startDate,
+            endDate: chat.rectangle.endDate,
+            startPrice: chat.rectangle.startPrice,
+            endPrice: chat.rectangle.endPrice,
+            interval: chat.rectangle.interval,
+          }
+        : undefined,
       messages: chat.messages.map((message) => ({
         id: message.id,
         content: message.content,
@@ -176,10 +189,13 @@ export class ChatService {
     }));
   }
 
-  async createChat(walletId: string, options?: { 
-    rectangle?: Rectangle;
-    model?: string;
-  }): Promise<{ id: ChatId }> {
+  async createChat(
+    walletId: string,
+    options?: {
+      rectangle?: Rectangle;
+      model?: string;
+    },
+  ): Promise<{ id: ChatId }> {
     const chatId = new ChatId(randomUUID());
 
     if (options?.rectangle) {
@@ -189,9 +205,9 @@ export class ChatService {
 
     await this.chatRepository.createChat(
       chatId,
-      walletId, 
+      walletId,
       options?.rectangle,
-      options?.model ?? 'gpt-4o'
+      options?.model ?? 'gpt-4o',
     );
 
     return { id: chatId };

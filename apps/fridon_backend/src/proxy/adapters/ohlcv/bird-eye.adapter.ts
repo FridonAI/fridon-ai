@@ -1,25 +1,44 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { JupiterTokenListAdapter } from '../token-list/token-list.adapter';
 import { OHLCVAdapter, type OHLCV } from './ohlcv.adapter';
 
 type BirdEyeResponse =
   | {
-    success: true;
-    data: {
-      items: { unixTime: number; o: number; h: number; l: number; c: number; v: number }[];
-    };
-  }
+      success: true;
+      data: {
+        items: {
+          unixTime: number;
+          o: number;
+          h: number;
+          l: number;
+          c: number;
+          v: number;
+        }[];
+      };
+    }
   | { success: false; message: 'address is invalid format' };
 
 @Injectable()
 export class BirdEyeAdapter implements OHLCVAdapter {
   private readonly l: Logger = new Logger(BirdEyeAdapter.name);
 
-  constructor(private readonly tokenListAdapter: JupiterTokenListAdapter) { }
+  constructor(private readonly tokenListAdapter: JupiterTokenListAdapter) {}
 
-  async getOHLCV(symbol: string, interval: '30m' | '1h' | '4h' | '1d', startTime: number, endTime: number): Promise<OHLCV[]> {
+  async getOHLCV(
+    symbol: string,
+    interval: '30m' | '1h' | '4h' | '1d',
+    startTime: number,
+    endTime: number,
+  ): Promise<OHLCV[]> {
     const tokenList = await this.tokenListAdapter.getTokenList();
-    const token = tokenList.find(token => token.symbol.toLowerCase() === symbol.toLowerCase());
+    const token = tokenList.find(
+      (token) => token.symbol.toLowerCase() === symbol.toLowerCase(),
+    );
     if (!token) {
       throw new NotFoundException(`Token not found: ${symbol}`);
     }
@@ -28,7 +47,7 @@ export class BirdEyeAdapter implements OHLCVAdapter {
       '30m': '30m',
       '1h': '1H',
       '4h': '4H',
-      '1d': '1D'
+      '1d': '1D',
     };
 
     const params = new URLSearchParams({
@@ -61,7 +80,7 @@ export class BirdEyeAdapter implements OHLCVAdapter {
       high: item.h,
       low: item.l,
       close: item.c,
-      volume: item.v
+      volume: item.v,
     }));
   }
 }

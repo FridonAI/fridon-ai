@@ -47,7 +47,10 @@ export class ChatHttpController {
     @Wallet() wallet: WalletSession,
     @Query() query: GetChatsRequestDto,
   ): Promise<GetChatsResponseDto> {
-    const res = await this.chatService.getChats(wallet.walletAddress, query.chatType ?? 'Regular');
+    const res = await this.chatService.getChats(
+      wallet.walletAddress,
+      query.chatType ?? 'Regular',
+    );
 
     return new GetChatsResponseDto({
       chats: res.map((chat) => ({
@@ -150,23 +153,21 @@ export class ChatHttpController {
     @Body() createChat?: CreateChatDto,
   ): Promise<CreateChatResponseDto> {
     const rectangle = createChat?.rectangle;
-    const res = await this.chatService.createChat(
-      wallet.walletAddress,
-      {
-        rectangle: rectangle && Object.keys(rectangle).length > 0
+    const res = await this.chatService.createChat(wallet.walletAddress, {
+      rectangle:
+        rectangle && Object.keys(rectangle).length > 0
           ? {
-            id: rectangle.id,
-            symbol: rectangle.coin,
-            startDate: new Date(rectangle.startDate * 1000),
-            endDate: new Date(rectangle.endDate * 1000),
-            startPrice: rectangle.startPrice,
-            endPrice: rectangle.endPrice,
-            interval: rectangle.interval,
-          }
+              id: rectangle.id,
+              symbol: rectangle.coin,
+              startDate: new Date(rectangle.startDate * 1000),
+              endDate: new Date(rectangle.endDate * 1000),
+              startPrice: rectangle.startPrice,
+              endPrice: rectangle.endPrice,
+              interval: rectangle.interval,
+            }
           : undefined,
-        model: createChat?.model,
-      }
-    );
+      model: createChat?.model,
+    });
 
     return new CreateChatResponseDto({
       chatId: res.id.value,

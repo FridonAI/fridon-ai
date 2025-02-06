@@ -91,7 +91,7 @@ export class ChatRepository {
     chatId: ChatId,
     walletId: string,
     rectanglePrisma?: Prisma.RectangleCreateArgs['data'],
-    model: string = 'gpt-4o'
+    model: string = 'gpt-4o',
   ): Promise<void> {
     let rectangleId: string | undefined;
 
@@ -116,7 +116,10 @@ export class ChatRepository {
   async getChat(chatId: ChatId) {
     const chat = await this.prisma.chat.findUniqueOrThrow({
       where: { id: chatId.value },
-      include: { messages: { orderBy: { createdAt: 'desc' } }, rectangle: true },
+      include: {
+        messages: { orderBy: { createdAt: 'desc' } },
+        rectangle: true,
+      },
     });
 
     return chat;
