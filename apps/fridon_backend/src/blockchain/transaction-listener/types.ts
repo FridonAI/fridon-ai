@@ -17,4 +17,5 @@ export const TRANSACTION_LISTENER_QUEUE = 'transaction-listener';
 export enum TransactionType {
   CHAT = 'chatTransaction',
   PAYMENT = 'paymentTransaction',
+  VERIFY = 'verifyTransaction',
 }

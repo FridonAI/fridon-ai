@@ -143,3 +143,15 @@ model WalletPlugin {
 
   @@id([walletId, pluginId])
 }
+
+model WalletVerification {
+  id Int @id @default(autoincrement())
+
+  walletId String @unique
+  txId     String
+  verified Boolean @default(false)
+  amount   Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

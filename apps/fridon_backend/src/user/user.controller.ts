@@ -25,7 +25,12 @@ export class UserController {
     private readonly transactionListenerService: TransactionListenerService,
     private readonly userService: UserService,
     private readonly pluginsService: PluginsService,
-  ) {}
+  ) { }
+
+  @Post('/verify')
+  async verifyTransaction() {
+
+  }
 
   @Post('/purchase')
   async processPaymentTransaction(

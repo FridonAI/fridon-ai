@@ -128,7 +128,7 @@ export class PurchaseTransactionConfirmedHandler {
         ),
       );
 
-    // Validatate creator and wallet price, destinations.
+    // Validate creator and wallet price, destinations.
     for (const filteredInstruction of filteredInstructions) {
       if (
         filteredInstruction &&
