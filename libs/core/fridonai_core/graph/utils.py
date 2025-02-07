@@ -75,7 +75,7 @@ def finalize_tools_response(state: SubState) -> dict:
         if message.type == "tool" and i > 2:
             try:
                 str_data = json.loads(message.content)
-                if str_data["structured_data"]:
+                if "structured_data" in str_data and str_data["structured_data"]:
                     structured_outputs.append(json.loads(message.content))
                 else:
                     text_outputs.append(f"{str_data}")
