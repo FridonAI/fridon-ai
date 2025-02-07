@@ -18,7 +18,7 @@ def init_models():
             api_key=os.environ.get("OPENAI_API_KEY"),
             verbose=True,
         )
-        models["gpt-4o"] = gpt_4o_model
+        models["gpt-4o"] = {"model": gpt_4o_model, "tooling": True}
     except Exception as e:
         print(f"Failed to initialize gpt-4o model: {e}")
 
@@ -29,7 +29,7 @@ def init_models():
             api_key=os.environ.get("OPENAI_API_KEY"),
             verbose=True,
         )
-        models["gpt-4o-mini"] = gpt_4o_mini_model
+        models["gpt-4o-mini"] = {"model": gpt_4o_mini_model, "tooling": True}
     except Exception as e:
         print(f"Failed to initialize gpt-4o-mini model: {e}")
 
@@ -40,7 +40,7 @@ def init_models():
             api_key=os.environ.get("ANTHROPIC_API_KEY"),
             verbose=True,
         )
-        models["claude-3-5-sonnet"] = claude_model
+        models["claude-3-5-sonnet"] = {"model": claude_model, "tooling": True}
     except Exception as e:
         print(f"Failed to initialize claude-3-5-sonnet model: {e}")
 
@@ -51,7 +51,7 @@ def init_models():
             openai_api_base="https://api.deepseek.com",
             max_tokens=1024,
         )
-        models["deepseek"] = deepseek_v3
+        models["deepseek"] = {"model": deepseek_v3, "tooling": False}
     except Exception as e:
         print(f"Failed to initialize deepseek model: {e}")
 
@@ -61,16 +61,19 @@ def init_models():
             temperature=0,
             api_key=os.environ.get("TOGETHER_API_KEY"),
         )
-        models["deepseek_together"] = deepseek_v3_together
+        models["deepseek_together"] = {"model": deepseek_v3_together, "tooling": False}
     except Exception as e:
         print(f"Failed to initialize deepseek_together model: {e}")
 
 
-def get_model(name="gpt-4o"):
-    if name in models:
-        return models[name]
+def get_model(name="gpt-4o", tooling_needed=False):
+    if name not in models:
+        return models["gpt-4o"]["model"]
+
+    if not tooling_needed or models[name]["tooling"]:
+        return models[name]["model"]
     else:
-        return models["gpt-4o"]
+        return models["gpt-4o"]["model"]
 
 
 def create_structured_output_model(output_format, model_name="gpt-4o"):
