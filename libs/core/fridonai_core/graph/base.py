@@ -1,7 +1,6 @@
 import os
 from typing import Literal
 from fridonai_core.graph.models import get_model
-from langchain_core.language_models import BaseChatModel
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, StateGraph
 from langchain_core.messages import HumanMessage

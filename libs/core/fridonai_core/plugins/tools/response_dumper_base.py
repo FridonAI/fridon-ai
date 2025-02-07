@@ -16,6 +16,7 @@ class ResponseDumperOutput(BaseModel):
     id: str
     name: str
     path: str | None = None
+    structured_data: bool = True
 
 
 class ResponseDumper:

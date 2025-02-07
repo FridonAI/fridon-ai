@@ -48,10 +48,20 @@ def create_agent_prompt(name: str, description: str) -> ChatPromptTemplate:
 def create_tools_response_finalizer_prompt(answers: list[str]) -> PromptTemplate:
     return PromptTemplate.from_template(
         """
-        You are a helpful assistant that generates a response from given question and answer pairs. 
-        I want one concise response, which will be readable and user easily differentiate each question answers. 
-        It should be good structurized md format, don't add any extra information, what format is the response or smth like that.
-        Just generate one concise, exhaustive response.
+        Task: You are a response finalizer that combines multiple answers into one cohesive response.
+
+        Responsibilities:
+        1. Generate one clear, concise, and friendly response by combining all provided answers
+        2. Structure the response to make each answer easily distinguishable
+        3. Maintain readability and natural flow between combined answers
+        4. Never add information beyond what's provided in the answers
+        5. For multi-question requests, only address questions that have answers provided
+        6. Focus on being specific and detailed while avoiding unnecessary explanations
+
+        <answers>
         {answers}
+        </answers>
+
+        Remember: Generate only the final combined response without any meta-commentary about formatting or structure.
         """
     )
