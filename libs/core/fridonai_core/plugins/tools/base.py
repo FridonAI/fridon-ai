@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 from fridonai_core.plugins.tools.response_dumper_base import ResponseDumper
 from langchain.callbacks.manager import AsyncCallbackManager, CallbackManagerForToolRun
@@ -17,6 +17,9 @@ class BaseTool(LangchainBaseTool):
     examples: list[dict] = []
     helper: bool = False
     response_dumper: ResponseDumper | None = None
+    default_runner_model_name: (
+        Literal["gpt-4o", "deepseek", "claude-3-5-sonnet"] | None
+    ) = None
 
     def _run(
         self,
@@ -46,7 +49,11 @@ class BaseTool(LangchainBaseTool):
         config_ = config.get("configurable", {})
         result = await self.utility.arun(
             *args,
-            **{**kwargs, **config_},
+            **{
+                **kwargs,
+                **config_,
+                "default_runner_model_name": self.default_runner_model_name,
+            },
         )
         if self.response_dumper and (isinstance(result, dict) or isinstance(result, list)):
             return (await self.response_dumper.dump(result, self.name)).dict()
