@@ -18,9 +18,7 @@ from fridonai_core.graph.utils import (
 from fridonai_core.plugins import BasePlugin
 
 
-def create_graph(
-    llm: BaseChatModel, plugins: list[BasePlugin], memory: BaseCheckpointSaver
-):
+def create_graph(plugins: list[BasePlugin], memory: BaseCheckpointSaver, config: dict):
     plugins_to_wrapped_plugins = {
         p.name: create_plugin_wrapper_tool(p, type(p).__name__) for p in plugins
     }
@@ -28,12 +26,14 @@ def create_graph(
         wp.__name__: pname for pname, wp in plugins_to_wrapped_plugins.items()
     }
 
+    tooling_llm = get_model(config["model"], tooling_needed=True)
+
     workflow = StateGraph(State)
 
     supervisor_agent = create_agent(
         create_supervised_prompt(),
         [*list(plugins_to_wrapped_plugins.values())],
-        llm=llm,
+        llm=tooling_llm,
         always_tool_call=False,
     )
 
@@ -47,10 +47,12 @@ def create_graph(
 
         agent_graph = create_agent(
             plugin_prompt,
-            plugin.tools_with_examples_in_description,
+            plugin.tools_with_additional_info(
+                description=True, default_runner_model_name=config["model"]
+            ),
             always_tool_call=False,
             name=plugin.slug,
-            llm=get_model(),
+            llm=tooling_llm,
         )
 
         workflow.add_node(
@@ -84,7 +86,6 @@ async def generate_response(
     config: dict,
     memory: Literal["postgres"] = "postgres",
     return_used_agents: bool = True,
-    llm: BaseChatModel = get_model("gpt-4o"),
 ):
 
     if memory not in ['postgres', 'sqlite']:
@@ -101,7 +102,7 @@ async def generate_response(
         if memory == 'postgres':
             await memory_saver.setup()
 
-        graph = create_graph(llm, plugins, memory_saver)
+        graph = create_graph(plugins, memory_saver, config)
         graph_config = {"configurable": config}
 
         prev_agents_len = len(

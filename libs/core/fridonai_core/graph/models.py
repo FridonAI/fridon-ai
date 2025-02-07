@@ -61,7 +61,7 @@ def init_models():
             temperature=0,
             api_key=os.environ.get("TOGETHER_API_KEY"),
         )
-        models["deepseek_together"] = {"model": deepseek_v3_together, "tooling": False}
+        models["deepseek"] = {"model": deepseek_v3_together, "tooling": False}
     except Exception as e:
         print(f"Failed to initialize deepseek_together model: {e}")
 

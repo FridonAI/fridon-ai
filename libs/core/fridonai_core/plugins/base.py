@@ -31,16 +31,28 @@ class BasePlugin(BaseModel):
     def examples_as_str(self) -> str:
         return "\n".join(self.request_examples)
 
-    @property
-    def tools_with_examples_in_description(self) -> list[BaseTool]:
+    def tools_with_additional_info(
+        self,
+        description: bool = True,
+        default_runner_model_name: Literal["gpt-4o", "deepseek", "claude-3-5-sonnet"]
+        | None = None,
+    ) -> list[BaseTool]:
         tools_with_examples = []
         for tool in self.tools:
             if tool.examples:
                 tool_with_examples = tool
-                tool_with_examples.description = (
-                    f"{tool.description}\nExamples:\n"
-                    + "\n".join(f"- {example['request']}" for example in tool.examples)
-                )
+                if description:
+                    tool_with_examples.description = (
+                        f"{tool.description}\nExamples:\n"
+                        + "\n".join(
+                            f"- {example['request']}" for example in tool.examples
+                        )
+                    )
+                if default_runner_model_name:
+                    tool_with_examples.default_runner_model_name = (
+                        default_runner_model_name
+                    )
+
                 tools_with_examples.append(tool_with_examples)
         return tools_with_examples
 
