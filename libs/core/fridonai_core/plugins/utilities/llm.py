@@ -15,6 +15,7 @@ class LLMUtility(BaseUtility):
     structured_output: type[BaseModel] | None = None
     fields_to_retain: list[str] = []
     model_name: str = "gpt-4o"
+    strict_model_mode: bool = False
 
     async def arun(self, *args, **kwargs) -> BaseModel | dict | str | Any:
         placeholders = await self._arun(*args, **kwargs)
@@ -23,7 +24,11 @@ class LLMUtility(BaseUtility):
             return placeholders
 
         prompt = PromptTemplate.from_template(self.llm_job_description)
-        llm = get_model(self.model_name)
+
+        if self.strict_model_mode or "default_runner_model_name" not in kwargs:
+            llm = get_model(self.model_name)
+        else:
+            llm = get_model(kwargs["default_runner_model_name"])
 
         if self.structured_output is not None:
             llm = create_structured_output_model(self.structured_output, llm)

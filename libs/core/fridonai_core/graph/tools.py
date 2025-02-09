@@ -1,5 +1,3 @@
-from typing import Union
-
 from pydantic import BaseModel, Field, create_model, ConfigDict
 
 from fridonai_core.plugins import BasePlugin

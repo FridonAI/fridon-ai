@@ -1,6 +1,5 @@
 from fridonai_core.graph.base import generate_response
 from fridonai_core.plugins.registry import ensure_plugin_registry
-from fridonai_core.graph.models import get_model
 
 
 class ProcessUserMessageService:
@@ -33,8 +32,6 @@ class ProcessUserMessageService:
             used_agents,
             prev_messages,
             new_used_agents_count,
-        ) = await generate_response(
-            message, plugins, config, memory="postgres", llm=get_model(model)
-        )
+        ) = await generate_response(message, plugins, config, memory="postgres")
 
         return final_response, used_agents, prev_messages, new_used_agents_count

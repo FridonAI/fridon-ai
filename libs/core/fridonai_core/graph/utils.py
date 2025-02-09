@@ -9,16 +9,18 @@ from langchain_core.output_parsers import StrOutputParser
 
 
 def prepare_plugin_agent(state):
-    tool_call = state["messages"][-1].tool_calls[0]
-    return {
-        "messages": [
-            AIMessage("", tool_calls=[tool_call]),
-            ToolMessage(
-                tool_call_id=tool_call["id"],
-                content="Resuming dialog with agent, do your job and generate response for given messages.",
-            ),
-        ]
-    }
+    plugin_name = state["plugin_names_to_call"].pop()
+    tool_calls = state["messages"][-1].tool_calls
+    for tc in filter(lambda tc: tc["name"] == plugin_name, tool_calls):
+        return {
+            "messages": [
+                AIMessage("", tool_calls=[tc]),
+                ToolMessage(
+                    tool_call_id=tc["id"],
+                    content="Resuming dialog with agent, do your job and generate response for given messages.",
+                ),
+            ]
+        }
 
 
 def handle_tool_error(state) -> dict:
@@ -27,7 +29,7 @@ def handle_tool_error(state) -> dict:
     return {
         "messages": [
             ToolMessage(
-                content=f"Error: {repr(error)}\n please fix your mistakes.",
+                content="There was an error while executing the tool. Try again.",
                 tool_call_id=tc["id"],
             )
             for tc in tool_calls
@@ -72,7 +74,11 @@ def finalize_tools_response(state: SubState) -> dict:
     for i, message in enumerate(messages):
         if message.type == "tool" and i > 2:
             try:
-                structured_outputs.append(json.loads(message.content))
+                str_data = json.loads(message.content)
+                if "structured_data" in str_data and str_data["structured_data"]:
+                    structured_outputs.append(json.loads(message.content))
+                else:
+                    text_outputs.append(f"{str_data}")
             except ValueError:
                 text_outputs.append(f"{message.content}")
 

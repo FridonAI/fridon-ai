@@ -55,9 +55,13 @@ class SupervisorAgent(Agent):
 
         tcs = list(grouped_tool_calls.values())
 
-        result.tool_calls = [] if len(tcs) == 0 else [tcs[0]]
+        result.tool_calls = tcs
 
-        return {"messages": result, "used_agents": []}
+        return {
+            "messages": result,
+            "used_agents": [],
+            "plugin_names_to_call": list(grouped_tool_calls.keys()),
+        }
 
 
 def create_agent_chain(
