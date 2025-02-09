@@ -57,16 +57,16 @@ def _find_similar_pattern(
 class CoinPriceChartSimilaritySearchUtility(BaseUtility):
     interval_to_params: dict[Literal["1h", "4h", "1d", "1w"], dict] = {
         "1h": {
-            "chart_length": 2,
+            "chart_length": 3,
         },
         "4h": {
-            "chart_length": 10,
+            "chart_length": 15,
         },
         "1d": {
-            "chart_length": 30,
+            "chart_length": 40,
         },
         "1w": {
-            "chart_length": 114,
+            "chart_length": 120,
         },
     }
 
