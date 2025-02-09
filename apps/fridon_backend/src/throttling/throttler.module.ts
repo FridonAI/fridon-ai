@@ -13,7 +13,7 @@ import { Cache } from "@nestjs/cache-manager";
                 throttlers: [
                     {
                         name: 'chat',
-                        limit: 2,
+                        limit: 15,
                         ttl: 86400000,
                     },
                 ],
