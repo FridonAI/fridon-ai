@@ -36,8 +36,9 @@ As a TA authority, your role is to decipher market trends, make informed predict
 Generated response should be simple, easy to understand, user shouldn't try hard to understand what's happening, conclusion should be main part of the analysis.
 
 Given {symbol} coin's TA data as below on the last trading day, what will be the next few days possible crypto price movement?
+Note: Some indicators might be unavailable due to insufficient data points.
 
-Technical Indicators for {interval} intervals:
+Technical Indicators for {interval} timeframe:
 {coin_history_indicators}"""
     fields_to_retain: list[str] = ["plot_data"]
     model_name: str = "gpt-4o-mini"
@@ -165,9 +166,15 @@ class CoinChartPlotterUtility(BaseUtility):
         if len(plot_data) == 0:
             return "No coins found"
 
+        available_indicators = [
+            ind
+            for ind in indicators
+            if any(row[ind] is not None for row in plot_data.to_dicts())
+        ]
+
         return {
             "plot_data": plot_data.to_dicts(),
-            "indicators_to_plot": indicators,
+            "indicators_to_plot": available_indicators,
         }
 
 
