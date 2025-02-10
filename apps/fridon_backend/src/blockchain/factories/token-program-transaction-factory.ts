@@ -13,8 +13,8 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { TokenAmount } from '../utils/tools/token-amount';
 import {
   NEW_TOKEN_FEE,
-  SOL_MINT_ADDRESS,
   TRANSFER_FEE,
+  WSOL_MINT_ADDRESS,
 } from '../utils/constants';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class TokenProgramTransactionFactory {
   ) {
     const txInstructions: TransactionInstruction[] = [];
 
-    if (new PublicKey(mintAddress).equals(SOL_MINT_ADDRESS)) {
+    if (new PublicKey(mintAddress).equals(WSOL_MINT_ADDRESS)) {
       const transferParams: TransferParams = {
         fromPubkey: new PublicKey(from),
         toPubkey: new PublicKey(to),

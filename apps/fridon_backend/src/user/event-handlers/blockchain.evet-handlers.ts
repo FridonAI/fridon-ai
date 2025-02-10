@@ -184,6 +184,34 @@ export class PurchaseTransactionConfirmedHandler {
         ),
       );
 
+    if (tokenAddress === SOL_MINT_ADDRESS) {
+      const filteredInstruction = filteredInstructions[0];
+      if (
+        filteredInstruction &&
+        filteredInstruction.parsed &&
+        filteredInstruction.parsed.type === 'transfer'
+      ) {
+        const { destination, lamports } = filteredInstruction.parsed.info as {
+          destination: string;
+          lamports: number;
+        };
+
+        if (destination !== destinationAddress) {
+          throw new BadRequestException(
+            `Destination does not match: expected ${destinationAddress}, got ${destination}`,
+          );
+        }
+
+        if (!this.isEqualNumber(lamports, requiredAmount)) {
+          throw new BadRequestException(
+            `Amount does not match: expected ${requiredAmount}, got ${lamports}`,
+          );
+        }
+
+        return;
+      }
+    }
+
     // Validate creator and wallet price, destinations.
     for (const filteredInstruction of filteredInstructions) {
       if (
@@ -239,6 +267,12 @@ export class PurchaseTransactionConfirmedHandler {
     const lowerBound = requiredAmount * 0.99;
     const upperBound = requiredAmount * 1.01;
     return parseInt(amount) >= lowerBound && parseInt(amount) <= upperBound;
+  }
+
+  isEqualNumber(amount: number, requiredAmount: number) {
+    const lowerBound = requiredAmount * 0.99;
+    const upperBound = requiredAmount * 1.01;
+    return amount >= lowerBound && amount <= upperBound;
   }
 }
 
