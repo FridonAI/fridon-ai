@@ -89,7 +89,7 @@ async def task_runner(
         "solana-bonk-educator",
         "emperor-trading",
         "off-topic",
-        "bonk-notifier",
+        # "bonk-notifier",
     ]
     (
         response_message,
@@ -184,7 +184,7 @@ async def send_plugins(pub: redis.Publisher = Provide["publisher"]):
     registry = ensure_plugin_registry()
     plugins = [plugin_cls().to_json() for plugin_cls in registry.plugins.values()]
 
-    plugins = [p for p in plugins if p["name"] != "off-topic"]
+    plugins = [p for p in plugins if p["name"] not in ["off-topic", "bonk-notifier"]]
 
     for i, plugin in enumerate(plugins):
         if plugin["slug"] == "solana-bonk-educator":
