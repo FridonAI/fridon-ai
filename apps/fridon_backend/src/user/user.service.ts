@@ -22,7 +22,7 @@ export class UserService {
     private readonly prisma: PrismaService,
     private readonly eventsService: EventsService,
     private readonly pluginsService: PluginsService,
-  ) {}
+  ) { }
 
   async getUserPlugins(walletAddress: string): Promise<UserPluginsResponseDto> {
     const res = await this.prisma.walletPlugin.findMany({
@@ -57,6 +57,8 @@ export class UserService {
   }
 
   async verifyUser(walletAddress: string, txId: string, amount: number) {
+    let verificationSucceeded = false;
+
     try {
       await this.prisma.walletVerification.upsert({
         where: {
@@ -94,6 +96,12 @@ export class UserService {
         'Failed to verify user',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    } finally {
+      // Send the verification status regardless of success or failure
+      this.eventsService.sendTo(walletAddress, 'user.user-verified', {
+        walletId: walletAddress,
+        verified: verificationSucceeded,
+      });
     }
   }
 
