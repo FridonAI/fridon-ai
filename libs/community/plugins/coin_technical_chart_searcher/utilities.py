@@ -277,7 +277,7 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
         },
     }
 
-    og_coins_for_flashback: list[str] = ["BTC", "ETH", "SOL", "DOGE"]
+    og_coins_for_flashback: list[str] = ["BTC", "ETH", "SOL", "DOGE", "XRP"]
 
     async def arun(
         self,
@@ -389,7 +389,7 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
                             "distance": float(match_dist),
                             "start_time": match_coin_data.iloc[0]["datetime"],
                             "end_time": match_coin_data.iloc[-1]["datetime"],
-                            "label": f"{coin}_{pd.Timestamp(match_date).strftime('%Y-%m-%d %H:%M:%S')}_{match_coin_data.iloc[-1]['datetime']}",
+                            "label": f"{coin} from {pd.Timestamp(match_date).strftime('%Y-%m-%d %H:00')}",
                         }
                     )
 
