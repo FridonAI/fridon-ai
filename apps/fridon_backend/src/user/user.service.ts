@@ -22,7 +22,7 @@ export class UserService {
     private readonly prisma: PrismaService,
     private readonly eventsService: EventsService,
     private readonly pluginsService: PluginsService,
-  ) { }
+  ) {}
 
   async getUserPlugins(walletAddress: string): Promise<UserPluginsResponseDto> {
     const res = await this.prisma.walletPlugin.findMany({
@@ -80,6 +80,7 @@ export class UserService {
           updatedAt: new Date(),
         },
       });
+      verificationSucceeded = true;
     } catch (e) {
       console.log(e);
 

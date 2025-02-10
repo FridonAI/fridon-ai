@@ -5,22 +5,22 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from '@nestjs/cache-manager';
 
 @Module({
-    imports: [
-        NestThrottlerModule.forRootAsync({
-            inject: [CACHE_MANAGER],
-            useFactory: (cacheManager: Cache) => ({
-                storage: new CacheWalletThrottlerStorage(cacheManager),
-                throttlers: [
-                    {
-                        name: 'chat',
-                        limit: 15,
-                        ttl: 86400000,
-                    },
-                ],
-            }),
-        }),
-    ],
-    providers: [CacheWalletThrottlerStorage],
-    exports: [NestThrottlerModule],
+  imports: [
+    NestThrottlerModule.forRootAsync({
+      inject: [CACHE_MANAGER],
+      useFactory: (cacheManager: Cache) => ({
+        storage: new CacheWalletThrottlerStorage(cacheManager),
+        throttlers: [
+          {
+            name: 'chat',
+            limit: 15,
+            ttl: 86400000,
+          },
+        ],
+      }),
+    }),
+  ],
+  providers: [CacheWalletThrottlerStorage],
+  exports: [NestThrottlerModule],
 })
 export class ThrottlerModule {}

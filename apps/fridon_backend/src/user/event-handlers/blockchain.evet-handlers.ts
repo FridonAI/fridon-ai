@@ -16,6 +16,7 @@ import { PublicKey } from '@metaplex-foundation/js';
 export const PY_USD_MINT_ADDRESS =
   '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo';
 export const USDC_MINT_ADDRESS = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+export const SOL_MINT_ADDRESS = 'So11111111111111111111111111111111111111112';
 
 @EventsHandler(TransactionConfirmedEvent)
 export class PurchaseTransactionConfirmedHandler {
@@ -49,7 +50,7 @@ export class PurchaseTransactionConfirmedHandler {
 
   async handleTransactionVerified(event: TransactionConfirmedEvent) {
     // Todo: Verify required amount
-    const requiredAmount = 0.01 * 10 ** 6;
+    const requiredAmount = 0.0001 * 10 ** 9;
     const destinationAddress = 'FhwPNk3vikQxfSfjtt3q2Mjrdj3rAsaF85yM7qiYA1wn';
     const txId = event.transactionId;
 
@@ -61,7 +62,7 @@ export class PurchaseTransactionConfirmedHandler {
       destinationAddress,
       '',
       0,
-      USDC_MINT_ADDRESS,
+      SOL_MINT_ADDRESS,
       TransactionType.VERIFY,
     );
 

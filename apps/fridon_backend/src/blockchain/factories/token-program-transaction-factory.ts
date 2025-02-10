@@ -2,14 +2,20 @@ import {
   Connection,
   PublicKey,
   PublicKeyInitData,
+  SystemProgram,
   TransactionInstruction,
+  TransferParams,
 } from '@solana/web3.js';
 import { TokenProgramInstructionFactory } from './token-program-instruction-factory';
 import BigNumber from 'bignumber.js';
 import { TransactionFactory } from './transaction-factory';
 import { HttpException, Injectable } from '@nestjs/common';
 import { TokenAmount } from '../utils/tools/token-amount';
-import { NEW_TOKEN_FEE, TRANSFER_FEE } from '../utils/constants';
+import {
+  NEW_TOKEN_FEE,
+  SOL_MINT_ADDRESS,
+  TRANSFER_FEE,
+} from '../utils/constants';
 
 @Injectable()
 export class TokenProgramTransactionFactory {
@@ -25,6 +31,23 @@ export class TokenProgramTransactionFactory {
     amount: BigNumber,
     connection: Connection,
   ) {
+    const txInstructions: TransactionInstruction[] = [];
+
+    if (new PublicKey(mintAddress).equals(SOL_MINT_ADDRESS)) {
+      const transferParams: TransferParams = {
+        fromPubkey: new PublicKey(from),
+        toPubkey: new PublicKey(to),
+        lamports: amount.toNumber(),
+      };
+
+      txInstructions.push(SystemProgram.transfer(transferParams));
+
+      return this.transactionFactory.generateTransactionV0(
+        txInstructions,
+        from,
+      );
+    }
+
     const accountInfo = await connection.getAccountInfo(new PublicKey(from));
 
     if (!accountInfo) {
@@ -37,8 +60,6 @@ export class TokenProgramTransactionFactory {
     }
 
     const payer = from;
-
-    const txInstructions: TransactionInstruction[] = [];
 
     // Create token account if needed.
     const createAssociatedTokenInstructions =
