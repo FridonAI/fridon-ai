@@ -10,7 +10,7 @@ import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 export class PluginsController {
   constructor(private readonly pluginService: PluginsService) {}
 
-  @CacheTTL(5) // ToDo: Change to 30 seconds
+  @CacheTTL(30) // ToDo: Change to 30 seconds
   @Get()
   async findAll(): Promise<FindAllPluginsDtoResponseDto[]> {
     const plugins = this.pluginService.getPlugins();

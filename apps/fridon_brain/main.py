@@ -84,7 +84,6 @@ async def task_runner(
         "coin-technical-analyzer",
         "coin-observer",
         "wallet",
-        "jupiter",
         "fridon",
         "solana-bonk-educator",
         "emperor-trading",
