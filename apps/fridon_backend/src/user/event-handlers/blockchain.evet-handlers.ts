@@ -50,8 +50,8 @@ export class PurchaseTransactionConfirmedHandler {
 
   async handleTransactionVerified(event: TransactionConfirmedEvent) {
     // Todo: Verify required amount
-    const requiredAmount = 0.0001 * 10 ** 9;
-    const destinationAddress = 'FhwPNk3vikQxfSfjtt3q2Mjrdj3rAsaF85yM7qiYA1wn';
+    const requiredAmount = 0.2 * 10 ** 9;
+    const destinationAddress = '54dWKinXp4Jcqem8H4bB2cpGzEtX58dYAnvqp1FxGkLW';
     const txId = event.transactionId;
 
     console.log('Start Verify Transaction');
@@ -101,7 +101,7 @@ export class PurchaseTransactionConfirmedHandler {
     // Transaction Validation
     // todo: replace this with actual values.
     const destinationAddress = plugin.owner;
-    const creatorAddress = 'FhwPNk3vikQxfSfjtt3q2Mjrdj3rAsaF85yM7qiYA1wn';
+    const creatorAddress = '54dWKinXp4Jcqem8H4bB2cpGzEtX58dYAnvqp1FxGkLW';
     const requiredAmount = plugin.price * 10 ** 5;
     const creatorFee = 0.1;
 
