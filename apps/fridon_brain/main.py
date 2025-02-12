@@ -187,12 +187,6 @@ async def send_plugins(pub: redis.Publisher = Provide["publisher"]):
         p for p in plugins if p["name"] not in ["off-topic", "Bonk Notifier", "Fridon"]
     ]
 
-    for i, plugin in enumerate(plugins):
-        if plugin["slug"] == "solana-bonk-educator":
-            plugins.insert(0, plugins.pop(i))
-            plugins[1], plugins[2] = plugins[2], plugins[1]
-            break
-
     while True:
         await pub.publish("plugins", json.dumps(plugins), log=False)
         await asyncio.sleep(5)

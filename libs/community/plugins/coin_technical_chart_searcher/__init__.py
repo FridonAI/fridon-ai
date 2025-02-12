@@ -7,7 +7,7 @@ plugin_registry = ensure_plugin_registry()
 
 @plugin_registry.register(name="coin-technical-chart-searcher")
 class CoinTechnicalChartSearcherPlugin(BasePlugin):
-    name: str = "Coin Technical Chart Searcher"
+    name: str = "Intelligent Coin Searcher"
     description: str = "AI plugin for searching coins by chart similarity with given coin or coin search by technical indicators."
     owner: str = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
     tools: list[BaseTool] = TOOLS
