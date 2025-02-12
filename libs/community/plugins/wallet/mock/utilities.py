@@ -31,3 +31,15 @@ class WalletBalanceMockUtility(RemoteMockUtility):
             return {"data": self.wallet_balances}
         amount = self.wallet_balances.get(currency, 0)
         return {"data": {currency: amount}}
+
+class JupiterSwapMockUtility(BlockchainMockUtility):
+    async def arun(
+        self,
+        from_token: str,
+        to_token: str,
+        amount: float | int,
+        *args,
+        wallet_id: str = "Wallet007007",
+        **kwargs,
+    ) -> str:
+        return f"Successfully swapped {amount} {from_token} to {to_token} from wallet {wallet_id}."
