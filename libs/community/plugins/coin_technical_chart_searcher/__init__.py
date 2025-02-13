@@ -5,7 +5,7 @@ from fridonai_core.plugins.tools import BaseTool
 
 plugin_registry = ensure_plugin_registry()
 
-@plugin_registry.register(name="coin-technical-chart-searcher")
+@plugin_registry.register(name="intelligent-coin-searcher")
 class CoinTechnicalChartSearcherPlugin(BasePlugin):
     name: str = "Intelligent Coin Searcher"
     description: str = "AI plugin for searching coins by chart similarity with given coin or coin search by technical indicators."

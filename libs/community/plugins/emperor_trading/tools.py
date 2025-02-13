@@ -23,7 +23,7 @@ class EmperorTradingCoinAnalysisToolInput(BaseToolInput):
 
 
 EmperorTradingCoinAnalysisTool = BaseTool(
-    name="emperor-trading-coin-analysis",
+    name="emperor-trader-coin-analysis",
     description="A tool that analyzes a coin's price chart with technical indicators, trends, and setups based on the EmperorBTC guide.",
     args_schema=EmperorTradingCoinAnalysisToolInput,
     utility=EmperorTradingCoinAnalysisUtility(),
@@ -52,7 +52,7 @@ class EmperorTradingManualToolInput(BaseToolInput):
 
 
 # EmperorTradingCoinAnalysisManualTool = BaseTool(
-#     name="emperor-trading-coin-analysis-manual",
+#     name="emperor-trader-coin-analysis-manual",
 #     description="Informative tool that answers questions about the EmperorBTC guide we use for analysis.",
 #     args_schema=EmperorTradingManualToolInput,
 #     utility=EmperorTradingManualUtility(),

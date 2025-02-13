@@ -6,14 +6,14 @@ from settings import settings
 async def main():
     _preload_modules()
     plugin_names = [
-        "coin-technical-chart-searcher",
+        "intelligent-coin-searcher",
         "coin-technical-analyzer",
         "coin-observer",
         "wallet",
         "jupiter",
         "fridon",
         "solana-bonk-educator",
-        "emperor-trading",
+        "emperor-trader",
     ]
     registry = ensure_plugin_registry()
 

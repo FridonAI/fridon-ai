@@ -5,7 +5,7 @@ from fridonai_core.plugins.tools import BaseTool
 
 plugin_registry = ensure_plugin_registry()
 
-@plugin_registry.register(name="emperor-trading")
+@plugin_registry.register(name="emperor-trader")
 class EmperorTradingPlugin(BasePlugin):
     name: str = "Emperor Trader"
     description: str = "AI plugin for trading based on BTC-Emperor's guide."

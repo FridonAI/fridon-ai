@@ -11,13 +11,13 @@ def test_chat():
     _preload_modules()
 
     plugin_names = [
-        "coin-technical-chart-searcher",
+        "intelligent-coin-searcher",
         "coin-technical-analyzer",
         "coin-observer",
         "wallet",
         "fridon",
         "solana-bonk-educator",
-        "emperor-trading",
+        "emperor-trader",
         "off-topic",
     ]
     registry = ensure_plugin_registry()

@@ -45,7 +45,7 @@ If assistant response is error score must be zero.
 """)
 
 agent_to_score = {
-    "coin-technical-chart-searcher": 2,
+    "intelligent-coin-searcher": 2,
     "coin-technical-analyzer": 2,
     "coin-observer": 1.5,
     "wallet": 1.5,
