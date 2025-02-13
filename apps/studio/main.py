@@ -15,7 +15,6 @@ def test_chat():
         "coin-technical-analyzer",
         "coin-observer",
         "wallet",
-        "jupiter",
         "fridon",
         "solana-bonk-educator",
         "emperor-trading",
@@ -25,9 +24,7 @@ def test_chat():
     plugins = [registry.plugins[plugin_name]() for plugin_name in plugin_names]
     plugins = [p for p in plugins if p.exclude is False]
 
-    llm = get_model()
-
     with SqliteSaver.from_conn_string(":memory:") as saver:
-        graph = create_graph(llm, plugins, memory=saver)
+        graph = create_graph(plugins, saver, config={"model": "gpt-4o-mini"})
 
     return graph
