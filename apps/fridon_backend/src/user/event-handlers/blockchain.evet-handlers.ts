@@ -50,7 +50,7 @@ export class PurchaseTransactionConfirmedHandler {
 
   async handleTransactionVerified(event: TransactionConfirmedEvent) {
     // Todo: Verify required amount
-    const requiredAmount = 0.2 * 10 ** 9;
+    const requiredAmount = 0.1 * 10 ** 9;
     const destinationAddress = '54dWKinXp4Jcqem8H4bB2cpGzEtX58dYAnvqp1FxGkLW';
     const txId = event.transactionId;
 

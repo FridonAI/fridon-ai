@@ -55,8 +55,11 @@ export class ChatRepository {
     const chats = await this.prisma.chat.findMany({
       where: { walletId, chatType },
       include: {
-        messages: { orderBy: { createdAt: 'desc' }, take: 1 },
+        messages: { orderBy: { createdAt: 'asc' }, take: 1 },
         rectangle: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
       },
     });
 
