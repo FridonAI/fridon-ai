@@ -46,7 +46,7 @@ async def _handle_score(
             request.user.wallet_id,
             request.data.message,
             response_message,
-            used_agents,
+            used_agents[len(used_agents) - new_used_agents_count :],
             prev_user_messages=prev_messages,
         )
     print(
