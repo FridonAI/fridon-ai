@@ -1,11 +1,7 @@
 import pandas as pd
 from datetime import datetime, timedelta, UTC
-from fridonai_core.plugins.utilities import BaseUtility
+from fridonai_core.plugins.utilities import LLMUtility
 from libs.data_providers.coin_price_providers import BinanceCoinPriceDataProvider
-
-from langchain.prompts import PromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from libs.core.fridonai_core.graph.models import get_model
 
 from libs.internals.indicators.emperor_guide import (
     get_latest_ema_crossover,
@@ -15,8 +11,12 @@ from libs.internals.indicators.emperor_guide import (
 from libs.community.plugins.emperor_trading.prompts import emas_guide_prompt
 
 
-class EmperorTradingCoinAnalysisUtility(BaseUtility):
-    async def arun(
+class EmperorTradingCoinAnalysisUtility(LLMUtility):
+    llm_job_description: str = emas_guide_prompt
+    model_name: str = "gpt-4o"
+    result_as_test_str: bool = True
+
+    async def _arun(
         self, coin_name: str, end_time: str | None = None, *args, **kwargs
     ) -> str:
         current_time = datetime.now(UTC)
@@ -36,23 +36,7 @@ class EmperorTradingCoinAnalysisUtility(BaseUtility):
 
         print("chart_results", chart_results)
 
-        return await self.get_llm_reasoning(chart_results, coin_name)
-
-    async def get_llm_reasoning(self, chart_results: dict, coin_name: str) -> str:
-        prompt_template = emas_guide_prompt
-
-        prompt = PromptTemplate(
-            input_variables=["chart_results"], template=prompt_template
-        )
-
-        llm = get_model()
-        chain = prompt | llm | StrOutputParser()
-
-        response = await chain.ainvoke(
-            input={"chart_results": chart_results, "coin_name": coin_name},
-        )
-
-        return response
+        return {"chart_results": chart_results, "coin_name": coin_name}
 
     async def calculate_indicators(
         self,

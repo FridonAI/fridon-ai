@@ -16,6 +16,7 @@ class LLMUtility(BaseUtility):
     fields_to_retain: list[str] = []
     model_name: str = "gpt-4o"
     strict_model_mode: bool = False
+    result_as_test_str: bool = False
 
     async def arun(self, *args, **kwargs) -> BaseModel | dict | str | Any:
         placeholders = await self._arun(*args, **kwargs)
@@ -41,6 +42,8 @@ class LLMUtility(BaseUtility):
         result = {
             "result": llm_result
         }
+        if self.result_as_test_str:
+            return llm_result
         if self.fields_to_retain:
             result = {
                 **{field: placeholders[field] for field in self.fields_to_retain},
