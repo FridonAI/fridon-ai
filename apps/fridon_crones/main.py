@@ -68,7 +68,6 @@ COINS = [
     "ARB",
     "HMSTR",
     "LINK",
-    "EUR",
     "CATI",
     "BNX",
     "RENDER",

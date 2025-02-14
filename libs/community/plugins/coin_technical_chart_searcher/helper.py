@@ -43,7 +43,6 @@ similarity_search_coins = [
     "ARB",
     "HMSTR",
     "LINK",
-    "EUR",
     "CATI",
     "BNX",
     "RENDER",
