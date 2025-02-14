@@ -80,13 +80,13 @@ async def task_runner(
     literal_client,
 ):
     plugins = [
-        "coin-technical-chart-searcher",
+        "intelligent-coin-searcher",
         "coin-technical-analyzer",
         "coin-observer",
         "wallet",
         "fridon",
         "solana-bonk-educator",
-        "emperor-trading",
+        "emperor-trader",
         "off-topic",
         # "bonk-notifier",
     ]

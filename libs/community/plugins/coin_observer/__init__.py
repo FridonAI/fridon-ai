@@ -13,7 +13,7 @@ class CoinObserverPlugin(BasePlugin):
     description: str = (
         "Plugin for monitoring coin prices and sending notifications based on user conditions."
     )
-    owner: str = "2snYEzbMckwnv85MW3s2sCaEQ1wtKZv2cj9WhbmDuuRD"
+    owner: str = "7fwBfKwFFmsXg2JjGPRhKSTPM3X5tVUYS59kHnVXKjXH"
     tools: list[BaseTool] = TOOLS
     image_url: str = "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/agent-avatars/coin-observer-avatar.png"
     json_format: bool = False
