@@ -129,13 +129,11 @@ export class AiEventsController {
       score: event.score,
     });
 
-    // update pluginsUsed plugin owners scores by 1
     for (const pluginId of event.pluginsUsed) {
       const pluginOwner = this.pluginsService.getPluginOwner(pluginId);
       await this.leaderBoardService.updateScore({
-        // chatId: event.chatId,
         walletId: pluginOwner,
-        score: event.score / 5,
+        score: 0.1,
         myPluginsUsed: 1,
       });
     }

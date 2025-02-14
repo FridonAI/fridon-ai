@@ -65,7 +65,7 @@ async def _handle_score(
                 "pluginsUsed": [
                     agent
                     for agent in used_agents[len(used_agents) - new_used_agents_count :]
-                    if agent != "off-topic"
+                    if agent not in ["off-topic", "bonk-notifier", "fridon"]
                 ],
             }
         ),

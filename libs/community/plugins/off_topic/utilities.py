@@ -12,7 +12,7 @@ Giving list of plugins.
 ###### Plugins ######
 
 ### Trading & Analysis
-- **Coin Technical Chart Searcher**: Advanced AI-powered search agent for finding coins based on chart similarity and technical indicators. Features include:
+- **Intelligent Coin Searcher**: Advanced AI-powered search agent for finding coins based on chart similarity and technical indicators. Features include:
   - Features:
     - Chart similarity search across current and historical data
     - Technical indicator-based coin filtering
@@ -36,7 +36,7 @@ Giving list of plugins.
     - "What's EMA?"
 
 
-- **Emperor Trading**: Specialized trading analysis based on EmperorBTC methodology, providing:
+- **Emperor Trader**: Specialized trading analysis based on EmperorBTC methodology, providing:
   - Features:
     - Technical analysis with EmperorBTC framework
   - Example Usage:
@@ -62,17 +62,12 @@ Giving list of plugins.
   - Features:
     - Balance checking
     - Token transfers
+    - Swap one token to another
   - Example Usage:
     - "Show my SOL balance"
     - "Check my token holdings"
     - "Transfer 1 sol to fridon.sol"
-
-- **Jupiter**: Seamless token swapping functionality:
-  - Features:
-    - Swap one token to another
-  - Example Usage:
     - "Swap 1 SOL to USDC"
-
 
 ### Education & Support
 - **Solana Bonk Educator**: Comprehensive educational resource covering:

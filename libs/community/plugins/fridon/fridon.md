@@ -27,8 +27,8 @@ FridonAI is an open-source AI powerhouse that streamlines and elevates the tradi
 
 FridonAI offers a diverse suite of specialized agents to enhance your trading experience:
 
-### Trading & Analysis
-- **Coin Technical Chart Searcher**: Advanced AI-powered search agent for finding coins based on chart similarity and technical indicators. Features include:
+### Trading & Crypto Agents (plugins) 
+- **Intelligent Coin Searcher**: Advanced AI-powered search agent for finding coins based on chart similarity and technical indicators. Features include:
   - Features:
     - Chart similarity search across current and historical data
     - Technical indicator-based coin filtering
@@ -52,7 +52,7 @@ FridonAI offers a diverse suite of specialized agents to enhance your trading ex
     - "What's EMA?"
 
 
-- **Emperor Trading**: Specialized trading analysis based on EmperorBTC methodology, providing:
+- **Emperor Trader**: Specialized trading analysis based on EmperorBTC methodology, providing:
   - Features:
     - Technical analysis with EmperorBTC framework
   - Example Usage:
@@ -78,17 +78,12 @@ FridonAI offers a diverse suite of specialized agents to enhance your trading ex
   - Features:
     - Balance checking
     - Token transfers
+    - Swap one token to another
   - Example Usage:
     - "Show my SOL balance"
     - "Check my token holdings"
     - "Transfer 1 sol to fridon.sol"
-
-- **Jupiter**: Seamless token swapping functionality:
-  - Features:
-    - Swap one token to another
-  - Example Usage:
     - "Swap 1 SOL to USDC"
-
 
 ### Education & Support
 - **Solana Bonk Educator**: Comprehensive educational resource covering:
@@ -104,9 +99,7 @@ FridonAI offers a diverse suite of specialized agents to enhance your trading ex
     - "Guide me through creating a Solana wallet"
 
 
-
 Examples for specific plugin questions/requests can be found on plugin's page.
-
 
 
 ## Products
