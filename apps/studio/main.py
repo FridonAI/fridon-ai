@@ -25,6 +25,6 @@ def test_chat():
     plugins = [p for p in plugins if p.exclude is False]
 
     with SqliteSaver.from_conn_string(":memory:") as saver:
-        graph = create_graph(plugins, saver, config={"model": "gpt-4o-mini"})
+        graph = create_graph(plugins, saver, config={"model": "gpt-4o"})
 
     return graph
