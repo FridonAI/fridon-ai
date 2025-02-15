@@ -1,11 +1,7 @@
 import json
 from fridonai_core.graph.tools import CompleteTool
 from langchain_core.messages import ToolMessage, AIMessage
-
-from fridonai_core.graph.prompts import create_tools_response_finalizer_prompt
 from fridonai_core.graph.states import State, SubState
-from fridonai_core.graph.models import get_model
-from langchain_core.output_parsers import StrOutputParser
 
 
 def prepare_plugin_agent(state):
