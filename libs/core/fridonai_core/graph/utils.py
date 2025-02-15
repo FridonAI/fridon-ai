@@ -1,11 +1,7 @@
 import json
 from fridonai_core.graph.tools import CompleteTool
 from langchain_core.messages import ToolMessage, AIMessage
-
-from fridonai_core.graph.prompts import create_tools_response_finalizer_prompt
 from fridonai_core.graph.states import State, SubState
-from fridonai_core.graph.models import get_model
-from langchain_core.output_parsers import StrOutputParser
 
 
 def prepare_plugin_agent(state):
@@ -55,14 +51,10 @@ def generate_final_response(state: State):
             break
         after_human_messages.append(messages[i])
 
-    text_answer = ""
-    if len(answers) > 0:
-        text_answer = "\n".join(answers)
-
     return {
         "final_response": {
             "structured_answers": structured_answers,
-            "text_answer": text_answer,
+            "text_answer": messages[-1].content,
         }
     }
 
@@ -81,15 +73,15 @@ def finalize_tools_response(state: SubState) -> dict:
                     text_outputs.append(f"{str_data}")
             except ValueError:
                 text_outputs.append(f"{message.content}")
+        if (
+            message.type == "ai"
+            and len(message.tool_calls) == 0
+            and not message.name
+            and message.content != "Complete"
+        ):
+            text_outputs.append(f"{message.content}")
 
-    text_answer = ""
-    if len(text_outputs) > 0:
-        prompt = create_tools_response_finalizer_prompt(text_outputs)
-
-        chain = prompt | get_model() | StrOutputParser()
-
-        text_answer = chain.invoke({"answers": text_outputs})
-
+    text_answer = "\n\n".join(text_outputs)
     return {
         "messages": [
             AIMessage(

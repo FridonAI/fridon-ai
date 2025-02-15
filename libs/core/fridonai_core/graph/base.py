@@ -102,7 +102,7 @@ async def generate_response(
             await memory_saver.setup()
 
         graph = create_graph(plugins, memory_saver, config)
-        graph_config = {"configurable": config}
+        graph_config = {"configurable": config, "recursion_limit": 3}
 
         prev_agents_len = len(
             (await graph.aget_state(graph_config)).values.get("used_agents", [])
