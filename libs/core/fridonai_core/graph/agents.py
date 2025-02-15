@@ -21,7 +21,7 @@ class Agent:
 
     def __call__(self, state, config: RunnableConfig):
         while True:
-            result = self.runnable.invoke(state)
+            result = self.runnable.invoke(state, config={"recursion_limit": 3})
 
             if not result.tool_calls and (
                 not result.content
