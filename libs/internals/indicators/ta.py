@@ -23,9 +23,11 @@ def calculate_ta_indicators(
     # Try to calculate each indicator, set to None if fails
     try:
         df_pandas.ta.macd(append=True)
+        df_pandas["MACD_histogram_12_26_9"] = df_pandas["MACDh_12_26_9"]
     except:
         df_pandas["MACD_12_26_9"] = None
         df_pandas["MACDh_12_26_9"] = None
+        df_pandas["MACD_histogram_12_26_9"] = None
 
     try:
         df_pandas.ta.rsi(append=True)
@@ -84,7 +86,6 @@ def calculate_ta_indicators(
     df_pandas["OBV_in_million"] = (
         df_pandas["OBV"].div(1e7) if df_pandas["OBV"] is not None else None
     )
-    df_pandas["MACD_histogram_12_26_9"] = df_pandas["MACDh_12_26_9"]
 
     if not return_last_one:
         df_pandas = df_pandas.assign(coin=coin)
