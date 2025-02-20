@@ -72,8 +72,8 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
 
     async def arun(
         self,
-        coin_name: str,
-        *args,
+        coin_name: str | None = None,
+        coin_address: str | None = None,
         start_time: str | None = None,
         end_time: str | None = None,
         interval: Literal["1h", "4h", "1d", "1w"] = "1d",
@@ -112,12 +112,24 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
             ]
         )
         target_coins = [
-            coin for coin in similarity_search_coins if coin != coin_name.upper()
+            coin
+            for coin in similarity_search_coins
+            if coin != (coin_name.upper() if coin_name else "")
         ][:100]
 
         source_coin_historical_ohlcvs = (
-            await data_provider.get_historical_ohlcv_by_start_end(
-                [coin_name.upper()],
+            (
+                await data_provider.get_historical_ohlcv_by_start_end(
+                    [coin_name.upper()],
+                    interval=interval,
+                    start_time=start_time,
+                    end_time=end_time,
+                    output_format="dataframe",
+                )
+            )
+            if coin_address is None
+            else await data_provider.get_historical_ohlcv_by_start_end_for_address(
+                coin_address,
                 interval=interval,
                 start_time=start_time,
                 end_time=end_time,
@@ -185,7 +197,9 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
 
         return {
             "type": "similar_coins",
-            "coin": coin_name,
+            "coin": coin_name
+            if coin_name
+            else await data_provider._get_ca_symbol_birdeye(coin_address),
             "interval": interval,
             "start_date_timestamp": int(start_time.timestamp()),
             "end_date_timestamp": int(end_time.timestamp()),
@@ -281,8 +295,8 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
 
     async def arun(
         self,
-        coin_name: str,
-        *args,
+        coin_name: str | None = None,
+        coin_address: str | None = None,
         interval: Literal["1h", "4h", "1d", "1w"] = "1d",
         chart_length: int | None = None,
         **kwargs,
@@ -292,7 +306,9 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
 
         number_of_points = chart_length * self.days_to_points_for_interval[interval]
         coins_to_fetch = [
-            coin for coin in self.og_coins_for_flashback if coin != coin_name.upper()
+            coin
+            for coin in self.og_coins_for_flashback
+            if coin != (coin_name.upper() if coin_name else "")
         ]
 
         binance_data_provider = BinanceCoinPriceDataProvider()
@@ -321,13 +337,21 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             og_coins_historical_ohlcvs
         )
 
-        current_coin_historical_ohlcv = await data_provider.get_historical_ohlcv(
-            [coin_name.upper()],
-            interval=interval,
-            days=self.interval_to_params[interval]["fetch_days"],
-            output_format="dataframe",
+        current_coin_historical_ohlcv = (
+            await data_provider.get_historical_ohlcv(
+                [coin_name.upper()],
+                interval=interval,
+                days=self.interval_to_params[interval]["fetch_days"],
+                output_format="dataframe",
+            )
+            if coin_address is None
+            else await data_provider.get_historical_ohlcv_for_address(
+                coin_address,
+                interval=interval,
+                days=self.interval_to_params[interval]["fetch_days"],
+                output_format="dataframe",
+            )
         )
-
         current_coin_historical_ohlcv = convert_timestamp_to_datetime(
             current_coin_historical_ohlcv
         )
@@ -397,7 +421,9 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
 
         return {
             "type": "flashback_coins",
-            "coin_name": coin_name,
+            "coin_name": coin_name
+            if coin_name
+            else await data_provider._get_ca_symbol_birdeye(coin_address),
             "interval": interval,
             "start_time": source_ohlcv.iloc[0]["datetime"],
             "end_time": source_ohlcv.iloc[-1]["datetime"],
