@@ -53,6 +53,9 @@ export class ProxyService {
   }
 
   async getTokens(keyword: string): Promise<string[]> {
+    if (keyword.length > 30) {
+      return [keyword];
+    }
     const tokenList = await this.jupiterTokenListAdapter.getTokenList();
     const binanceTokenList = this.binanceTokenListAdapter.getTokenList();
     return Array.from(
