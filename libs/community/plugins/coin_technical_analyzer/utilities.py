@@ -1,10 +1,9 @@
 from typing import List, Literal, Union
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 import pyarrow.compute as pc
 
 from fridonai_core.plugins.utilities.base import BaseUtility
 from fridonai_core.plugins.utilities.llm import LLMUtility
-import os
 
 from libs.data_providers import (
     BinanceCoinPriceDataProvider as BinanceCoinPriceDataProvider,
@@ -15,11 +14,18 @@ from libs.data_providers import (
 from libs.internals.indicators import calculate_ta_indicators
 
 interval_to_days = {
-    "30m": 3,
-    "1h": 5,
-    "4h": 22,
-    "1d": 80,
-    "1w": 400,
+    "30m": 5,
+    "1h": 7,
+    "4h": 25,
+    "1d": 100,
+    "1w": 500,
+}
+
+interval_timedelta = {
+    "1h": timedelta(hours=1),
+    "4h": timedelta(hours=4),
+    "1d": timedelta(days=1),
+    "1w": timedelta(weeks=1),
 }
 
 
@@ -45,7 +51,8 @@ Technical Indicators for {interval} timeframe:
 
     async def _arun(
         self,
-        coin_name: str,
+        coin_name: str | None = None,
+        coin_address: str | None = None,
         interval: Literal["1h", "4h", "1d", "1w"] = "4h",
         start_time: Union[str, None] = None,
         end_time: Union[str, None] = None,
@@ -59,21 +66,43 @@ Technical Indicators for {interval} timeframe:
             ]
         )
         if start_time and end_time:
-            ohlcv_data = await data_provider.get_historical_ohlcv_by_start_end(
-                [coin_name.upper()],
-                interval,
-                datetime.fromisoformat(start_time).replace(tzinfo=UTC),
-                datetime.fromisoformat(end_time).replace(tzinfo=UTC),
-                output_format="dataframe",
+            start_time_dt = datetime.fromisoformat(start_time).replace(tzinfo=UTC)
+            start_time_dt = start_time_dt - (interval_timedelta[interval] * 50)
+            ohlcv_data = (
+                await data_provider.get_historical_ohlcv_by_start_end(
+                    [coin_name.upper()],
+                    interval,
+                    start_time_dt,
+                    datetime.fromisoformat(end_time).replace(tzinfo=UTC),
+                    output_format="dataframe",
+                )
+                if not coin_address
+                else await data_provider.get_historical_ohlcv_by_start_end_for_address(
+                    [coin_address],
+                    interval,
+                    start_time_dt,
+                    datetime.fromisoformat(end_time).replace(tzinfo=UTC),
+                    output_format="dataframe",
+                )
             )
 
         else:
-            ohlcv_data = await data_provider.get_historical_ohlcv(
-                [coin_name.upper()],
-                interval,
-                days=interval_to_days[interval],
-                output_format="dataframe",
+            ohlcv_data = (
+                await data_provider.get_historical_ohlcv(
+                    [coin_name.upper()],
+                    interval,
+                    days=interval_to_days[interval],
+                    output_format="dataframe",
+                )
+                if not coin_address
+                else await data_provider.get_historical_ohlcv_for_address(
+                    coin_address,
+                    interval,
+                    interval_to_days[interval],
+                    output_format="dataframe",
+                )
             )
+            print("dataframe", ohlcv_data.shape, interval_to_days[interval])
         if len(ohlcv_data) == 0:
             return "No data found"
 
@@ -84,7 +113,7 @@ Technical Indicators for {interval} timeframe:
             return "No data found"
         return {
             "coin_history_indicators": str(coin_interval_record_df.to_dicts()),
-            "symbol": coin_name,
+            "symbol": coin_name if coin_name else coin_address,
             "plot_data": plot_data.to_dicts(),
             "interval": interval,
         }
@@ -124,7 +153,8 @@ class CoinTechnicalIndicatorsListUtility(BaseUtility):
 class CoinChartPlotterUtility(BaseUtility):
     async def arun(
         self,
-        coin_name: str,
+        coin_name: str = None,
+        coin_address: str = None,
         indicators: List[str] = [
             "MACD_12_26_9",
             "MACD_histogram_12_26_9",
@@ -154,13 +184,21 @@ class CoinChartPlotterUtility(BaseUtility):
             ]
         )
 
-        ohlcv_data = await data_provider.get_historical_ohlcv(
-            [coin_name.upper()],
-            interval,
-            days=interval_to_days[interval],
-            output_format="dataframe",
+        ohlcv_data = (
+            await data_provider.get_historical_ohlcv(
+                [coin_name.upper()],
+                interval,
+                days=interval_to_days[interval],
+                output_format="dataframe",
+            )
+            if not coin_address
+            else await data_provider.get_historical_ohlcv_for_address(
+                coin_address,
+                interval,
+                interval_to_days[interval],
+                output_format="dataframe",
+            )
         )
-
         plot_data = calculate_ta_indicators(ohlcv_data, return_last_one=False)
 
         if len(plot_data) == 0:
@@ -180,7 +218,11 @@ class CoinChartPlotterUtility(BaseUtility):
 
 class CoinInfoUtility(BaseUtility):
     async def arun(
-        self, coin_name: str, *args, fields: List[str] = [], **kwargs
+        self,
+        coin_name: str | None = None,
+        coin_address: str | None = None,
+        fields: List[str] = [],
+        **kwargs,
     ) -> str:
         response = f"Here is requested {coin_name} coin information: \n"
 
@@ -196,12 +238,22 @@ class CoinInfoUtility(BaseUtility):
                 ]
             )
             interval = "4h"
-            ohlcv_data = await data_provider.get_historical_ohlcv(
-                [coin_name.upper()],
-                interval,
-                days=interval_to_days[interval],
-                output_format="dataframe",
+            ohlcv_data = (
+                await data_provider.get_historical_ohlcv(
+                    [coin_name.upper()],
+                    interval,
+                    days=interval_to_days[interval],
+                    output_format="dataframe",
+                )
+                if not coin_address
+                else await data_provider.get_historical_ohlcv_for_address(
+                    coin_address,
+                    interval,
+                    interval_to_days[interval],
+                    output_format="dataframe",
+                )
             )
+
             if len(ohlcv_data) == 0:
                 return "No data found"
 

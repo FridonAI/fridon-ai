@@ -35,14 +35,17 @@ export class BirdEyeAdapter implements OHLCVAdapter {
     startTime: number,
     endTime: number,
   ): Promise<OHLCV[]> {
-    const tokenList = await this.tokenListAdapter.getTokenList();
-    const token = tokenList.find(
-      (token) => token.symbol.toLowerCase() === symbol.toLowerCase(),
-    );
-    if (!token) {
-      throw new NotFoundException(`Token not found: ${symbol}`);
+    let address: string | undefined = symbol;
+    if (symbol.length < 30) {
+      const tokenList = await this.tokenListAdapter.getTokenList();
+      const token = tokenList.find(
+        (token) => token.symbol.toLowerCase() === symbol.toLowerCase(),
+      );
+      if (!token) {
+        throw new NotFoundException(`Token not found: ${symbol}`);
+      }
+      address = token?.address;
     }
-
     const intervalMap = {
       '30m': '30m',
       '1h': '1H',
@@ -51,7 +54,7 @@ export class BirdEyeAdapter implements OHLCVAdapter {
     };
 
     const params = new URLSearchParams({
-      address: token.address,
+      address: address,
       time_from: startTime.toString(),
       time_to: endTime.toString(),
       type: intervalMap[interval],

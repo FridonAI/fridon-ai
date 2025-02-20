@@ -16,6 +16,34 @@ class CoinPriceDataProvider:
 
     async def get_historical_ohlcv(self, coins, interval, days, output_format): ...
 
+    def _to_dataframe(self, data: list[dict]) -> pd.DataFrame:
+        if not data:
+            return pd.DataFrame()
+        columns = [
+            "coin",
+            "timestamp",
+            "date",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+        ]
+        df = pd.DataFrame(data, columns=columns)
+        for col in ["open", "high", "low", "close", "volume"]:
+            df[col] = df[col].astype(float)
+        return df
+
+    async def _execute_in_batches(self, tasks: list[asyncio.Future]) -> list:
+        results = []
+        for i in range(0, len(tasks), self.BATCH_SIZE):
+            batch = tasks[i : i + self.BATCH_SIZE]
+            batch_results = await asyncio.gather(*batch)
+            results.extend(batch_results)
+            if i + self.BATCH_SIZE < len(tasks):
+                await asyncio.sleep(1)
+        return results
+
 
 class DummyCoinPriceDataProvider(CoinPriceDataProvider):
     async def get_current_ohlcv(self, coins, interval="30m", output_format="dict"):
@@ -255,6 +283,7 @@ class BirdeyeCoinPriceDataProvider(CoinPriceDataProvider):
     CACHE_DIR = Path("../../cache")
     CACHE_FILE = CACHE_DIR / "token_list_cache.json"
     CACHE_DURATION = timedelta(days=1)
+    BATCH_SIZE = 15
 
     def __init__(self, token_list):
         self._base_url = "https://public-api.birdeye.so"
@@ -270,6 +299,13 @@ class BirdeyeCoinPriceDataProvider(CoinPriceDataProvider):
             "1w": "1W",
         }
 
+        self.interval_deltas = {
+            "1h": timedelta(hours=1),
+            "4h": timedelta(hours=4),
+            "1d": timedelta(days=1),
+            "1w": timedelta(weeks=1),
+        }
+
     @staticmethod
     async def create():
         token_list = await BirdeyeCoinPriceDataProvider._get_cached_token_list()
@@ -277,27 +313,20 @@ class BirdeyeCoinPriceDataProvider(CoinPriceDataProvider):
 
     @staticmethod
     async def _get_cached_token_list():
-        # Create cache directory if it doesn't exist
         BirdeyeCoinPriceDataProvider.CACHE_DIR.mkdir(exist_ok=True)
-
-        # Check if cache file exists and is fresh
         if BirdeyeCoinPriceDataProvider.CACHE_FILE.exists():
             with open(BirdeyeCoinPriceDataProvider.CACHE_FILE, "r") as f:
                 cache_data = json.load(f)
                 cache_time = datetime.fromtimestamp(cache_data["timestamp"], UTC)
-
-                # If cache is fresh, return cached data
                 if (
                     datetime.now(UTC) - cache_time
                     < BirdeyeCoinPriceDataProvider.CACHE_DURATION
                 ):
                     return cache_data["token_list"]
 
-        # If cache doesn't exist or is stale, fetch new data
         token_list_provider = JupiterTokenListDataProvider()
         token_list = await token_list_provider.get_token_list()
 
-        # Save to cache
         cache_data = {
             "timestamp": datetime.now(UTC).timestamp(),
             "token_list": token_list,
@@ -308,145 +337,113 @@ class BirdeyeCoinPriceDataProvider(CoinPriceDataProvider):
         return token_list
 
     async def get_current_ohlcv(self, coins, interval: str = "30m", output_format: str = "dict"):
-        interval = self._interval_map[interval]
-        data = []
-        tasks = []
-        for symbol in coins:
-            symbol = symbol.upper()
-            params = {
-                "symbol": symbol,
-                "address": self._token_map[symbol]["address"],
-                "type": interval,
-                "time_from": int((datetime.now(UTC) - timedelta(days=1)).timestamp()),
-                "time_to": int(datetime.now(UTC).timestamp()),
-            }
-            tasks.append(self._fetch_coin_ohlcv_birdeye(params))
+        time_to = datetime.now(UTC)
+        time_from = time_to - self.interval_deltas.get(interval, timedelta(minutes=30))
 
-            if len(tasks) >= 15:
-                batch_results = await asyncio.gather(*tasks)
-                for coin_result in batch_results:
-                    data.extend(coin_result[-1:0])
-                tasks = []
-                await asyncio.sleep(1)
-        # Process any remaining tasks
-        if tasks:
-            batch_results = await asyncio.gather(*tasks)
-            for coin_result in batch_results:
-                data.extend(coin_result[-1:])
+        results = await self._fetch_ohlcv_for_coins(coins, interval, time_from, time_to)
+        latest_data = [res[-1] for res in results if res]
 
-        return data, datetime.now(UTC).replace(microsecond=0)
+        timestamp = datetime.now(UTC).replace(microsecond=0)
+        if output_format == "dataframe":
+            return self._to_dataframe(latest_data), timestamp
+        return latest_data, timestamp
 
+    async def get_historical_ohlcv_by_start_end(
+        self,
+        coins,
+        interval: str = "30m",
+        start_time: datetime = None,
+        end_time: datetime = None,
+        output_format: str = "dict",
+    ):
+        if not start_time or not end_time:
+            raise ValueError("start_time and end_time must be provided")
 
-    async def get_historical_ohlcv(self, coins, interval: str = "30m", days: int = 45, output_format: str = "dict"):
-        interval = self._interval_map[interval]
-        data = []
-        tasks = []
-        for symbol in coins:
-            symbol = symbol.upper()
-            params = {
-                "symbol": symbol,
-                "address": self._token_map[symbol]["address"],
-                "type": interval,
-                "time_from": int((datetime.now(UTC) - timedelta(days=days)).timestamp()),
-                "time_to": int(datetime.now(UTC).timestamp()),
-            }
-            tasks.append(self._fetch_coin_ohlcv_birdeye(params))
-
-            # Process in batches of 15 requests per second
-            if len(tasks) >= 15:
-                batch_results = await asyncio.gather(*tasks)
-                for coin_result in batch_results:
-                    data.extend(coin_result)
-                tasks = []
-                await asyncio.sleep(1)
-
-        # Process any remaining tasks
-        if tasks:
-            batch_results = await asyncio.gather(*tasks)
-
-            for coin_result in batch_results:
-                data.extend(coin_result)
+        results = await self._fetch_ohlcv_for_coins(
+            coins, interval, start_time, end_time
+        )
+        all_data = [entry for coin_data in results for entry in coin_data]
 
         if output_format == "dataframe":
-            columns = [
-                "coin",
-                "timestamp",
-                "date",
-                "open",
-                "high",
-                "low",
-                "close",
-                "volume",
-            ]
-            df = pd.DataFrame.from_records(data, columns=columns)
-            df["open"] = df["open"].astype(float)
-            df["high"] = df["high"].astype(float)
-            df["low"] = df["low"].astype(float)
-            df["close"] = df["close"].astype(float)
-            df["volume"] = df["volume"].astype(float)
+            return self._to_dataframe(all_data)
+        return all_data, datetime.now(UTC).replace(microsecond=0)
 
-            return df
+    async def get_historical_ohlcv_by_start_end_for_address(
+        self,
+        address: str,
+        interval: str = "30m",
+        start_time: datetime = None,
+        end_time: datetime = None,
+        output_format: str = "dict",
+    ):
+        if not start_time or not end_time:
+            raise ValueError("start_time and end_time must be provided")
 
-        return data, datetime.now(UTC).replace(microsecond=0)
+        interval_key = self._interval_map.get(interval, "30m")
+        params = {
+            "address": address,
+            "type": interval_key,
+            "time_from": int(start_time.timestamp()),
+            "time_to": int(end_time.timestamp()),
+        }
+        data = await self._fetch_coin_ohlcv_birdeye(None, params)
 
-    async def get_historical_ohlcv_by_start_end(self, coins, interval: str = "30m",  start_time: int = None, end_time: int = None, output_format: str = "dict"):
-        interval = self._interval_map[interval]
-        data = []
+        if output_format == "dataframe":
+            return self._to_dataframe(data)
+        return data
+
+    async def get_historical_ohlcv(
+        self, coins, interval: str = "30m", days: int = 45, output_format: str = "dict"
+    ):
+        end_time = datetime.now(UTC)
+        start_time = end_time - timedelta(days=days)
+
+        return await self.get_historical_ohlcv_by_start_end(
+            coins, interval, start_time, end_time, output_format
+        )
+
+    async def get_historical_ohlcv_for_address(
+        self,
+        address: str,
+        interval: str = "30m",
+        days: int = 45,
+        output_format: str = "dict",
+    ):
+        end_time = datetime.now(UTC)
+        start_time = end_time - timedelta(days=days)
+
+        return await self.get_historical_ohlcv_by_start_end_for_address(
+            address, interval, start_time, end_time, output_format
+        )
+
+    async def _fetch_ohlcv_for_coins(
+        self,
+        coins: list[str],
+        interval: str,
+        time_from: datetime,
+        time_to: datetime,
+    ) -> list[list[dict]]:
+        interval_key = self._interval_map.get(interval, "30m")
         tasks = []
         for symbol in coins:
             symbol = symbol.upper()
+            token = self._token_map.get(symbol)
+            if not token:
+                continue
             params = {
-                "symbol": symbol,
-                "address": self._token_map[symbol]["address"],
-                "type": interval,
-                "time_from": int(start_time.timestamp()),
-                "time_to": int(end_time.timestamp()),
+                "address": token["address"],
+                "type": interval_key,
+                "time_from": int(time_from.timestamp()),
+                "time_to": int(time_to.timestamp()),
             }
-            tasks.append(self._fetch_coin_ohlcv_birdeye(params))
-            # Process in batches of 15 requests per second
-            if len(tasks) >= 15:
-                batch_results = await asyncio.gather(*tasks)
-                for coin_result in batch_results:
-                    data.extend(coin_result)
-                tasks = []
-                await asyncio.sleep(1)
-
-        # Process any remaining tasks
-        if tasks:
-            batch_results = await asyncio.gather(*tasks)
-
-            for coin_result in batch_results:
-                data.extend(coin_result)
-
-        if output_format == "dataframe":
-            columns = [
-                "coin",
-                "timestamp",
-                "date",
-                "open",
-                "high",
-                "low",
-                "close",
-                "volume",
-            ]
-            df = pd.DataFrame.from_records(data, columns=columns)
-            df["open"] = df["open"].astype(float)
-            df["high"] = df["high"].astype(float)
-            df["low"] = df["low"].astype(float)
-            df["close"] = df["close"].astype(float)
-            df["volume"] = df["volume"].astype(float)
-
-            return df
-
-        return data, datetime.now(UTC).replace(microsecond=0)
+            tasks.append(self._fetch_coin_ohlcv_birdeye(symbol, params))
+        results = await self._execute_in_batches(tasks)
+        return results
 
     async def _fetch_coin_ohlcv_birdeye(
-        self, params: dict
+        self, symbol: str | None, params: dict
     ) -> list[dict]:
-        symbol = params["symbol"]
-        del params["symbol"]
         formatted_data = []
-
         headers = {
             "accept": "application/json",
             "x-chain": "solana",
@@ -457,33 +454,65 @@ class BirdeyeCoinPriceDataProvider(CoinPriceDataProvider):
                 async with session.get(
                     f"{self._base_url}/defi/ohlcv", params=params, headers=headers
                 ) as resp:
-                    data = await resp.json()
+                    response_data = await resp.json()
         except Exception as e:
-            print(f"Error fetching {symbol} {params['type']} data from Birdeye: {e}")
+            identifier = symbol if symbol is not None else params.get("address")
+            print(f"Error fetching data for {identifier} with params {params}: {e}")
             return []
 
-        if data["success"] is False or data["data"] is None:
+        if not response_data.get("success") or response_data.get("data") is None:
             return []
 
-        for entry in data["data"]["items"]:
-            timestamp = entry["unixTime"]
-            date_str = datetime.fromtimestamp(timestamp).strftime(
-                "%Y-%m-%d"
-            )
+        for entry in response_data["data"]["items"]:
+            timestamp = entry.get("unixTime")
+            if not timestamp:
+                continue
+            date_str = datetime.fromtimestamp(timestamp, UTC).strftime("%Y-%m-%d")
+
+            if symbol is None:
+                symbol = await self._get_ca_symbol_birdeye(entry.get("address"))
             formatted_data.append(
                 {
                     "coin": symbol,
-                    "timestamp": timestamp,
+                    "timestamp": timestamp * 1000,
                     "date": date_str,
-                    "open": entry["o"],
-                    "high": entry["h"],
-                    "low": entry["l"],
-                    "close": entry["c"],
-                    "volume": entry["v"],
+                    "open": entry.get("o"),
+                    "high": entry.get("h"),
+                    "low": entry.get("l"),
+                    "close": entry.get("c"),
+                    "volume": entry.get("v"),
                 }
             )
-
         return formatted_data
+
+    async def _get_ca_symbol_birdeye(self, address: str) -> str:
+        headers = {
+            "accept": "application/json",
+            "x-chain": "solana",
+            "X-API-KEY": self._birdeye_api_key,
+        }
+
+        params = {
+            "address": address,
+        }
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    f"{self._base_url}/defi/v3/token/meta-data/single",
+                    params=params,
+                    headers=headers,
+                ) as resp:
+                    response_data = await resp.json()
+                    if (
+                        not response_data.get("success")
+                        or response_data.get("data") is None
+                    ):
+                        return address
+                    return response_data["data"]["symbol"]
+        except Exception as e:
+            print("Error while fetching CA symbol:", e)
+            return address
 
 
 class CompositeCoinPriceDataProvider(CoinPriceDataProvider):
@@ -515,3 +544,29 @@ class CompositeCoinPriceDataProvider(CoinPriceDataProvider):
             if isinstance(resp, tuple) or len(resp) > 0:
                 return resp
         return [], datetime.now(UTC).replace(microsecond=0)
+
+    async def get_historical_ohlcv_by_start_end_for_address(
+        self, address, interval, start_time, end_time, output_format
+    ):
+        for provider in self.providers:
+            if isinstance(provider, BirdeyeCoinPriceDataProvider):
+                return await provider.get_historical_ohlcv_by_start_end_for_address(
+                    address, interval, start_time, end_time, output_format
+                )
+        print("No birdeye provider found")
+        return [], datetime.now(UTC).replace(microsecond=0)
+
+    async def get_historical_ohlcv_for_address(
+        self, address, interval, days, output_format
+    ):
+        for provider in self.providers:
+            if isinstance(provider, BirdeyeCoinPriceDataProvider):
+                return await provider.get_historical_ohlcv_for_address(
+                    address, interval, days, output_format
+                )
+
+    async def _get_ca_symbol_birdeye(self, address: str) -> str:
+        for provider in self.providers:
+            if isinstance(provider, BirdeyeCoinPriceDataProvider):
+                return await provider._get_ca_symbol_birdeye(address)
+        return address

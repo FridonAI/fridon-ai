@@ -25,9 +25,13 @@ else:
 
 
 class CoinTechnicalAnalyzerToolInput(BaseToolInput):
-    coin_name: str = Field(
+    coin_name: str | None = Field(
         ...,
-        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is.",
+        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is. It's usually small string, not random characters.",
+    )
+    coin_address: str | None = Field(
+        default=None,
+        description="The address of the coin to analyze. If not provided, the coin name will be used to get the address. It's big string with random characters.",
     )
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
         default="1h", description="The timeframe of the chart candles"
@@ -52,15 +56,7 @@ CoinTechnicalAnalyzerTool = BaseTool(
             "image_url": "https://fridon-ai-assets.s3.eu-central-1.amazonaws.com/example-images/chart-analyzer.png",
         },
         {
-            "request": "Analyze bonk price chat for me from 2024-01-01 to 2024-01-02",
-            "response": "",
-        },
-        {
-            "request": "What do you think about sol price?",
-            "response": "",
-        },
-        {
-            "request": "Analyze solana price chart from 12 December 2024 to 13 December 2024 by 4h timeframe",
+            "request": "Analyze DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 price chat for me from 2024-01-01 to 2024-01-02",
             "response": "",
         },
     ],
@@ -100,15 +96,7 @@ CoinTechnicalIndicatorsListTool = BaseTool(
             "response": "",
         },
         {
-            "request": "What are the technical indicators?",
-            "response": "",
-        },
-        {
             "request": "What is MACD_12_26_9?",
-            "response": "",
-        },
-        {
-            "request": "When is RSI_14 used?",
             "response": "",
         },
     ],
@@ -116,9 +104,13 @@ CoinTechnicalIndicatorsListTool = BaseTool(
 
 
 class CoinChartPlotterToolInput(BaseToolInput):
-    coin_name: str = Field(
+    coin_name: str | None = Field(
         ...,
-        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is.",
+        description="The symbol of the coin to plot, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is. It's usually small string, not random characters.",
+    )
+    coin_address: str | None = Field(
+        default=None,
+        description="The address of the coin to analyze. If not provided, the coin name will be used to get the address. It's big string with random characters.",
     )
     indicators: List[
         Literal[
@@ -173,7 +165,7 @@ CoinChartPlotterTool = BaseTool(
     utility=CoinChartPlotterUtility(),
     examples=[
         {
-            "request": "Plot BTC chart",
+            "request": "Plot daily BTC chart",
             "response": "",
         },
         {
@@ -181,16 +173,20 @@ CoinChartPlotterTool = BaseTool(
             "response": "",
         },
         {
-            "request": "Plot BTC chart.",
-        }
+            "request": "Plot DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 price chart.",
+        },
     ],
     response_dumper=S3ResponseDumper(),
 )
 
 class CoinInfoToolInput(BaseToolInput):
-    coin_name: str = Field(
+    coin_name: str | None = Field(
         ...,
-        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is.",
+        description="The symbol of the coin, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is. It's usually small string, not random characters.",
+    )
+    coin_address: str | None = Field(
+        default=None,
+        description="The address of the coin to analyze. If not provided, the coin name will be used to get the address. It's big string with random characters.",
     )
     fields: List[
         Literal[
@@ -228,7 +224,7 @@ CoinInfoTool = BaseTool(
             "response": "",
         },
         {
-            "request": "What is the price, volume and rsi value of BTC?",
+            "request": "What is the price, volume and rsi value of DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263?",
             "response": "",
         },
     ],

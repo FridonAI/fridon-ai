@@ -22,8 +22,13 @@ else:
     )
 
 class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
-    coin_name: str = Field(
-        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is."
+    coin_name: Union[str, None] = Field(
+        default=None,
+        description="The symbol of the coin, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is. It's usually small string, not random characters.",
+    )
+    coin_address: Union[str, None] = Field(
+        default=None,
+        description="The address of the coin to analyze. If not provided, the coin name will be used to get the address. It's a big string with random characters.",
     )
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
         default="1d", description="The interval of the price chart"
@@ -43,7 +48,7 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
     response_dumper=S3ResponseDumper(),
     examples=[
         {
-            "request": "Give me coins similar to bonk price chart from december 2023",
+            "request": "Give me coins similar to DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 price chart from december 2023",
             "response": "",
         },
         {
@@ -58,8 +63,13 @@ CoinPriceChartSimilaritySearchTool = BaseTool(
 )
 
 class CoinPriceChartFlashbackSearchToolInput(BaseToolInput):
-    coin_name: str = Field(
-        description="The symbol of the coin to analyze, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is."
+    coin_name: str | None = Field(
+        default=None,
+        description="The symbol of the coin, abbreviation. If a full name is provided of known coin refactor to abbreviation otherwise leave it as is. It's usually small string, not random characters.",
+    )
+    coin_address: str | None = Field(
+        default=None,
+        description="The address of the coin to analyze. If not provided, the coin name will be used to get the address. It's a big string with random characters.",
     )
     interval: Literal["1h", "4h", "1d", "1w"] = Field(
         default="1d", description="The interval of the price chart"
@@ -79,7 +89,7 @@ CoinPriceChartFlashbackSearchTool = BaseTool(
             "response": "",
         },
         {
-            "request": "Which coins in the past had similar 4-hour chart patterns to what BTC is showing in the last 30 days?",
+            "request": "Which coins in the past had similar 4-hour chart patterns to what DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263 is showing in the last 30 days?",
             "response": "",
         },
     ],

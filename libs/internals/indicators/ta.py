@@ -88,6 +88,8 @@ def calculate_ta_indicators(
     )
 
     if not return_last_one:
+        if df_pandas.shape[0] > 80:
+            df_pandas = df_pandas.iloc[49:]
         df_pandas = df_pandas.assign(coin=coin)
         df_pandas["timestamp"] = df_pandas["date"].apply(lambda x: int(x.timestamp() * 1000))
         df_pandas["date"] = df_pandas["date"].apply(lambda x: x.strftime("%Y-%m-%d"))
