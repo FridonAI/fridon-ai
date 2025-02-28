@@ -19,7 +19,7 @@ export class TokenProgramInstructionFactory {
     mintAddress: string,
     amount: number,
   ) {
-    // 1) Check mintAddress associated accout.
+    // 1) Check mintAddress associated account.
     const source = await findAssociatedTokenAddress(from, mintAddress);
     const dest = await findAssociatedTokenAddress(to, mintAddress);
 
