@@ -222,7 +222,6 @@ COINS = [
 ]
 
 
-# @aiocron.crontab("0,30 * * * *", start=True)
 async def data_ingestion_job():
     logger.info(f"\n\nStarting data ingestion job. {datetime.datetime.now(datetime.UTC).isoformat()}\n\n")
     await update_ohlcv_data()
@@ -231,7 +230,7 @@ async def data_ingestion_job():
 
 async def update_ohlcv_data():
     data_provider = DataProvider()
-    raw_data, _ = await data_provider.get_current_ohlcv(COINS, interval="30m")
+    raw_data = await data_provider.get_current_ohlcv(COINS, interval="30m")
     current_time = datetime.datetime.fromtimestamp(raw_data[0]["timestamp"] // 1000)
     raw_repository = OhlcvRepository(table_name="ohlcv_raw")
     df = pl.from_records(raw_data)
@@ -446,7 +445,6 @@ async def seed():
 
 async def process(loop):
     await seed()
-    # await data_ingestion_job()
     aiocron.crontab("0,30 * * * *", data_ingestion_job, loop=loop)
 
 def main():
