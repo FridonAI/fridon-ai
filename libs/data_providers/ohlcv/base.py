@@ -1,7 +1,6 @@
 from typing import List, Literal, Union, Dict, Any
 from datetime import datetime
 import pandas as pd
-import polars as pl
 import asyncio
 
 
@@ -20,7 +19,8 @@ class BaseOHLCVProvider:
         interval: Literal["1h", "4h", "1d", "1w"],
         days: int = 30,
         output_format: Literal["dataframe", "dict"] = "dataframe",
-    ) -> Union[pd.DataFrame, pl.DataFrame, List[Dict[str, Any]]]:
+        category: Literal["spot", "futures"] = "spot",
+    ) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
         """
         Fetch historical OHLCV data for a list of symbols.
 
@@ -42,7 +42,8 @@ class BaseOHLCVProvider:
         start_time: datetime,
         end_time: datetime,
         output_format: Literal["dataframe", "dict"] = "dataframe",
-    ) -> Union[pd.DataFrame, pl.DataFrame, List[Dict[str, Any]]]:
+        category: Literal["spot", "futures"] = "spot",
+    ) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
         """
         Fetch historical OHLCV data for a list of symbols within a specific time range.
 
@@ -64,7 +65,8 @@ class BaseOHLCVProvider:
         interval: Literal["1h", "4h", "1d", "1w"],
         days: int = 30,
         output_format: Literal["dataframe", "dict"] = "dataframe",
-    ) -> Union[pd.DataFrame, pl.DataFrame, List[Dict[str, Any]]]:
+        category: Literal["spot", "futures"] = "spot",
+    ) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
         """
         Fetch historical OHLCV data for a specific token address.
 
@@ -86,7 +88,8 @@ class BaseOHLCVProvider:
         start_time: datetime,
         end_time: datetime,
         output_format: Literal["dataframe", "dict"] = "dataframe",
-    ) -> Union[pd.DataFrame, pl.DataFrame, List[Dict[str, Any]]]:
+        category: Literal["spot", "futures"] = "spot",
+    ) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
         """
         Fetch historical OHLCV data for a token address within a specific time range.
 
@@ -103,8 +106,11 @@ class BaseOHLCVProvider:
         ...
 
     async def get_current_ohlcv(
-        self, symbols: List[str], interval: Literal["1h", "4h", "1d", "1w"]
-    ) -> Dict[str, float]:
+        self,
+        symbols: List[str],
+        interval: Literal["1h", "4h", "1d", "1w"],
+        category: Literal["spot", "futures"] = "spot",
+    ) -> List[Dict[str, Any]]:
         """
         Fetch current OHLCV data for a list of symbols.
 
@@ -117,7 +123,7 @@ class BaseOHLCVProvider:
         """
         ...
 
-    async def _execute_in_batches(self, tasks: list[asyncio.Future]) -> list:
+    async def _execute_in_batches(self, tasks: list[asyncio.Future]) -> List:
         results = []
         for i in range(0, len(tasks), self._batch_size):
             batch = tasks[i : i + self._batch_size]

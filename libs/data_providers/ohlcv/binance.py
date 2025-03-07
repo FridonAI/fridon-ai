@@ -28,11 +28,12 @@ class BinanceOHLCVProvider(BaseOHLCVProvider):
         interval: Literal["1h", "4h", "1d", "1w"],
         days: int = 45,
         output_format: Literal["dataframe", "dict"] = "dataframe",
+        category: Literal["spot", "futures"] = "spot",
     ) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
         end_time = datetime.now(UTC)
         start_time = end_time - timedelta(days=days)
         return await self.get_historical_ohlcv_by_start_end(
-            symbols, interval, start_time, end_time, output_format
+            symbols, interval, start_time, end_time, output_format, category
         )
 
     async def get_historical_ohlcv_by_start_end(
@@ -42,6 +43,7 @@ class BinanceOHLCVProvider(BaseOHLCVProvider):
         start_time: datetime,
         end_time: datetime,
         output_format: Literal["dataframe", "dict"] = "dataframe",
+        category: Literal["spot", "futures"] = "spot",
     ) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
         start_timestamp = int(start_time.timestamp() * 1000)
         end_timestamp = int(end_time.timestamp() * 1000)
@@ -53,7 +55,12 @@ class BinanceOHLCVProvider(BaseOHLCVProvider):
                 map(
                     lambda symbol: asyncio.create_task(
                         self._fetch_symbol_data(
-                            session, symbol, interval, start_timestamp, end_timestamp
+                            session,
+                            symbol,
+                            interval,
+                            start_timestamp,
+                            end_timestamp,
+                            category,
                         )
                     ),
                     symbols,
@@ -69,14 +76,17 @@ class BinanceOHLCVProvider(BaseOHLCVProvider):
         return all_data
 
     async def get_current_ohlcv(
-        self, symbols: List[str], interval: Literal["1h", "4h", "1d", "1w"]
+        self,
+        symbols: List[str],
+        interval: Literal["1h", "4h", "1d", "1w"],
+        category: Literal["spot", "futures"] = "spot",
     ) -> List[Dict[str, Any]]:
         tasks = []
         async with aiohttp.ClientSession() as session:
             tasks = list(
                 map(
                     lambda symbol: asyncio.create_task(
-                        self._fetch_current_data(session, symbol, interval)
+                        self._fetch_current_data(session, symbol, interval, category)
                     ),
                     symbols,
                 )
@@ -91,6 +101,7 @@ class BinanceOHLCVProvider(BaseOHLCVProvider):
         interval: str,
         start_timestamp: int,
         end_timestamp: int,
+        category: Literal["spot", "futures"] = "spot",
     ) -> List[Dict[str, Any]]:
         """Fetches historical OHLCV data with pagination."""
         all_data = []
@@ -108,7 +119,8 @@ class BinanceOHLCVProvider(BaseOHLCVProvider):
             }
             try:
                 async with session.get(
-                    f"{self.base_url}{self.klines_endpoint}", params=params
+                    f"{self.base_url if category == 'spot' else self.base_futures_url}{self.klines_endpoint}",
+                    params=params,
                 ) as resp:
                     if resp.status != 200:
                         error_text = await resp.text()
@@ -146,12 +158,14 @@ class BinanceOHLCVProvider(BaseOHLCVProvider):
         session: aiohttp.ClientSession,
         symbol: str,
         interval: Literal["1h", "4h", "1d", "1w"],
+        category: Literal["spot", "futures"] = "spot",
     ) -> List[Dict[str, Any]]:
         """Fetches the latest single OHLCV data point."""
         symbol_pair = f"{symbol}USDT" if not symbol.endswith("USDT") else symbol
         params = {"symbol": symbol_pair, "interval": interval, "limit": 1}
         async with session.get(
-            f"{self.base_url}{self.klines_endpoint}", params=params
+            f"{self.base_url if category == 'spot' else self.base_futures_url}{self.klines_endpoint}",
+            params=params,
         ) as response:
             if response.status != 200:
                 print(

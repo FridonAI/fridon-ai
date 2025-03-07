@@ -1,6 +1,6 @@
 import os
 import aiohttp
-from typing import List, Literal, Dict, Union
+from typing import List, Literal, Dict, Union, Any
 from datetime import UTC, datetime, timedelta
 
 from libs.data_providers.ohlcv.base import BaseOHLCVProvider
@@ -155,7 +155,7 @@ class BirdeyeOHLCVProvider(BaseOHLCVProvider):
 
     async def _fetch_coin_ohlcv_birdeye(
         self, symbol: str | None, params: Dict
-    ) -> list[dict]:
+    ) -> List[Dict[str, Any]]:
         formatted_data = []
         headers = {
             "accept": "application/json",

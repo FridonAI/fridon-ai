@@ -30,8 +30,6 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
             "1d": "D",
             "1w": "W",
         }
-        # For this provider we assume the "spot" market category.
-        self.category = "spot"
 
     async def get_historical_ohlcv(
         self,
@@ -39,11 +37,12 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
         interval: Literal["1h", "4h", "1d", "1w"] = "1h",
         days: int = 45,
         output_format: Literal["dataframe", "dict"] = "dataframe",
+        category: Literal["spot", "futures"] = "spot",
     ) -> Union[pl.DataFrame, List[Dict[str, Any]]]:
         end_time = datetime.now(UTC)
         start_time = end_time - timedelta(days=days)
         return await self.get_historical_ohlcv_by_start_end(
-            symbols, interval, start_time, end_time, output_format
+            symbols, interval, start_time, end_time, output_format, category
         )
 
     async def get_historical_ohlcv_by_start_end(
@@ -53,6 +52,7 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
         start_time: datetime,
         end_time: datetime,
         output_format: Literal["dataframe", "dict"] = "dataframe",
+        category: Literal["spot", "futures"] = "spot",
     ) -> Union[pl.DataFrame, List[Dict[str, Any]]]:
         start_ts = int(start_time.timestamp()) * 1000
         end_ts = int(end_time.timestamp()) * 1000
@@ -64,7 +64,7 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
                 tasks.append(
                     asyncio.create_task(
                         self._fetch_symbol_data(
-                            session, symbol, interval, start_ts, end_ts
+                            session, symbol, interval, start_ts, end_ts, category
                         )
                     )
                 )
@@ -82,6 +82,7 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
         self,
         symbols: List[str],
         interval: Literal["1h", "4h", "1d", "1w"] = "1h",
+        category: Literal["spot", "futures"] = "spot",
     ) -> List[Dict[str, Any]]:
         """
         Fetch the current (latest) candle for each symbol.
@@ -92,7 +93,7 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
             for symbol in symbols:
                 tasks.append(
                     asyncio.create_task(
-                        self._fetch_current_data(session, symbol, interval)
+                        self._fetch_current_data(session, symbol, interval, category)
                     )
                 )
             results = await asyncio.gather(*tasks)
@@ -105,6 +106,7 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
         interval: str,
         start_ts: int,
         end_ts: int,
+        category: Literal["spot", "futures"] = "spot",
     ) -> List[Dict[str, Any]]:
         """
         Fetches historical OHLCV data for a given symbol via the V5 API endpoint.
@@ -118,7 +120,7 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
 
         while True:
             params = {
-                "category": self.category,
+                "category": category if category == "spot" else "linear",
                 "symbol": symbol_pair,
                 "interval": interval_str,
                 "start": start_ts,
@@ -173,6 +175,7 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
         session: aiohttp.ClientSession,
         symbol: str,
         interval: str,
+        category: Literal["spot", "futures"] = "spot",
     ) -> List[Dict[str, Any]]:
         """
         Fetches the latest candle for a given symbol.
@@ -182,7 +185,7 @@ class BybitOHLCVProvider(BaseOHLCVProvider):
         symbol_pair = f"{symbol}USDT" if not symbol.endswith("USDT") else symbol
 
         params = {
-            "category": self.category,
+            "category": category if category == "spot" else "linear",
             "symbol": symbol_pair,
             "interval": interval_str,
             "limit": 1,
