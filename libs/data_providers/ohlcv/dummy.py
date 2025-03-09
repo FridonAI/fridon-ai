@@ -18,7 +18,7 @@ class DummyOHLCVProvider(BaseOHLCVProvider):
         interval: Literal["1h", "4h", "1d", "1w"],
         days: int = 30,
         output_format: Literal["dataframe", "dict"] = "dataframe",
-    ) -> Union[pd.DataFrame, pl.DataFrame, List[Dict[str, Any]]]:
+    ) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
         """
         Generate random OHLCV data for a list of symbols.
         """
@@ -85,7 +85,7 @@ class DummyOHLCVProvider(BaseOHLCVProvider):
         interval: Literal["1h", "4h", "1d", "1w"],
         days: int = 30,
         output_format: Literal["dataframe", "dict"] = "dataframe",
-    ) -> Union[pd.DataFrame, pl.DataFrame, List[Dict[str, Any]]]:
+    ) -> Union[pd.DataFrame, List[Dict[str, Any]]]:
         """
         Generate random OHLCV data for a specific token address.
         """

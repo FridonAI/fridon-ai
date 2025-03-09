@@ -36,7 +36,6 @@ class BirdeyeOHLCVProvider(BaseOHLCVProvider):
     async def create():
         token_list_provider = JupiterTokenListDataProvider()
         token_list = await token_list_provider.get_token_list()
-        print("token_list", token_list)
         return BirdeyeOHLCVProvider(token_list)
 
     async def get_historical_ohlcv_by_start_end(
@@ -46,6 +45,7 @@ class BirdeyeOHLCVProvider(BaseOHLCVProvider):
         start_time: Union[datetime, None] = None,
         end_time: Union[datetime, None] = None,
         output_format: Literal["dataframe", "dict"] = "dataframe",
+        category: Literal["spot", "futures"] = "spot",
     ):
         if not start_time or not end_time:
             raise ValueError("start_time and end_time must be provided")
@@ -66,6 +66,7 @@ class BirdeyeOHLCVProvider(BaseOHLCVProvider):
         start_time: Union[datetime, None] = None,
         end_time: Union[datetime, None] = None,
         output_format: Literal["dataframe", "dict"] = "dataframe",
+        category: Literal["spot", "futures"] = "spot",
     ):
         if not start_time or not end_time:
             raise ValueError("start_time and end_time must be provided")
@@ -89,6 +90,7 @@ class BirdeyeOHLCVProvider(BaseOHLCVProvider):
         interval: str = "30m",
         days: int = 45,
         output_format: str = "dict",
+        category: Literal["spot", "futures"] = "spot",
     ):
         end_time = datetime.now(UTC)
         start_time = end_time - timedelta(days=days)
