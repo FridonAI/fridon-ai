@@ -19,26 +19,29 @@ class CompositeCoinDataProvider:
         symbols: List[str],
         interval: str,
         output_format: Literal["dataframe", "dict"] = "dataframe",
-        category: Literal["spot", "futures"] = "spot",
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
     ) -> List[Dict[str, Any]]:
         if not symbols:
             return []
         remaining_symbols = symbols.copy()
         results = []
-        for provider in self.ohlcv_providers:
+        for cat in category:
+            for provider in self.ohlcv_providers:
+                if not remaining_symbols:
+                    break
+                resp = await provider.get_current_ohlcv(
+                    remaining_symbols, interval, output_format, cat
+                )
+                if isinstance(resp, tuple) or len(resp) > 0:
+                    results.append(resp)
+                    fetched_symbols = list(
+                        set(item.get("coin") for item in resp if "coin" in item)
+                    )
+                    remaining_symbols = [
+                        s for s in remaining_symbols if s not in fetched_symbols
+                    ]
             if not remaining_symbols:
                 break
-            resp = await provider.get_current_ohlcv(
-                remaining_symbols, interval, output_format, category
-            )
-            if isinstance(resp, tuple) or len(resp) > 0:
-                results.append(resp)
-                fetched_symbols = list(
-                    set(item.get("coin") for item in resp if "coin" in item)
-                )
-                remaining_symbols = [
-                    s for s in remaining_symbols if s not in fetched_symbols
-                ]
         if not results:
             return []
         combined = []
@@ -52,32 +55,36 @@ class CompositeCoinDataProvider:
         interval: str,
         days: int,
         output_format: Literal["dataframe", "dict"] = "dataframe",
-        category: Literal["spot", "futures"] = "spot",
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
     ):
         if not symbols:
             return []
         remaining_symbols = symbols.copy()
         results = []
-        for provider in self.ohlcv_providers:
+        for cat in category:
+            for provider in self.ohlcv_providers:
+                if not remaining_symbols:
+                    break
+                resp = await provider.get_historical_ohlcv(
+                    remaining_symbols, interval, days, output_format, cat
+                )
+                if isinstance(resp, tuple) or len(resp) > 0:
+                    results.append(resp)
+                    if isinstance(resp, pd.DataFrame):
+                        fetched_symbols = (
+                            resp["coin"].unique().tolist()
+                            if "coin" in resp.columns
+                            else []
+                        )
+                    else:
+                        fetched_symbols = list(
+                            set(item.get("coin") for item in resp if "coin" in item)
+                        )
+                    remaining_symbols = [
+                        s for s in remaining_symbols if s not in fetched_symbols
+                    ]
             if not remaining_symbols:
                 break
-            print("Remaining symbols", remaining_symbols, provider.__class__.__name__)
-            resp = await provider.get_historical_ohlcv(
-                remaining_symbols, interval, days, output_format, category
-            )
-            if isinstance(resp, tuple) or len(resp) > 0:
-                results.append(resp)
-                if isinstance(resp, pd.DataFrame):
-                    fetched_symbols = (
-                        resp["coin"].unique().tolist() if "coin" in resp.columns else []
-                    )
-                else:
-                    fetched_symbols = list(
-                        set(item.get("coin") for item in resp if "coin" in item)
-                    )
-                remaining_symbols = [
-                    s for s in remaining_symbols if s not in fetched_symbols
-                ]
         if not results:
             return []
         if isinstance(results[0], pd.DataFrame):
@@ -94,36 +101,41 @@ class CompositeCoinDataProvider:
         start_time: datetime,
         end_time: datetime,
         output_format: Literal["dataframe", "dict"] = "dataframe",
-        category: Literal["spot", "futures"] = "spot",
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
     ):
         if not symbols:
             return []
         remaining_symbols = symbols.copy()
         results = []
-        for provider in self.ohlcv_providers:
+        for cat in category:
+            for provider in self.ohlcv_providers:
+                if not remaining_symbols:
+                    break
+                resp = await provider.get_historical_ohlcv_by_start_end(
+                    remaining_symbols,
+                    interval,
+                    start_time,
+                    end_time,
+                    output_format,
+                    cat,
+                )
+                if isinstance(resp, tuple) or len(resp) > 0:
+                    results.append(resp)
+                    if isinstance(resp, pd.DataFrame):
+                        fetched_symbols = (
+                            resp["coin"].unique().tolist()
+                            if "coin" in resp.columns
+                            else []
+                        )
+                    else:
+                        fetched_symbols = list(
+                            set(item.get("coin") for item in resp if "coin" in item)
+                        )
+                    remaining_symbols = [
+                        s for s in remaining_symbols if s not in fetched_symbols
+                    ]
             if not remaining_symbols:
                 break
-            resp = await provider.get_historical_ohlcv_by_start_end(
-                remaining_symbols,
-                interval,
-                start_time,
-                end_time,
-                output_format,
-                category,
-            )
-            if isinstance(resp, tuple) or len(resp) > 0:
-                results.append(resp)
-                if isinstance(resp, pd.DataFrame):
-                    fetched_symbols = (
-                        resp["coin"].unique().tolist() if "coin" in resp.columns else []
-                    )
-                else:
-                    fetched_symbols = list(
-                        set(item.get("coin") for item in resp if "coin" in item)
-                    )
-                remaining_symbols = [
-                    s for s in remaining_symbols if s not in fetched_symbols
-                ]
         if not results:
             return []
         if isinstance(results[0], pd.DataFrame):
