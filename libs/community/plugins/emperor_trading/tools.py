@@ -1,5 +1,5 @@
 from pydantic import Field
-from typing import Union
+from typing import Union, List, Literal
 
 from fridonai_core.plugins.schemas import BaseToolInput
 from fridonai_core.plugins.tools import BaseTool
@@ -19,6 +19,10 @@ class EmperorTradingCoinAnalysisToolInput(BaseToolInput):
     )
     end_time: Union[str, None] = Field(
         default=None, description="The end date for the price chart comparison."
+    )
+    category: List[Literal["spot", "futures"]] = Field(
+        default=["spot", "futures"],
+        description="The order of categories of the coin data, spot or futures data. Order is a priority of data categories.",
     )
 
 

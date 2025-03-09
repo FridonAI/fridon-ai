@@ -42,6 +42,10 @@ class CoinTechnicalAnalyzerToolInput(BaseToolInput):
     end_time: Union[str, None] = Field(
         default=None, description="The end time of the price chart"
     )
+    category: List[Literal["spot", "futures"]] = Field(
+        default=["spot", "futures"],
+        description="The order of categories of the coin data, spot or futures data. Order is a priority of data categories.",
+    )
 
 
 CoinTechnicalAnalyzerTool = BaseTool(
@@ -156,6 +160,10 @@ class CoinChartPlotterToolInput(BaseToolInput):
         default="4h", description="The interval of the technical indicators"
     )
 
+    category: List[Literal["spot", "futures"]] = Field(
+        default=["spot", "futures"],
+        description="The order of categories of the coin data, spot or futures data. Order is a priority of data categories.",
+    )
 
 
 CoinChartPlotterTool = BaseTool(
@@ -211,6 +219,15 @@ class CoinInfoToolInput(BaseToolInput):
             "PSARs_0.02_0.2",
         ]
     ] = Field(default=[], description="List of fields to get info about")
+
+    interval: Literal["1h", "4h", "1d", "1w"] = Field(
+        default="4h", description="The interval of the technical indicators"
+    )
+
+    category: List[Literal["spot", "futures"]] = Field(
+        default=["spot", "futures"],
+        description="The order of categories of the coin data, spot or futures data. Order is a priority of data categories.",
+    )
 
 
 CoinInfoTool = BaseTool(

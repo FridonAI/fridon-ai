@@ -1,6 +1,6 @@
 from fridonai_core.plugins.tools.response_dumper_base import S3ResponseDumper
 from pydantic import Field
-from typing import Literal, Union
+from typing import Literal, Union, List
 
 from libs.community.helpers.tools import DatetimeExtractorTool
 from fridonai_core.plugins.schemas import BaseToolInput
@@ -39,6 +39,11 @@ class CoinPriceChartSimilaritySearchToolInput(BaseToolInput):
     end_time: Union[str, None] = Field(
         default=None, description="The end date for the price chart comparison."
     )
+    category: List[Literal["spot", "futures"]] = Field(
+        default=["spot", "futures"],
+        description="The order of categories of the coin data, spot or futures data. Order is a priority of data categories.",
+    )
+
 
 CoinPriceChartSimilaritySearchTool = BaseTool(
     name="coin-price-chart-similarity-search",
@@ -75,6 +80,10 @@ class CoinPriceChartFlashbackSearchToolInput(BaseToolInput):
         default="1d", description="The interval of the price chart"
     )
     chart_length: int = Field(default=30, description="The length of the price chart")
+    category: List[Literal["spot", "futures"]] = Field(
+        default=["spot", "futures"],
+        description="The order of categories of the coin data, spot or futures data. Order is a priority of data categories.",
+    )
 
 
 CoinPriceChartFlashbackSearchTool = BaseTool(
