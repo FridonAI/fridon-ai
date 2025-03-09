@@ -121,23 +121,13 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
         ][:100]
 
         source_coin_historical_ohlcvs = (
-            (
-                await data_provider.get_historical_ohlcv_by_start_end(
-                    [coin_name.upper()],
-                    interval=interval,
-                    start_time=start_time,
-                    end_time=end_time,
-                    output_format="dataframe",
-                    category=category,
-                )
-            )
-            if coin_address is None
-            else await data_provider.get_historical_ohlcv_by_start_end_for_address(
-                coin_address,
+            await data_provider.get_historical_ohlcv_by_start_end(
+                [coin_name.upper() if coin_name else coin_address],
                 interval=interval,
                 start_time=start_time,
                 end_time=end_time,
                 output_format="dataframe",
+                category=category,
             )
         )
 
@@ -345,21 +335,12 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             og_coins_historical_ohlcvs
         )
 
-        current_coin_historical_ohlcv = (
-            await data_provider.get_historical_ohlcv(
-                [coin_name.upper()],
-                interval=interval,
-                days=self.interval_to_params[interval]["fetch_days"],
-                output_format="dataframe",
-                category=category,
-            )
-            if coin_address is None
-            else await data_provider.get_historical_ohlcv_for_address(
-                coin_address,
-                interval=interval,
-                days=self.interval_to_params[interval]["fetch_days"],
-                output_format="dataframe",
-            )
+        current_coin_historical_ohlcv = await data_provider.get_historical_ohlcv(
+            [coin_name.upper() if coin_name else coin_address],
+            interval=interval,
+            days=self.interval_to_params[interval]["fetch_days"],
+            output_format="dataframe",
+            category=category,
         )
         current_coin_historical_ohlcv = convert_timestamp_to_datetime(
             current_coin_historical_ohlcv

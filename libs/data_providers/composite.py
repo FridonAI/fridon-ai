@@ -49,6 +49,9 @@ class CompositeCoinDataProvider:
             combined.extend(r)
         return combined
 
+    def _is_address(self, symbol: str) -> bool:
+        return len(symbol) > 30
+
     async def get_historical_ohlcv(
         self,
         symbols: List[str],
@@ -59,8 +62,21 @@ class CompositeCoinDataProvider:
     ):
         if not symbols:
             return []
-        remaining_symbols = symbols.copy()
+        remaining_symbols = []
         results = []
+
+        for symbol in symbols:
+            if self._is_address(symbol):
+                resp = await self.get_historical_ohlcv_for_address(
+                    address=symbol,
+                    interval=interval,
+                    days=days,
+                    output_format=output_format,
+                )
+                if isinstance(resp, tuple) or len(resp) > 0:
+                    results.append(resp)
+            else:
+                remaining_symbols.append(symbol)
         for cat in category:
             for provider in self.ohlcv_providers:
                 if not remaining_symbols:
@@ -105,8 +121,21 @@ class CompositeCoinDataProvider:
     ):
         if not symbols:
             return []
-        remaining_symbols = symbols.copy()
+        remaining_symbols = []
         results = []
+        for symbol in symbols:
+            if self._is_address(symbol):
+                resp = await self.get_historical_ohlcv_by_start_end_for_address(
+                    address=symbol,
+                    interval=interval,
+                    start_time=start_time,
+                    end_time=end_time,
+                    output_format=output_format,
+                )
+                if isinstance(resp, tuple) or len(resp) > 0:
+                    results.append(resp)
+            else:
+                remaining_symbols.append(symbol)
         for cat in category:
             for provider in self.ohlcv_providers:
                 if not remaining_symbols:
