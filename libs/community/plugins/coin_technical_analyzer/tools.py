@@ -46,6 +46,9 @@ class CoinTechnicalAnalyzerToolInput(BaseToolInput):
         default=["spot", "futures"],
         description="The order of categories of the coin data, spot or futures data. Order is a priority of data categories.",
     )
+    user_request: str | None = Field(
+        default=None, description="The user's request about the coin analysis"
+    )
 
 
 CoinTechnicalAnalyzerTool = BaseTool(

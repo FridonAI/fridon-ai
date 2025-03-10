@@ -45,6 +45,10 @@ Generated response should be simple, easy to understand, user shouldn't try hard
 Given {symbol} coin's TA data as below on the last trading day, what will be the next few days possible crypto price movement?
 Note: Some indicators might be unavailable due to insufficient data points.
 
+On top of analysis consider user's request and generate corresponding, easy to understand, concise response.
+User request (If request is empty just generate analysis):
+{user_request}
+
 Technical Indicators for {interval} timeframe:
 {coin_history_indicators}"""
     fields_to_retain: list[str] = ["plot_data"]
@@ -54,6 +58,7 @@ Technical Indicators for {interval} timeframe:
         self,
         coin_name: str | None = None,
         coin_address: str | None = None,
+        user_request: str = "",
         interval: Literal["1h", "4h", "1d", "1w"] = "4h",
         start_time: Union[str, None] = None,
         end_time: Union[str, None] = None,
@@ -88,7 +93,6 @@ Technical Indicators for {interval} timeframe:
                 output_format="dataframe",
                 category=category,
             )
-            print("dataframe", ohlcv_data.shape, interval_to_days[interval])
         if len(ohlcv_data) == 0:
             return "No data found"
 
@@ -102,6 +106,7 @@ Technical Indicators for {interval} timeframe:
             "symbol": coin_name if coin_name else coin_address,
             "plot_data": plot_data.to_dicts(),
             "interval": interval,
+            "user_request": user_request,
         }
 
 
