@@ -28,6 +28,7 @@ export class BinanceAdapter implements OHLCVAdapter {
     interval: '30m' | '1h' | '4h' | '1d',
     startTime: number,
     endTime: number,
+    category: string = 'spot',
   ): Promise<OHLCV[]> {
     const params = new URLSearchParams({
       symbol: `${symbol.toUpperCase()}USDT`,
@@ -35,7 +36,15 @@ export class BinanceAdapter implements OHLCVAdapter {
       startTime: (startTime * 1000).toString(),
       endTime: (endTime * 1000).toString(),
     });
-    const url = `https://api.binance.com/api/v3/klines?${params.toString()}`;
+
+    let baseUrl = 'https://api.binance.com/api/v3/klines';
+    if (category === 'futures') {
+      baseUrl = 'https://fapi.binance.com/fapi/v1/klines';
+    }
+
+    const url = `${baseUrl}?${params.toString()}`;
+    this.l.log(`Fetching Binance ${category} OHLCV data: ${url}`);
+
     const response = await fetch(url);
     const result = (await response.json()) as BinanceResponse;
 
