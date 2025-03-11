@@ -1,7 +1,13 @@
 import pandas as pd
 from datetime import datetime, timedelta, UTC
+from typing import List, Literal
 from fridonai_core.plugins.utilities import LLMUtility
-from libs.data_providers.coin_price_providers import BinanceCoinPriceDataProvider
+from libs.data_providers import (
+    BinanceOHLCVProvider,
+    BybitOHLCVProvider,
+    BirdeyeOHLCVProvider,
+    CompositeCoinDataProvider,
+)
 
 from libs.internals.indicators.emperor_guide import (
     get_latest_ema_crossover,
@@ -17,7 +23,12 @@ class EmperorTradingCoinAnalysisUtility(LLMUtility):
     result_as_test_str: bool = True
 
     async def _arun(
-        self, coin_name: str, end_time: str | None = None, *args, **kwargs
+        self,
+        coin_name: str,
+        end_time: str | None = None,
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
+        *args,
+        **kwargs,
     ) -> str:
         current_time = datetime.now(UTC)
         if end_time is not None:
@@ -28,47 +39,56 @@ class EmperorTradingCoinAnalysisUtility(LLMUtility):
         (
             coin_historical_ohlcvs_4h,
             coin_historical_ohlcvs_1d,
-        ) = await self.get_coin_historical_ohlcvs(coin_name, end_time)
+        ) = await self._get_coin_historical_ohlcvs(coin_name, end_time, category)
 
-        chart_results = await self.calculate_indicators(
+        chart_results = await self._calculate_indicators(
             coin_historical_ohlcvs_4h, coin_historical_ohlcvs_1d, end_time
         )
 
-        print("chart_results", chart_results)
-
         return {"chart_results": chart_results, "coin_name": coin_name}
 
-    async def calculate_indicators(
+    async def _calculate_indicators(
         self,
         coin_historical_ohlcvs_4h: pd.DataFrame,
         coin_historical_ohlcvs_1d: pd.DataFrame,
         end_time: datetime,
     ) -> str:
-        ema_results = self.get_ema_results(
+        ema_results = self._get_ema_results(
             coin_historical_ohlcvs_4h, coin_historical_ohlcvs_1d, end_time
         )
         return {**ema_results}
 
-    async def get_coin_historical_ohlcvs(
-        self, coin_name: str, end_time: datetime
+    async def _get_coin_historical_ohlcvs(
+        self,
+        coin_name: str,
+        end_time: datetime,
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
     ) -> pd.DataFrame:
-        binance_provider = BinanceCoinPriceDataProvider()
+        data_provider = CompositeCoinDataProvider(
+            [
+                BinanceOHLCVProvider(),
+                BybitOHLCVProvider(),
+                await BirdeyeOHLCVProvider.create(),
+            ]
+        )
         coin_historical_ohlcvs_4h = (
-            await binance_provider.get_historical_ohlcv_by_start_end(
+            await data_provider.get_historical_ohlcv_by_start_end(
                 [coin_name],
                 interval="4h",
                 start_time=end_time - timedelta(days=60),
                 end_time=end_time,
                 output_format="dataframe",
+                category=category,
             )
         )
         coin_historical_ohlcvs_1d = (
-            await binance_provider.get_historical_ohlcv_by_start_end(
+            await data_provider.get_historical_ohlcv_by_start_end(
                 [coin_name],
                 interval="1d",
                 start_time=end_time - timedelta(days=200),
                 end_time=end_time,
                 output_format="dataframe",
+                category=category,
             )
         )
 
@@ -81,7 +101,7 @@ class EmperorTradingCoinAnalysisUtility(LLMUtility):
 
         return coin_historical_ohlcvs_4h, coin_historical_ohlcvs_1d
 
-    def get_ema_results(
+    def _get_ema_results(
         self,
         coin_historical_ohlcvs_4h: pd.DataFrame,
         coin_historical_ohlcvs_1d: pd.DataFrame,

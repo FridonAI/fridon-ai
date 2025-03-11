@@ -9,10 +9,11 @@ import pandas as pd
 
 from fridonai_core.plugins.utilities import BaseUtility
 from libs.community.plugins.coin_technical_analyzer.helpers.llm import get_filter_generator_chain
-from libs.data_providers.coin_price_providers import (
-    BinanceCoinPriceDataProvider,
-    BirdeyeCoinPriceDataProvider,
-    CompositeCoinPriceDataProvider,
+from libs.data_providers import (
+    BinanceOHLCVProvider,
+    BybitOHLCVProvider,
+    BirdeyeOHLCVProvider,
+    CompositeCoinDataProvider,
 )
 from libs.repositories.indicators import IndicatorsRepository
 
@@ -77,6 +78,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
         start_time: str | None = None,
         end_time: str | None = None,
         interval: Literal["1h", "4h", "1d", "1w"] = "1d",
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
         **kwargs,
     ) -> str | dict:
         current_time = datetime.now(UTC)
@@ -105,10 +107,11 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
         time_diff_hours = (end_time - start_time).total_seconds() / 3600
         current_minus_diff_time = current_time - timedelta(hours=time_diff_hours)
 
-        data_provider = CompositeCoinPriceDataProvider(
+        data_provider = CompositeCoinDataProvider(
             [
-                BinanceCoinPriceDataProvider(),
-                await BirdeyeCoinPriceDataProvider.create(),
+                BinanceOHLCVProvider(),
+                BybitOHLCVProvider(),
+                await BirdeyeOHLCVProvider.create(),
             ]
         )
         target_coins = [
@@ -118,22 +121,13 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
         ][:100]
 
         source_coin_historical_ohlcvs = (
-            (
-                await data_provider.get_historical_ohlcv_by_start_end(
-                    [coin_name.upper()],
-                    interval=interval,
-                    start_time=start_time,
-                    end_time=end_time,
-                    output_format="dataframe",
-                )
-            )
-            if coin_address is None
-            else await data_provider.get_historical_ohlcv_by_start_end_for_address(
-                coin_address,
+            await data_provider.get_historical_ohlcv_by_start_end(
+                [coin_name.upper() if coin_name else coin_address],
                 interval=interval,
                 start_time=start_time,
                 end_time=end_time,
                 output_format="dataframe",
+                category=category,
             )
         )
 
@@ -147,6 +141,7 @@ class CoinPriceChartSimilaritySearchUtility(BaseUtility):
                 start_time=current_minus_diff_time,
                 end_time=current_time,
                 output_format="dataframe",
+                category=category,
             )
         )
         target_start_time = int(
@@ -299,6 +294,7 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
         coin_address: str | None = None,
         interval: Literal["1h", "4h", "1d", "1w"] = "1d",
         chart_length: int | None = None,
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
         **kwargs,
     ) -> list[dict]:
         if chart_length is None:
@@ -311,12 +307,13 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             if coin != (coin_name.upper() if coin_name else "")
         ]
 
-        binance_data_provider = BinanceCoinPriceDataProvider()
+        binance_data_provider = BinanceOHLCVProvider()
 
-        data_provider = CompositeCoinPriceDataProvider(
+        data_provider = CompositeCoinDataProvider(
             [
                 binance_data_provider,
-                await BirdeyeCoinPriceDataProvider.create(),
+                BybitOHLCVProvider(),
+                await BirdeyeOHLCVProvider.create(),
             ]
         )
 
@@ -326,31 +323,24 @@ class CoinPriceChartFalshbackSearchUtility(BaseUtility):
             ).dt.strftime("%Y-%m-%d %H:%M:%S")
             return df
 
-        og_coins_historical_ohlcvs = await binance_data_provider.get_historical_ohlcv(
+        og_coins_historical_ohlcvs = await data_provider.get_historical_ohlcv(
             coins_to_fetch,
             interval=interval,
             days=self.interval_to_params[interval]["fetch_days"],
             output_format="dataframe",
+            category=category,
         )
 
         og_coins_historical_ohlcvs = convert_timestamp_to_datetime(
             og_coins_historical_ohlcvs
         )
 
-        current_coin_historical_ohlcv = (
-            await data_provider.get_historical_ohlcv(
-                [coin_name.upper()],
-                interval=interval,
-                days=self.interval_to_params[interval]["fetch_days"],
-                output_format="dataframe",
-            )
-            if coin_address is None
-            else await data_provider.get_historical_ohlcv_for_address(
-                coin_address,
-                interval=interval,
-                days=self.interval_to_params[interval]["fetch_days"],
-                output_format="dataframe",
-            )
+        current_coin_historical_ohlcv = await data_provider.get_historical_ohlcv(
+            [coin_name.upper() if coin_name else coin_address],
+            interval=interval,
+            days=self.interval_to_params[interval]["fetch_days"],
+            output_format="dataframe",
+            category=category,
         )
         current_coin_historical_ohlcv = convert_timestamp_to_datetime(
             current_coin_historical_ohlcv

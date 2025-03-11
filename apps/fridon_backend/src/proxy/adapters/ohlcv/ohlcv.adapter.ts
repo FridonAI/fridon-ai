@@ -13,5 +13,6 @@ export interface OHLCVAdapter {
     interval: '30m' | '1h' | '4h' | '1d',
     startTime: number,
     endTime: number,
+    category?: string,
   ): Promise<OHLCV[]>;
 }

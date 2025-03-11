@@ -11,12 +11,12 @@ export class PluginsService {
 
   setPlugins(plugins: Plugin[]): void {
     const orderedPlugins = [
-      plugins.find(p => p.name === 'Intelligent Coin Searcher'),
-      plugins.find(p => p.name === 'Coin Technical Analyzer'),
-      plugins.find(p => p.name === 'Emperor Trader'),
-      plugins.find(p => p.name === 'Solana Bonk Educator'),
-      plugins.find(p => p.name === 'Wallet'),
-      plugins.find(p => p.name === 'Coin Observer'),
+      plugins.find((p) => p.name === 'Intelligent Coin Searcher'),
+      plugins.find((p) => p.name === 'Coin Technical Analyzer'),
+      plugins.find((p) => p.name === 'Emperor Trader'),
+      plugins.find((p) => p.name === 'Solana Bonk Educator'),
+      plugins.find((p) => p.name === 'Wallet'),
+      plugins.find((p) => p.name === 'Coin Observer'),
     ].filter(Boolean);
     this.pluginRepository.set(orderedPlugins);
   }

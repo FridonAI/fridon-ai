@@ -6,9 +6,10 @@ from fridonai_core.plugins.utilities.base import BaseUtility
 from fridonai_core.plugins.utilities.llm import LLMUtility
 
 from libs.data_providers import (
-    BinanceCoinPriceDataProvider as BinanceCoinPriceDataProvider,
-    BirdeyeCoinPriceDataProvider as BirdeyeCoinPriceDataProvider,
-    CompositeCoinPriceDataProvider as CompositeCoinPriceDataProvider,
+    BinanceOHLCVProvider,
+    BirdeyeOHLCVProvider,
+    BybitOHLCVProvider,
+    CompositeCoinDataProvider,
 )
 
 from libs.internals.indicators import calculate_ta_indicators
@@ -44,6 +45,10 @@ Generated response should be simple, easy to understand, user shouldn't try hard
 Given {symbol} coin's TA data as below on the last trading day, what will be the next few days possible crypto price movement?
 Note: Some indicators might be unavailable due to insufficient data points.
 
+On top of analysis consider user's request and generate corresponding, easy to understand, concise response.
+User request (If request is empty just generate analysis):
+{user_request}
+
 Technical Indicators for {interval} timeframe:
 {coin_history_indicators}"""
     fields_to_retain: list[str] = ["plot_data"]
@@ -53,56 +58,41 @@ Technical Indicators for {interval} timeframe:
         self,
         coin_name: str | None = None,
         coin_address: str | None = None,
+        user_request: str = "",
         interval: Literal["1h", "4h", "1d", "1w"] = "4h",
         start_time: Union[str, None] = None,
         end_time: Union[str, None] = None,
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
         *args,
         **kwargs,
     ) -> dict:
-        data_provider = CompositeCoinPriceDataProvider(
+        data_provider = CompositeCoinDataProvider(
             [
-                BinanceCoinPriceDataProvider(),
-                await BirdeyeCoinPriceDataProvider.create(),
+                BinanceOHLCVProvider(),
+                BybitOHLCVProvider(),
+                await BirdeyeOHLCVProvider.create(),
             ]
         )
         if start_time and end_time:
             start_time_dt = datetime.fromisoformat(start_time).replace(tzinfo=UTC)
             start_time_dt = start_time_dt - (interval_timedelta[interval] * 50)
-            ohlcv_data = (
-                await data_provider.get_historical_ohlcv_by_start_end(
-                    [coin_name.upper()],
-                    interval,
-                    start_time_dt,
-                    datetime.fromisoformat(end_time).replace(tzinfo=UTC),
-                    output_format="dataframe",
-                )
-                if not coin_address
-                else await data_provider.get_historical_ohlcv_by_start_end_for_address(
-                    [coin_address],
-                    interval,
-                    start_time_dt,
-                    datetime.fromisoformat(end_time).replace(tzinfo=UTC),
-                    output_format="dataframe",
-                )
+            ohlcv_data = await data_provider.get_historical_ohlcv_by_start_end(
+                [coin_name.upper() if coin_name else coin_address],
+                interval,
+                start_time_dt,
+                datetime.fromisoformat(end_time).replace(tzinfo=UTC),
+                output_format="dataframe",
+                category=category,
             )
 
         else:
-            ohlcv_data = (
-                await data_provider.get_historical_ohlcv(
-                    [coin_name.upper()],
-                    interval,
-                    days=interval_to_days[interval],
-                    output_format="dataframe",
-                )
-                if not coin_address
-                else await data_provider.get_historical_ohlcv_for_address(
-                    coin_address,
-                    interval,
-                    interval_to_days[interval],
-                    output_format="dataframe",
-                )
+            ohlcv_data = await data_provider.get_historical_ohlcv(
+                [coin_name.upper() if coin_name else coin_address],
+                interval,
+                days=interval_to_days[interval],
+                output_format="dataframe",
+                category=category,
             )
-            print("dataframe", ohlcv_data.shape, interval_to_days[interval])
         if len(ohlcv_data) == 0:
             return "No data found"
 
@@ -116,6 +106,7 @@ Technical Indicators for {interval} timeframe:
             "symbol": coin_name if coin_name else coin_address,
             "plot_data": plot_data.to_dicts(),
             "interval": interval,
+            "user_request": user_request,
         }
 
 
@@ -174,30 +165,23 @@ class CoinChartPlotterUtility(BaseUtility):
             "PSARs_0.02_0.2",
         ],
         interval: Literal["1h", "4h", "1d", "1w"] = "4h",
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
         *args,
         **kwargs,
     ) -> str:
-        data_provider = CompositeCoinPriceDataProvider(
+        data_provider = CompositeCoinDataProvider(
             [
-                BinanceCoinPriceDataProvider(),
-                await BirdeyeCoinPriceDataProvider.create(),
+                BinanceOHLCVProvider(),
+                BybitOHLCVProvider(),
+                await BirdeyeOHLCVProvider.create(),
             ]
         )
-
-        ohlcv_data = (
-            await data_provider.get_historical_ohlcv(
-                [coin_name.upper()],
-                interval,
-                days=interval_to_days[interval],
-                output_format="dataframe",
-            )
-            if not coin_address
-            else await data_provider.get_historical_ohlcv_for_address(
-                coin_address,
-                interval,
-                interval_to_days[interval],
-                output_format="dataframe",
-            )
+        ohlcv_data = await data_provider.get_historical_ohlcv(
+            [coin_name.upper() if coin_name else coin_address],
+            interval,
+            days=interval_to_days[interval],
+            output_format="dataframe",
+            category=category,
         )
         plot_data = calculate_ta_indicators(ohlcv_data, return_last_one=False)
 
@@ -221,7 +205,9 @@ class CoinInfoUtility(BaseUtility):
         self,
         coin_name: str | None = None,
         coin_address: str | None = None,
+        interval: Literal["1h", "4h", "1d", "1w"] = "4h",
         fields: List[str] = [],
+        category: List[Literal["spot", "futures"]] = ["spot", "futures"],
         **kwargs,
     ) -> str:
         response = f"Here is requested {coin_name} coin information: \n"
@@ -231,27 +217,19 @@ class CoinInfoUtility(BaseUtility):
             fields.remove("description")
 
         if len(fields) > 0:
-            data_provider = CompositeCoinPriceDataProvider(
+            data_provider = CompositeCoinDataProvider(
                 [
-                    BinanceCoinPriceDataProvider(),
-                    await BirdeyeCoinPriceDataProvider.create(),
+                    BinanceOHLCVProvider(),
+                    BybitOHLCVProvider(),
+                    await BirdeyeOHLCVProvider.create(),
                 ]
             )
-            interval = "4h"
-            ohlcv_data = (
-                await data_provider.get_historical_ohlcv(
-                    [coin_name.upper()],
-                    interval,
-                    days=interval_to_days[interval],
-                    output_format="dataframe",
-                )
-                if not coin_address
-                else await data_provider.get_historical_ohlcv_for_address(
-                    coin_address,
-                    interval,
-                    interval_to_days[interval],
-                    output_format="dataframe",
-                )
+            ohlcv_data = await data_provider.get_historical_ohlcv(
+                [coin_name.upper() if coin_name else coin_address],
+                interval,
+                days=interval_to_days[interval],
+                output_format="dataframe",
+                category=category,
             )
 
             if len(ohlcv_data) == 0:
