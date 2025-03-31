@@ -1,7 +1,8 @@
 import requests
 import time
 import datetime
-from typing import Optional, Dict, Any
+import os
+from typing import Optional, Dict, Any, Literal
 
 from libs.data_providers.derivative.base import DerivativeDataProvider
 
@@ -12,9 +13,15 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
     BASE_URL = "https://api.coinalyze.net/v1"
     RATE_LIMIT = 40
 
-    def __init__(self, api_key: str):
-        self.api_key = api_key
-        self.headers = {"api_key": self.api_key}
+    interval_to_days: dict[Literal["1h", "4h", "1d", "1w"], dict] = {
+        "30min": 4,
+        "1hour": 7,
+        "4hour": 28,
+        "daily": 100,
+    }
+
+    def __init__(self, api_key: str | None = None):
+        self.headers = {"api_key": api_key or os.getenv("COINALYZE_API_KEY")}
         self.last_request_time = 0
 
     def _rate_limit(self):
@@ -68,7 +75,7 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
         interval: str = "1hour",
         from_timestamp: Optional[int] = None,
         to_timestamp: Optional[int] = None,
-        days: int = 7,
+        days: int = None,
         convert_to_usd: bool = False,
     ) -> pd.DataFrame:
         """
@@ -86,7 +93,10 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
         """
         if from_timestamp is None:
             from_timestamp = int(
-                (datetime.datetime.now() - datetime.timedelta(days=days)).timestamp()
+                (
+                    datetime.datetime.now()
+                    - datetime.timedelta(days=days or self.interval_to_days[interval])
+                ).timestamp()
             )
         if to_timestamp is None:
             to_timestamp = int(datetime.datetime.now().timestamp())
@@ -131,7 +141,7 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
         interval: str = "1hour",
         from_timestamp: Optional[int] = None,
         to_timestamp: Optional[int] = None,
-        days: int = 7,
+        days: int = None,
     ) -> pd.DataFrame:
         """
         Get historical funding rate data
@@ -147,7 +157,10 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
         """
         if from_timestamp is None:
             from_timestamp = int(
-                (datetime.datetime.now() - datetime.timedelta(days=days)).timestamp()
+                (
+                    datetime.datetime.now()
+                    - datetime.timedelta(days=days or self.interval_to_days[interval])
+                ).timestamp()
             )
         if to_timestamp is None:
             to_timestamp = int(datetime.datetime.now().timestamp())
@@ -191,7 +204,7 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
         interval: str = "1hour",
         from_timestamp: Optional[int] = None,
         to_timestamp: Optional[int] = None,
-        days: int = 7,
+        days: int = None,
         convert_to_usd: bool = True,
     ) -> pd.DataFrame:
         """
@@ -209,7 +222,10 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
         """
         if from_timestamp is None:
             from_timestamp = int(
-                (datetime.datetime.now() - datetime.timedelta(days=days)).timestamp()
+                (
+                    datetime.datetime.now()
+                    - datetime.timedelta(days=days or self.interval_to_days[interval])
+                ).timestamp()
             )
         if to_timestamp is None:
             to_timestamp = int(datetime.datetime.now().timestamp())
@@ -255,7 +271,7 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
         interval: str = "1hour",
         from_timestamp: Optional[int] = None,
         to_timestamp: Optional[int] = None,
-        days: int = 7,
+        days: int = None,
     ):
         """
         Get historical long/short ratio data for a symbol
@@ -271,7 +287,10 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
         """
         if from_timestamp is None:
             from_timestamp = int(
-                (datetime.datetime.now() - datetime.timedelta(days=days)).timestamp()
+                (
+                    datetime.datetime.now()
+                    - datetime.timedelta(days=days or self.interval_to_days[interval])
+                ).timestamp()
             )
         if to_timestamp is None:
             to_timestamp = int(datetime.datetime.now().timestamp())
@@ -311,7 +330,7 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
         interval: str = "1hour",
         from_timestamp: Optional[int] = None,
         to_timestamp: Optional[int] = None,
-        days: int = 7,
+        days: int = None,
         include_oi: bool = True,
         include_funding: bool = True,
         include_liquidations: bool = True,
@@ -337,7 +356,10 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
 
         if from_timestamp is None:
             from_timestamp = int(
-                (datetime.datetime.now() - datetime.timedelta(days=days)).timestamp()
+                (
+                    datetime.datetime.now()
+                    - datetime.timedelta(days=days or self.interval_to_days[interval])
+                ).timestamp()
             )
         if to_timestamp is None:
             to_timestamp = int(datetime.datetime.now().timestamp())
@@ -429,3 +451,16 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
             result["merged"] = merged_df
 
         return result
+
+    def _to_coinalyze_interval(self, interval: str) -> str:
+        return {
+            "30m": "30min",
+            "1h": "1hour",
+            "4h": "4hour",
+            "1d": "daily",
+        }[interval]
+
+    def _to_coinalyze_symbol_name(self, symbol: str) -> str:
+        if not symbol.endswith("USDT_PERP.A"):
+            return f"{symbol.upper()}USDT_PERP.A"
+        return symbol

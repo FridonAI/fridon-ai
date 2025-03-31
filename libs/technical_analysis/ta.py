@@ -6,9 +6,9 @@ def calculate_ta_indicators(
     df: pl.DataFrame | pd.DataFrame, return_last_one: bool = True
 ) -> pl.DataFrame:
     if isinstance(df, pl.DataFrame):
-        df_pandas = df.to_pandas()
+        df_pandas = df.to_pandas().copy()
     else:
-        df_pandas = df
+        df_pandas = df.copy()
 
     if "date" in df_pandas.columns:
         df_pandas = df_pandas.drop(columns=["date"])

@@ -10,9 +10,14 @@ from libs.data_providers import (
     BirdeyeOHLCVProvider,
     BybitOHLCVProvider,
     CompositeCoinDataProvider,
+    CoinalyzeDataProvider,
 )
 
-from libs.internals.indicators import calculate_ta_indicators
+from libs.technical_analysis.ta import calculate_ta_indicators
+from libs.technical_analysis import (
+    calculate_derivative_indicators,
+    generate_indicator_narrative,
+)
 
 interval_to_days = {
     "30m": 5,
@@ -31,26 +36,18 @@ interval_timedelta = {
 
 
 class CoinTechnicalAnalyzerUtility(LLMUtility):
-    llm_job_description: str = """Assume the role as a leading Technical Analysis (TA) expert in the stock market, \
-a modern counterpart to Charles Dow, John Bollinger, and Alan Andrews. \
-Your mastery encompasses both stock fundamentals and intricate technical indicators. \
-You possess the ability to decode complex market dynamics, \
-providing clear insights and recommendations backed by a thorough understanding of interrelated factors. \
-Your expertise extends to practical tools like the pandas_ta module, \
-allowing you to navigate data intricacies with ease. \
-As a TA authority, your role is to decipher market trends, make informed predictions, and offer valuable perspectives.
+    llm_job_description: str = """Assume the role of an elite crypto market analyst with deep expertise in both traditional OHLCV price signals and derivative market indicators. Your mastery in technical analysis enables you to seamlessly synthesize these datasets, providing clear and actionable insights on token performance and future price movements.
 
-Generated response should be simple, easy to understand, user shouldn't try hard to understand what's happening, conclusion should be main part of the analysis.
+Your response should be straightforward, easily understandable, and conclude with a clear summary of the recommended market actions.
 
-Given {symbol} coin's TA data as below on the last trading day, what will be the next few days possible crypto price movement?
-Note: Some indicators might be unavailable due to insufficient data points.
+Analyze the following TA data for {symbol} coin from the most recent trading session for the specified {interval} timeframe. Considering both the price-based and derivative signals, what are the likely crypto price movements? Note: Some indicators might be unavailable due to insufficient data points.
 
-On top of analysis consider user's request and generate corresponding, easy to understand, concise response.
-User request (If request is empty just generate analysis):
-{user_request}
+PRICE INDICATORS (OHLCV data) for {interval} timeframe:
+{coin_history_indicators}
 
-Technical Indicators for {interval} timeframe:
-{coin_history_indicators}"""
+DERIVATIVE INDICATORS for {interval} timeframe:
+{derivative_indicators}
+"""
     fields_to_retain: list[str] = ["plot_data"]
     model_name: str = "gpt-4o-mini"
 
@@ -73,6 +70,11 @@ Technical Indicators for {interval} timeframe:
                 await BirdeyeOHLCVProvider.create(),
             ]
         )
+
+        coinalyze_data_provider = CoinalyzeDataProvider(
+            api_key="c018e3ca-a67b-42c4-980b-a203eaa005ef"
+        )
+
         if start_time and end_time:
             start_time_dt = datetime.fromisoformat(start_time).replace(tzinfo=UTC)
             start_time_dt = start_time_dt - (interval_timedelta[interval] * 50)
@@ -99,6 +101,17 @@ Technical Indicators for {interval} timeframe:
         plot_data = calculate_ta_indicators(ohlcv_data, return_last_one=False)
         coin_interval_record_df = plot_data.tail(1)
 
+        derivative_narrative = None
+        if interval != "1w":
+            derivative_data = coinalyze_data_provider.get_consolidated_data(
+                coinalyze_data_provider._to_coinalyze_symbol_name(coin_name),
+                interval=coinalyze_data_provider._to_coinalyze_interval(interval),
+            )
+            derivative_ta = calculate_derivative_indicators(derivative_data, ohlcv_data)
+            derivative_narrative = generate_indicator_narrative(
+                derivative_ta, lookback_periods=12
+            )
+
         if len(coin_interval_record_df) == 0:
             return "No data found"
         return {
@@ -107,6 +120,7 @@ Technical Indicators for {interval} timeframe:
             "plot_data": plot_data.to_dicts(),
             "interval": interval,
             "user_request": user_request,
+            "derivative_indicators": derivative_narrative,
         }
 
 
