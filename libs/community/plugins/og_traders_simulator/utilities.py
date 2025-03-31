@@ -14,7 +14,7 @@ from libs.technical_analysis.emperor_guide import (
     check_200ema_support,
 )
 
-from libs.community.plugins.emperor_trading.prompts import emas_guide_prompt
+from libs.community.plugins.og_traders_simulator.prompts import emas_guide_prompt
 
 
 class EmperorTradingCoinAnalysisUtility(LLMUtility):

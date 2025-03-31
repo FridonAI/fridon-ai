@@ -51,7 +51,7 @@ agent_to_score = {
     "wallet": 1.5,
     "fridon": 0.3,
     "solana-bonk-educator": 0.5,
-    "emperor-trader": 2,
+    "og-traders-simulator": 2,
     "off-topic": 0,
 }
 
