@@ -6,6 +6,8 @@ from libs.data_providers.ohlcv.birdeye import BirdeyeOHLCVProvider
 from libs.data_providers.ohlcv.dummy import DummyOHLCVProvider
 from libs.data_providers.composite import CompositeCoinDataProvider
 
+from libs.data_providers.derivative.coinalyze import CoinalyzeDataProvider
+
 __all__ = [
     "BaseOHLCVProvider",
     "BinanceOHLCVProvider",
@@ -13,4 +15,5 @@ __all__ = [
     "BirdeyeOHLCVProvider",
     "DummyOHLCVProvider",
     "CompositeCoinDataProvider",
+    "CoinalyzeDataProvider",
 ]

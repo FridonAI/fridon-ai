@@ -7,7 +7,7 @@ from fridonai_core.plugins.tools.response_dumper_base import S3ResponseDumper
 
 from libs.community.helpers.tools import DatetimeExtractorTool
 
-from libs.community.plugins.emperor_trading.utilities import (
+from libs.community.plugins.og_traders_simulator.utilities import (
     EmperorTradingCoinAnalysisUtility,
     # EmperorTradingManualUtility,
 )

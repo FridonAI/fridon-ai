@@ -86,7 +86,7 @@ async def task_runner(
         "wallet",
         "fridon",
         "solana-bonk-educator",
-        "emperor-trader",
+        "og-traders-simulator",
         "off-topic",
         # "bonk-notifier",
     ]

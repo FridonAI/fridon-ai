@@ -9,12 +9,12 @@ from libs.data_providers import (
     CompositeCoinDataProvider,
 )
 
-from libs.internals.indicators.emperor_guide import (
+from libs.technical_analysis.emperor_guide import (
     get_latest_ema_crossover,
     check_200ema_support,
 )
 
-from libs.community.plugins.emperor_trading.prompts import emas_guide_prompt
+from libs.community.plugins.og_traders_simulator.prompts import emas_guide_prompt
 
 
 class EmperorTradingCoinAnalysisUtility(LLMUtility):

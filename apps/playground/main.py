@@ -13,7 +13,7 @@ async def main():
         "jupiter",
         "fridon",
         "solana-bonk-educator",
-        "emperor-trader",
+        "og-traders-simulator",
     ]
     registry = ensure_plugin_registry()
 

@@ -17,7 +17,7 @@ def test_chat():
         "wallet",
         "fridon",
         "solana-bonk-educator",
-        "emperor-trader",
+        "og-traders-simulator",
         "off-topic",
     ]
     registry = ensure_plugin_registry()
