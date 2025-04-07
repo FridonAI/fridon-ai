@@ -17,7 +17,7 @@ from libs.utils.redis.pubsub import Publisher
 registry = ensure_cron_registry()
 
 
-@registry.register
+# @registry.register
 class BonkNotifierCron(BaseCron):
     name: str = "Bonk Notifier"
     schedule: str = "0 */1 * * *"
