@@ -88,7 +88,6 @@ async def task_runner(
         "solana-bonk-educator",
         "og-traders-simulator",
         "off-topic",
-        # "bonk-notifier",
     ]
     (
         response_message,
