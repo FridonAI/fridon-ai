@@ -71,9 +71,7 @@ DERIVATIVE INDICATORS for {interval} timeframe:
             ]
         )
 
-        coinalyze_data_provider = CoinalyzeDataProvider(
-            api_key="c018e3ca-a67b-42c4-980b-a203eaa005ef"
-        )
+        coinalyze_data_provider = CoinalyzeDataProvider()
 
         if start_time and end_time:
             start_time_dt = datetime.fromisoformat(start_time).replace(tzinfo=UTC)

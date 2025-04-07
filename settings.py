@@ -30,6 +30,8 @@ class Settings(BaseSettings):
 
     BIRDEYE_API_KEY: str
 
+    COINALYZE_API_KEY: str
+
     REDIS_HOST: str
 
     LITERAL_API_KEY: Optional[str]

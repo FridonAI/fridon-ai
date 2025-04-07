@@ -13,12 +13,12 @@ export class PluginsEventListener {
 
   @EventPattern('plugins')
   async process(event: PluginDto[]): Promise<void> {
-    const currentPlugins = this.pluginService.getPlugins();
+    // const currentPlugins = this.pluginService.getPlugins();
     const newPlugins = event;
 
-    if (currentPlugins.length !== newPlugins.length) {
-      Logger.log('Plugins updated: ' + JSON.stringify(newPlugins));
-    }
+    // if (currentPlugins.length !== newPlugins.length) {
+    //   Logger.log('Plugins updated: ' + JSON.stringify(newPlugins));
+    // }
 
     this.pluginService.setPlugins(newPlugins);
   }

@@ -8,6 +8,8 @@ from libs.data_providers.derivative.base import DerivativeDataProvider
 
 import pandas as pd
 
+from settings import settings
+
 
 class CoinalyzeDataProvider(DerivativeDataProvider):
     BASE_URL = "https://api.coinalyze.net/v1"
@@ -21,7 +23,7 @@ class CoinalyzeDataProvider(DerivativeDataProvider):
     }
 
     def __init__(self, api_key: str | None = None):
-        self.headers = {"api_key": api_key or os.getenv("COINALYZE_API_KEY")}
+        self.headers = {"api_key": api_key or settings.COINALYZE_API_KEY}
         self.last_request_time = 0
 
     def _rate_limit(self):
