@@ -130,7 +130,7 @@ docker compose up --build
 
 **Set up the FridonAI Brain locally**
 
-*It will need Redis and Postgres to be runnning and configured in .env*
+*It will need Redis and Postgres to be running and configured in .env*
 1. **Clone the Repository**
 
    ```bash
