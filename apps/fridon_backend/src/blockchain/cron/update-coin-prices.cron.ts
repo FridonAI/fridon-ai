@@ -15,9 +15,9 @@ export class UpdateCoinPrices implements OnModuleInit {
   async onModuleInit() {
     this.l.log('Called Update Token Prices onModuleInit');
 
-    const coinPrices = await this.tools.fetchCoinPricesCoinGecko();
+    // const coinPrices = await this.tools.fetchCoinPricesCoinGecko();
 
-    await this.cacheManager.set('coinPrices', coinPrices, 300 * 1000);
+    // await this.cacheManager.set('coinPrices', coinPrices, 300 * 1000);
   }
 
   @Cron(CronExpression.EVERY_30_MINUTES)

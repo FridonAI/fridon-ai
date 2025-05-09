@@ -11,10 +11,9 @@ export class UpdateTokenList implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    this.logger.log('Called Update Token List onModuleInit');
-
-    this.jupiterTokenListAdapter.resetTokenList();
-    await this.jupiterTokenListAdapter.getTokenList();
+    // this.logger.log('Called Update Token List onModuleInit');
+    // this.jupiterTokenListAdapter.resetTokenList();
+    // await this.jupiterTokenListAdapter.getTokenList();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
