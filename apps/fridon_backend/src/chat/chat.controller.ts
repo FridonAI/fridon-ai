@@ -22,6 +22,7 @@ import {
   GetNotificationResponseDto,
   CreateChatDto,
   TransactionCanceledRequestDto,
+  MetadataDto,
 } from './chat.dto';
 import { ChatId } from './domain/chat-id.value-object';
 import { ApiTags } from '@nestjs/swagger';
@@ -31,6 +32,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { TransactionCanceledEvent } from 'src/blockchain/events/transaction.event';
 import { TransactionType } from 'src/blockchain/transaction-listener/types';
 import { WalletThrottlerGuard } from '@lib/throttling';
+import { getWeightedExamples, MODEL_EXAMPLES } from './utils';
 
 @Controller('chats')
 @ApiTags('chat')
@@ -41,6 +43,24 @@ export class ChatHttpController {
     private readonly transactionListenerService: TransactionListenerService,
     private readonly eventBus: EventBus,
   ) {}
+
+  @Get('metadata')
+  async getMetadata(@Param() params: MetadataDto) {
+    const limit = params.limit ?? 2;
+
+    // Generate random limit number of metadata from CHAT_EXAMPLES
+    const examples = getWeightedExamples(limit);
+    const models = MODEL_EXAMPLES;
+
+    return {
+      metadata: examples.map((example) => example.message),
+      models: models.map((model) => ({
+        name: model.name,
+        slug: model.slug,
+        icon: model.icon,
+      })),
+    };
+  }
 
   @Get()
   async getChats(

@@ -11,6 +11,11 @@ import {
   Min,
 } from 'class-validator';
 
+export class MetadataDto extends BaseDto<MetadataDto> {
+  @ApiProperty({ example: 2 })
+  limit: number;
+}
+
 // Shared
 export class ChatIdDto extends BaseDto<ChatIdDto> {
   @ApiProperty({ example: '11111111-1111-1111-1111-111111111111' })
