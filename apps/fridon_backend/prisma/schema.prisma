@@ -180,7 +180,7 @@ model Notification {
 }
 
 // Alert settings
-model AlertSettings {
+model AlertSetting {
   id String @id @default(uuid())
 
   walletId String

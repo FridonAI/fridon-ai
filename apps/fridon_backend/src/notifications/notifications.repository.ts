@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, NotificationType, Notification } from '@prisma/client';
+import {
+  Prisma,
+  NotificationType,
+  Notification,
+  AlertSetting,
+} from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { availableSorts } from './notifications.request.dto';
 
@@ -40,12 +45,54 @@ export type FindNotificationsQueryResult =
 export class NotificationsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async disableAlertSetting(alertId: string, walletId: string): Promise<void> {
+    await this.prisma.alertSetting.update({
+      where: {
+        id: alertId,
+        walletId,
+      },
+      data: {
+        enabled: false,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  async readNotification(
+    notificationId: number,
+    walletId: string,
+  ): Promise<void> {
+    await this.prisma.notification.update({
+      where: {
+        id: notificationId,
+        walletId,
+      },
+      data: {
+        read: true,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  async readAllNotifications(walletId: string): Promise<void> {
+    await this.prisma.notification.updateMany({
+      where: {
+        walletId,
+        read: false,
+      },
+      data: {
+        read: true,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
   async createAlertSetting(
     alertId: string,
     walletId: string,
     text: string,
   ): Promise<string> {
-    const alert = await this.prisma.alertSettings.create({
+    const alert = await this.prisma.alertSetting.create({
       data: {
         id: alertId,
         text,
@@ -104,6 +151,15 @@ export class NotificationsRepository {
       {} as Record<NotificationType, number>,
     );
     return notificationsCountMap;
+  }
+  async findAlertSettings(walletId: string): Promise<AlertSetting[]> {
+    const alertSettings = await this.prisma.alertSetting.findMany({
+      where: {
+        walletId,
+      },
+    });
+
+    return alertSettings;
   }
 
   async findNotifications(

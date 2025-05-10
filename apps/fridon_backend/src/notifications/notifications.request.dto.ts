@@ -10,6 +10,24 @@ import {
 } from 'class-validator';
 import { NotificationType } from './notifications.type';
 
+export class ReadNotificationRequestDto {
+  @ApiProperty({
+    example: 1,
+    description: 'Notification Id',
+  })
+  @IsNumber()
+  readonly notificationId: number;
+}
+
+export class DisableAlertRequestDto {
+  @ApiProperty({
+    example: '52479f81-8d70-4e35-ab54-35d961f76a6e',
+    description: 'Alert Id',
+  })
+  @IsString()
+  @Transform((param) => param?.value?.toLowerCase())
+  readonly alertId: string;
+}
 // Alerts Request DTO
 export class CreateAlertRequestDto {
   // @ApiProperty({

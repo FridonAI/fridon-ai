@@ -1,8 +1,18 @@
-import { Body, Controller, Get, Logger, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   CreateAlertRequestDto,
   CreateNotificationRequestDto,
+  DisableAlertRequestDto,
   FindNotificationsRequestDto,
+  ReadNotificationRequestDto,
 } from './notifications.request.dto';
 import {
   FindNotificationsQueryResult,
@@ -11,6 +21,9 @@ import {
 import { Wallet, WalletSession } from '@lib/auth';
 import { Request } from 'express';
 import {
+  AlertSettingResponseDto,
+  DisableAlertSettingResponseDto,
+  FindAlertSettingResponseDto,
   FindNotificationsCountResponseDto,
   FindNotificationsDto,
   FindNotificationsResponseDto,
@@ -19,6 +32,7 @@ import { Notification } from '@prisma/client';
 import { NotificationType } from './notifications.type';
 // import { EventsService } from 'src/events/events.service';
 import { EventPattern } from '@nestjs/microservices';
+import { EventsService } from 'src/events/events.service';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -26,10 +40,55 @@ export class NotificationsController {
 
   constructor(
     private readonly notificationsRepository: NotificationsRepository,
-    // private readonly eventsService: EventsService,
+    private readonly eventsService: EventsService,
   ) {}
 
-  @EventPattern('create_alert')
+  @Post('read')
+  async readNotification(
+    @Wallet() wallet: WalletSession,
+    @Body() body: ReadNotificationRequestDto,
+  ) {
+    this.logger.log('readNotification', JSON.stringify(body));
+    const walletId = wallet.walletAddress;
+    return await this.notificationsRepository.readNotification(
+      body.notificationId,
+      walletId,
+    );
+  }
+
+  @Post('read-all')
+  async readAllNotifications(@Wallet() wallet: WalletSession) {
+    this.logger.log('readAllNotifications');
+    const walletId = wallet.walletAddress;
+    return await this.notificationsRepository.readAllNotifications(walletId);
+  }
+
+  @Post('disable-alert')
+  async disableAlert(
+    @Wallet() wallet: WalletSession,
+    @Body() body: DisableAlertRequestDto,
+  ) {
+    this.logger.log('disableAlert', JSON.stringify(body));
+    const walletId = wallet.walletAddress;
+
+    await this.notificationsRepository.disableAlertSetting(
+      body.alertId,
+      walletId,
+    );
+
+    // Send event to the redis.
+    this.eventsService.sendTo(
+      walletId,
+      'notification.disable-alert',
+      new DisableAlertSettingResponseDto({
+        type: 'disable-alert',
+        id: body.alertId,
+        walletId,
+      }),
+    );
+  }
+
+  @EventPattern('create-alert')
   async createAlert(
     createAlertRequestDto: CreateAlertRequestDto,
   ): Promise<string> {
@@ -42,7 +101,7 @@ export class NotificationsController {
     );
   }
 
-  @EventPattern('create_notification')
+  @EventPattern('create-notification')
   async createNotification(
     @Body() createNotificationRequestDto: CreateNotificationRequestDto,
   ) {
@@ -59,6 +118,27 @@ export class NotificationsController {
     );
   }
 
+  @Get('alert-settings')
+  async getAlertSettings(@Wallet() wallet: WalletSession) {
+    this.logger.log('getAlertSettings');
+    const walletId = wallet.walletAddress;
+    const result =
+      await this.notificationsRepository.findAlertSettings(walletId);
+
+    return new FindAlertSettingResponseDto({
+      data: result.map((alertSetting) => {
+        return new AlertSettingResponseDto({
+          walletId: alertSetting.walletId,
+          enabled: alertSetting.enabled,
+          text: alertSetting.text,
+          createdAt: alertSetting.createdAt.getDate(),
+          updatedAt: alertSetting.updatedAt.getDate(),
+        });
+      }),
+    });
+  }
+
+  @Get('count')
   async getNotificationsCount(@Wallet() wallet: WalletSession) {
     const notificationsCount =
       await this.notificationsRepository.findNotificationsCount(
@@ -70,7 +150,7 @@ export class NotificationsController {
     });
   }
 
-  @Get('get-all')
+  @Get('all')
   async getNotifications(
     @Wallet() wallet: WalletSession,
     @Req() req: Request,
@@ -139,6 +219,7 @@ export class NotificationsController {
 
   private formatOutputTournaments(result: Notification): FindNotificationsDto {
     return new FindNotificationsDto({
+      id: result.id,
       walletId: result.walletId,
       type: result.type as NotificationType,
       text: result.text,

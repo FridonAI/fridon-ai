@@ -5,6 +5,7 @@ import { OffsetPaginatedResponseDto } from '@lib/common/dtos/offset-paginated-re
 
 // Find Notifications Response DTO
 export class FindNotificationsDto extends BaseDto<FindNotificationsDto> {
+  id: number;
   walletId: string;
   type: NotificationType;
   text: string;
@@ -27,4 +28,25 @@ export class FindNotificationsCountResponseDto extends BaseDto<FindNotifications
     },
   })
   count: Record<NotificationType, number>;
+}
+
+// Disable Alert Setting Response DTO
+export class DisableAlertSettingResponseDto extends BaseDto<DisableAlertSettingResponseDto> {
+  type: 'disable-alert';
+  id: string;
+  walletId: string;
+}
+
+// Find Alert Setting Response DTO
+export class AlertSettingResponseDto extends BaseDto<AlertSettingResponseDto> {
+  walletId: string;
+  enabled: boolean;
+  text: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export class FindAlertSettingResponseDto extends BaseDto<FindAlertSettingResponseDto> {
+  @ApiProperty({ type: AlertSettingResponseDto, isArray: true })
+  declare readonly data: readonly AlertSettingResponseDto[];
 }
