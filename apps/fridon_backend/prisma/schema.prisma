@@ -156,3 +156,37 @@ model WalletVerification {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// Notifications/Alerts
+
+enum NotificationType {
+  System
+  Alert
+}
+
+model Notification {
+  id Int @id @default(autoincrement())
+
+  walletId String
+  type     NotificationType
+  text     String
+  read     Boolean          @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([walletId, type])
+  @@index([walletId, read])
+}
+
+// Alert settings
+model AlertSettings {
+  id String @id @default(uuid())
+
+  walletId String
+  enabled  Boolean @default(true)
+  text     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

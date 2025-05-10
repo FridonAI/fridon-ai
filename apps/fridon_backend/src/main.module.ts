@@ -16,6 +16,7 @@ import { DataProviderModule } from './data-providers/data-provider.module';
 import { UserModule } from './user/user.module';
 import { PluginsModule } from './plugins/plugins.module';
 import { ProxyModule } from './proxy/proxy.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ProxyModule } from './proxy/proxy.module';
     UserModule,
     PluginsModule,
     ProxyModule,
+    NotificationsModule,
   ],
   providers: [providePrismaClientExceptionFilter()],
 })
