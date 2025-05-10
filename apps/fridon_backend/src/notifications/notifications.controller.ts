@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Logger,
-  Post,
-  Query,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Logger, Query, Req } from '@nestjs/common';
 import {
   CreateAlertRequestDto,
   CreateNotificationRequestDto,
@@ -25,6 +17,8 @@ import {
 } from './notifications.response.dto';
 import { Notification } from '@prisma/client';
 import { NotificationType } from './notifications.type';
+// import { EventsService } from 'src/events/events.service';
+import { EventPattern } from '@nestjs/microservices';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -32,11 +26,12 @@ export class NotificationsController {
 
   constructor(
     private readonly notificationsRepository: NotificationsRepository,
+    // private readonly eventsService: EventsService,
   ) {}
 
-  @Post('create-alert')
+  @EventPattern('create_alert')
   async createAlert(
-    @Body() createAlertRequestDto: CreateAlertRequestDto,
+    createAlertRequestDto: CreateAlertRequestDto,
   ): Promise<string> {
     this.logger.log('createAlert', JSON.stringify(createAlertRequestDto));
     const { alertId, walletId, text } = createAlertRequestDto;
@@ -47,7 +42,7 @@ export class NotificationsController {
     );
   }
 
-  @Post('create-notification')
+  @EventPattern('create_notification')
   async createNotification(
     @Body() createNotificationRequestDto: CreateNotificationRequestDto,
   ) {
