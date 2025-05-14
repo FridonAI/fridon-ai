@@ -190,3 +190,17 @@ model AlertSetting {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model User {
+  id String @id @default(uuid())
+
+  privyId  String  @unique
+  walletId String  @unique
+  email    String? @unique
+  twitter  String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([walletId])
+}
