@@ -37,6 +37,20 @@ export class DisableAlertSettingResponseDto extends BaseDto<DisableAlertSettingR
   walletId: string;
 }
 
+export class CreateAlertSettingResponseDto extends BaseDto<CreateAlertSettingResponseDto> {
+  type: 'create-alert';
+  id: string;
+  walletId: string;
+  text: string;
+}
+
+export class CreateNotificationResponseDto extends BaseDto<CreateNotificationResponseDto> {
+  type: 'create-notification';
+  notificationType: string;
+  walletId: string;
+  text: string;
+}
+
 // Find Alert Setting Response DTO
 export class AlertSettingResponseDto extends BaseDto<AlertSettingResponseDto> {
   walletId: string;

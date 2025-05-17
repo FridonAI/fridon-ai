@@ -22,6 +22,8 @@ import { Wallet, WalletSession } from '@lib/auth';
 import { Request } from 'express';
 import {
   AlertSettingResponseDto,
+  CreateAlertSettingResponseDto,
+  CreateNotificationResponseDto,
   DisableAlertSettingResponseDto,
   FindAlertSettingResponseDto,
   FindNotificationsCountResponseDto,
@@ -76,7 +78,6 @@ export class NotificationsController {
       walletId,
     );
 
-    // Send event to the redis.
     this.eventsService.sendTo(
       walletId,
       'notification.disable-alert',
@@ -94,6 +95,18 @@ export class NotificationsController {
   ): Promise<string> {
     this.logger.log('createAlert', JSON.stringify(createAlertRequestDto));
     const { alertId, walletId, text } = createAlertRequestDto;
+
+    this.eventsService.sendTo(
+      walletId,
+      'notification.create-alert',
+      new CreateAlertSettingResponseDto({
+        type: 'create-alert',
+        id: alertId,
+        walletId,
+        text,
+      }),
+    );
+
     return await this.notificationsRepository.createAlertSetting(
       alertId,
       walletId,
@@ -111,6 +124,16 @@ export class NotificationsController {
     );
     const { walletId, type, text } = createNotificationRequestDto;
 
+    this.eventsService.sendTo(
+      walletId,
+      'notification.create-notification',
+      new CreateNotificationResponseDto({
+        type: 'create-notification',
+        notificationType: type,
+        text,
+        walletId,
+      }),
+    );
     return await this.notificationsRepository.createNotification(
       walletId,
       type,
