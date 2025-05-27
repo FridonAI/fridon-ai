@@ -39,6 +39,7 @@ class CoinObserverUtility(BaseUtility):
         interval: str,
         filter_expression: str,
         recurring: bool,
+        pub: Publisher = Provide["publisher"],
     ):
         print(wallet_id, coin_name, interval, filter_expression)
         observer_record = CoinObserverRecord(
@@ -59,6 +60,18 @@ class CoinObserverUtility(BaseUtility):
         existing_filters.append(observer_record.model_dump())
 
         await coin_observer_repository.write(wallet_id, existing_filters)
+        
+        # Publish alert event.
+        await pub.publish(
+            "create-alert",
+            json.dumps(
+                {
+                    "alertId": str(uuid.uuid4()),
+                    "walletId": wallet_id,
+                    "text": f"{coin_name} alert: {filter_expression}",
+                }
+            )
+        )
 
     async def _generate_filter(
         self, coin_name: str, interval: Literal["1h", "4h", "1d", "1w"], filter: str

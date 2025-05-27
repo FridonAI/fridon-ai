@@ -28,6 +28,13 @@ async function main() {
       },
     ),
   });
+
+  await prisma.walletVerification.create({
+    data: {
+      walletId: 'CM8PWG9RsC6DfPauGruCvThss1M5GPRdrsb2HXRnGyYc',
+      verified: true,
+    }
+  })
 }
 
 main()

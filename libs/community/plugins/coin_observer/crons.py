@@ -52,12 +52,12 @@ class CoinObserverCron(BaseCron):
         #             )
 
         #             await pub.publish(
-        #                 "notifications_received",
+        #                 "create-notification",
         #                 json.dumps(
         #                     {
         #                         "walletId": wallet_id,
-        #                         "slug": "coin-observer",
-        #                         "message": response,
+        #                         "type": "Alert",
+        #                         "text": response,
         #                     }
         #                 ),
         #             )

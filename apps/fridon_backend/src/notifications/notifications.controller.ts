@@ -96,6 +96,12 @@ export class NotificationsController {
     this.logger.log('createAlert', JSON.stringify(createAlertRequestDto));
     const { alertId, walletId, text } = createAlertRequestDto;
 
+    const id = await this.notificationsRepository.createAlertSetting(
+      alertId,
+      walletId,
+      text,
+    );
+
     this.eventsService.sendTo(
       walletId,
       'notification.create-alert',
@@ -107,11 +113,7 @@ export class NotificationsController {
       }),
     );
 
-    return await this.notificationsRepository.createAlertSetting(
-      alertId,
-      walletId,
-      text,
-    );
+    return id;
   }
 
   @EventPattern('create-notification')
@@ -124,6 +126,12 @@ export class NotificationsController {
     );
     const { walletId, type, text } = createNotificationRequestDto;
 
+    const id = await this.notificationsRepository.createNotification(
+      walletId,
+      type,
+      text,
+    );
+
     this.eventsService.sendTo(
       walletId,
       'notification.create-notification',
@@ -134,11 +142,8 @@ export class NotificationsController {
         walletId,
       }),
     );
-    return await this.notificationsRepository.createNotification(
-      walletId,
-      type,
-      text,
-    );
+
+    return id;
   }
 
   @Get('alert-settings')
