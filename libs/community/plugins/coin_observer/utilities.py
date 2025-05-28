@@ -2,11 +2,13 @@ from typing import Literal
 
 import pyarrow.compute as pc
 from fridonai_core.plugins.utilities.base import BaseUtility
+from dependency_injector.wiring import Provide
 
 from libs.community.plugins.coin_observer.helpers.llm import get_filter_generator_chain
 from libs.community.plugins.coin_observer.schemas import CoinObserverRecord
 from libs.repositories.indicators import IndicatorsRepository
 from libs.repositories.redis import RedisRepository
+from libs.utils.redis.pubsub import Publisher
 
 
 class CoinObserverUtility(BaseUtility):
@@ -20,6 +22,7 @@ class CoinObserverUtility(BaseUtility):
         wallet_id: str,
         **kwargs,
     ) -> str:
+        print("Coin observer utility called")
         print(coin_name, interval, filter, wallet_id)
         try:
             filter_expression = await self._generate_filter(coin_name, interval, filter)
@@ -62,16 +65,18 @@ class CoinObserverUtility(BaseUtility):
         await coin_observer_repository.write(wallet_id, existing_filters)
         
         # Publish alert event.
-        await pub.publish(
-            "create-alert",
-            json.dumps(
-                {
-                    "alertId": str(uuid.uuid4()),
-                    "walletId": wallet_id,
-                    "text": f"{coin_name} alert: {filter_expression}",
-                }
-            )
-        )
+        print("this is pub", pub)
+        print(f"Publishing alert for {coin_name} with filter: {filter_expression}")
+        # await pub.publish(
+        #     "create-alert",
+        #     json.dumps(
+        #         {
+        #             "alertId": str(uuid.uuid4()),
+        #             "walletId": wallet_id,
+        #             "text": f"{coin_name} alert: {filter_expression}",
+        #         }
+        #     )
+        # )
 
     async def _generate_filter(
         self, coin_name: str, interval: Literal["1h", "4h", "1d", "1w"], filter: str
